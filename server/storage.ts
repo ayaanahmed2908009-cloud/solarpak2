@@ -1,0 +1,383 @@
+import { 
+  users, type User, type InsertUser,
+  projects, type Project, type InsertProject,
+  donations, type Donation, type InsertDonation,
+  impactStories, type ImpactStory, type InsertImpactStory,
+  testimonials, type Testimonial, type InsertTestimonial,
+  stats, type Stats, type InsertStats,
+  subscribers, type Subscriber, type InsertSubscriber
+} from "@shared/schema";
+
+// Storage interface
+export interface IStorage {
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+
+  // Project operations
+  getProjects(): Promise<Project[]>;
+  getProject(id: number): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProjectFunding(id: number, additionalAmount: number): Promise<Project | undefined>;
+
+  // Donation operations
+  getDonations(): Promise<Donation[]>;
+  getDonation(id: number): Promise<Donation | undefined>;
+  createDonation(donation: InsertDonation): Promise<Donation>;
+  updateDonationStatus(id: number, status: string, paymentIntentId?: string): Promise<Donation | undefined>;
+
+  // Impact story operations
+  getImpactStories(): Promise<ImpactStory[]>;
+  getImpactStory(id: number): Promise<ImpactStory | undefined>;
+  createImpactStory(story: InsertImpactStory): Promise<ImpactStory>;
+
+  // Testimonial operations
+  getTestimonials(): Promise<Testimonial[]>;
+  getTestimonial(id: number): Promise<Testimonial | undefined>;
+  createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
+
+  // Stats operations
+  getStats(): Promise<Stats | undefined>;
+  updateStats(newStats: Partial<Stats>): Promise<Stats | undefined>;
+  incrementStatsHomesHelped(additionalHomes: number): Promise<Stats | undefined>;
+  incrementStatsSolarPanels(additionalPanels: number): Promise<Stats | undefined>;
+
+  // Newsletter operations
+  addSubscriber(subscriber: InsertSubscriber): Promise<Subscriber>;
+}
+
+// In-memory storage implementation
+export class MemStorage implements IStorage {
+  private users: Map<number, User>;
+  private projects: Map<number, Project>;
+  private donations: Map<number, Donation>;
+  private impactStories: Map<number, ImpactStory>;
+  private testimonials: Map<number, Testimonial>;
+  private statsData: Stats | undefined;
+  private subscribers: Map<number, Subscriber>;
+  private currentIds: {
+    users: number;
+    projects: number;
+    donations: number;
+    impactStories: number;
+    testimonials: number;
+    stats: number;
+    subscribers: number;
+  };
+
+  constructor() {
+    this.users = new Map();
+    this.projects = new Map();
+    this.donations = new Map();
+    this.impactStories = new Map();
+    this.testimonials = new Map();
+    this.subscribers = new Map();
+    this.currentIds = {
+      users: 1,
+      projects: 1,
+      donations: 1,
+      impactStories: 1,
+      testimonials: 1,
+      stats: 1,
+      subscribers: 1
+    };
+
+    // Initialize with some default data
+    this.seedData();
+  }
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.username === username,
+    );
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.currentIds.users++;
+    const user: User = { ...insertUser, id };
+    this.users.set(id, user);
+    return user;
+  }
+
+  // Project operations
+  async getProjects(): Promise<Project[]> {
+    return Array.from(this.projects.values());
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    return this.projects.get(id);
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const id = this.currentIds.projects++;
+    const timestamp = new Date();
+    const project: Project = { 
+      ...insertProject, 
+      id, 
+      currentFunding: 0, 
+      createdAt: timestamp
+    };
+    this.projects.set(id, project);
+    return project;
+  }
+
+  async updateProjectFunding(id: number, additionalAmount: number): Promise<Project | undefined> {
+    const project = this.projects.get(id);
+    if (!project) return undefined;
+
+    const updatedProject = {
+      ...project,
+      currentFunding: project.currentFunding + additionalAmount
+    };
+    this.projects.set(id, updatedProject);
+
+    // Update overall stats
+    await this.updateStats({
+      amountRaised: (this.statsData?.amountRaised || 0) + additionalAmount
+    });
+
+    return updatedProject;
+  }
+
+  // Donation operations
+  async getDonations(): Promise<Donation[]> {
+    return Array.from(this.donations.values());
+  }
+
+  async getDonation(id: number): Promise<Donation | undefined> {
+    return this.donations.get(id);
+  }
+
+  async createDonation(insertDonation: InsertDonation): Promise<Donation> {
+    const id = this.currentIds.donations++;
+    const timestamp = new Date();
+    const donation: Donation = { 
+      ...insertDonation, 
+      id, 
+      paymentStatus: 'pending',
+      paymentIntentId: undefined,
+      createdAt: timestamp
+    };
+    this.donations.set(id, donation);
+    return donation;
+  }
+
+  async updateDonationStatus(id: number, status: string, paymentIntentId?: string): Promise<Donation | undefined> {
+    const donation = this.donations.get(id);
+    if (!donation) return undefined;
+
+    const updatedDonation = {
+      ...donation,
+      paymentStatus: status,
+      paymentIntentId: paymentIntentId || donation.paymentIntentId
+    };
+    this.donations.set(id, updatedDonation);
+
+    // If donation is successful, update project funding
+    if (status === 'succeeded' && donation.projectId) {
+      await this.updateProjectFunding(donation.projectId, donation.amount);
+    }
+
+    return updatedDonation;
+  }
+
+  // Impact story operations
+  async getImpactStories(): Promise<ImpactStory[]> {
+    return Array.from(this.impactStories.values());
+  }
+
+  async getImpactStory(id: number): Promise<ImpactStory | undefined> {
+    return this.impactStories.get(id);
+  }
+
+  async createImpactStory(insertStory: InsertImpactStory): Promise<ImpactStory> {
+    const id = this.currentIds.impactStories++;
+    const timestamp = new Date();
+    const story: ImpactStory = { ...insertStory, id, createdAt: timestamp };
+    this.impactStories.set(id, story);
+    return story;
+  }
+
+  // Testimonial operations
+  async getTestimonials(): Promise<Testimonial[]> {
+    return Array.from(this.testimonials.values());
+  }
+
+  async getTestimonial(id: number): Promise<Testimonial | undefined> {
+    return this.testimonials.get(id);
+  }
+
+  async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
+    const id = this.currentIds.testimonials++;
+    const timestamp = new Date();
+    const testimonial: Testimonial = { ...insertTestimonial, id, createdAt: timestamp };
+    this.testimonials.set(id, testimonial);
+    return testimonial;
+  }
+
+  // Stats operations
+  async getStats(): Promise<Stats | undefined> {
+    return this.statsData;
+  }
+
+  async updateStats(newStats: Partial<Stats>): Promise<Stats | undefined> {
+    if (!this.statsData) return undefined;
+
+    this.statsData = {
+      ...this.statsData,
+      ...newStats,
+      updatedAt: new Date()
+    };
+    return this.statsData;
+  }
+
+  async incrementStatsHomesHelped(additionalHomes: number): Promise<Stats | undefined> {
+    if (!this.statsData) return undefined;
+
+    this.statsData = {
+      ...this.statsData,
+      homesHelped: this.statsData.homesHelped + additionalHomes,
+      peopleImpacted: this.statsData.peopleImpacted + (additionalHomes * 5), // Assuming average of 5 people per home
+      updatedAt: new Date()
+    };
+    return this.statsData;
+  }
+
+  async incrementStatsSolarPanels(additionalPanels: number): Promise<Stats | undefined> {
+    if (!this.statsData) return undefined;
+
+    this.statsData = {
+      ...this.statsData,
+      solarPanelsInstalled: this.statsData.solarPanelsInstalled + additionalPanels,
+      co2Reduced: this.statsData.co2Reduced + (additionalPanels * 2), // Assuming 2 tons per panel annually
+      cleanEnergy: this.statsData.cleanEnergy + (additionalPanels * 3), // Assuming 3 MWh per panel annually
+      updatedAt: new Date()
+    };
+    return this.statsData;
+  }
+
+  // Newsletter operations
+  async addSubscriber(insertSubscriber: InsertSubscriber): Promise<Subscriber> {
+    const id = this.currentIds.subscribers++;
+    const timestamp = new Date();
+    const subscriber: Subscriber = { ...insertSubscriber, id, createdAt: timestamp };
+    this.subscribers.set(id, subscriber);
+    return subscriber;
+  }
+
+  // Seed with initial data
+  private seedData() {
+    // Seed stats
+    const timestamp = new Date();
+    this.statsData = {
+      id: 1,
+      hoursWithoutPower: 12,
+      temperature: 35,
+      homesHelped: 127,
+      solarPanelsInstalled: 486,
+      co2Reduced: 254,
+      peopleImpacted: 635,
+      cleanEnergy: 381,
+      amountRaised: 128450,
+      goal: 200000,
+      updatedAt: timestamp
+    };
+
+    // Seed projects
+    const projects: InsertProject[] = [
+      {
+        name: "Sindh Province Initiative",
+        description: "Bringing solar power to 30 families in rural Sindh villages facing 16+ hour power outages daily.",
+        location: "Sindh, Pakistan",
+        imageUrl: "https://images.unsplash.com/photo-1497440001374-f26997328c1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        totalFundingGoal: 30000,
+        isActive: true
+      },
+      {
+        name: "Punjab School Project",
+        description: "Installing solar systems at 5 rural schools to provide reliable electricity for 600+ students.",
+        location: "Punjab, Pakistan",
+        imageUrl: "https://images.unsplash.com/photo-1518543214929-88a0571781dd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        totalFundingGoal: 60000,
+        isActive: true
+      },
+      {
+        name: "Medical Clinics Initiative",
+        description: "Powering 3 rural medical clinics with solar energy to ensure continuous healthcare services.",
+        location: "Various locations, Pakistan",
+        imageUrl: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        totalFundingGoal: 50000,
+        isActive: true
+      }
+    ];
+
+    projects.forEach(project => {
+      const id = this.currentIds.projects++;
+      this.projects.set(id, {
+        ...project,
+        id,
+        currentFunding: id === 1 ? 19500 : id === 2 ? 24000 : 37500, // Set current funding based on project
+        createdAt: timestamp
+      });
+    });
+
+    // Seed impact stories
+    const impactStories: InsertImpactStory[] = [
+      {
+        title: "The Ahmed Family",
+        description: "After receiving solar panels, the Ahmed family can now power their home consistently. Their children can study at night, and they no longer worry about food spoiling in their refrigerator.",
+        location: "Lahore, Pakistan",
+        imageUrl: "https://images.unsplash.com/photo-1596568823550-e32f21edbdaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+      },
+      {
+        title: "Community School",
+        description: "A local school serving 120 students now has reliable electricity throughout the day. Students can use computers and attend classes without interruption, even during the hottest months.",
+        location: "Multan, Pakistan",
+        imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+      },
+      {
+        title: "Local Clinic",
+        description: "A healthcare facility serving rural communities now has 24/7 electricity. They can refrigerate vaccines, use medical equipment, and treat patients during evening hours.",
+        location: "Peshawar, Pakistan",
+        imageUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+      }
+    ];
+
+    impactStories.forEach(story => {
+      const id = this.currentIds.impactStories++;
+      this.impactStories.set(id, {
+        ...story,
+        id,
+        createdAt: timestamp
+      });
+    });
+
+    // Seed testimonials
+    const testimonials: InsertTestimonial[] = [
+      {
+        name: "Farhan Ahmed",
+        location: "Karachi, Pakistan",
+        message: "The solar panels have completely changed our lives. My children can now study at night, and we can keep our home cool during the hottest days. We no longer have to worry about the grid going down.",
+        imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+        rating: 5
+      }
+    ];
+
+    testimonials.forEach(testimonial => {
+      const id = this.currentIds.testimonials++;
+      this.testimonials.set(id, {
+        ...testimonial,
+        id,
+        createdAt: timestamp
+      });
+    });
+  }
+}
+
+export const storage = new MemStorage();
