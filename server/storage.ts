@@ -295,15 +295,15 @@ export class MemStorage implements IStorage {
         name: "Sindh Province Initiative",
         description: "Bringing solar power to 30 families in rural Sindh villages facing 16+ hour power outages daily.",
         location: "Sindh, Pakistan",
-        imageUrl: "https://images.unsplash.com/photo-1497440001374-f26997328c1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        imageUrl: "",
         totalFundingGoal: 30000,
         isActive: true
       },
       {
         name: "Punjab School Project",
         description: "Installing solar systems at 5 rural schools to provide reliable electricity for 600+ students.",
-        location: "Punjab, Pakistan",
-        imageUrl: "https://images.unsplash.com/photo-1518543214929-88a0571781dd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        location: "Punjab, Pakistan", 
+        imageUrl: "",
         totalFundingGoal: 60000,
         isActive: true
       },
@@ -311,7 +311,7 @@ export class MemStorage implements IStorage {
         name: "Medical Clinics Initiative",
         description: "Powering 3 rural medical clinics with solar energy to ensure continuous healthcare services.",
         location: "Various locations, Pakistan",
-        imageUrl: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        imageUrl: "",
         totalFundingGoal: 50000,
         isActive: true
       }
@@ -333,19 +333,19 @@ export class MemStorage implements IStorage {
         title: "The Ahmed Family",
         description: "After receiving solar panels, the Ahmed family can now power their home consistently. Their children can study at night, and they no longer worry about food spoiling in their refrigerator.",
         location: "Lahore, Pakistan",
-        imageUrl: "https://images.unsplash.com/photo-1596568823550-e32f21edbdaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+        imageUrl: "",
       },
       {
         title: "Community School",
         description: "A local school serving 120 students now has reliable electricity throughout the day. Students can use computers and attend classes without interruption, even during the hottest months.",
         location: "Multan, Pakistan",
-        imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+        imageUrl: "",
       },
       {
         title: "Local Clinic",
         description: "A healthcare facility serving rural communities now has 24/7 electricity. They can refrigerate vaccines, use medical equipment, and treat patients during evening hours.",
         location: "Peshawar, Pakistan",
-        imageUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+        imageUrl: "",
       }
     ];
 
@@ -364,7 +364,7 @@ export class MemStorage implements IStorage {
         name: "Farhan Ahmed",
         location: "Karachi, Pakistan",
         message: "The solar panels have completely changed our lives. My children can now study at night, and we can keep our home cool during the hottest days. We no longer have to worry about the grid going down.",
-        imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+        imageUrl: "",
         rating: 5
       }
     ];
