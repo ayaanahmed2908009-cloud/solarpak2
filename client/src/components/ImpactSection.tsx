@@ -39,7 +39,7 @@ export default function ImpactSection() {
           <h2 className="font-heading font-bold text-3xl md:text-4xl text-gray-800 mb-4">Our Impact</h2>
           <p className="text-gray-600 text-lg">Transforming lives through sustainable solar energy</p>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row justify-between items-center mb-6">
@@ -57,7 +57,7 @@ export default function ImpactSection() {
                 </span>
               </div>
             </div>
-            
+
             <div className="mb-4">
               <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                 <div 
@@ -66,7 +66,7 @@ export default function ImpactSection() {
                 ></div>
               </div>
             </div>
-            
+
             <div className="flex flex-col md:flex-row justify-between text-center mb-4">
               <div className="mb-4 md:mb-0">
                 <p className="text-gray-500 text-sm mb-1">Homes Powered</p>
@@ -75,7 +75,7 @@ export default function ImpactSection() {
                 </div>
                 <p className="text-gray-600 text-sm">of 200 goal</p>
               </div>
-              
+
               <div className="mb-4 md:mb-0">
                 <p className="text-gray-500 text-sm mb-1">CO₂ Reduced</p>
                 <div className="font-heading font-bold text-2xl text-secondary">
@@ -83,7 +83,7 @@ export default function ImpactSection() {
                 </div>
                 <p className="text-gray-600 text-sm">tons annually</p>
               </div>
-              
+
               <div className="mb-4 md:mb-0">
                 <p className="text-gray-500 text-sm mb-1">People Impacted</p>
                 <div className="font-heading font-bold text-2xl text-secondary">
@@ -91,7 +91,7 @@ export default function ImpactSection() {
                 </div>
                 <p className="text-gray-600 text-sm">lives improved</p>
               </div>
-              
+
               <div>
                 <p className="text-gray-500 text-sm mb-1">Clean Energy</p>
                 <div className="font-heading font-bold text-2xl text-secondary">
@@ -102,18 +102,14 @@ export default function ImpactSection() {
             </div>
           </div>
         </div>
-        
+
         <div className="grid md:grid-cols-3 gap-8">
           {impactStories && impactStories.map(story => (
             <div 
               key={story.id} 
               className="bg-white rounded-lg shadow-md overflow-hidden transition transform hover:-translate-y-1 hover:shadow-lg"
             >
-              <img 
-                src={story.imageUrl} 
-                alt={story.title} 
-                className="w-full h-48 object-cover"
-              />
+              <div className="h-4"></div>
               <div className="p-6">
                 <h4 className="font-heading font-bold text-xl mb-2">{story.title}</h4>
                 <p className="text-gray-600 mb-4">

@@ -16,7 +16,7 @@ export default function ProjectsSection() {
             <h2 className="font-heading font-bold text-3xl md:text-4xl text-gray-800 mb-4">Current Projects</h2>
             <p className="text-gray-600 text-lg">Support our ongoing solar installation initiatives</p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {[1, 2, 3].map(i => (
               <div key={i} className="animate-pulse bg-white rounded-lg h-96 shadow-md border border-gray-100"></div>
@@ -34,30 +34,25 @@ export default function ProjectsSection() {
           <h2 className="font-heading font-bold text-3xl md:text-4xl text-gray-800 mb-4">Current Projects</h2>
           <p className="text-gray-600 text-lg">Support our ongoing solar installation initiatives</p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {projects && projects.map(project => {
             const progressPercentage = (project.currentFunding / project.totalFundingGoal) * 100;
-            
+
             return (
               <div key={project.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
-                <div className="relative">
-                  <img 
-                    src={project.imageUrl} 
-                    alt={project.name} 
-                    className="w-full h-56 object-cover"
-                  />
+                <div className="relative h-48"> {/* Replacement div */}
                   <div className="absolute top-4 right-4 bg-secondary text-white px-3 py-1 rounded-full text-sm font-medium">
                     {project.isActive ? 'Active' : 'Completed'}
                   </div>
                 </div>
-                
+
                 <div className="p-6">
                   <h4 className="font-heading font-bold text-xl mb-2">{project.name}</h4>
                   <p className="text-gray-600 mb-4">
                     {project.description}
                   </p>
-                  
+
                   <div className="mb-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">Progress</span>
@@ -70,7 +65,7 @@ export default function ProjectsSection() {
                       ></div>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-between mb-6 text-sm">
                     <span className="text-gray-600">
                       <span className="font-medium text-secondary">
@@ -81,7 +76,7 @@ export default function ProjectsSection() {
                       Goal: <span className="font-medium">${project.totalFundingGoal.toLocaleString()}</span>
                     </span>
                   </div>
-                  
+
                   <Link 
                     href={`/checkout?projectId=${project.id}`}
                     className="block text-center bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-6 py-2 rounded-md transition"
@@ -93,7 +88,7 @@ export default function ProjectsSection() {
             );
           })}
         </div>
-        
+
         <div className="text-center">
           <Link 
             href="/#projects" 
