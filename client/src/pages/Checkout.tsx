@@ -96,11 +96,23 @@ export default function Checkout() {
   const search = useSearch();
   const params = new URLSearchParams(search);
   const donationId = params.get("donationId");
+  const projectId = params.get("projectId");
   const { toast } = useToast();
   
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Animation effect
+  useEffect(() => {
+    // Slight delay for entrance animation
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch donation details
   const { data: donation, isLoading: donationLoading } = useQuery<Donation>({
@@ -142,6 +154,13 @@ export default function Checkout() {
   const handlePaymentSuccess = () => {
     setPaymentStatus("success");
     
+    // Show a toast notification
+    toast({
+      title: "Payment successful!",
+      description: "Thank you for your generous donation",
+      variant: "default",
+    });
+    
     // Redirect to success page after a short delay
     setTimeout(() => {
       navigate("/success");
@@ -165,25 +184,29 @@ export default function Checkout() {
 
   if (donationLoading || (paymentStatus === "processing" && !clientSecret)) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading"/>
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" aria-label="Loading"/>
+          <p className="text-gray-600 animate-pulse">Preparing your donation...</p>
+        </div>
       </div>
     );
   }
 
   if (!donation) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
         <Navbar />
         <div className="flex-grow flex items-center justify-center p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader>
+          <Card className="w-full max-w-md gradient-border animate-fade-in shadow-xl">
+            <CardHeader className="text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-2" />
               <CardTitle className="text-xl font-semibold">Error</CardTitle>
               <CardDescription>No donation information found.</CardDescription>
             </CardHeader>
-            <CardFooter>
+            <CardFooter className="flex justify-center">
               <Link href="/">
-                <Button className="w-full">Return to Homepage</Button>
+                <Button className="btn-glow px-8">Return to Homepage</Button>
               </Link>
             </CardFooter>
           </Card>
@@ -199,62 +222,140 @@ export default function Checkout() {
     appearance: {
       theme: 'stripe' as const,
       labels: 'floating' as const,
+      variables: {
+        colorPrimary: '#4F46E5',
+        colorBackground: '#FFFFFF',
+        colorText: '#1F2937',
+        colorDanger: '#EF4444',
+        fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system',
+        borderRadius: '8px',
+        spacingUnit: '4px',
+      }
     },
   };
 
+  // Impact information based on donation amount
+  const getDonationImpact = (amount: number) => {
+    if (amount >= 1000) {
+      return "Complete solar system for an entire home with battery storage";
+    } else if (amount >= 250) {
+      return "Small solar system to power basic appliances for a family";
+    } else if (amount >= 50) {
+      return "Basic solar lighting system for one room in a family home";
+    } else {
+      return "Contribution towards solar panel installation";
+    }
+  };
+
+  const impact = getDonationImpact(donation.amount);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg">
-          <CardHeader>
-            <Link href="/" className="text-secondary hover:text-primary inline-flex items-center mb-4">
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to home
-            </Link>
-            <CardTitle className="text-2xl font-bold">Complete Your Donation</CardTitle>
-            <CardDescription>
-              You're donating ${donation.amount} {donation.isRecurring ? 'monthly' : ''}
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            {paymentStatus === "success" ? (
-              <div className="text-center py-4">
-                <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Payment Successful</h3>
-                <p className="text-gray-600 mb-4">Thank you for your donation!</p>
-                <p className="text-gray-600">Redirecting to confirmation page...</p>
+      <div className="flex-grow container mx-auto px-4 py-12 md:py-20">
+        <div className={`max-w-6xl mx-auto transition-all duration-700 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Left side - donation information */}
+            <div className="w-full md:w-2/5 order-2 md:order-1">
+              <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-6 md:p-8 h-full">
+                <div className="mb-8">
+                  <Link href="/" className="text-primary hover:text-primary/80 inline-flex items-center mb-8 transition-all duration-300">
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    <span>Back to home</span>
+                  </Link>
+                  
+                  <h3 className="font-heading font-bold text-2xl mb-2">Your Donation Summary</h3>
+                  <div className="h-1 w-20 bg-primary rounded-full mb-6"></div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+                      <span className="text-gray-600">Amount:</span>
+                      <span className="font-semibold text-lg text-primary">${donation.amount}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+                      <span className="text-gray-600">Type:</span>
+                      <span className="font-medium">{donation.isRecurring ? 'Monthly recurring' : 'One-time donation'}</span>
+                    </div>
+                    
+                    {donation.projectId && (
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+                        <span className="text-gray-600">Project:</span>
+                        <span className="font-medium">Project #{donation.projectId}</span>
+                      </div>
+                    )}
+                    
+                    <div className="pt-2">
+                      <h4 className="font-semibold mb-2">Your Impact:</h4>
+                      <p className="text-gray-600">{impact}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
+                  <h4 className="font-medium mb-2 flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2 text-primary" />
+                    <span>Tax Deductible Donation</span>
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    Your donation is tax-deductible where applicable. You'll receive a receipt via email once your payment is processed.
+                  </p>
+                </div>
               </div>
-            ) : paymentStatus === "error" ? (
-              <div className="text-center py-4">
-                <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Payment Failed</h3>
-                <p className="text-gray-600 mb-4">
-                  {errorMessage || "There was an error processing your payment."}
-                </p>
-                <Button 
-                  onClick={resetPaymentStatus} 
-                  className="mx-auto"
-                >
-                  Try Again
-                </Button>
-              </div>
-            ) : clientSecret ? (
-              <Elements stripe={stripePromise} options={stripeOptions}>
-                <CheckoutForm 
-                  donation={donation} 
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
-                />
-              </Elements>
-            ) : (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading payment form"/>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+            
+            {/* Right side - payment form */}
+            <div className="w-full md:w-3/5 order-1 md:order-2">
+              <Card className="shadow-xl border-0 overflow-hidden">
+                <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-6 px-8">
+                  <h2 className="font-heading font-bold text-2xl mb-1">Complete Your Donation</h2>
+                  <p className="text-white/80">Enter your payment details to finalize your donation</p>
+                </div>
+                
+                <CardContent className="p-8">
+                  {paymentStatus === "success" ? (
+                    <div className="text-center py-8 animate-fade-in">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle className="h-10 w-10 text-green-500" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">Payment Successful</h3>
+                      <p className="text-gray-600 mb-6">Thank you for your generous donation!</p>
+                      <p className="text-gray-600">Redirecting to confirmation page...</p>
+                    </div>
+                  ) : paymentStatus === "error" ? (
+                    <div className="text-center py-8 animate-fade-in">
+                      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <AlertCircle className="h-10 w-10 text-red-500" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">Payment Failed</h3>
+                      <p className="text-gray-600 mb-6">
+                        {errorMessage || "There was an error processing your payment."}
+                      </p>
+                      <Button 
+                        onClick={resetPaymentStatus} 
+                        className="btn-glow px-8"
+                      >
+                        Try Again
+                      </Button>
+                    </div>
+                  ) : clientSecret ? (
+                    <Elements stripe={stripePromise} options={stripeOptions}>
+                      <CheckoutForm 
+                        donation={donation} 
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                      />
+                    </Elements>
+                  ) : (
+                    <div className="flex justify-center items-center py-16">
+                      <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading payment form"/>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
