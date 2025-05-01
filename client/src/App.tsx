@@ -6,8 +6,80 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Checkout from "@/pages/Checkout";
 import Success from "@/pages/Success";
+import { useEffect } from "react";
+
+// Smooth scroll behavior utility
+function setSmoothScroll() {
+  // Use a better smooth scrolling when clicking anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (this: HTMLAnchorElement, e: Event) {
+      e.preventDefault();
+      
+      const targetId = this.getAttribute('href') || '';
+      if (!targetId || targetId === '#') return;
+      
+      const targetElement = document.querySelector(targetId);
+      if (!targetElement) return;
+      
+      // Calculate scroll position with offset to account for fixed headers
+      const offset = 80;
+      const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - offset;
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+      
+      // Update URL hash without scrolling (which would create a jump)
+      history.pushState({}, '', targetId);
+    });
+  });
+  
+  // Implement scroll-triggered animations for sections
+  const observerOptions = {
+    root: null, // Use viewport as root
+    rootMargin: '0px',
+    threshold: 0.15 // Trigger when 15% of element is visible
+  };
+  
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('section-visible');
+        
+        // Initialize counters or animations specific to this section
+        if (entry.target.getAttribute('data-animate') === 'true') {
+          entry.target.setAttribute('data-animate', 'false');
+          const event = new CustomEvent('section-visible', { 
+            detail: { id: entry.target.id } 
+          });
+          document.dispatchEvent(event);
+        }
+      }
+    });
+  }, observerOptions);
+  
+  // Observe all sections
+  document.querySelectorAll('section[id]').forEach(section => {
+    section.classList.add('section-hidden');
+    section.setAttribute('data-animate', 'true');
+    sectionObserver.observe(section);
+  });
+}
 
 function Router() {
+  useEffect(() => {
+    // Set up smooth scrolling and section animations when routes change
+    setSmoothScroll();
+    
+    return () => {
+      // Clean up event listeners on route change
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.removeEventListener('click', () => {});
+      });
+    };
+  }, []);
+  
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -21,8 +93,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <div className="app-container min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <Router />
+        <Toaster />
+      </div>
     </QueryClientProvider>
   );
 }

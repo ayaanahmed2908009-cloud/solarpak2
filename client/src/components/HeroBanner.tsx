@@ -1,8 +1,10 @@
-import { Sun, Zap, Users, ThermometerSun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Sun, Zap, Users, ThermometerSun, ChevronDown } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 
 export default function HeroBanner() {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [height, setHeight] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -11,87 +13,112 @@ export default function HeroBanner() {
     };
 
     window.addEventListener("scroll", handleScroll);
+    
+    // Set the section height to viewport height for full-screen effect
+    if (sectionRef.current) {
+      setHeight(window.innerHeight);
+      const resizeObserver = new ResizeObserver(() => {
+        setHeight(window.innerHeight);
+      });
+      resizeObserver.observe(sectionRef.current);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        resizeObserver.disconnect();
+      };
+    }
+    
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-r from-blue-900 via-blue-700 to-blue-500 overflow-hidden animated-bg">
+    <section 
+      ref={sectionRef}
+      className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 overflow-hidden animated-bg" 
+      style={{ height: height ? `${height}px` : '100vh' }}
+    >
       {/* Floating solar panels and sun decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-10 opacity-20 animate-pulse" style={{ animationDuration: '4s' }}>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-10 opacity-20 floating" style={{ animationDuration: '4s' }}>
           <Sun size={80} className="text-yellow-300" />
         </div>
-        <div className="absolute bottom-1/2 right-1/4 opacity-20 animate-pulse" style={{ animationDuration: '7s' }}>
+        <div className="absolute bottom-1/2 right-1/4 opacity-20 floating-delay-1" style={{ animationDuration: '7s' }}>
           <Sun size={60} className="text-yellow-300" />
         </div>
-        <div className="absolute top-1/3 right-1/5 opacity-10 animate-pulse" style={{ animationDuration: '5s' }}>
+        <div className="absolute top-1/3 right-1/5 opacity-10 floating-delay-2" style={{ animationDuration: '5s' }}>
           <Zap size={50} className="text-yellow-400" />
+        </div>
+        <div className="absolute top-2/3 left-1/4 opacity-20 floating" style={{ animationDuration: '6s' }}>
+          <Zap size={40} className="text-yellow-300" />
         </div>
       </div>
       
       {/* Dark overlay with gradient */}
-      <div className="absolute inset-0 bg-black opacity-30"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900 opacity-70"></div>
+      <div className="absolute inset-0 bg-black opacity-40"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/90 opacity-70"></div>
       
       {/* Parallax effect on the content */}
-      <div className="container mx-auto px-4 py-24 md:py-32 lg:py-40 relative z-10 text-white"
+      <div className="container mx-auto px-4 py-24 md:py-32 lg:py-40 relative z-10 text-white h-full flex flex-col justify-center"
         style={{ 
           transform: `translateY(${scrollPosition * 0.2}px)`,
           opacity: Math.max(1 - scrollPosition / 700, 0.2) 
         }}>
-        <div className="max-w-3xl">
-          <div className="flex items-center mb-4">
+        <div className="max-w-3xl mx-auto md:mx-0">
+          <div className="flex items-center mb-4 animate-fade-in" style={{ animationDuration: '1s', animationFillMode: 'both' }}>
             <Sun className="h-8 w-8 mr-2 text-yellow-400" />
             <span className="text-lg font-semibold uppercase tracking-wider">SolarPak Initiative</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
-            <span className="block">Bringing Light to</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight animate-fade-in"
+            style={{ animationDuration: '1.2s', animationDelay: '0.2s', animationFillMode: 'both' }}>
+            <span className="block text-shadow-lg">Bringing Light to</span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-yellow-400 font-extrabold">
               Pakistan
             </span>
-            <span className="block">Through Solar Power</span>
+            <span className="block text-shadow-lg">Through Solar Power</span>
           </h1>
           
-          <p className="text-lg md:text-xl mb-8 opacity-90">
+          <p className="text-lg md:text-xl mb-8 opacity-90 animate-fade-in" 
+            style={{ animationDuration: '1.4s', animationDelay: '0.4s', animationFillMode: 'both' }}>
             Help us combat electricity shortages and improve lives by funding solar panel installations for families across Pakistan.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in"
+            style={{ animationDuration: '1.6s', animationDelay: '0.6s', animationFillMode: 'both' }}>
             <a 
               href="#donate" 
-              className="bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-8 py-4 rounded-md text-center transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
+              className="btn-glow bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-8 py-4 rounded-md text-center transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
             >
               Make a Donation
             </a>
             <a 
               href="#problem" 
-              className="bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-20 text-white font-heading font-semibold px-8 py-4 rounded-md text-center transition-all duration-300 text-lg border border-white border-opacity-40 hover:border-opacity-60"
+              className="glass-effect hover:bg-white/20 text-white font-heading font-semibold px-8 py-4 rounded-md text-center transition-all duration-300 text-lg border border-white/40 hover:border-white/60"
             >
               Learn More
             </a>
           </div>
           
           {/* Key stats indicators */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-black/20 backdrop-blur-sm rounded-lg p-5 border border-white/10">
-            <div className="text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 glass-effect rounded-lg p-5 animate-fade-in"
+            style={{ animationDuration: '1.8s', animationDelay: '0.8s', animationFillMode: 'both' }}>
+            <div className="text-center pulse-on-hover">
               <ThermometerSun className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
               <p className="text-sm font-medium text-gray-200">Average Temp</p>
               <p className="text-xl font-bold text-white">35°C</p>
             </div>
-            <div className="text-center">
+            <div className="text-center pulse-on-hover">
               <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
               <p className="text-sm font-medium text-gray-200">Daily Outages</p>
               <p className="text-xl font-bold text-white">12 hrs</p>
             </div>
-            <div className="text-center">
+            <div className="text-center pulse-on-hover">
               <Users className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
               <p className="text-sm font-medium text-gray-200">People Affected</p>
               <p className="text-xl font-bold text-white">210M+</p>
             </div>
-            <div className="text-center">
+            <div className="text-center pulse-on-hover">
               <Sun className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
               <p className="text-sm font-medium text-gray-200">Solar Potential</p>
               <p className="text-xl font-bold text-white">High</p>
@@ -100,18 +127,36 @@ export default function HeroBanner() {
         </div>
       </div>
       
-      {/* Image with enhanced styling */}
-      <div className="absolute right-0 bottom-0 hidden lg:block lg:w-2/5 h-full">
+      {/* Image of Pakistan with enhanced styling */}
+      <div className="absolute right-0 top-0 bottom-0 hidden lg:block lg:w-2/5 h-full z-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-transparent z-10"></div>
         <img 
-          src="https://images.unsplash.com/photo-1627859284229-27d646b18a5a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-          alt="Solar panels on a rooftop in Pakistan" 
-          className="object-cover h-full w-full"
+          src="https://images.unsplash.com/photo-1604055854429-f2c82ff6dce4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+          alt="Pakistan landscape with solar potential" 
+          className="object-cover h-full w-full blur-sm"
           style={{ 
-            transform: `translateY(${scrollPosition * 0.05}px)`,
+            transform: `translateY(${scrollPosition * 0.05}px) scale(1.1)`,
             transition: 'transform 0.1s ease-out'
           }}
         />
+        <img 
+          src="https://images.unsplash.com/photo-1673691488828-5ecdac6557c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+          alt="Pakistani village with solar energy potential" 
+          className="absolute inset-0 object-cover h-full w-full"
+          style={{ 
+            transform: `translateY(${scrollPosition * 0.03}px)`,
+            transition: 'transform 0.1s ease-out',
+            opacity: 0.9
+          }}
+        />
+      </div>
+      
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white z-20 animate-bounce">
+        <div className="flex flex-col items-center">
+          <span className="text-sm font-medium mb-2">Scroll Down</span>
+          <ChevronDown className="h-6 w-6" />
+        </div>
       </div>
       
       {/* Bottom wave decoration */}

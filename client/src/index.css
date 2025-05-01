@@ -245,10 +245,83 @@
   }
 }
 
+/* Section animations and scroll behaviors */
+.section-hidden {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.8s ease-out;
+  will-change: opacity, transform;
+}
+
+.section-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered animations for children */
+.section-visible .stagger-item {
+  animation: stagger-fade-up 0.5s ease forwards;
+  opacity: 0;
+}
+
+.section-visible .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.section-visible .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.section-visible .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.section-visible .stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.section-visible .stagger-item:nth-child(5) { animation-delay: 0.5s; }
+.section-visible .stagger-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes stagger-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Full-height sections */
+.full-height-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Snap scrolling for modern browsers */
+html {
+  scroll-behavior: smooth;
+}
+
+@supports (scroll-snap-type: y mandatory) {
+  .snap-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+  }
+  
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
 /* Responsive design utilities */
 @media (max-width: 640px) {
   .section-container {
     @apply py-8;
+  }
+  
+  html {
+    scroll-padding-top: 4rem;
+  }
+}
+
+@media (min-width: 641px) {
+  html {
+    scroll-padding-top: 5rem;
   }
 }
 
@@ -268,4 +341,38 @@
 /* Glass effect */
 .glass-effect {
   @apply backdrop-blur-md bg-white/10 border border-white/20;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Gradient border */
+.gradient-border {
+  position: relative;
+  border-radius: 0.75rem;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(to right, var(--primary), rgba(99, 102, 241, 0.5)) border-box;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.gradient-border:hover {
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(to right, var(--primary), rgba(99, 102, 241, 0.8)) border-box;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
