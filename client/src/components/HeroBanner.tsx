@@ -131,8 +131,8 @@ export default function HeroBanner() {
       <div className="absolute right-0 top-0 bottom-0 hidden lg:block lg:w-2/5 h-full z-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-transparent z-10"></div>
         <img 
-          src="https://images.unsplash.com/photo-1604055854429-f2c82ff6dce4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-          alt="Pakistan landscape with solar potential" 
+          src="https://images.unsplash.com/photo-1567001205053-5756a0906a2e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+          alt="Badshahi Mosque in Lahore, Pakistan" 
           className="object-cover h-full w-full blur-sm"
           style={{ 
             transform: `translateY(${scrollPosition * 0.05}px) scale(1.1)`,
@@ -140,8 +140,8 @@ export default function HeroBanner() {
           }}
         />
         <img 
-          src="https://images.unsplash.com/photo-1673691488828-5ecdac6557c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-          alt="Pakistani village with solar energy potential" 
+          src="https://images.unsplash.com/photo-1576432379232-65efee9a7631?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+          alt="Rural area in Pakistan with solar energy potential" 
           className="absolute inset-0 object-cover h-full w-full"
           style={{ 
             transform: `translateY(${scrollPosition * 0.03}px)`,
