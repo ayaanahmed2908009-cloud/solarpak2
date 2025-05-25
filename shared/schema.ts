@@ -13,7 +13,7 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User schema with enhanced auth fields
+// User schema with enhanced auth fields and roles
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
@@ -25,6 +25,10 @@ export const users = pgTable("users", {
   providerId: text("provider_id"), // External ID from provider
   stripeCustomerId: text("stripe_customer_id"),
   isVerified: boolean("is_verified").default(false),
+  role: text("role").default("user").notNull(), // 'user', 'member', 'admin'
+  membershipTier: text("membership_tier").default("none"), // 'none', 'bronze', 'silver', 'gold', 'platinum'
+  totalDonated: doublePrecision("total_donated").default(0), // Track total donations
+  lastDonationDate: timestamp("last_donation_date"), // Track last donation date
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow()
 });

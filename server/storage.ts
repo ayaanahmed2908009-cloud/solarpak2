@@ -17,6 +17,10 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   updateStripeCustomerId(userId: number, customerId: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
+  updateUserRole(id: number, role: string): Promise<User | undefined>;
+  updateUserMembership(id: number, tier: string): Promise<User | undefined>;
+  updateUserDonationStats(id: number, amount: number): Promise<User | undefined>;
 
   // Project operations
   getProjects(): Promise<Project[]>;
@@ -156,6 +160,72 @@ export class MemStorage implements IStorage {
     };
     
     this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+  
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+  
+  async updateUserRole(id: number, role: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updatedUser = {
+      ...user,
+      role,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+  
+  async updateUserMembership(id: number, tier: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updatedUser = {
+      ...user,
+      membershipTier: tier,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+  
+  async updateUserDonationStats(id: number, amount: number): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    // Calculate new total donated amount
+    const totalDonated = (user.totalDonated || 0) + amount;
+    
+    // Determine membership tier based on total donation amount
+    let membershipTier = user.membershipTier || 'none';
+    
+    if (totalDonated >= 5000) {
+      membershipTier = 'platinum';
+    } else if (totalDonated >= 1000) {
+      membershipTier = 'gold';
+    } else if (totalDonated >= 500) {
+      membershipTier = 'silver';
+    } else if (totalDonated >= 100) {
+      membershipTier = 'bronze';
+    }
+    
+    // Update user with new donation stats and membership tier
+    const updatedUser = {
+      ...user,
+      role: user.role === 'admin' ? 'admin' : 'member', // Become a member after donation
+      totalDonated,
+      membershipTier,
+      lastDonationDate: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.users.set(id, updatedUser);
     return updatedUser;
   }
 
