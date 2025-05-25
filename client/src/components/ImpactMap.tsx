@@ -1,237 +1,385 @@
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
-import { Icon, LatLngTuple } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { cn } from "@/lib/utils";
 
-// Fix for Leaflet default marker icons in React
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+// Fix Leaflet marker icon issue in React
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png"
+});
 
-// Define the installation data structure
+// Custom solar panel marker icon
+const solarIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/5734/5734378.png",
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -36]
+});
+
+// Fly to bounds component
+function SetViewToBounds({ bounds }: { bounds: L.LatLngBoundsExpression }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    map.fitBounds(bounds);
+  }, [map, bounds]);
+  
+  return null;
+}
+
 interface Installation {
   id: number;
   village: string;
-  coordinates: LatLngTuple;
+  coordinates: L.LatLngTuple;
   date: string;
   households: number;
   kwhGenerated: number;
   co2Saved: number;
   moneySaved: number;
-  imageUrl: string;
+  imageUrls: string[];
+  videoUrls: string[];
 }
 
 export default function ImpactMap() {
-  const [installations, setInstallations] = useState<Installation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalStats, setTotalStats] = useState({
-    totalHouseholds: 0,
-    totalKwh: 0,
-    totalCo2: 0,
-    totalMoney: 0
-  });
+  const [activeInstallation, setActiveInstallation] = useState<Installation | null>(null);
+  const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  
+  // Sample data - in a real application, this would come from an API
+  const installations: Installation[] = [
+    {
+      id: 1,
+      village: "Thar Desert Community",
+      coordinates: [24.896, 70.2],
+      date: "March 15, 2023",
+      households: 35,
+      kwhGenerated: 4200,
+      co2Saved: 2100,
+      moneySaved: 84000,
+      imageUrls: [
+        "https://images.pexels.com/photos/9875441/pexels-photo-9875441.jpeg",
+        "https://images.pexels.com/photos/9875442/pexels-photo-9875442.jpeg"
+      ],
+      videoUrls: [
+        "https://www.youtube.com/embed/qM_XUa6Mj7s",
+        "https://www.youtube.com/embed/GBcFI5XbMwU"
+      ]
+    },
+    {
+      id: 2,
+      village: "Umerkot District",
+      coordinates: [25.3601, 69.7463],
+      date: "June 10, 2023",
+      households: 28,
+      kwhGenerated: 3600,
+      co2Saved: 1800,
+      moneySaved: 72000,
+      imageUrls: [
+        "https://images.pexels.com/photos/7233096/pexels-photo-7233096.jpeg",
+        "https://images.pexels.com/photos/7233097/pexels-photo-7233097.jpeg"
+      ],
+      videoUrls: [
+        "https://www.youtube.com/embed/y50Xj9YbH0Q",
+        "https://www.youtube.com/embed/1i7-UCwpxzM"
+      ]
+    },
+    {
+      id: 3,
+      village: "Sanghar Community",
+      coordinates: [26.0453, 68.9483],
+      date: "September 5, 2023",
+      households: 42,
+      kwhGenerated: 5040,
+      co2Saved: 2520,
+      moneySaved: 100800,
+      imageUrls: [
+        "https://images.pexels.com/photos/3652782/pexels-photo-3652782.jpeg",
+        "https://images.pexels.com/photos/2800816/pexels-photo-2800816.jpeg"
+      ],
+      videoUrls: [
+        "https://www.youtube.com/embed/lZlxnRsE1Nk",
+        "https://www.youtube.com/embed/rXfSi7QOVV0"
+      ]
+    },
+    {
+      id: 4,
+      village: "Mirpurkhas Region",
+      coordinates: [25.5276, 69.0126],
+      date: "November 20, 2023",
+      households: 31,
+      kwhGenerated: 3720,
+      co2Saved: 1860,
+      moneySaved: 74400,
+      imageUrls: [
+        "https://images.pexels.com/photos/247599/pexels-photo-247599.jpeg",
+        "https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg"
+      ],
+      videoUrls: [
+        "https://www.youtube.com/embed/AjnDFBaN0lA",
+        "https://www.youtube.com/embed/iNnJqXvcR4M"
+      ]
+    },
+    {
+      id: 5,
+      village: "Nawabshah Community",
+      coordinates: [26.2442, 68.4100],
+      date: "January 15, 2024",
+      households: 38,
+      kwhGenerated: 4560,
+      co2Saved: 2280,
+      moneySaved: 91200,
+      imageUrls: [
+        "https://images.pexels.com/photos/2467323/pexels-photo-2467323.jpeg",
+        "https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg"
+      ],
+      videoUrls: [
+        "https://www.youtube.com/embed/KE28QVaQ770",
+        "https://www.youtube.com/embed/RLtR2riNPgM"
+      ]
+    }
+  ];
 
-  // Set default icon for Leaflet markers
-  useEffect(() => {
-    // This is needed to properly display the marker icons in React
-    const DefaultIcon = new Icon({
-      iconUrl: icon,
-      iconRetinaUrl: iconRetina,
-      shadowUrl: iconShadow,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
+  // Calculate bounds for all installations
+  const allCoordinates = installations.map(i => i.coordinates);
+  const bounds = L.latLngBounds(allCoordinates.map(coord => L.latLng(coord[0], coord[1])));
+  
+  // Extend bounds slightly for better visibility
+  const extendedBounds = bounds.pad(0.3);
 
-    // @ts-ignore - TS doesn't know about this Leaflet internal
-    delete L.Icon.Default.prototype._getIconUrl;
-    // @ts-ignore - Set default icon
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: iconRetina,
-      iconUrl: icon,
-      shadowUrl: iconShadow
-    });
-  }, []);
+  const handleNextMedia = () => {
+    const mediaUrls = mediaType === 'photo' 
+      ? activeInstallation?.imageUrls 
+      : activeInstallation?.videoUrls;
+    
+    if (mediaUrls && mediaUrls.length > 0) {
+      setCurrentMediaIndex((currentMediaIndex + 1) % mediaUrls.length);
+    }
+  };
 
-  // Load installation data
-  useEffect(() => {
-    // This would normally come from an API, using static data for now
-    const sampleInstallations: Installation[] = [
-      {
-        id: 1,
-        village: "Tharparkar Village",
-        coordinates: [24.8950, 69.8511], // Tharparkar district
-        date: "March 2023",
-        households: 15,
-        kwhGenerated: 4500,
-        co2Saved: 2.8,
-        moneySaved: 540,
-        imageUrl: "https://images.unsplash.com/photo-1592833167344-45da5e0c3571?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-      },
-      {
-        id: 2,
-        village: "Umerkot Community",
-        coordinates: [25.3549, 69.7376], // Umerkot district
-        date: "April 2023",
-        households: 12,
-        kwhGenerated: 3800,
-        co2Saved: 2.3,
-        moneySaved: 460,
-        imageUrl: "https://images.unsplash.com/photo-1666045054858-b4f595016d74?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-      },
-      {
-        id: 3,
-        village: "Mirpurkhas Settlement",
-        coordinates: [25.5260, 69.0137], // Mirpurkhas district
-        date: "June 2023",
-        households: 20,
-        kwhGenerated: 6200,
-        co2Saved: 3.9,
-        moneySaved: 750,
-        imageUrl: "https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-      },
-      {
-        id: 4,
-        village: "Sanghar Community",
-        coordinates: [26.0414, 68.9480], // Sanghar district
-        date: "August 2023",
-        households: 18,
-        kwhGenerated: 5400,
-        co2Saved: 3.4,
-        moneySaved: 650,
-        imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-      },
-      {
-        id: 5,
-        village: "Khairpur Village",
-        coordinates: [27.5295, 68.7591], // Khairpur district
-        date: "October 2023",
-        households: 25,
-        kwhGenerated: 7500,
-        co2Saved: 4.7,
-        moneySaved: 900,
-        imageUrl: "https://images.unsplash.com/photo-1613514785940-daed07799d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-      }
-    ];
+  const handlePrevMedia = () => {
+    const mediaUrls = mediaType === 'photo' 
+      ? activeInstallation?.imageUrls 
+      : activeInstallation?.videoUrls;
+    
+    if (mediaUrls && mediaUrls.length > 0) {
+      setCurrentMediaIndex((currentMediaIndex - 1 + mediaUrls.length) % mediaUrls.length);
+    }
+  };
 
-    // Calculate total stats
-    const totalHouseholds = sampleInstallations.reduce((sum, installation) => sum + installation.households, 0);
-    const totalKwh = sampleInstallations.reduce((sum, installation) => sum + installation.kwhGenerated, 0);
-    const totalCo2 = sampleInstallations.reduce((sum, installation) => sum + installation.co2Saved, 0);
-    const totalMoney = sampleInstallations.reduce((sum, installation) => sum + installation.moneySaved, 0);
-
-    setTotalStats({
-      totalHouseholds,
-      totalKwh,
-      totalCo2,
-      totalMoney
-    });
-
-    setInstallations(sampleInstallations);
-    setIsLoading(false);
-  }, []);
-
-  // Create a custom marker icon for solar installations
-  const solarIcon = new Icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/4056/4056236.png',
-    iconSize: [38, 38],
-    iconAnchor: [19, 38],
-    popupAnchor: [0, -38]
-  });
-
-  if (isLoading) {
-    return (
-      <div className="h-[500px] flex items-center justify-center bg-gray-100 rounded-xl">
-        <div className="animate-pulse text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading impact map...</p>
-        </div>
-      </div>
-    );
-  }
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat().format(num);
+  };
 
   return (
-    <div className="impact-map-container">
-      <div className="grid md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white p-4 rounded-lg shadow-md text-center">
-          <div className="text-3xl font-bold text-primary">{totalStats.totalHouseholds}</div>
-          <div className="text-gray-500 text-sm">Households Powered</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md text-center">
-          <div className="text-3xl font-bold text-primary">{totalStats.totalKwh.toLocaleString()}</div>
-          <div className="text-gray-500 text-sm">kWh Generated</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md text-center">
-          <div className="text-3xl font-bold text-primary">{totalStats.totalCo2.toFixed(1)}</div>
-          <div className="text-gray-500 text-sm">Tons CO₂ Saved</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md text-center">
-          <div className="text-3xl font-bold text-primary">${totalStats.totalMoney.toLocaleString()}</div>
-          <div className="text-gray-500 text-sm">Money Saved</div>
-        </div>
-      </div>
-
-      <div className="h-[500px] rounded-xl overflow-hidden shadow-lg border border-gray-200">
-        <MapContainer 
-          center={[25.8943, 68.5247]} // Center of Sindh province
-          zoom={7} 
-          style={{ height: '100%', width: '100%' }} 
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <ZoomControl position="bottomright" />
-          
-          {installations.map(installation => (
-            <Marker 
-              key={installation.id} 
-              position={installation.coordinates}
-              icon={solarIcon}
+    <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-xl border border-gray-200">
+      <MapContainer 
+        center={[25.5, 69.5]} 
+        zoom={7} 
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <SetViewToBounds bounds={extendedBounds} />
+        
+        {installations.map((installation) => (
+          <Marker 
+            key={installation.id}
+            position={installation.coordinates}
+            icon={solarIcon}
+            eventHandlers={{
+              click: () => {
+                setActiveInstallation(installation);
+                setCurrentMediaIndex(0); // Reset media index when selecting a new installation
+              }
+            }}
+          >
+            <Popup 
+              closeButton={true} 
+              minWidth={300}
+              maxWidth={500}
+              className="custom-popup"
+              onClose={() => {
+                setActiveInstallation(null);
+                setMediaType('photo');
+                setCurrentMediaIndex(0);
+              }}
             >
-              <Popup>
-                <div className="popup-content">
-                  <h3 className="font-bold text-lg mb-1">{installation.village}</h3>
-                  <p className="text-sm text-gray-600 mb-2">Installed: {installation.date}</p>
-                  
-                  <div className="popup-image mb-2">
-                    <img 
-                      src={installation.imageUrl} 
-                      alt={`Solar installation in ${installation.village}`}
-                      className="w-full h-32 object-cover rounded-md"
-                    />
+              <div className="py-2">
+                <h3 className="font-heading font-bold text-xl mb-2">{installation.village}</h3>
+                <div className="mb-4">
+                  <div className="flex justify-between gap-2 mb-2">
+                    <button 
+                      className={cn(
+                        "flex-1 py-1 px-3 rounded-md font-medium text-sm transition-colors",
+                        mediaType === 'photo' 
+                          ? "bg-primary text-white" 
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      )}
+                      onClick={() => {
+                        setMediaType('photo');
+                        setCurrentMediaIndex(0);
+                      }}
+                    >
+                      Photos
+                    </button>
+                    <button 
+                      className={cn(
+                        "flex-1 py-1 px-3 rounded-md font-medium text-sm transition-colors",
+                        mediaType === 'video' 
+                          ? "bg-primary text-white" 
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      )}
+                      onClick={() => {
+                        setMediaType('video');
+                        setCurrentMediaIndex(0);
+                      }}
+                    >
+                      Videos
+                    </button>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="font-semibold">Households:</span> {installation.households}
-                    </div>
-                    <div>
-                      <span className="font-semibold">kWh Generated:</span> {installation.kwhGenerated}
-                    </div>
-                    <div>
-                      <span className="font-semibold">CO₂ Saved:</span> {installation.co2Saved} tons
-                    </div>
-                    <div>
-                      <span className="font-semibold">Money Saved:</span> ${installation.moneySaved}
-                    </div>
+                  <div className="relative min-h-[200px] bg-gray-100 rounded-lg overflow-hidden">
+                    {mediaType === 'photo' ? (
+                      <>
+                        <img 
+                          src={installation.imageUrls[currentMediaIndex]} 
+                          alt={`Solar installation in ${installation.village}`}
+                          className="w-full h-[200px] object-cover"
+                        />
+                        {installation.imageUrls.length > 1 && (
+                          <div className="absolute top-0 bottom-0 left-0 right-0 flex items-center justify-between px-2">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrevMedia();
+                              }}
+                              className="bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNextMedia();
+                              }}
+                              className="bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                        <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                          {currentMediaIndex + 1}/{installation.imageUrls.length}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <iframe
+                          src={installation.videoUrls[currentMediaIndex]}
+                          title={`Solar installation video for ${installation.village}`}
+                          className="w-full h-[200px]"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                        {installation.videoUrls.length > 1 && (
+                          <div className="absolute top-0 bottom-0 left-0 right-0 flex items-center justify-between px-2 pointer-events-none">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrevMedia();
+                              }}
+                              className="bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors pointer-events-auto"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNextMedia();
+                              }}
+                              className="bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-colors pointer-events-auto"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                        <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                          {currentMediaIndex + 1}/{installation.videoUrls.length}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
-      </div>
-
-      <div className="mt-4 bg-primary/5 p-4 rounded-lg border border-primary/10 text-sm text-gray-600">
-        <p>
-          <span className="font-semibold">Note:</span> This map shows our solar panel installations across Sindh province. 
-          Click on the markers to see details about each installation including the number of households 
-          benefiting, energy generated, and environmental impact.
-        </p>
-      </div>
+                
+                <div className="text-sm mb-2">
+                  <span className="font-medium">Installation Date:</span> {installation.date}
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="bg-blue-50 p-2 rounded-lg">
+                    <div className="text-xs text-blue-600 font-medium">Households Powered</div>
+                    <div className="text-lg font-bold text-blue-800">{installation.households}</div>
+                  </div>
+                  <div className="bg-green-50 p-2 rounded-lg">
+                    <div className="text-xs text-green-600 font-medium">kWh Generated</div>
+                    <div className="text-lg font-bold text-green-800">{formatNumber(installation.kwhGenerated)}</div>
+                  </div>
+                  <div className="bg-amber-50 p-2 rounded-lg">
+                    <div className="text-xs text-amber-600 font-medium">Estimated CO₂ Saved (kg)</div>
+                    <div className="text-lg font-bold text-amber-800">{formatNumber(installation.co2Saved)}</div>
+                  </div>
+                  <div className="bg-purple-50 p-2 rounded-lg">
+                    <div className="text-xs text-purple-600 font-medium">Money Saved (PKR)</div>
+                    <div className="text-lg font-bold text-purple-800">{formatNumber(installation.moneySaved)}</div>
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <a 
+                    href="#donate" 
+                    className="block bg-primary hover:bg-primary/90 text-white font-heading font-medium text-center px-4 py-2 rounded-md transition w-full"
+                  >
+                    Support This Community
+                  </a>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+      
+      {/* Custom CSS for map popups */}
+      <style jsx>{`
+        :global(.custom-popup .leaflet-popup-content-wrapper) {
+          border-radius: 0.75rem;
+          padding: 0.5rem;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        :global(.custom-popup .leaflet-popup-content) {
+          margin: 0;
+          width: 320px !important;
+        }
+        
+        :global(.custom-popup .leaflet-popup-tip) {
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+      `}</style>
     </div>
   );
 }
