@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import type { Project } from "@shared/schema";
 
 const donationSchema = z.object({
@@ -29,17 +30,19 @@ export default function DonationForm() {
   const [, navigate] = useLocation();
   const [selectedAmount, setSelectedAmount] = useState<number>(50);
   const [isCustomAmount, setIsCustomAmount] = useState(false);
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   const { data: projects } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
   });
 
+  // Initialize form with user data if available
   const form = useForm<DonationFormValues>({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       amount: 50,
-      name: "",
-      email: "",
+      name: user?.fullName || "",
+      email: user?.email || "",
       frequency: "one-time",
       projectId: "",
     },
@@ -59,6 +62,27 @@ export default function DonationForm() {
   };
 
   const onSubmit = async (data: DonationFormValues) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Save donation details to session storage for after login
+      sessionStorage.setItem('pendingDonation', JSON.stringify({
+        amount: data.amount,
+        name: data.name,
+        email: data.email,
+        frequency: data.frequency,
+        projectId: data.projectId
+      }));
+      
+      toast({
+        title: "Authentication Required",
+        description: "Please log in or create an account to continue with your donation.",
+      });
+      
+      // Redirect to login page
+      navigate('/login');
+      return;
+    }
+    
     try {
       // Create donation record
       const donationResponse = await apiRequest("POST", "/api/donations", {

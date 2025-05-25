@@ -84,10 +84,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a donation (initial record before payment)
-  app.post("/api/donations", async (req, res) => {
+  // Create a donation (initial record before payment) - requires authentication
+  app.post("/api/donations", isAuthenticated, async (req, res) => {
     try {
       const validatedData = insertDonationSchema.parse(req.body);
+      
+      // Use the authenticated user's email if available
+      if (req.user && (req.user as any).email) {
+        validatedData.email = (req.user as any).email;
+      }
+      
       const donation = await storage.createDonation(validatedData);
       res.status(201).json(donation);
     } catch (error) {
@@ -99,8 +105,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create payment intent for donation
-  app.post("/api/create-payment-intent", async (req, res) => {
+  // Create payment intent for donation - requires authentication
+  app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
     try {
       const { amount, donationId } = req.body;
       
