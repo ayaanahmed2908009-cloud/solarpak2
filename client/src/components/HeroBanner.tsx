@@ -35,19 +35,9 @@ export default function HeroBanner() {
   return (
     <section 
       ref={sectionRef}
-      className="relative overflow-hidden" 
+      className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 overflow-hidden animated-bg" 
       style={{ height: height ? `${height}px` : '100vh' }}
     >
-      {/* Main background image */}
-      <div className="absolute inset-0 w-full h-full">
-        <img 
-          src="https://images.unsplash.com/photo-1523206489230-c012c64b2b48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" 
-          alt="Rural village in Sindh, Pakistan" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/80 to-blue-700/70"></div>
-      </div>
-      
       {/* Floating solar panels and sun decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-10 opacity-20 floating" style={{ animationDuration: '4s' }}>
@@ -64,7 +54,11 @@ export default function HeroBanner() {
         </div>
       </div>
       
-      {/* Content */}
+      {/* Dark overlay with gradient */}
+      <div className="absolute inset-0 bg-black opacity-40"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/90 opacity-70"></div>
+      
+      {/* Parallax effect on the content */}
       <div className="container mx-auto px-4 py-24 md:py-32 lg:py-40 relative z-10 text-white h-full flex flex-col justify-center"
         style={{ 
           transform: `translateY(${scrollPosition * 0.2}px)`,
@@ -80,14 +74,14 @@ export default function HeroBanner() {
             style={{ animationDuration: '1.2s', animationDelay: '0.2s', animationFillMode: 'both' }}>
             <span className="block text-shadow-lg">Bringing Light to</span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-yellow-400 font-extrabold">
-              Interior Sindh
+              Pakistan
             </span>
             <span className="block text-shadow-lg">Through Solar Power</span>
           </h1>
           
           <p className="text-lg md:text-xl mb-8 opacity-90 animate-fade-in" 
             style={{ animationDuration: '1.4s', animationDelay: '0.4s', animationFillMode: 'both' }}>
-            Help us combat electricity shortages and improve lives by funding solar panel installations for families across rural Pakistan.
+            Help us combat electricity shortages and improve lives by funding solar panel installations for families across Pakistan.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in"
@@ -131,6 +125,30 @@ export default function HeroBanner() {
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Image of Pakistan with enhanced styling */}
+      <div className="absolute right-0 top-0 bottom-0 hidden lg:block lg:w-2/5 h-full z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-transparent z-10"></div>
+        <img 
+          src="https://images.unsplash.com/photo-1593939535589-8356e421b3cc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+          alt="Rural landscape in Sindh, Pakistan" 
+          className="object-cover h-full w-full blur-sm"
+          style={{ 
+            transform: `translateY(${scrollPosition * 0.05}px) scale(1.1)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        />
+        <img 
+          src="https://images.unsplash.com/photo-1592555059503-0a774cb8d477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+          alt="Interior Sindh, Pakistan rural village" 
+          className="absolute inset-0 object-cover h-full w-full"
+          style={{ 
+            transform: `translateY(${scrollPosition * 0.03}px)`,
+            transition: 'transform 0.1s ease-out',
+            opacity: 0.9
+          }}
+        />
       </div>
       
       {/* Scroll indicator */}
