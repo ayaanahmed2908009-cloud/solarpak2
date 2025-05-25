@@ -7,6 +7,7 @@ import ImpactSection from "@/components/ImpactSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import DonationSection from "@/components/DonationSection";
+import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import { useState, useEffect, useRef } from "react";
@@ -74,6 +75,10 @@ export default function Home() {
         
         <div className="snap-section">
           <DonationSection />
+        </div>
+        
+        <div className="snap-section">
+          <MonthlyImpactSection />
         </div>
         
         <div className="snap-section">
