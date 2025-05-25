@@ -1,10 +1,11 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertDonationSchema, insertSubscriberSchema } from "@shared/schema";
+import { setupAuth, login, logout, register, isAuthenticated, getCurrentUser } from "./auth";
+import Stripe from "stripe";
+import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -13,6 +14,15 @@ if (!process.env.STRIPE_SECRET_KEY) {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up authentication middleware
+  setupAuth(app);
+  
+  // Authentication routes
+  app.post("/api/auth/login", login);
+  app.post("/api/auth/register", register);
+  app.get("/api/auth/logout", logout);
+  app.get("/api/auth/user", getCurrentUser);
+  
   // Prefix all routes with /api
   
   // Get stats
