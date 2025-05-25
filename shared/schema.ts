@@ -1,18 +1,49 @@
-import { pgTable, text, serial, integer, boolean, doublePrecision, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, doublePrecision, timestamp, varchar, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// User schema
+// Session storage table for authentication
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User schema with enhanced auth fields
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password"), // Can be null for OAuth users
+  fullName: text("full_name"),
+  username: text("username").unique(),
+  profileImageUrl: text("profile_image_url"),
+  provider: text("provider").default("local"), // 'local', 'google', 'apple'
+  providerId: text("provider_id"), // External ID from provider
+  stripeCustomerId: text("stripe_customer_id"),
+  isVerified: boolean("is_verified").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow()
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-});
+// Validate email and password for local sign up
+export const insertUserSchema = createInsertSchema(users)
+  .pick({
+    email: true,
+    password: true,
+    fullName: true,
+    username: true,
+    provider: true,
+    providerId: true,
+    profileImageUrl: true,
+  })
+  .extend({
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters").optional(),
+  });
 
 // Project schema
 export const projects = pgTable("projects", {
