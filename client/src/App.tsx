@@ -10,6 +10,7 @@ import Impact from "@/pages/Impact";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
+import Membership from "@/pages/Membership";
 import { useEffect } from "react";
 import { AuthProvider } from "@/hooks/useAuth";
 
@@ -94,6 +95,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/membership" component={Membership} />
       <Route component={NotFound} />
     </Switch>
   );

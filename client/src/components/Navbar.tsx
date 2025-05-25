@@ -55,6 +55,9 @@ export default function Navbar() {
             <a href="#stories" className="font-heading font-medium hover:text-primary transition">
               Stories
             </a>
+            <Link href="/membership" className="font-heading font-medium hover:text-primary transition">
+              Membership
+            </Link>
           </nav>
           
           <div className="flex items-center space-x-4">
