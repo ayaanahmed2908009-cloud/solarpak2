@@ -63,6 +63,7 @@ export class MemStorage implements IStorage {
   private testimonials: Map<number, Testimonial>;
   private statsData: Stats | undefined;
   private subscribers: Map<number, Subscriber>;
+  private adminAccountsCreated: boolean = false;
   private currentIds: {
     users: number;
     projects: number;
@@ -127,6 +128,10 @@ export class MemStorage implements IStorage {
       providerId: insertUser.providerId || null,
       stripeCustomerId: null,
       isVerified: false,
+      role: insertUser.role || 'user',
+      membershipTier: insertUser.membershipTier || 'none',
+      totalDonated: insertUser.totalDonated || 0,
+      lastDonationDate: insertUser.lastDonationDate || null,
       createdAt: now,
       updatedAt: now
     };
@@ -308,9 +313,19 @@ export class MemStorage implements IStorage {
     };
     this.donations.set(id, updatedDonation);
 
-    // If donation is successful, update project funding
-    if (status === 'succeeded' && donation.projectId) {
-      await this.updateProjectFunding(donation.projectId, donation.amount);
+    // If donation is successful
+    if (status === 'succeeded') {
+      // Update project funding if specific project was selected
+      if (donation.projectId) {
+        await this.updateProjectFunding(donation.projectId, donation.amount);
+      }
+      
+      // Find the user by email and update their membership status
+      const userByEmail = await this.getUserByEmail(donation.email);
+      if (userByEmail) {
+        // Update user's donation stats and membership tier
+        await this.updateUserDonationStats(userByEmail.id, donation.amount);
+      }
     }
 
     return updatedDonation;
@@ -399,9 +414,73 @@ export class MemStorage implements IStorage {
     this.subscribers.set(id, subscriber);
     return subscriber;
   }
+  
+  // Create admin accounts
+  private async createAdminAccounts() {
+    // Avoid creating admin accounts multiple times
+    if (this.adminAccountsCreated) return;
+    
+    try {
+      // Import the hashing function from auth.ts
+      const { hashPassword } = await import('./auth');
+      
+      // Create admin account: Ayaan
+      const ayaanPasswordHash = await hashPassword('12345');
+      const ayaanUser: User = {
+        id: this.currentIds.users++,
+        email: 'ayaan@solarlightpakistan.org',
+        password: ayaanPasswordHash,
+        fullName: 'Ayaan Administrator',
+        username: 'Ayaan',
+        profileImageUrl: null,
+        provider: 'local',
+        providerId: null,
+        stripeCustomerId: null,
+        isVerified: true,
+        role: 'admin',
+        membershipTier: 'platinum',
+        totalDonated: 5000,
+        lastDonationDate: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.users.set(ayaanUser.id, ayaanUser);
+      
+      // Create test admin account: test1
+      const test1PasswordHash = await hashPassword('654321');
+      const test1User: User = {
+        id: this.currentIds.users++,
+        email: 'test1@solarlightpakistan.org',
+        password: test1PasswordHash,
+        fullName: 'Test Administrator',
+        username: 'test1',
+        profileImageUrl: null,
+        provider: 'local',
+        providerId: null,
+        stripeCustomerId: null,
+        isVerified: true,
+        role: 'admin',
+        membershipTier: 'platinum',
+        totalDonated: 5000,
+        lastDonationDate: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.users.set(test1User.id, test1User);
+      
+      // Mark as created
+      this.adminAccountsCreated = true;
+      console.log('Admin accounts created successfully');
+    } catch (error) {
+      console.error("Failed to create admin accounts:", error);
+    }
+  }
 
   // Seed with initial data
-  private seedData() {
+  private async seedData() {
+    // Create admin accounts
+    await this.createAdminAccounts();
+    
     // Seed stats
     const timestamp = new Date();
     this.statsData = {

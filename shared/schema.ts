@@ -43,10 +43,18 @@ export const insertUserSchema = createInsertSchema(users)
     provider: true,
     providerId: true,
     profileImageUrl: true,
+    role: true,
+    membershipTier: true,
+    totalDonated: true,
+    lastDonationDate: true
   })
   .extend({
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
+    role: z.enum(['user', 'member', 'admin']).default('user').optional(),
+    membershipTier: z.enum(['none', 'bronze', 'silver', 'gold', 'platinum']).default('none').optional(),
+    totalDonated: z.number().default(0).optional(),
+    lastDonationDate: z.date().optional().nullable()
   });
 
 // Project schema
