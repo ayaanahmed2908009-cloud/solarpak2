@@ -64,6 +64,49 @@ export default function Navbar() {
             >
               Donate Now
             </a>
+            
+            {isAuthenticated && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.profileImageUrl || ""} />
+                      <AvatarFallback className="bg-primary/10">
+                        {user.fullName?.charAt(0) || user.email.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span>{user.fullName || user.email}</span>
+                      <span className="text-xs text-muted-foreground">{user.role}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link href="/dashboard">
+                    <DropdownMenuItem className="cursor-pointer">
+                      Dashboard
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="hidden md:flex items-center space-x-2">
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">Log in</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button variant="outline" size="sm">Sign up</Button>
+                </Link>
+              </div>
+            )}
+            
             <button 
               className="md:hidden text-gray-600" 
               onClick={toggleMobileMenu}
@@ -121,9 +164,56 @@ export default function Navbar() {
             >
               Stories
             </a>
+            
+            {isAuthenticated && user ? (
+              <>
+                <div className="border-t border-gray-200 pt-4 mt-2"></div>
+                <Link 
+                  href="/dashboard" 
+                  className="font-heading font-medium hover:text-primary transition py-2 flex items-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  My Dashboard
+                  {user.role === 'admin' && (
+                    <span className="ml-2 text-xs bg-primary text-white px-2 py-1 rounded-full">
+                      Admin
+                    </span>
+                  )}
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="font-heading font-medium text-gray-600 hover:text-primary transition py-2 text-left"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="border-t border-gray-200 pt-4 mt-2"></div>
+                <Link 
+                  href="/login" 
+                  className="font-heading font-medium hover:text-primary transition py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Log in
+                </Link>
+                <Link 
+                  href="/signup" 
+                  className="font-heading font-medium hover:text-primary transition py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+            
             <a 
               href="#donate" 
-              className="bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-6 py-2 rounded-md transition text-center"
+              className="bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-6 py-2 rounded-md transition text-center mt-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Donate Now
