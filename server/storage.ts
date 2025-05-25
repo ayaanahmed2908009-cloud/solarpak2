@@ -210,13 +210,14 @@ export class MemStorage implements IStorage {
     // Determine membership tier based on total donation amount
     let membershipTier = user.membershipTier || 'none';
     
-    if (totalDonated >= 5000) {
+    // Membership thresholds should match those on the membership page
+    if (totalDonated >= 1000) {
       membershipTier = 'platinum';
-    } else if (totalDonated >= 1000) {
-      membershipTier = 'gold';
     } else if (totalDonated >= 500) {
+      membershipTier = 'gold';
+    } else if (totalDonated >= 250) {
       membershipTier = 'silver';
-    } else if (totalDonated >= 100) {
+    } else if (totalDonated >= 50) {
       membershipTier = 'bronze';
     }
     
