@@ -10,6 +10,7 @@ import Impact from "@/pages/Impact";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import { useEffect } from "react";
+import { AuthProvider } from "@/hooks/useAuth";
 
 // Smooth scroll behavior utility
 function setSmoothScroll() {
@@ -99,10 +100,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="app-container min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        <Router />
-        <Toaster />
-      </div>
+      <AuthProvider>
+        <div className="app-container min-h-screen bg-gradient-to-b from-gray-50 to-white">
+          <Router />
+          <Toaster />
+        </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

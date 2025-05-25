@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   // Fetch current user with TanStack Query
-  const { data: userData, isLoading } = useQuery({
+  const { data: userData, isLoading } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: false,
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Update user state when userData changes
   useEffect(() => {
     if (userData) {
-      setUser(userData);
+      setUser(userData as User);
     } else {
       setUser(null);
     }

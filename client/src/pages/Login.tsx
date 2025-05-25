@@ -2,12 +2,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LoginForm from "@/components/auth/LoginForm";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
-  const [location] = useLocation();
-
+  const { isAuthenticated } = useAuth();
+  const [_, setLocation] = useLocation();
+  
   // Animation effect
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,6 +18,13 @@ export default function Login() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/");
+    }
+  }, [isAuthenticated, setLocation]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
