@@ -1,60 +1,48 @@
 import { Request, Response, NextFunction } from "express";
-import { compare, hash } from "bcrypt";
-import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import connectPgSimple from "connect-pg-simple";
-import { pool } from "./db";
+import bcrypt from "bcrypt";
 import { storage } from "./storage";
+import { InsertUser } from "@shared/schema";
 
-// Password hashing
-export async function hashPassword(password: string): Promise<string> {
-  return await hash(password, 10);
-}
-
-export async function verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-  return await compare(plainPassword, hashedPassword);
-}
-
-// Configure passport local strategy
-const configurePassport = () => {
-  // Local strategy for username/password login
+// Setup passport local strategy
+export const setupAuth = (app: any) => {
+  // Initialize passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+  
+  // Set up local strategy
   passport.use(
     new LocalStrategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
-      },
+      { usernameField: "email" },
       async (email, password, done) => {
         try {
+          // Get user by email
           const user = await storage.getUserByEmail(email);
           
           if (!user) {
-            return done(null, false, { message: "Incorrect email or password" });
+            return done(null, false, { message: "Invalid email or password" });
           }
           
-          // For users registered with OAuth, they won't have a password
-          if (!user.password) {
-            return done(null, false, { 
-              message: `This account uses ${user.provider} authentication. Please sign in with ${user.provider}.` 
-            });
-          }
+          // Check password
+          const isPasswordValid = await verifyPassword(
+            password,
+            user.password || ""
+          );
           
-          const isValid = await verifyPassword(password, user.password);
-          
-          if (!isValid) {
-            return done(null, false, { message: "Incorrect email or password" });
+          if (!isPasswordValid) {
+            return done(null, false, { message: "Invalid email or password" });
           }
           
           return done(null, user);
-        } catch (err) {
-          return done(err);
+        } catch (error) {
+          return done(error);
         }
       }
     )
   );
   
-  // User serialization/deserialization for session
+  // Serialize and deserialize user
   passport.serializeUser((user: any, done) => {
     done(null, user.id);
   });
@@ -63,53 +51,33 @@ const configurePassport = () => {
     try {
       const user = await storage.getUser(id);
       done(null, user);
-    } catch (err) {
-      done(err);
+    } catch (error) {
+      done(error, null);
     }
   });
 };
 
-// Session and auth setup
-export const setupAuth = (app: any) => {
-  const PgSession = connectPgSimple(session);
-  
-  // Set up session middleware
-  app.use(
-    session({
-      store: new PgSession({
-        pool,
-        tableName: "sessions",
-        createTableIfMissing: true,
-      }),
-      secret: process.env.SESSION_SECRET || "solar-panel-project-dev-secret",
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-      },
-    })
-  );
-  
-  // Initialize passport
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
-  // Configure passport strategies
-  configurePassport();
-};
+// Password utility functions
+export async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  return hashedPassword;
+}
 
-// Authentication middleware
+export async function verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  return await bcrypt.compare(plainPassword, hashedPassword);
+}
+
+// Middleware to check if user is authenticated
 export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     return next();
   }
   
-  res.status(401).json({ message: "Unauthorized" });
+  return res.status(401).json({ message: "Unauthorized" });
 };
 
-// Auth controller methods
+// Login handler
 export const login = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("local", (err: Error, user: any, info: any) => {
     if (err) {
@@ -117,96 +85,88 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     }
     
     if (!user) {
-      return res.status(401).json({ message: info.message });
+      return res.status(401).json({ message: info.message || "Authentication failed" });
     }
     
-    req.logIn(user, (err) => {
+    req.login(user, (err) => {
       if (err) {
         return next(err);
       }
       
-      // Don't send sensitive information to the client
-      const safeUser = {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        username: user.username,
-        profileImageUrl: user.profileImageUrl,
-        provider: user.provider,
-      };
+      // Exclude sensitive information
+      const { password, ...userInfo } = user;
       
-      return res.json({ user: safeUser });
+      return res.status(200).json({ message: "Login successful", user: userInfo });
     });
   })(req, res, next);
 };
 
+// Logout handler
 export const logout = (req: Request, res: Response) => {
-  req.logout(() => {
-    res.json({ message: "Logged out successfully" });
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Error during logout" });
+    }
+    
+    res.status(200).json({ message: "Logout successful" });
   });
 };
 
+// Get current user
 export const getCurrentUser = (req: Request, res: Response) => {
-  if (!req.user) {
-    return res.json(null);
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(200).json(null);
   }
   
-  const user = req.user as any;
+  // Exclude sensitive information
+  const { password, ...userInfo } = req.user as any;
   
-  // Don't send sensitive information to the client
-  const safeUser = {
-    id: user.id,
-    email: user.email,
-    fullName: user.fullName,
-    username: user.username,
-    profileImageUrl: user.profileImageUrl,
-    provider: user.provider,
-  };
-  
-  res.json(safeUser);
+  return res.status(200).json(userInfo);
 };
 
+// Register a new user
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password, fullName, username } = req.body;
+    const { email, password, fullName } = req.body;
     
-    // Check if user already exists
+    // Check if email already exists
     const existingUser = await storage.getUserByEmail(email);
+    
     if (existingUser) {
-      return res.status(400).json({ message: "Email is already registered" });
+      return res.status(400).json({ message: "Email already in use" });
     }
     
     // Hash password
     const hashedPassword = await hashPassword(password);
     
     // Create user
-    const user = await storage.createUser({
+    const userData: InsertUser = {
       email,
       password: hashedPassword,
-      fullName,
-      username,
+      fullName: fullName || null,
       provider: "local",
-    });
+    };
     
-    // Log the user in
-    req.logIn(user, (err) => {
+    const newUser = await storage.createUser(userData);
+    
+    // Log in the new user
+    req.login(newUser, (err) => {
       if (err) {
         return next(err);
       }
       
-      // Don't send sensitive information to the client
-      const safeUser = {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        username: user.username,
-        profileImageUrl: user.profileImageUrl,
-        provider: user.provider,
-      };
+      // Exclude sensitive information
+      const { password, ...userInfo } = newUser;
       
-      res.status(201).json({ user: safeUser });
+      return res.status(201).json({
+        message: "Registration successful",
+        user: userInfo,
+      });
     });
-  } catch (err) {
-    next(err);
+  } catch (error: any) {
+    return res.status(500).json({
+      message: "Error during registration",
+      error: error.message,
+    });
   }
 };

@@ -117,7 +117,8 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now,
       isVerified: false,
-      provider: insertUser.provider || 'local'
+      provider: insertUser.provider || 'local',
+      stripeCustomerId: null
     };
     
     this.users.set(id, user);
