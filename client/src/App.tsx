@@ -7,6 +7,8 @@ import Home from "@/pages/Home";
 import Checkout from "@/pages/Checkout";
 import Success from "@/pages/Success";
 import Impact from "@/pages/Impact";
+import Login from "@/pages/Login";
+import SignUp from "@/pages/SignUp";
 import { useEffect } from "react";
 
 // Smooth scroll behavior utility
@@ -87,6 +89,8 @@ function Router() {
       <Route path="/impact" component={Impact} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/success" component={Success} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={SignUp} />
       <Route component={NotFound} />
     </Switch>
   );
