@@ -16,6 +16,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+  updateStripeCustomerId(userId: number, customerId: string): Promise<User | undefined>;
 
   // Project operations
   getProjects(): Promise<Project[]>;
@@ -110,15 +111,20 @@ export class MemStorage implements IStorage {
     const id = this.currentIds.users++;
     const now = new Date();
     
-    // Ensure required fields have default values
+    // Ensure required fields have default values and convert undefined to null
     const user: User = { 
-      ...insertUser, 
       id,
-      createdAt: now,
-      updatedAt: now,
-      isVerified: false,
+      email: insertUser.email,
+      password: insertUser.password || null,
+      fullName: insertUser.fullName || null,
+      username: insertUser.username || null,
+      profileImageUrl: insertUser.profileImageUrl || null,
       provider: insertUser.provider || 'local',
-      stripeCustomerId: null
+      providerId: insertUser.providerId || null,
+      stripeCustomerId: null,
+      isVerified: false,
+      createdAt: now,
+      updatedAt: now
     };
     
     this.users.set(id, user);
@@ -138,6 +144,20 @@ export class MemStorage implements IStorage {
     this.users.set(id, updatedUser);
     return updatedUser;
   }
+  
+  async updateStripeCustomerId(userId: number, customerId: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    const updatedUser = {
+      ...user,
+      stripeCustomerId: customerId,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
 
   // Project operations
   async getProjects(): Promise<Project[]> {
@@ -152,9 +172,14 @@ export class MemStorage implements IStorage {
     const id = this.currentIds.projects++;
     const timestamp = new Date();
     const project: Project = { 
-      ...insertProject, 
-      id, 
-      currentFunding: 0, 
+      id,
+      name: insertProject.name,
+      description: insertProject.description,
+      location: insertProject.location,
+      imageUrl: insertProject.imageUrl,
+      totalFundingGoal: insertProject.totalFundingGoal,
+      currentFunding: 0,
+      isActive: true,
       createdAt: timestamp
     };
     this.projects.set(id, project);
