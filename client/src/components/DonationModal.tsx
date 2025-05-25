@@ -381,7 +381,7 @@ export default function DonationModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">General donation</SelectItem>
+                          <SelectItem value="general">General donation</SelectItem>
                           <SelectItem value="1">Sindh Province Initiative</SelectItem>
                           <SelectItem value="2">Punjab Rural Electrification</SelectItem>
                           <SelectItem value="3">Balochistan Remote Villages</SelectItem>
