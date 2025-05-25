@@ -1,139 +1,107 @@
-import { useState, useEffect } from "react";
-import DonationForm from "./DonationForm";
-import { Home, Plug, PanelTop, ShieldCheck, Sun, Battery, Zap } from "lucide-react";
+import { useState } from "react";
+import DonationModal from "./DonationModal";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function DonationSection() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Add intersection observer for animation on scroll
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const section = document.getElementById("donate");
-    if (section) {
-      observer.observe(section);
-    }
-
-    return () => {
-      if (section) {
-        observer.unobserve(section);
-      }
-    };
-  }, []);
+  const [selectedAmount, setSelectedAmount] = useState<number>(50);
+  
+  // Pre-defined donation amounts
+  const donationAmounts = [
+    { amount: 25, impact: "Provides basic solar lighting for a family" },
+    { amount: 50, impact: "Powers essential appliances for one day" },
+    { amount: 100, impact: "Lights an entire home for a month" },
+    { amount: 250, impact: "Installs a small solar system" },
+    { amount: 500, impact: "Provides sustainable electricity for a family" },
+    { amount: 1000, impact: "Installs a complete solar system" },
+  ];
 
   return (
-    <section id="donate" className="section-container bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 opacity-5 pointer-events-none">
-        <Sun className="w-64 h-64 text-primary" />
-      </div>
-      <div className="absolute bottom-0 left-0 opacity-5 pointer-events-none">
-        <Zap className="w-40 h-40 text-primary" />
-      </div>
-      
+    <section id="donate" className="py-16 md:py-24 bg-gradient-to-b from-blue-50 to-white">
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <span className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">Make a Difference</span>
-          <h2 className="font-heading font-bold text-3xl md:text-4xl text-gray-800 mb-4">
-            <span className="gradient-text">Support Our Mission</span>
+        <div className="text-center mb-12">
+          <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
+            Make a Difference Today
           </h2>
-          <p className="text-gray-600 text-lg mb-8">
-            Your donation brings light to families living without reliable electricity
+          <div className="h-1 w-24 bg-primary rounded-full mx-auto mb-6"></div>
+          <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+            Your donation brings clean, reliable solar energy to families in Pakistan suffering from electricity shortages and extreme heat.
           </p>
         </div>
-        
-        <div className="max-w-6xl mx-auto">
-          <div className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-1000 ${
-            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'
-          }`}>
-            <div className="flex flex-col lg:flex-row">
-              <div className="lg:w-1/2 p-8 md:p-10">
-                <h3 className="font-heading font-bold text-2xl md:text-3xl text-gray-800 mb-4">Make a Donation</h3>
-                <p className="text-gray-600 mb-8">
-                  Your contribution helps bring sustainable electricity to families in Pakistan experiencing up to 12 hours of daily blackouts.
-                </p>
-                
-                <DonationForm />
+
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
+          <div className="p-6 md:p-8 flex flex-col">
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4">Choose a Donation Amount</h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                {donationAmounts.map((option) => (
+                  <button
+                    key={option.amount}
+                    className={cn(
+                      "border rounded-lg p-4 transition-all text-left",
+                      selectedAmount === option.amount
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-gray-200 hover:border-primary/50 hover:bg-primary/5"
+                    )}
+                    onClick={() => setSelectedAmount(option.amount)}
+                  >
+                    <div className="font-bold text-xl text-primary mb-1">
+                      ${option.amount}
+                    </div>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {option.impact}
+                    </p>
+                  </button>
+                ))}
               </div>
               
-              <div className="lg:w-1/2 bg-gradient-to-br from-primary to-primary/80 text-white p-8 md:p-10 flex flex-col justify-between relative overflow-hidden">
-                {/* Background decor elements */}
-                <div className="absolute top-0 right-0 opacity-10">
-                  <Sun className="w-32 h-32" />
-                </div>
-                <div className="absolute bottom-0 left-0 opacity-10">
-                  <Battery className="w-24 h-24" />
-                </div>
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <h4 className="font-medium mb-2">Your Impact</h4>
+                <p className="text-gray-600">
+                  {donationAmounts.find(d => d.amount === selectedAmount)?.impact || "Your donation helps provide solar energy to families in need"}
+                </p>
                 
-                <div className="relative z-10">
-                  <h3 className="font-heading font-bold text-2xl mb-8 flex items-center">
-                    <span className="mr-2">Your Impact</span>
-                    <div className="h-px flex-grow bg-white/20 ml-4"></div>
-                  </h3>
-                  
-                  <div className="space-y-8 mb-12">
-                    <div className="flex items-start transform transition-transform duration-500 hover:translate-x-2">
-                      <div className="mr-5 bg-white/10 rounded-full p-3 backdrop-blur-sm">
-                        <Home className="w-8 h-8 text-yellow-300" />
-                      </div>
-                      <div>
-                        <h4 className="font-heading font-semibold text-xl mb-2 text-white">$50 provides</h4>
-                        <p className="text-white/80 leading-relaxed">
-                          A basic solar lighting system for one room in a family home, eliminating the need for dangerous kerosene lamps
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start transform transition-transform duration-500 hover:translate-x-2">
-                      <div className="mr-5 bg-white/10 rounded-full p-3 backdrop-blur-sm">
-                        <Plug className="w-8 h-8 text-yellow-300" />
-                      </div>
-                      <div>
-                        <h4 className="font-heading font-semibold text-xl mb-2 text-white">$250 provides</h4>
-                        <p className="text-white/80 leading-relaxed">
-                          A small solar system to power basic appliances for a family, including lights, fans, and mobile charging
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start transform transition-transform duration-500 hover:translate-x-2">
-                      <div className="mr-5 bg-white/10 rounded-full p-3 backdrop-blur-sm">
-                        <PanelTop className="w-8 h-8 text-yellow-300" />
-                      </div>
-                      <div>
-                        <h4 className="font-heading font-semibold text-xl mb-2 text-white">$1,000 provides</h4>
-                        <p className="text-white/80 leading-relaxed">
-                          A complete solar system for an entire home with battery storage, powering essential appliances throughout blackouts
-                        </p>
-                      </div>
-                    </div>
+                {selectedAmount >= 50 && (
+                  <div className="mt-3 text-sm">
+                    <span className="text-primary font-medium">
+                      {selectedAmount >= 1000 ? "Platinum" : 
+                       selectedAmount >= 500 ? "Gold" : 
+                       selectedAmount >= 250 ? "Silver" : "Bronze"} membership tier unlocked!
+                    </span>
                   </div>
-                </div>
-                
-                <div className="bg-white/10 p-6 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
-                  <h4 className="font-heading font-semibold text-xl mb-3 flex items-center">
-                    <ShieldCheck className="w-5 h-5 mr-2 text-yellow-300" />
-                    Donation Transparency
-                  </h4>
-                  <p className="text-white/90 mb-4 leading-relaxed">
-                    We're committed to transparency. You'll receive updates about your specific contribution, including photos of installations you helped fund.
-                  </p>
-                  <div className="flex items-center">
-                    <div className="mr-2 bg-yellow-300/20 p-1 rounded">
-                      <ShieldCheck className="w-5 h-5 text-yellow-300" />
-                    </div>
-                    <p className="text-sm text-white/90">Your donation is tax-deductible where applicable</p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <DonationModal
+                suggestedAmount={selectedAmount}
+                buttonText="Donate Once"
+                fullWidth={true}
+              />
+              
+              <DonationModal
+                suggestedAmount={selectedAmount}
+                buttonText="Donate Monthly"
+                buttonVariant="outline"
+                fullWidth={true}
+                projectId="1" // Optional, can be removed if not needed
+              />
+            </div>
+            
+            <div className="mt-6 text-center text-sm text-gray-500">
+              All donations are secure and tax-deductible where applicable.
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-12 text-center">
+          <h3 className="text-xl font-semibold mb-4">Other Ways to Help</h3>
+          <div className="flex flex-col md:flex-row justify-center gap-4">
+            <Button variant="outline">Become a Partner</Button>
+            <Button variant="outline">Corporate Sponsorships</Button>
+            <Button variant="outline">Share Our Mission</Button>
           </div>
         </div>
       </div>

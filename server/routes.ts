@@ -105,24 +105,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create payment intent for donation - requires authentication
+  // Create payment intent for one-time donation - requires authentication
   app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
     try {
-      const { amount, donationId } = req.body;
+      const { amount, donationId, email, name } = req.body;
       
       if (!amount || amount <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
+      }
+
+      // Get the donation details if we have an ID
+      let donationEmail = email;
+      let donationName = name;
+      
+      if (donationId) {
+        const donation = await storage.getDonation(donationId);
+        if (donation) {
+          donationEmail = donation.email;
+          donationName = donation.name;
+        }
+      }
+
+      // Create or retrieve the customer
+      let customerId;
+      if (donationEmail) {
+        // Try to find an existing customer with the email
+        const customers = await stripe.customers.list({ email: donationEmail });
+        
+        if (customers.data.length > 0) {
+          customerId = customers.data[0].id;
+        } else {
+          // Create a new customer
+          const customer = await stripe.customers.create({
+            email: donationEmail,
+            name: donationName || undefined,
+          });
+          customerId = customer.id;
+        }
       }
 
       // Create a payment intent with Stripe
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "usd",
+        customer: customerId,
         // Add metadata for tracking
         metadata: {
           donationId: donationId ? donationId.toString() : undefined,
           integration_check: 'accept_a_payment'
         },
+        receipt_email: donationEmail,
+        description: "Donation to SolarHelp Pakistan",
       });
 
       // If we have a donation ID, update its payment intent ID
@@ -134,6 +167,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error creating payment intent:", error.message);
       res.status(500).json({ message: "Error creating payment intent", error: error.message });
+    }
+  });
+  
+  // Create subscription for recurring donation - requires authentication
+  app.post("/api/create-subscription", isAuthenticated, async (req, res) => {
+    try {
+      const { amount, donationId, email, name } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ message: "Invalid amount" });
+      }
+      
+      // Get the donation details if we have an ID
+      let donationEmail = email;
+      let donationName = name;
+      
+      if (donationId) {
+        const donation = await storage.getDonation(donationId);
+        if (donation) {
+          donationEmail = donation.email;
+          donationName = donation.name;
+        }
+      }
+      
+      if (!donationEmail) {
+        return res.status(400).json({ message: "Email is required for subscriptions" });
+      }
+      
+      // First, create or retrieve the customer
+      let customer;
+      
+      // Try to find an existing customer with this email
+      const customers = await stripe.customers.list({ email: donationEmail });
+      
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+      } else {
+        // Create a new customer
+        customer = await stripe.customers.create({
+          email: donationEmail,
+          name: donationName || undefined,
+        });
+      }
+      
+      // Create a price for this donation amount
+      // In a production app, you would probably have predefined price IDs
+      const price = await stripe.prices.create({
+        unit_amount: Math.round(amount * 100), // Convert to cents
+        currency: 'usd',
+        recurring: {
+          interval: 'month',
+        },
+        product_data: {
+          name: 'Monthly Donation',
+          description: 'Monthly donation to SolarHelp Pakistan',
+        },
+        metadata: {
+          donationId: donationId ? donationId.toString() : undefined,
+        },
+      });
+      
+      // Create the subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: price.id }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+        metadata: {
+          donationId: donationId ? donationId.toString() : undefined,
+        },
+      });
+      
+      // Access the client secret
+      const invoice = subscription.latest_invoice as any;
+      const clientSecret = invoice?.payment_intent?.client_secret;
+      
+      // If we have a donation ID, update its status
+      if (donationId) {
+        await storage.updateDonationStatus(donationId, "pending", subscription.id);
+      }
+      
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret: clientSecret,
+      });
+    } catch (error: any) {
+      console.error("Error creating subscription:", error.message);
+      res.status(500).json({ message: "Error creating subscription", error: error.message });
     }
   });
 
@@ -161,38 +283,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     // Handle specific event types
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object;
-      
-      // Find the donation associated with this payment
-      if (paymentIntent.metadata.donationId) {
-        const donationId = parseInt(paymentIntent.metadata.donationId);
-        const donation = await storage.getDonation(donationId);
+    try {
+      // Handle one-time payment success
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
         
-        if (donation) {
-          // Update donation status
-          await storage.updateDonationStatus(donationId, "succeeded", paymentIntent.id);
+        // Find the donation associated with this payment
+        if (paymentIntent.metadata?.donationId) {
+          const donationId = parseInt(paymentIntent.metadata.donationId);
+          const donation = await storage.getDonation(donationId);
           
-          // If it's for a specific project, update project funding
-          if (donation.projectId) {
-            await storage.updateProjectFunding(donation.projectId, donation.amount);
-          }
-          
-          // Update stats for successful donations
-          await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
-          await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
-          
-          // Find the user by email and update their membership status
-          const user = await storage.getUserByEmail(donation.email);
-          if (user) {
-            // Update user's donation stats and membership tier
-            await storage.updateUserDonationStats(user.id, donation.amount);
-            console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
+          if (donation) {
+            // Update donation status
+            await storage.updateDonationStatus(donationId, "succeeded", paymentIntent.id);
+            
+            // If it's for a specific project, update project funding
+            if (donation.projectId) {
+              await storage.updateProjectFunding(donation.projectId, donation.amount);
+            }
+            
+            // Update stats for successful donations
+            await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
+            await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
+            
+            // Find the user by email and update their membership status
+            const user = await storage.getUserByEmail(donation.email);
+            if (user) {
+              // Update user's donation stats and membership tier
+              await storage.updateUserDonationStats(user.id, donation.amount);
+              console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
+            }
+            
+            console.log(`Payment succeeded for donation ${donationId}`);
           }
         }
       }
+      
+      // Handle subscription payment success
+      else if (event.type === 'invoice.payment_succeeded') {
+        const invoice = event.data.object;
+        
+        // Check if this is a subscription payment
+        if (invoice.subscription) {
+          // Get the subscription details to find the metadata
+          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+          
+          if (subscription.metadata?.donationId) {
+            const donationId = parseInt(subscription.metadata.donationId);
+            const donation = await storage.getDonation(donationId);
+            
+            if (donation) {
+              // Update donation status
+              await storage.updateDonationStatus(donationId, "succeeded", subscription.id);
+              
+              // If it's for a specific project, update project funding
+              if (donation.projectId) {
+                await storage.updateProjectFunding(donation.projectId, donation.amount);
+              }
+              
+              // Update stats for successful donations
+              await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
+              await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
+              
+              // Find the user by email and update their membership status
+              const user = await storage.getUserByEmail(donation.email);
+              if (user) {
+                // Update user's donation stats and membership tier
+                await storage.updateUserDonationStats(user.id, donation.amount);
+                console.log(`Updated membership for user ${user.id} after subscription payment of $${donation.amount}`);
+              }
+              
+              console.log(`Subscription payment succeeded for donation ${donationId}`);
+            }
+          }
+        }
+      }
+      
+      // Handle subscription creation (first payment)
+      else if (event.type === 'customer.subscription.created') {
+        const subscription = event.data.object;
+        
+        if (subscription.metadata?.donationId) {
+          const donationId = parseInt(subscription.metadata.donationId);
+          const donation = await storage.getDonation(donationId);
+          
+          if (donation) {
+            // Update donation status
+            await storage.updateDonationStatus(donationId, "active", subscription.id);
+            console.log(`Subscription created for donation ${donationId}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error processing webhook event:', error);
     }
 
+    // Always return a 200 response to acknowledge receipt of the event
     res.json({ received: true });
   });
 

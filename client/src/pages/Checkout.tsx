@@ -39,27 +39,41 @@ function CheckoutForm({ donation, onSuccess, onError }: {
 
     setIsProcessing(true);
 
-    // Confirm the payment
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/success`,
-        // Can add receipt email here if needed
-        receipt_email: donation.email,
-      },
-      redirect: 'if_required',
-    });
+    try {
+      // Use the appropriate confirmation method based on whether this is recurring
+      if (donation.isRecurring) {
+        // For recurring donations (subscriptions)
+        const { error } = await stripe.confirmSetup({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/success?type=subscription&donationId=${donation.id}`,
+          },
+          redirect: 'if_required',
+        });
 
-    setIsProcessing(false);
+        if (error) {
+          throw error;
+        }
+      } else {
+        // For one-time donations (payment intents)
+        const { error } = await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/success?type=payment&donationId=${donation.id}`,
+            receipt_email: donation.email,
+          },
+          redirect: 'if_required',
+        });
 
-    if (error) {
-      // Show error to customer
-      onError(error.message || "An unknown error occurred");
-    } else {
-      // Payment succeeded
+        if (error) {
+          throw error;
+        }
+      }
+
+      // If we get here without redirecting, the payment succeeded
       onSuccess();
       
-      // Also trigger our manual webhook for the demo
+      // Trigger our manual webhook for the demo
       // In a real application, Stripe would send a webhook
       try {
         await apiRequest("POST", "/api/payment-webhook", {
@@ -69,6 +83,11 @@ function CheckoutForm({ donation, onSuccess, onError }: {
       } catch (err) {
         console.error("Error updating payment status:", err);
       }
+    } catch (error: any) {
+      // Show error to customer
+      onError(error.message || "An unknown error occurred");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -86,6 +105,11 @@ function CheckoutForm({ donation, onSuccess, onError }: {
       
       <div className="text-xs text-gray-500 text-center mt-4">
         Your payment information is secured with encryption by Stripe.
+        {donation.isRecurring && (
+          <p className="mt-1">
+            You can cancel your monthly donation at any time from your account.
+          </p>
+        )}
       </div>
     </form>
   );
@@ -124,13 +148,20 @@ export default function Checkout() {
   // Create payment intent when donation is loaded
   useEffect(() => {
     if (donation && paymentStatus === "idle") {
-      // Create a payment intent
+      // Create a payment intent or setup intent based on donation type
       const createIntent = async () => {
         try {
           setPaymentStatus("processing");
-          const response = await apiRequest("POST", "/api/create-payment-intent", {
+          
+          const endpoint = donation.isRecurring 
+            ? "/api/create-subscription" 
+            : "/api/create-payment-intent";
+          
+          const response = await apiRequest("POST", endpoint, {
             amount: donation.amount,
             donationId: donation.id,
+            email: donation.email,
+            name: donation.name,
           });
           
           const data = await response.json();
@@ -270,7 +301,9 @@ export default function Checkout() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center pb-3 border-b border-gray-100">
                       <span className="text-gray-600">Amount:</span>
-                      <span className="font-semibold text-lg text-primary">${donation.amount}</span>
+                      <span className="font-semibold text-lg text-primary">
+                        ${donation.amount}{donation.isRecurring && <span className="text-sm font-normal">/month</span>}
+                      </span>
                     </div>
                     
                     <div className="flex justify-between items-center pb-3 border-b border-gray-100">
@@ -289,6 +322,15 @@ export default function Checkout() {
                       <h4 className="font-semibold mb-2">Your Impact:</h4>
                       <p className="text-gray-600">{impact}</p>
                     </div>
+                    
+                    {donation.isRecurring && (
+                      <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+                        <h4 className="font-medium text-primary mb-1">Monthly Impact</h4>
+                        <p className="text-sm text-gray-600">
+                          Your recurring donation helps us plan long-term projects and provide continuous support to communities in need.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
