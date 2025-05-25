@@ -181,6 +181,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Update stats for successful donations
           await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
           await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
+          
+          // Find the user by email and update their membership status
+          const user = await storage.getUserByEmail(donation.email);
+          if (user) {
+            // Update user's donation stats and membership tier
+            await storage.updateUserDonationStats(user.id, donation.amount);
+            console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
+          }
         }
       }
     }
@@ -205,13 +213,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update donation status
       await storage.updateDonationStatus(donationId, status || "succeeded");
 
-      // If payment succeeded and it's for a specific project, update project funding
-      if (status === "succeeded" && donation.projectId) {
-        await storage.updateProjectFunding(donation.projectId, donation.amount);
+      // If payment succeeded
+      if (status === "succeeded" || !status) {
+        // If it's for a specific project, update project funding
+        if (donation.projectId) {
+          await storage.updateProjectFunding(donation.projectId, donation.amount);
+        }
+        
+        // Update stats for successful donations
+        await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
+        await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
+        
+        // Find the user by email and update their membership status
+        const user = await storage.getUserByEmail(donation.email);
+        if (user) {
+          // Update user's donation stats and membership tier
+          await storage.updateUserDonationStats(user.id, donation.amount);
+          console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
+        }
       }
 
       res.json({ success: true });
     } catch (error) {
+      console.error("Error processing payment webhook:", error);
       res.status(500).json({ message: "Error processing payment webhook" });
     }
   });
