@@ -47,43 +47,42 @@ export default function Home() {
   return (
     <div className="min-h-screen text-gray-800 overflow-x-hidden">
       <Navbar />
-      <main ref={mainRef} className="snap-container">
-        {/* Each section is now a snap section and will take up the full viewport */}
-        <div className="snap-section">
+      <main ref={mainRef} className="relative w-full">
+        <section id="hero" className="snap-section">
           <HeroBanner />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="problem" className="snap-section">
           <ProblemSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="solution" className="snap-section">
           <SolutionSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="impact" className="snap-section">
           <ImpactSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="projects" className="snap-section">
           <ProjectsSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="testimonials" className="snap-section">
           <TestimonialsSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="donate" className="snap-section">
           <DonationSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="monthly" className="snap-section">
           <MonthlyImpactSection />
-        </div>
+        </section>
         
-        <div className="snap-section">
+        <section id="newsletter" className="snap-section">
           <NewsletterSection />
-        </div>
+        </section>
         
         <Footer />
       </main>
