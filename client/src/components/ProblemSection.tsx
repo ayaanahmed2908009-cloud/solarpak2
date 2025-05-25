@@ -33,8 +33,8 @@ export default function ProblemSection() {
           <div className="order-1 md:order-2">
             <div className="rounded-xl overflow-hidden shadow-lg">
               <img 
-                src="https://images.unsplash.com/photo-1600490036275-35f5f1656861?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-                alt="Family during a power outage in Pakistan" 
+                src="https://images.unsplash.com/photo-1585668542639-647dd8a43304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                alt="Rural village in interior Sindh, Pakistan" 
                 className="w-full h-auto"
               />
             </div>
