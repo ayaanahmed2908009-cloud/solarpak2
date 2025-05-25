@@ -230,6 +230,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error subscribing to newsletter" });
     }
   });
+  
+  // ======== User Management APIs (Admin only) ========
+  
+  // Middleware to check if user is an admin
+  const isAdmin = async (req: Request, res: Response, next: Function) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const user = req.user as any;
+    if (user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden - Admin access required" });
+    }
+    
+    next();
+  };
+  
+  // Get all users (admin only)
+  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      
+      // Remove sensitive information
+      const safeUsers = users.map(user => {
+        const { password, ...userInfo } = user;
+        return userInfo;
+      });
+      
+      res.json(safeUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching users" });
+    }
+  });
+  
+  // Update user role (admin only)
+  app.patch("/api/admin/users/:id/role", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { role } = req.body;
+      
+      if (!role || !['user', 'member', 'admin'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+      
+      const updatedUser = await storage.updateUserRole(userId, role);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove sensitive information
+      const { password, ...userInfo } = updatedUser;
+      
+      res.json(userInfo);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating user role" });
+    }
+  });
+  
+  // Update user membership tier (admin only)
+  app.patch("/api/admin/users/:id/membership", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { tier } = req.body;
+      
+      if (!tier || !['none', 'bronze', 'silver', 'gold', 'platinum'].includes(tier)) {
+        return res.status(400).json({ message: "Invalid membership tier" });
+      }
+      
+      const updatedUser = await storage.updateUserMembership(userId, tier);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove sensitive information
+      const { password, ...userInfo } = updatedUser;
+      
+      res.json(userInfo);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating user membership" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

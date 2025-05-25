@@ -12,6 +12,10 @@ export interface User {
   username?: string;
   profileImageUrl?: string;
   provider: string;
+  role: string;
+  membershipTier: string;
+  totalDonated: number;
+  lastDonationDate?: Date;
 }
 
 // Auth context interface

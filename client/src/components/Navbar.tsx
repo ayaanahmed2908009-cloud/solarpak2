@@ -1,12 +1,28 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Sun } from "lucide-react";
+import { Sun, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+  
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
