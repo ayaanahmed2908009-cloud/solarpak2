@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
@@ -91,7 +91,7 @@ export default function DonationModal({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       amount: suggestedAmount,
-      donationType: "one-time",
+      donationType: buttonText?.toLowerCase().includes("monthly") ? "monthly" : "one-time",
       email: user?.email || "",
       name: user?.fullName || "",
       projectId: projectId || "",
@@ -99,6 +99,23 @@ export default function DonationModal({
       agreeToTerms: false,
     },
   });
+  
+  // Update form values when user or suggested amount changes
+  useEffect(() => {
+    if (user) {
+      form.setValue("email", user.email || "");
+      form.setValue("name", user.fullName || "");
+    }
+    
+    if (suggestedAmount) {
+      form.setValue("amount", suggestedAmount);
+    }
+    
+    // Set donation type based on button text
+    if (buttonText?.toLowerCase().includes("monthly")) {
+      form.setValue("donationType", "monthly");
+    }
+  }, [user, suggestedAmount, buttonText, form]);
 
   const watchAmount = form.watch("amount");
   const watchDonationType = form.watch("donationType");
@@ -119,6 +136,11 @@ export default function DonationModal({
     try {
       setIsSubmitting(true);
 
+      // Check if the user has filled in all required fields
+      if (!data.email || !data.name) {
+        throw new Error("Please fill in all required fields");
+      }
+
       // Create a donation record
       const donationResponse = await apiRequest("POST", "/api/donations", {
         amount: data.amount,
@@ -135,6 +157,13 @@ export default function DonationModal({
 
       const donationData = await donationResponse.json();
 
+      // Set a success toast
+      toast({
+        title: "Donation Initiated",
+        description: "Taking you to the payment page...",
+        variant: "default",
+      });
+
       // Navigate to checkout with the donation ID
       navigate(`/checkout?donationId=${donationData.id}`);
       setIsOpen(false);
@@ -142,7 +171,9 @@ export default function DonationModal({
       console.error("Donation error:", error);
       toast({
         title: "Donation Error",
-        description: "There was a problem processing your donation. Please try again.",
+        description: typeof error === 'object' && error !== null && 'message' in error 
+          ? String(error.message) 
+          : "There was a problem processing your donation. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -150,7 +181,7 @@ export default function DonationModal({
     }
   };
 
-  // Calculate monthly impact text
+  // Calculate impact text
   const getImpactText = (amount: number, isMonthly: boolean) => {
     const displayAmount = isMonthly ? amount : amount;
 
