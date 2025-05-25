@@ -30,6 +30,9 @@ export default function Navbar() {
             <a href="#impact" className="font-heading font-medium hover:text-primary transition">
               Impact
             </a>
+            <Link href="/impact" className="font-heading font-medium text-primary hover:text-primary/80 transition">
+              Impact Map
+            </Link>
             <a href="#projects" className="font-heading font-medium hover:text-primary transition">
               Projects
             </a>
@@ -81,6 +84,13 @@ export default function Navbar() {
             >
               Impact
             </a>
+            <Link 
+              href="/impact" 
+              className="font-heading font-medium text-primary hover:text-primary/80 transition py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Impact Map
+            </Link>
             <a 
               href="#projects" 
               className="font-heading font-medium hover:text-primary transition py-2"
