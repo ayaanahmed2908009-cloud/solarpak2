@@ -11,8 +11,7 @@ import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import { useState, useEffect, useRef } from "react";
-import { ChevronUp } from "lucide-react";
-import Spline from '@splinetool/react-spline';
+import { ChevronUp, Sun, Zap, Users, ThermometerSun } from "lucide-react";
 import DonationModal from "@/components/DonationModal";
 
 export default function Home() {
@@ -63,19 +62,27 @@ export default function Home() {
               </div>
               
               <div className="relative z-10 text-center text-white max-w-lg px-8">
+                <div className="flex items-center justify-center mb-4">
+                  <Sun className="h-8 w-8 mr-2 text-yellow-400" />
+                  <span className="text-lg font-semibold uppercase tracking-wider">SolarPak Initiative</span>
+                </div>
+                
                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                  Solar Light
-                  <span className="block bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                  <span className="block text-shadow-lg">Bringing Light to</span>
+                  <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent font-extrabold">
                     Pakistan
                   </span>
+                  <span className="block text-shadow-lg">Through Solar Power</span>
                 </h1>
-                <p className="text-lg md:text-xl mb-8 text-blue-100 leading-relaxed">
-                  Bringing sustainable energy to families in Pakistan through solar power installations
+                
+                <p className="text-lg md:text-xl mb-8 text-blue-100 leading-relaxed opacity-90">
+                  Help us combat electricity shortages and improve lives by funding solar panel installations for families across Pakistan.
                 </p>
-                <div className="flex flex-col gap-4">
+                
+                <div className="flex flex-col gap-4 mb-8">
                   <DonationModal 
                     suggestedAmount={100}
-                    buttonText="Make a Difference"
+                    buttonText="Make a Donation"
                     buttonVariant="default"
                     buttonSize="lg"
                     fullWidth={true}
@@ -84,8 +91,32 @@ export default function Home() {
                     onClick={() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })}
                     className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-semibold transition-all"
                   >
-                    Explore Our Impact
+                    Learn More
                   </button>
+                </div>
+                
+                {/* Key stats indicators */}
+                <div className="grid grid-cols-2 gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <div className="text-center">
+                    <ThermometerSun className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
+                    <p className="text-xs font-medium text-gray-200">Average Temp</p>
+                    <p className="text-lg font-bold text-white">35°C</p>
+                  </div>
+                  <div className="text-center">
+                    <Zap className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
+                    <p className="text-xs font-medium text-gray-200">Daily Outages</p>
+                    <p className="text-lg font-bold text-white">12 hrs</p>
+                  </div>
+                  <div className="text-center">
+                    <Users className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
+                    <p className="text-xs font-medium text-gray-200">People Affected</p>
+                    <p className="text-lg font-bold text-white">210M+</p>
+                  </div>
+                  <div className="text-center">
+                    <Sun className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
+                    <p className="text-xs font-medium text-gray-200">Solar Potential</p>
+                    <p className="text-lg font-bold text-white">High</p>
+                  </div>
                 </div>
               </div>
             </div>
