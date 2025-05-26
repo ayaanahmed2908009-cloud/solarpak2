@@ -90,25 +90,59 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Right Half - Interactive Spline Design */}
-            <div className="w-1/2 bg-white relative">
-              <Spline 
-                scene="https://prod.spline.design/7mLKGredueQLsGl3ceYxsfYT/scene.splinecode"
-                className="w-full h-full"
-                onLoad={() => console.log('3D scene loaded successfully')}
-                onError={(error) => {
-                  console.log('3D scene error:', error);
-                  // Fallback design if Spline fails
-                }}
-              />
+            {/* Right Half - Beautiful Visual Design */}
+            <div className="w-1/2 bg-gradient-to-bl from-yellow-50 via-white to-blue-50 relative overflow-hidden">
+              {/* Animated background elements */}
+              <div className="absolute inset-0">
+                <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-yellow-400/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-green-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+              </div>
               
-              {/* Fallback design overlay in case Spline doesn't load */}
-              <div className="absolute inset-0 bg-gradient-to-bl from-yellow-100 via-white to-blue-100 opacity-30 pointer-events-none" />
+              {/* Solar panel illustration using CSS */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative">
+                  {/* Solar panel grid */}
+                  <div className="grid grid-cols-3 gap-2 transform rotate-12">
+                    {[...Array(9)].map((_, i) => (
+                      <div 
+                        key={i}
+                        className="w-16 h-24 bg-gradient-to-br from-blue-800 to-blue-900 rounded-lg shadow-lg border-2 border-blue-700"
+                        style={{
+                          animation: `fadeIn 0.5s ease-in-out ${i * 0.1}s forwards`,
+                          opacity: 0
+                        }}
+                      >
+                        <div className="w-full h-full bg-gradient-to-br from-blue-600/50 to-transparent rounded-md"></div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Sun rays */}
+                  <div className="absolute -top-20 left-1/2 transform -translate-x-1/2">
+                    <div className="w-16 h-16 bg-yellow-400 rounded-full animate-pulse shadow-2xl shadow-yellow-400/50">
+                      <div className="absolute inset-0 bg-yellow-300 rounded-full animate-ping"></div>
+                    </div>
+                    {/* Rays */}
+                    {[...Array(8)].map((_, i) => (
+                      <div 
+                        key={i}
+                        className="absolute top-1/2 left-1/2 w-1 bg-yellow-400 origin-bottom"
+                        style={{
+                          height: '40px',
+                          transform: `translate(-50%, -50%) rotate(${i * 45}deg)`,
+                          animation: `pulse 2s infinite ${i * 0.25}s`
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
               
-              {/* Optional text overlay on the 3D side */}
+              {/* Interactive text overlay */}
               <div className="absolute bottom-8 left-8 right-8 text-center">
-                <p className="text-gray-600 text-sm font-medium bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-                  Interactive 3D Experience - Explore our solar solutions
+                <p className="text-gray-700 font-semibold bg-white/90 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg">
+                  ☀️ Solar Energy Solutions for Pakistan
                 </p>
               </div>
             </div>
