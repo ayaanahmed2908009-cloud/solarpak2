@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
-// UI Components
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -26,11 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -38,24 +31,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Heart, Zap, Sun, Users, Loader2 } from "lucide-react";
 
-// Define the donation schema with validation
+// Donation form schema
 const donationSchema = z.object({
-  amount: z.preprocess(
-    (val) => (val === "" ? undefined : Number(val)),
-    z.number({ invalid_type_error: "Amount must be a number" })
-      .positive("Amount must be positive")
-      .min(5, "Minimum donation is $5")
-  ),
+  amount: z.number().min(1, "Amount must be at least $1"),
   donationType: z.enum(["one-time", "monthly"]),
-  email: z.string().email("Please enter a valid email"),
-  name: z.string().min(2, "Please enter your name"),
+  email: z.string().email("Please enter a valid email address"),
+  name: z.string().min(1, "Please enter your name"),
   projectId: z.string().optional(),
   message: z.string().optional(),
   agreeToTerms: z.boolean().refine(val => val === true, {
-    message: "You must agree to the terms",
-  }),
+    message: "You must agree to the terms and conditions"
+  })
 });
 
 type DonationFormValues = z.infer<typeof donationSchema>;
@@ -136,44 +130,27 @@ export default function DonationModal({
     try {
       setIsSubmitting(true);
 
-      // Check if the user has filled in all required fields
-      if (!data.email || !data.name) {
-        throw new Error("Please fill in all required fields");
-      }
-
-      // Create a donation record
-      const donationResponse = await apiRequest("POST", "/api/donations", {
+      // Create Stripe checkout session
+      const response = await apiRequest("POST", "/api/create-checkout-session", {
         amount: data.amount,
-        email: data.email,
-        name: data.name,
-        projectId: data.projectId || null,
-        message: data.message || "",
-        isRecurring: data.donationType === "monthly",
+        isMonthly: data.donationType === "monthly",
+        projectId: data.projectId
       });
 
-      if (!donationResponse.ok) {
-        throw new Error("Failed to create donation");
+      if (response.ok) {
+        const { checkoutUrl } = await response.json();
+        
+        // Redirect to Stripe checkout page
+        window.location.href = checkoutUrl;
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to create checkout session");
       }
-
-      const donationData = await donationResponse.json();
-
-      // Set a success toast
-      toast({
-        title: "Donation Initiated",
-        description: "Taking you to the payment page...",
-        variant: "default",
-      });
-
-      // Navigate to checkout with the donation ID
-      navigate(`/checkout?donationId=${donationData.id}`);
-      setIsOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Donation error:", error);
       toast({
-        title: "Donation Error",
-        description: typeof error === 'object' && error !== null && 'message' in error 
-          ? String(error.message) 
-          : "There was a problem processing your donation. Please try again.",
+        title: "Payment Error",
+        description: error.message || "Failed to process donation. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -192,218 +169,173 @@ export default function DonationModal({
     } else if (displayAmount >= 100) {
       return "Solar lighting for multiple rooms";
     } else if (displayAmount >= 50) {
-      return "Basic solar lighting for one room";
+      return "Basic solar lighting setup";
     } else {
-      return "Contribution towards solar installation";
+      return "Contribution towards solar equipment";
     }
   };
 
-  // Handle pre-defined amount selection
-  const selectAmount = (amount: number) => {
-    form.setValue("amount", amount);
+  // Calculate families helped per month
+  const getFamiliesHelped = (amount: number, isMonthly: boolean) => {
+    const monthlyEquivalent = isMonthly ? amount : amount / 12;
+    return Math.floor(monthlyEquivalent / 25); // Assuming $25 helps one family per month
   };
-
-  // Get the tier that would be unlocked with this donation
-  const getTierUnlocked = (amount: number) => {
-    if (amount >= 1000) return "Platinum";
-    if (amount >= 500) return "Gold";
-    if (amount >= 250) return "Silver";
-    if (amount >= 50) return "Bronze";
-    return null;
-  };
-
-  const tierUnlocked = getTierUnlocked(watchAmount);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button 
-          variant={buttonVariant} 
+        <Button
+          variant={buttonVariant || "default"}
           size={buttonSize}
-          className={fullWidth ? "w-full" : ""}
+          className={`${fullWidth ? "w-full" : ""} ${buttonVariant === "default" ? "btn-glow bg-primary hover:bg-primary/90" : ""}`}
         >
+          <Heart className="mr-2 h-4 w-4" />
           {buttonText}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Make a Donation</DialogTitle>
+          <DialogTitle className="flex items-center text-2xl font-bold">
+            <Sun className="mr-2 h-6 w-6 text-yellow-500" />
+            Make a Donation
+          </DialogTitle>
           <DialogDescription>
-            Help bring solar power to families in Pakistan suffering from electricity shortages.
+            Help us bring solar power to families in Pakistan who need it most.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Donation Type Selection */}
             <FormField
               control={form.control}
               name="donationType"
               render={({ field }) => (
-                <FormItem className="space-y-1">
+                <FormItem>
                   <FormLabel>Donation Type</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex"
-                    >
-                      <div className="flex items-center space-x-2 mr-6">
-                        <RadioGroupItem value="one-time" id="one-time" />
-                        <label
-                          htmlFor="one-time"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          One-time
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="monthly" id="monthly" />
-                        <label
-                          htmlFor="monthly"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Monthly
-                        </label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select donation type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="one-time">One-time Donation</SelectItem>
+                      <SelectItem value="monthly">Monthly Donation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Monthly donations help us plan long-term projects better.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Amount selection */}
-            <div className="space-y-3">
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Amount ($)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter amount"
-                        type="number"
-                        {...field}
-                        onChange={(e) => {
-                          const value = e.target.value === "" ? "" : Number(e.target.value);
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Predefined amounts */}
-              <div className="grid grid-cols-3 gap-2">
-                {predefinedAmounts.map((amount) => (
-                  <Button
-                    key={amount}
-                    type="button"
-                    variant={watchAmount === amount ? "default" : "outline"}
-                    onClick={() => selectAmount(amount)}
-                    className="text-sm"
-                  >
-                    ${amount}
-                  </Button>
-                ))}
-              </div>
-
-              {/* Impact message */}
-              {watchAmount > 0 && (
-                <div className="text-sm bg-primary/5 p-3 rounded-md border border-primary/10">
-                  <div className="font-medium text-primary">
-                    Your Impact:
-                  </div>
-                  <div className="text-gray-600">
-                    {getImpactText(watchAmount, watchDonationType === "monthly")}
-                  </div>
-                  {tierUnlocked && (
-                    <div className="mt-2 pt-2 border-t border-primary/10">
-                      <span className="text-primary font-medium">
-                        Unlocks {tierUnlocked} membership tier
-                      </span>
+            {/* Amount Selection */}
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Donation Amount (USD)</FormLabel>
+                  <div className="space-y-3">
+                    {/* Predefined amount buttons */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {predefinedAmounts.map((amount) => (
+                        <Button
+                          key={amount}
+                          type="button"
+                          variant={watchAmount === amount ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => field.onChange(amount)}
+                          className="h-12"
+                        >
+                          ${amount}
+                        </Button>
+                      ))}
                     </div>
-                  )}
-                </div>
+                    
+                    {/* Custom amount input */}
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-medium">$</span>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Enter custom amount"
+                          min="1"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          className="text-lg"
+                        />
+                      </FormControl>
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
-            <Separator />
+            {/* Impact Preview */}
+            {watchAmount > 0 && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-3">
+                    <Zap className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-blue-900 mb-2">Your Impact</h4>
+                      <div className="space-y-2 text-sm text-blue-800">
+                        <div className="flex items-center justify-between">
+                          <span>Impact:</span>
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                            {getImpactText(watchAmount, watchDonationType === "monthly")}
+                          </Badge>
+                        </div>
+                        {watchDonationType === "monthly" && getFamiliesHelped(watchAmount, true) > 0 && (
+                          <div className="flex items-center justify-between">
+                            <span>Families helped monthly:</span>
+                            <div className="flex items-center">
+                              <Users className="h-4 w-4 mr-1" />
+                              <span className="font-semibold">{getFamiliesHelped(watchAmount, true)}</span>
+                            </div>
+                          </div>
+                        )}
+                        {watchDonationType === "monthly" && (
+                          <div className="text-xs text-blue-600 mt-2">
+                            Annual impact: ${watchAmount * 12}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Personal information */}
-            <div className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="your@email.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+            {/* Personal Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your name" {...field} />
+                      <Input placeholder="Your full name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Project selection if available */}
-              {projectId ? null : (
-                <FormField
-                  control={form.control}
-                  name="projectId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project (Optional)</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a project (optional)" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="general">General donation</SelectItem>
-                          <SelectItem value="1">Sindh Province Initiative</SelectItem>
-                          <SelectItem value="2">Punjab Rural Electrification</SelectItem>
-                          <SelectItem value="3">Balochistan Remote Villages</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Choose a specific project or donate to our general fund.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
               <FormField
                 control={form.control}
-                name="message"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message (Optional)</FormLabel>
+                    <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your message" {...field} />
+                      <Input type="email" placeholder="your@email.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -411,7 +343,30 @@ export default function DonationModal({
               />
             </div>
 
-            {/* Terms agreement */}
+            {/* Optional Message */}
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Share why you're donating or leave a message for the families you're helping..."
+                      className="resize-none"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Your message will be shared with the families you help (if you wish).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Terms Agreement */}
             <FormField
               control={form.control}
               name="agreeToTerms"
@@ -424,30 +379,36 @@ export default function DonationModal({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      I agree to the terms and conditions
+                    <FormLabel className="text-sm">
+                      I agree to the terms and conditions and understand that donations are processed securely through Stripe.
                     </FormLabel>
-                    <FormDescription>
-                      Your donation may be tax-deductible.
-                    </FormDescription>
+                    <FormMessage />
                   </div>
-                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            <DialogFooter>
-              <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>Continue to Payment</>
-                )}
-              </Button>
-            </DialogFooter>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              className="w-full btn-glow bg-primary hover:bg-primary/90 text-lg py-6"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Heart className="mr-2 h-5 w-5" />
+                  {watchDonationType === "monthly" 
+                    ? `Donate $${watchAmount}/month` 
+                    : `Donate $${watchAmount}`
+                  }
+                </>
+              )}
+            </Button>
           </form>
         </Form>
       </DialogContent>

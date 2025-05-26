@@ -105,68 +105,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create payment intent for one-time donation - requires authentication
-  app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
+  // Create Stripe checkout session for donations
+  app.post("/api/create-checkout-session", isAuthenticated, async (req, res) => {
     try {
-      const { amount, donationId, email, name } = req.body;
+      const { amount, isMonthly, projectId } = req.body;
+      const user = req.user as any;
       
       if (!amount || amount <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
       }
 
-      // Get the donation details if we have an ID
-      let donationEmail = email;
-      let donationName = name;
-      
-      if (donationId) {
-        const donation = await storage.getDonation(donationId);
-        if (donation) {
-          donationEmail = donation.email;
-          donationName = donation.name;
-        }
-      }
-
-      // Create or retrieve the customer
-      let customerId;
-      if (donationEmail) {
-        // Try to find an existing customer with the email
-        const customers = await stripe.customers.list({ email: donationEmail });
-        
-        if (customers.data.length > 0) {
-          customerId = customers.data[0].id;
-        } else {
-          // Create a new customer
-          const customer = await stripe.customers.create({
-            email: donationEmail,
-            name: donationName || undefined,
-          });
-          customerId = customer.id;
-        }
-      }
-
-      // Create a payment intent with Stripe
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: "usd",
-        customer: customerId,
-        // Add metadata for tracking
+      // Create the checkout session configuration
+      const sessionConfig: any = {
+        payment_method_types: ['card'],
+        customer_email: user.email,
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `Solar Panel Donation${projectId ? ` - Project ${projectId}` : ''}`,
+            },
+            unit_amount: Math.round(amount * 100), // Convert to cents
+          },
+          quantity: 1,
+        }],
+        mode: isMonthly ? 'subscription' : 'payment',
+        success_url: `${req.protocol}://${req.get('host')}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/`,
         metadata: {
-          donationId: donationId ? donationId.toString() : undefined,
-          integration_check: 'accept_a_payment'
-        },
-        receipt_email: donationEmail,
-        description: "Donation to SolarHelp Pakistan",
-      });
+          userId: user.id.toString(),
+          projectId: projectId || '',
+          amount: amount.toString(),
+          type: isMonthly ? 'monthly' : 'one-time'
+        }
+      };
 
-      // If we have a donation ID, update its payment intent ID
-      if (donationId) {
-        await storage.updateDonationStatus(donationId, "pending", paymentIntent.id);
+      // For monthly payments, set up recurring billing
+      if (isMonthly) {
+        sessionConfig.line_items[0].price_data.recurring = {
+          interval: 'month'
+        };
       }
 
-      res.json({ clientSecret: paymentIntent.client_secret });
+      const session = await stripe.checkout.sessions.create(sessionConfig);
+
+      res.json({ 
+        checkoutUrl: session.url,
+        sessionId: session.id 
+      });
     } catch (error: any) {
-      console.error("Error creating payment intent:", error.message);
-      res.status(500).json({ message: "Error creating payment intent", error: error.message });
+      console.error("Stripe checkout error:", error);
+      res.status(500).json({ 
+        message: "Error creating checkout session", 
+        error: error.message 
+      });
     }
   });
   
