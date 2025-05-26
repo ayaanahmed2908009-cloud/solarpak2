@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Sun, User } from "lucide-react";
+import { Sun, User, Menu, X, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   DropdownMenu,
@@ -26,46 +26,62 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3">
+    <header className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100 sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="text-primary text-3xl">
-              <Sun className="w-8 h-8" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-20 scale-110 group-hover:opacity-30 transition-all duration-300"></div>
+              <div className="relative bg-gradient-to-br from-blue-600 to-blue-700 p-2 rounded-full group-hover:scale-105 transition-transform duration-300">
+                <Sun className="w-6 h-6 text-white" />
+              </div>
             </div>
-            <span className="font-heading font-bold text-2xl text-secondary">SolarPak</span>
+            <div className="flex flex-col">
+              <span className="font-heading font-bold text-2xl bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Solar Light Pakistan
+              </span>
+              <span className="text-xs text-gray-500 font-medium tracking-wide">Bringing Energy to Communities</span>
+            </div>
           </Link>
           
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#problem" className="font-heading font-medium hover:text-primary transition">
-              The Problem
+          <nav className="hidden md:flex items-center space-x-1">
+            <a href="#problem" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
+              <span className="relative z-10">The Crisis</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
             </a>
-            <a href="#solution" className="font-heading font-medium hover:text-primary transition">
-              Our Solution
+            <a href="#solution" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
+              <span className="relative z-10">Our Solution</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
             </a>
-            <a href="#impact" className="font-heading font-medium hover:text-primary transition">
-              Impact
+            <a href="#impact" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
+              <span className="relative z-10">Impact</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
             </a>
-            <Link href="/impact" className="font-heading font-medium text-primary hover:text-primary/80 transition">
-              Impact Map
+            <Link href="/impact" className="relative group px-4 py-2 rounded-lg font-medium text-blue-600 hover:text-blue-700 transition-all duration-300 bg-blue-50 hover:bg-blue-100">
+              <span className="relative z-10 flex items-center">
+                <Zap className="w-4 h-4 mr-1" />
+                Impact Map
+              </span>
             </Link>
-            <a href="#projects" className="font-heading font-medium hover:text-primary transition">
-              Projects
+            <a href="#projects" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
+              <span className="relative z-10">Projects</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
             </a>
-            <a href="#stories" className="font-heading font-medium hover:text-primary transition">
-              Stories
-            </a>
-            <Link href="/membership" className="font-heading font-medium hover:text-primary transition">
-              Membership
+            <Link href="/membership" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
+              <span className="relative z-10">Membership</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
             </Link>
           </nav>
           
           <div className="flex items-center space-x-4">
             <a 
               href="#donate" 
-              className="hidden md:block bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-6 py-2 rounded-md transition"
+              className="hidden md:block relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl group"
             >
-              Donate Now
+              <span className="relative z-10 flex items-center">
+                ❤️ Donate Now
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
             </a>
             
             {isAuthenticated && user ? (
@@ -116,20 +132,22 @@ export default function Navbar() {
             )}
             
             <button 
-              className="md:hidden text-gray-600" 
+              className="md:hidden relative p-2 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group" 
               onClick={toggleMobileMenu}
               aria-label="Toggle mobile menu"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-blue-600 group-hover:rotate-90 transition-transform duration-300" />
+              ) : (
+                <Menu className="h-6 w-6 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
+              )}
             </button>
           </div>
         </div>
         
         {/* Mobile Menu */}
-        <div className={`md:hidden ${isMobileMenuOpen ? '' : 'hidden'}`}>
-          <div className="flex flex-col space-y-4 mt-4 pb-4">
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="flex flex-col space-y-2 mt-4 pb-4 bg-gradient-to-b from-blue-50/50 to-white rounded-lg p-4 mx-2">
             <a 
               href="#problem" 
               className="font-heading font-medium hover:text-primary transition py-2"
