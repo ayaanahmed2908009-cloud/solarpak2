@@ -62,11 +62,6 @@ export default function Home() {
               </div>
               
               <div className="relative z-10 text-center text-white max-w-lg px-8">
-                <div className="flex items-center justify-center mb-4">
-                  <Sun className="h-8 w-8 mr-2 text-yellow-400" />
-                  <span className="text-lg font-semibold uppercase tracking-wider">SolarPak Initiative</span>
-                </div>
-                
                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                   <span className="block text-shadow-lg">Bringing Light to</span>
                   <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent font-extrabold">
