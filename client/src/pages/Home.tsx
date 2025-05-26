@@ -49,40 +49,67 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navbar />
-      <main ref={mainRef} className="relative w-full bg-white">
-        {/* Hero Section with Clean White Background */}
-        <section className="relative h-screen w-full bg-white flex items-center justify-center overflow-hidden">
-          {/* Beautiful gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100" />
-          
-          {/* Decorative elements */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-32 h-32 bg-blue-300 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-20 w-40 h-40 bg-yellow-300 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-green-300 rounded-full blur-3xl"></div>
-          </div>
-          
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <div className="text-center max-w-4xl px-6">
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                Solar Light Pakistan
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 text-gray-700">
-                Bringing sustainable energy to families in Pakistan through solar power
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <DonationModal 
-                  suggestedAmount={100}
-                  buttonText="Donate Now"
-                  buttonVariant="default"
-                  buttonSize="lg"
-                />
-                <button 
-                  onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all"
-                >
-                  Learn More
-                </button>
+      <main ref={mainRef} className="relative w-full">
+        {/* Unique Split-Screen Hero Section */}
+        <section className="relative h-screen w-full overflow-hidden">
+          <div className="flex h-full">
+            {/* Left Half - Content */}
+            <div className="w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center relative overflow-hidden">
+              {/* Background decorative elements */}
+              <div className="absolute inset-0">
+                <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-20 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-green-400/20 rounded-full blur-3xl"></div>
+              </div>
+              
+              <div className="relative z-10 text-center text-white max-w-lg px-8">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                  Solar Light
+                  <span className="block bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                    Pakistan
+                  </span>
+                </h1>
+                <p className="text-lg md:text-xl mb-8 text-blue-100 leading-relaxed">
+                  Bringing sustainable energy to families in Pakistan through solar power installations
+                </p>
+                <div className="flex flex-col gap-4">
+                  <DonationModal 
+                    suggestedAmount={100}
+                    buttonText="Make a Difference"
+                    buttonVariant="default"
+                    buttonSize="lg"
+                    fullWidth={true}
+                  />
+                  <button 
+                    onClick={() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-semibold transition-all"
+                  >
+                    Explore Our Impact
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Half - Interactive Spline Design */}
+            <div className="w-1/2 bg-white relative">
+              <Spline 
+                scene="https://prod.spline.design/7mLKGredueQLsGl3ceYxsfYT/scene.splinecode"
+                className="w-full h-full"
+                onLoad={() => console.log('3D scene loaded successfully')}
+                onError={(error) => {
+                  console.log('3D scene error:', error);
+                  // Fallback design if Spline fails
+                }}
+              />
+              
+              {/* Fallback design overlay in case Spline doesn't load */}
+              <div className="absolute inset-0 bg-gradient-to-bl from-yellow-100 via-white to-blue-100 opacity-30 pointer-events-none" />
+              
+              {/* Optional text overlay on the 3D side */}
+              <div className="absolute bottom-8 left-8 right-8 text-center">
+                <p className="text-gray-600 text-sm font-medium bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                  Interactive 3D Experience - Explore our solar solutions
+                </p>
               </div>
             </div>
           </div>
