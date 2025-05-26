@@ -180,10 +180,6 @@ export default function Home() {
           </div>
         </section>
         
-        <section id="hero" className="snap-section">
-          <HeroBanner />
-        </section>
-        
         <section id="problem" className="snap-section">
           <ProblemSection />
         </section>
