@@ -20,6 +20,9 @@ app.use(
     }),
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+      httpOnly: true,
+      secure: false, // Set to false for development
+      sameSite: 'lax'
     },
   })
 );
