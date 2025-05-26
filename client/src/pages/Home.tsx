@@ -49,8 +49,13 @@ export default function Home() {
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navbar />
       <main ref={mainRef} className="relative w-full">
-        {/* Unique Split-Screen Hero Section */}
-        <section className="relative h-screen w-full overflow-hidden">
+        {/* Mobile Hero - Original Design */}
+        <section className="md:hidden snap-section">
+          <HeroBanner />
+        </section>
+
+        {/* Desktop Split-Screen Hero Section */}
+        <section className="hidden md:block relative h-screen w-full overflow-hidden">
           <div className="flex h-full">
             {/* Left Half - Content */}
             <div className="w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center relative overflow-hidden">
