@@ -12,6 +12,8 @@ import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import { useState, useEffect, useRef } from "react";
 import { ChevronUp } from "lucide-react";
+import Spline from '@splinetool/react-spline';
+import DonationModal from "@/components/DonationModal";
 
 export default function Home() {
   // State to control the visibility of the back-to-top button
@@ -45,9 +47,47 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-gray-800 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navbar />
-      <main ref={mainRef} className="relative w-full">
+      <main ref={mainRef} className="relative w-full bg-white">
+        {/* Hero Section with Clean White Background */}
+        <section className="relative h-screen w-full bg-white flex items-center justify-center overflow-hidden">
+          {/* Beautiful gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-100" />
+          
+          {/* Decorative elements */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-20 left-20 w-32 h-32 bg-blue-300 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-20 w-40 h-40 bg-yellow-300 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-green-300 rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="relative z-10 flex items-center justify-center h-full">
+            <div className="text-center max-w-4xl px-6">
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Solar Light Pakistan
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 text-gray-700">
+                Bringing sustainable energy to families in Pakistan through solar power
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <DonationModal 
+                  suggestedAmount={100}
+                  buttonText="Donate Now"
+                  buttonVariant="default"
+                  buttonSize="lg"
+                />
+                <button 
+                  onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all"
+                >
+                  Learn More
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
         <section id="hero" className="snap-section">
           <HeroBanner />
         </section>
