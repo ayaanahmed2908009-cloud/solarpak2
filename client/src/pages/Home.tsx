@@ -178,9 +178,17 @@ export default function Home() {
               </div>
             </div>
           </div>
+          
+          {/* Seamless transition with gradient overlay */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-white/50 to-white z-20 pointer-events-none"></div>
         </section>
         
-        <section id="problem" className="snap-section">
+        {/* Smooth transition container */}
+        <div className="relative -mt-16 z-30">
+          <div className="h-16 bg-gradient-to-b from-white/80 to-white"></div>
+        </div>
+        
+        <section id="problem" className="snap-section relative bg-white">
           <ProblemSection />
         </section>
         
