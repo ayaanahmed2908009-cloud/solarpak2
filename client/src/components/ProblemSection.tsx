@@ -1,63 +1,57 @@
-import { AlertCircle, Lightbulb, Heart } from "lucide-react";
+import { AlertCircle, Heart } from "lucide-react";
 
 export default function ProblemSection() {
   return (
-    <section id="problem" className="py-16 bg-gray-50">
+    <section id="problem" className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="font-heading font-bold text-3xl md:text-4xl text-gray-800 mb-4">The Problem</h2>
-          <p className="text-gray-600 text-lg">Millions in Pakistan face daily electricity shortages in extreme heat</p>
-        </div>
-        
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          <div className="order-2 md:order-1">
-            <h3 className="font-heading font-bold text-2xl mb-4 text-secondary">Life Without Reliable Power</h3>
-            <p className="text-gray-700 mb-4">
-              Across Pakistan, millions of people face up to 12+ hours of load shedding (power outages) every day. In the scorching summer months when temperatures regularly exceed 35°C (95°F), this creates unbearable living conditions.
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="font-heading font-bold text-4xl md:text-5xl gradient-text mb-6">
+              The Crisis
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              12+ hours of daily power outages in 35°C+ heat leaves millions without basic electricity
             </p>
-            <p className="text-gray-700 mb-4">
-              Without electricity, families cannot run fans or air conditioning, refrigerate food, or power essential medical devices. Children struggle to study after dark, and businesses cannot operate consistently.
-            </p>
-            <p className="text-gray-700 mb-6">
-              For many Pakistani families, expensive and polluting diesel generators are the only alternative during outages, creating both financial strain and environmental damage.
-            </p>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-accent mb-4">
-              <h4 className="font-heading font-semibold text-lg mb-2">Personal Experience</h4>
-              <p className="text-gray-700 italic">
-                "As a kid visiting Pakistan each summer, I experienced these electricity shortages firsthand. The heat was unbearable without AC in temperatures above 35°C. My family was fortunate enough to install solar panels, but most families can't afford this solution."
-              </p>
-            </div>
           </div>
           
-          <div className="order-1 md:order-2">
-            <div className="rounded-xl overflow-hidden shadow-lg">
-              <img 
-                src="https://images.unsplash.com/photo-1585668542639-647dd8a43304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-                alt="Rural village in interior Sindh, Pakistan" 
-                className="w-full h-auto"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <div className="flex items-center mb-2">
-                  <div className="text-accent mr-2">
-                    <Lightbulb className="w-5 h-5" />
-                  </div>
-                  <h4 className="font-heading font-semibold">Education Impact</h4>
-                </div>
-                <p className="text-sm text-gray-700">Students cannot study after sunset during power outages</p>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <h3 className="font-heading font-bold text-xl mb-3 text-primary">The Reality</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Families endure extreme heat without fans, can't refrigerate food, and children study by candlelight. 
+                  Expensive diesel generators are the only alternative for those who can afford them.
+                </p>
               </div>
               
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <div className="flex items-center mb-2">
-                  <div className="text-accent mr-2">
-                    <Heart className="w-5 h-5" />
+              <div className="bg-primary/5 p-6 rounded-xl border border-primary/10">
+                <h4 className="font-semibold text-lg mb-2 text-primary">Personal Connection</h4>
+                <p className="text-gray-700 italic">
+                  "Experiencing 35°C+ heat without electricity during childhood visits to Pakistan inspired this mission. 
+                  Solar panels transformed our family's comfort, but most can't access this solution."
+                </p>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/10 to-primary/5 p-8">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                      <AlertCircle className="w-8 h-8 text-red-600" />
+                    </div>
+                    <div className="text-3xl font-bold text-red-600 mb-2">12+</div>
+                    <div className="text-sm text-gray-600">Hours without power daily</div>
                   </div>
-                  <h4 className="font-heading font-semibold">Health Risks</h4>
+                  
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
+                      <Heart className="w-8 h-8 text-orange-600" />
+                    </div>
+                    <div className="text-3xl font-bold text-orange-600 mb-2">35°C+</div>
+                    <div className="text-sm text-gray-600">Extreme heat temperatures</div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-700">Heat exhaustion and dehydration cases rise during outages</p>
               </div>
             </div>
           </div>

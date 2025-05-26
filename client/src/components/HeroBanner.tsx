@@ -159,12 +159,12 @@ export default function HeroBanner() {
         </div>
       </div>
       
-      {/* Bottom wave decoration */}
+      {/* Bottom wave decoration for seamless flow */}
       <div className="absolute bottom-0 left-0 right-0 z-10">
         <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path 
             d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 70C840 80 960 100 1080 110C1200 120 1320 120 1380 120H1440V0H1380C1320 0 1200 0 1080 0C960 0 840 0 720 0C600 0 480 0 360 0C240 0 120 0 60 0H0V120Z" 
-            fill="#f8fafc"
+            fill="white"
           />
         </svg>
       </div>
