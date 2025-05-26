@@ -125,7 +125,84 @@ export default function Home() {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-green-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
               </div>
               
+              {/* Floating Energy Icons */}
+              <div className="absolute inset-0 overflow-hidden">
+                {/* Lightning bolts */}
+                <div className="absolute top-1/4 left-1/4 text-yellow-500 animate-bounce" style={{animationDelay: '0s', animationDuration: '3s'}}>
+                  <Zap className="h-6 w-6 opacity-60" />
+                </div>
+                <div className="absolute top-3/4 right-1/4 text-yellow-500 animate-bounce" style={{animationDelay: '1s', animationDuration: '3s'}}>
+                  <Zap className="h-5 w-5 opacity-40" />
+                </div>
+                <div className="absolute top-1/2 left-1/6 text-yellow-500 animate-bounce" style={{animationDelay: '2s', animationDuration: '3s'}}>
+                  <Zap className="h-4 w-4 opacity-50" />
+                </div>
+                
+                {/* Energy particles */}
+                <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-yellow-400 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-green-400 rounded-full animate-ping" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute top-2/3 right-1/6 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping" style={{animationDelay: '2.5s'}}></div>
+              </div>
 
+              {/* Geometric Patterns */}
+              <div className="absolute inset-0 overflow-hidden">
+                {/* Hexagonal patterns */}
+                <div className="absolute top-1/4 right-1/4 opacity-20">
+                  <svg width="40" height="40" viewBox="0 0 40 40" className="animate-spin" style={{animationDuration: '20s'}}>
+                    <polygon points="20,5 32,12.5 32,27.5 20,35 8,27.5 8,12.5" 
+                             stroke="#10b981" strokeWidth="2" fill="none" />
+                  </svg>
+                </div>
+                <div className="absolute bottom-1/4 left-1/6 opacity-15">
+                  <svg width="30" height="30" viewBox="0 0 30 30" className="animate-spin" style={{animationDuration: '15s', animationDirection: 'reverse'}}>
+                    <polygon points="15,3.75 24,9.375 24,20.625 15,26.25 6,20.625 6,9.375" 
+                             stroke="#3b82f6" strokeWidth="1.5" fill="none" />
+                  </svg>
+                </div>
+                
+                {/* Circuit-like lines */}
+                <div className="absolute top-1/2 left-1/8 w-16 h-0.5 bg-gradient-to-r from-green-400 to-transparent opacity-30 animate-pulse"></div>
+                <div className="absolute bottom-1/3 right-1/8 w-12 h-0.5 bg-gradient-to-l from-blue-400 to-transparent opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+              </div>
+
+              {/* Enhanced Light Rays & Particles */}
+              <div className="absolute inset-0">
+                {/* Moving light particles */}
+                {[...Array(6)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className="absolute w-1 h-1 bg-yellow-300 rounded-full opacity-60"
+                    style={{
+                      top: `${20 + i * 10}%`,
+                      left: `${10 + i * 15}%`,
+                      animation: `float 4s ease-in-out infinite ${i * 0.5}s`
+                    }}
+                  ></div>
+                ))}
+              </div>
+
+              {/* Simple House Illustrations */}
+              <div className="absolute bottom-20 left-8 opacity-40">
+                <div className="relative">
+                  {/* House shape */}
+                  <div className="w-8 h-6 bg-gray-600 relative">
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-3 border-transparent border-b-gray-700"></div>
+                    {/* Power indicator */}
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="absolute top-20 right-12 opacity-30">
+                <div className="relative">
+                  {/* Another house */}
+                  <div className="w-6 h-5 bg-gray-600 relative">
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-b-2 border-transparent border-b-gray-700"></div>
+                    {/* Power indicator */}
+                    <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                  </div>
+                </div>
+              </div>
 
               {/* Solar panel illustration using CSS */}
               <div className="absolute inset-0 flex items-center justify-center">
