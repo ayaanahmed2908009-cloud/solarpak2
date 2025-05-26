@@ -125,6 +125,28 @@ export default function Home() {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-green-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
               </div>
               
+              {/* Pakistan map background */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                <svg viewBox="0 0 400 500" className="w-80 h-96 text-gray-400">
+                  <path
+                    d="M80 120 C90 100, 120 90, 150 100 L180 95 C200 90, 220 95, 240 110 L260 120 C280 130, 300 140, 310 160 L320 180 C325 200, 320 220, 315 240 L310 260 C305 280, 300 300, 295 320 L290 340 C285 360, 280 380, 270 395 L250 410 C230 420, 210 415, 190 410 L170 405 C150 400, 130 395, 110 385 L90 375 C70 365, 60 345, 55 325 L50 305 C45 285, 50 265, 55 245 L60 225 C65 205, 70 185, 75 165 L80 145 Z"
+                    fill="currentColor"
+                    className="animate-pulse"
+                    style={{animationDuration: '4s'}}
+                  />
+                  {/* Major cities dots */}
+                  <circle cx="190" cy="180" r="3" fill="currentColor" opacity="0.6">
+                    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+                  </circle>
+                  <circle cx="220" cy="220" r="3" fill="currentColor" opacity="0.6">
+                    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                  </circle>
+                  <circle cx="160" cy="260" r="3" fill="currentColor" opacity="0.6">
+                    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" begin="1s"/>
+                  </circle>
+                </svg>
+              </div>
+
               {/* Solar panel illustration using CSS */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
