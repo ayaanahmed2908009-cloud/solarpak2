@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import KeyStats from "@/components/KeyStats";
 
+import CrisisSection from "@/components/CrisisSection";
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
@@ -264,7 +265,10 @@ export default function Home() {
           </div>
         </section>
         
-
+        {/* Crisis Section - Immediate impact after hero */}
+        <section className="snap-section">
+          <CrisisSection />
+        </section>
         
         <section id="problem" className="snap-section relative bg-white">
           <ProblemSection />
