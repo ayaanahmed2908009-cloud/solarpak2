@@ -54,8 +54,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navbar />
-      <FloatingTestimonials />
-      <PakistanWeatherWidget />
       <main ref={mainRef} className="relative w-full">
         {/* Mobile Hero - Original Design */}
         <section className="md:hidden snap-section">
