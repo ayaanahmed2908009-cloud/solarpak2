@@ -6,7 +6,7 @@ import CrisisSection from "@/components/CrisisSection";
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
-import ProblemSection from "@/components/ProblemSection";
+
 import SolutionSection from "@/components/SolutionSection";
 import VirtualVillageTour from "@/components/VirtualVillageTour";
 import ProjectsSection from "@/components/ProjectsSection";
@@ -270,9 +270,7 @@ export default function Home() {
           <CrisisSection />
         </section>
         
-        <section id="problem" className="snap-section relative bg-white">
-          <ProblemSection />
-        </section>
+
         
         {/* Virtual Village Tour - Interactive experience */}
         <section className="snap-section">
