@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Play, Pause, RotateCcw, MapPin, Users, Thermometer, Clock } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Play, Pause, RotateCcw, MapPin, Users, Thermometer, Clock, Sun, Moon, Lightbulb, Fan, Home, Star, Zap, Heart, ArrowLeft, ArrowRight, DollarSign, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -14,66 +14,136 @@ interface VillageScene {
   familiesAffected: number;
   location: string;
   story: string;
+  villagerName: string;
+  villagerQuote: string;
+  timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
+  solarPanelsInstalled: number;
+  monthlyBillBefore: number;
+  monthlyBillAfter: number;
+  villagerAge: number;
+  occupation: string;
+  beforeConditions: string[];
+  afterBenefits: string[];
+  emotionalImpact: string;
 }
 
 export default function VirtualVillageTour() {
   const [currentScene, setCurrentScene] = useState(0);
   const [showAfter, setShowAfter] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'transforming' | 'completed'>('idle');
   const [sliderPosition, setSliderPosition] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const villages: VillageScene[] = [
+  const scenes: VillageScene[] = [
     {
-      id: "1",
-      title: "Hassan's Family Home - Interior Sindh",
-      description: "A family of 6 struggling with 16-hour daily power outages in 45°C heat",
-      beforeImage: "🏠💔", // Would be actual images in production
-      afterImage: "🏠✨☀️",
+      id: "karachi-outskirts",
+      title: "Fatima's Family Transformation",
+      description: "From sweltering heat to comfortable living in Karachi",
+      beforeImage: "🏚️",
+      afterImage: "🏠",
       temperature: 45,
       powerOutageHours: 16,
       familiesAffected: 1,
-      location: "Tharparkar, Sindh",
-      story: "Hassan's children couldn't study after sunset. His wife's sewing business failed without reliable power. The oppressive heat made sleep impossible without fans."
+      location: "Karachi, Sindh",
+      story: "Meet Fatima Malik, a school teacher whose family suffered through 16-hour power outages in 45°C heat. Watch their incredible transformation.",
+      villagerName: "Fatima Malik",
+      villagerQuote: "My children can finally sleep peacefully at night. The fans work all day, and we don't worry about electricity bills anymore. It's like we have a new life.",
+      timeOfDay: "afternoon",
+      solarPanelsInstalled: 6,
+      monthlyBillBefore: 15000,
+      monthlyBillAfter: 0,
+      villagerAge: 34,
+      occupation: "School Teacher",
+      beforeConditions: [
+        "16 hours daily without power",
+        "₹15,000 monthly electricity bills",
+        "Children couldn't sleep in heat",
+        "Teaching at home impossible",
+        "Spoiled food and medicines"
+      ],
+      afterBenefits: [
+        "24/7 reliable electricity",
+        "₹0 monthly electricity bills",
+        "Cool, comfortable home",
+        "Children excel in studies",
+        "Food stays fresh, medicines safe"
+      ],
+      emotionalImpact: "From despair to hope - Fatima's family now thrives with dignity and comfort."
     },
     {
-      id: "2", 
-      title: "Village School - Rural Punjab",
-      description: "150 students learning in extreme heat without electricity",
-      beforeImage: "🏫🔥📚",
-      afterImage: "🏫⚡📚✨",
+      id: "rural-sindh",
+      title: "Hassan's Journey to Light",
+      description: "From candlelight studies to bright educational futures",
+      beforeImage: "🌾",
+      afterImage: "🌟",
       temperature: 42,
-      powerOutageHours: 12,
-      familiesAffected: 150,
-      location: "Jhang, Punjab",
-      story: "The village school had no electricity for fans or lights. Students fainted from heat exhaustion. Evening classes were impossible, limiting education opportunities."
+      powerOutageHours: 20,
+      familiesAffected: 1,
+      location: "Interior Sindh",
+      story: "Hassan Ahmed, a farmer whose daughter studied by candlelight, now watches her dream of becoming a doctor under bright solar-powered lights.",
+      villagerName: "Hassan Ahmed",
+      villagerQuote: "My daughter Ayesha now studies under bright lights and dreams of becoming a doctor. Solar power didn't just give us electricity - it gave us hope for the future.",
+      timeOfDay: "evening",
+      solarPanelsInstalled: 4,
+      monthlyBillBefore: 8000,
+      monthlyBillAfter: 0,
+      villagerAge: 41,
+      occupation: "Farmer",
+      beforeConditions: [
+        "20 hours daily without power",
+        "Children studied by candlelight",
+        "₹8,000 spent on diesel generators",
+        "Constant worry about fuel costs",
+        "Limited evening family time"
+      ],
+      afterBenefits: [
+        "Consistent power for evening study",
+        "Bright lights for homework",
+        "₹0 spent on fuel or electricity",
+        "Money saved for education",
+        "Quality family time together"
+      ],
+      emotionalImpact: "From educational limitations to unlimited potential - Hassan's daughter now aims for medical school."
     },
     {
-      id: "3",
-      title: "Community Health Center",
-      description: "Medical clinic serving 500 families without reliable power",
-      beforeImage: "🏥😰💉",
-      afterImage: "🏥⚡💊✅",
+      id: "lahore-suburbs",
+      title: "Aisha's Financial Freedom",
+      description: "From crushing bills to saving for the future",
+      beforeImage: "🏘️",
+      afterImage: "🌞",
       temperature: 40,
-      powerOutageHours: 14,
-      familiesAffected: 500,
-      location: "Layyah, Punjab", 
-      story: "Dr. Fatima couldn't store vaccines properly. Surgery lights failed during operations. Patients suffered in the sweltering heat without air conditioning."
+      powerOutageHours: 12,
+      familiesAffected: 1,
+      location: "Lahore, Punjab",
+      story: "Aisha Hassan, a nurse, watched 60% of her income disappear on electricity bills. Now she saves money for her children's future and family dreams.",
+      villagerName: "Aisha Hassan",
+      villagerQuote: "We saved enough money in just 6 months to buy new school supplies and even plan our first family trip! Solar power gave us our financial freedom back.",
+      timeOfDay: "morning",
+      solarPanelsInstalled: 8,
+      monthlyBillBefore: 18000,
+      monthlyBillAfter: 0,
+      villagerAge: 29,
+      occupation: "Nurse",
+      beforeConditions: [
+        "₹18,000 monthly electricity bills",
+        "60% of income on power costs",
+        "No money for children's extras",
+        "Constant financial stress",
+        "Dreams seemed impossible"
+      ],
+      afterBenefits: [
+        "₹0 monthly electricity costs",
+        "₹18,000 saved every month",
+        "Money for education and trips",
+        "Financial peace of mind",
+        "Dreams becoming reality"
+      ],
+      emotionalImpact: "From financial stress to family prosperity - Aisha's family now builds their future with confidence."
     }
   ];
 
-  const currentVillage = villages[currentScene];
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isAutoPlaying) {
-      interval = setInterval(() => {
-        setCurrentScene((prev) => (prev + 1) % villages.length);
-        setShowAfter(false);
-        setSliderPosition(0);
-      }, 5000);
-    }
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, villages.length]);
+  const currentVillage = scenes[currentScene];
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -81,198 +151,394 @@ export default function VirtualVillageTour() {
     setShowAfter(value > 50);
   };
 
-  const resetView = () => {
+  const triggerTransformation = () => {
+    setAnimationPhase('transforming');
+    let position = 0;
+    const animationInterval = setInterval(() => {
+      position += 2;
+      setSliderPosition(position);
+      setShowAfter(position > 50);
+      
+      if (position >= 100) {
+        clearInterval(animationInterval);
+        setAnimationPhase('completed');
+        setTimeout(() => setAnimationPhase('idle'), 2000);
+      }
+    }, 50);
+  };
+
+  const resetScene = () => {
     setSliderPosition(0);
     setShowAfter(false);
+    setAnimationPhase('idle');
+  };
+
+  const nextScene = () => {
+    if (currentScene < scenes.length - 1) {
+      setCurrentScene(currentScene + 1);
+      resetScene();
+    }
+  };
+
+  const prevScene = () => {
+    if (currentScene > 0) {
+      setCurrentScene(currentScene - 1);
+      resetScene();
+    }
+  };
+
+  const startAutoPlay = () => {
+    setIsAutoPlaying(true);
+    intervalRef.current = setInterval(() => {
+      triggerTransformation();
+      setTimeout(() => {
+        setCurrentScene(prev => (prev + 1) % scenes.length);
+        resetScene();
+      }, 8000);
+    }, 10000);
+  };
+
+  const stopAutoPlay = () => {
+    setIsAutoPlaying(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  const getTimeIcon = () => {
+    switch (currentVillage.timeOfDay) {
+      case 'morning': return <Sun className="w-5 h-5 text-yellow-500" />;
+      case 'afternoon': return <Sun className="w-5 h-5 text-orange-500" />;
+      case 'evening': return <Sun className="w-5 h-5 text-orange-600" />;
+      case 'night': return <Moon className="w-5 h-5 text-blue-400" />;
+    }
   };
 
   return (
-    <div className="py-16 bg-gradient-to-b from-orange-50 to-red-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-20 px-4 relative overflow-hidden">
+      {/* Floating Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-yellow-200/30 rounded-full blur-xl animate-pulse" />
+        <div className="absolute top-40 right-20 w-32 h-32 bg-blue-200/30 rounded-full blur-xl animate-pulse delay-1000" />
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-green-200/30 rounded-full blur-xl animate-pulse delay-2000" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
             Virtual Village Experience
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-            Step into the lives of Pakistani families facing extreme heat and power shortages. 
-            See the transformation your donations create.
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8">
+            Step into the homes of real Pakistani families and witness their incredible transformation from darkness to light, 
+            from struggle to prosperity, from despair to hope.
           </p>
           
-          <div className="flex justify-center space-x-4 mb-8">
+          {/* Auto-play Controls */}
+          <div className="flex items-center justify-center gap-4 mb-8">
             <Button
-              onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-              variant="outline"
-              size="sm"
-              className="flex items-center"
+              onClick={isAutoPlaying ? stopAutoPlay : startAutoPlay}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              size="lg"
             >
-              {isAutoPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+              {isAutoPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               {isAutoPlaying ? 'Pause Tour' : 'Start Auto Tour'}
             </Button>
-            <Button onClick={resetView} variant="outline" size="sm" className="flex items-center">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Reset View
+            <Button onClick={triggerTransformation} variant="outline" size="lg" className="border-2">
+              ✨ See Transformation
             </Button>
           </div>
         </div>
 
-        {/* Scene Navigation */}
-        <div className="flex justify-center mb-8">
-          <div className="flex space-x-2">
-            {villages.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentScene(index);
-                  setIsAutoPlaying(false);
-                  resetView();
-                }}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentScene 
-                    ? 'bg-orange-500 scale-125' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Main Village View */}
-        <div className="max-w-4xl mx-auto">
-          <Card className="overflow-hidden shadow-2xl">
-            <CardContent className="p-0">
-              {/* Village Stats Header */}
-              <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl font-bold">{currentVillage.title}</h3>
-                  <div className="flex items-center bg-white/20 rounded-full px-3 py-1">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{currentVillage.location}</span>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <Thermometer className="w-5 h-5 mr-1" />
-                      <span className="text-2xl font-bold">{currentVillage.temperature}°C</span>
+        {/* Main Content */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Interactive Viewer */}
+          <div className="space-y-6">
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-white/50 shadow-2xl">
+              <CardContent className="p-8">
+                {/* Village Info Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <Home className="w-6 h-6 text-white" />
                     </div>
-                    <p className="text-sm opacity-90">Extreme Heat</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <Clock className="w-5 h-5 mr-1" />
-                      <span className="text-2xl font-bold">{currentVillage.powerOutageHours}h</span>
-                    </div>
-                    <p className="text-sm opacity-90">Daily Outages</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <Users className="w-5 h-5 mr-1" />
-                      <span className="text-2xl font-bold">{currentVillage.familiesAffected}</span>
-                    </div>
-                    <p className="text-sm opacity-90">Families Affected</p>
-                  </div>
-                </div>
-                
-                <p className="text-white/90">{currentVillage.description}</p>
-              </div>
-
-              {/* Interactive Before/After View */}
-              <div className="relative bg-gray-100 h-96 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-8xl mb-4 transition-all duration-500">
-                      {showAfter ? currentVillage.afterImage : currentVillage.beforeImage}
-                    </div>
-                    <div className="bg-white rounded-lg p-4 shadow-lg max-w-md">
-                      <h4 className="font-bold text-lg mb-2">
-                        {showAfter ? "After Solar Installation ✨" : "Before Solar Power 😓"}
-                      </h4>
-                      <p className="text-gray-600 text-sm">
-                        {showAfter 
-                          ? "Reliable electricity, cool homes, thriving businesses, and bright futures!"
-                          : currentVillage.story
-                        }
-                      </p>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-800">{currentVillage.title}</h3>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin className="w-4 h-4" />
+                        <span>{currentVillage.location}</span>
+                      </div>
                     </div>
                   </div>
+                  {getTimeIcon()}
                 </div>
 
-                {/* Overlay gradient based on condition */}
-                <div className={`absolute inset-0 transition-all duration-500 ${
-                  showAfter 
-                    ? 'bg-gradient-to-t from-green-500/20 to-blue-500/20' 
-                    : 'bg-gradient-to-t from-red-500/30 to-orange-500/30'
-                }`}></div>
-              </div>
-
-              {/* Interactive Slider */}
-              <div className="p-6 bg-white">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Drag to see the transformation your donation creates:
-                  </label>
-                  <div className="relative">
+                {/* Before/After Visualization */}
+                <div className="relative h-64 bg-gradient-to-r from-gray-800 to-gray-600 rounded-xl overflow-hidden mb-6">
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-green-400 to-blue-500 transition-all duration-1000 ease-out"
+                    style={{ 
+                      clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)`,
+                      opacity: showAfter ? 1 : 0
+                    }}
+                  />
+                  
+                  {/* Before State */}
+                  <div className={`absolute inset-0 flex items-center justify-center text-6xl transition-all duration-500 ${showAfter ? 'opacity-30' : 'opacity-100'}`}>
+                    {currentVillage.beforeImage}
+                  </div>
+                  
+                  {/* After State */}
+                  <div className={`absolute inset-0 flex items-center justify-center text-6xl transition-all duration-500 ${showAfter ? 'opacity-100' : 'opacity-0'}`}>
+                    {currentVillage.afterImage}
+                  </div>
+                  
+                  {/* Transformation Slider */}
+                  <div className="absolute bottom-4 left-4 right-4">
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={sliderPosition}
                       onChange={handleSliderChange}
-                      className="w-full h-3 bg-gradient-to-r from-red-400 to-green-400 rounded-lg appearance-none cursor-pointer slider"
+                      className="w-full h-2 bg-white/30 rounded-lg appearance-none cursor-pointer slider"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>Crisis</span>
-                      <span>Hope</span>
-                      <span>Transformation</span>
-                    </div>
+                  </div>
+                  
+                  {/* Labels */}
+                  <div className="absolute top-4 left-4 bg-red-500/90 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    BEFORE
+                  </div>
+                  <div className="absolute top-4 right-4 bg-green-500/90 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    AFTER
                   </div>
                 </div>
 
-                {/* Impact Message */}
-                <div className="text-center">
-                  {showAfter ? (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h5 className="font-bold text-green-800 mb-2">🎉 Transformation Complete!</h5>
-                      <p className="text-green-700">
-                        Your donation brought reliable electricity, cooling relief, and renewed hope to this community.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                      <h5 className="font-bold text-orange-800 mb-2">💔 The Reality Today</h5>
-                      <p className="text-orange-700">
-                        Families are suffering in extreme heat without reliable power. Your help can change this.
-                      </p>
-                    </div>
-                  )}
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                    <Thermometer className="w-6 h-6 text-red-500 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-red-600">{currentVillage.temperature}°C</div>
+                    <div className="text-sm text-red-700">Extreme Heat</div>
+                  </div>
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                    <Zap className="w-6 h-6 text-orange-500 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-orange-600">{currentVillage.powerOutageHours}h</div>
+                    <div className="text-sm text-orange-700">Daily Outages</div>
+                  </div>
                 </div>
+
+                {/* Navigation */}
+                <div className="flex items-center justify-between">
+                  <Button 
+                    onClick={prevScene} 
+                    disabled={currentScene === 0}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Previous
+                  </Button>
+                  
+                  <div className="flex gap-2">
+                    {scenes.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentScene(index);
+                          resetScene();
+                        }}
+                        className={`w-3 h-3 rounded-full transition-all ${
+                          index === currentScene 
+                            ? 'bg-blue-500 scale-125' 
+                            : 'bg-gray-300 hover:bg-gray-400'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  
+                  <Button 
+                    onClick={nextScene} 
+                    disabled={currentScene === scenes.length - 1}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Reset Button */}
+            <Button onClick={resetScene} variant="outline" className="w-full">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset Transformation
+            </Button>
+          </div>
+
+          {/* Story Panel */}
+          <div className="space-y-6">
+            {/* Villager Profile */}
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-white/50 shadow-xl">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-2xl text-white font-bold">
+                    {currentVillage.villagerName.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold text-gray-800">{currentVillage.villagerName}</h4>
+                    <p className="text-gray-600">{currentVillage.occupation}, Age {currentVillage.villagerAge}</p>
+                  </div>
+                </div>
+                
+                <blockquote className="text-lg italic text-gray-700 border-l-4 border-blue-500 pl-4 mb-6">
+                  "{currentVillage.villagerQuote}"
+                </blockquote>
+                
+                <p className="text-gray-700 leading-relaxed">
+                  {currentVillage.story}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Before/After Comparison */}
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Before Conditions */}
+              <Card className="bg-red-50/80 border-red-200">
+                <CardContent className="p-6">
+                  <h5 className="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
+                    <span className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-sm">!</span>
+                    Before Solar
+                  </h5>
+                  <ul className="space-y-2">
+                    {currentVillage.beforeConditions.map((condition, index) => (
+                      <li key={index} className="text-sm text-red-700 flex items-start gap-2">
+                        <span className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
+                        {condition}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* After Benefits */}
+              <Card className="bg-green-50/80 border-green-200">
+                <CardContent className="p-6">
+                  <h5 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+                    <span className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">✓</span>
+                    After Solar
+                  </h5>
+                  <ul className="space-y-2">
+                    {currentVillage.afterBenefits.map((benefit, index) => (
+                      <li key={index} className="text-sm text-green-700 flex items-start gap-2">
+                        <span className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Financial Impact */}
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <CardContent className="p-6">
+                <h5 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Financial Transformation
+                </h5>
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-red-600">₹{currentVillage.monthlyBillBefore.toLocaleString()}</div>
+                    <div className="text-sm text-red-700">Monthly Before</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">₹{currentVillage.monthlyBillAfter}</div>
+                    <div className="text-sm text-green-700">Monthly After</div>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-yellow-800">
+                      ₹{(currentVillage.monthlyBillBefore * 12).toLocaleString()} saved annually!
+                    </div>
+                    <div className="text-sm text-yellow-700">
+                      {currentVillage.solarPanelsInstalled} solar panels installed
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Emotional Impact */}
+            <Card className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
+              <CardContent className="p-6 text-center">
+                <Heart className="w-8 h-8 text-pink-500 mx-auto mb-3" />
+                <p className="text-lg font-semibold text-pink-800 italic">
+                  {currentVillage.emotionalImpact}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="mt-16 text-center">
+          <Card className="bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 border-0 text-white">
+            <CardContent className="p-12">
+              <h3 className="text-4xl font-bold mb-6">Create Your Own Transformation Story</h3>
+              <p className="text-xl opacity-90 mb-8 max-w-3xl mx-auto">
+                Every donation creates a story like these. Join thousands of donors who are transforming lives, 
+                one family at a time, one village at a time.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
+                  <Star className="w-5 h-5 mr-2" />
+                  Transform a Family Today
+                </Button>
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold">
+                  <GraduationCap className="w-5 h-5 mr-2" />
+                  Learn More About Impact
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Call to Action */}
-        <div className="text-center mt-12">
-          <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-2xl p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Be the Change They Need</h3>
-            <p className="mb-6">
-              Every solar panel installation transforms lives. Your donation doesn't just provide electricity - 
-              it brings dignity, opportunity, and hope to families facing Pakistan's energy crisis.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                🌟 Transform a Village - $500
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                💝 Help One Family - $100
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
-
-
+      
+      {/* Custom Slider Styles */}
+      <style>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #3B82F6;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #3B82F6;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+      `}</style>
     </div>
   );
 }
