@@ -272,13 +272,13 @@ export default function Home() {
         
 
         
+        <section id="solution" className="snap-section">
+          <EnhancedSolutionSection />
+        </section>
+        
         {/* Virtual Village Tour - Interactive experience */}
         <section className="snap-section">
           <VirtualVillageTour />
-        </section>
-        
-        <section id="solution" className="snap-section">
-          <EnhancedSolutionSection />
         </section>
         
         {/* Unified Impact Section - Comprehensive impact showcase */}
