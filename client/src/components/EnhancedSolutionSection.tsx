@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { Zap, Sun, Home, Users, Lightbulb, Fan, Wifi, Heart, ArrowRight, CheckCircle } from "lucide-react";
+import { Zap, Sun, Clock, Thermometer, Heart, ArrowRight, CheckCircle, Battery, Shield, Lightbulb, Users } from "lucide-react";
 
 export default function EnhancedSolutionSection() {
-  const [activeStep, setActiveStep] = useState(0);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -23,51 +23,43 @@ export default function EnhancedSolutionSection() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (isVisible) {
-      const interval = setInterval(() => {
-        setActiveStep((prev) => (prev + 1) % 4);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [isVisible]);
-
-  const solutionSteps = [
+  const problemSolutions = [
     {
-      icon: Sun,
-      title: "Solar Panel Installation",
-      description: "High-efficiency solar panels designed for Pakistan's intense sunlight",
-      details: "Our panels capture maximum energy even in extreme heat, providing 8-12 hours of power daily",
-      color: "from-yellow-400 to-orange-500"
+      problem: "45°C Heat with No AC",
+      solution: "24/7 Solar-Powered Cooling",
+      icon: Thermometer,
+      beforeIcon: "🔥",
+      afterIcon: "❄️",
+      timeframe: "Immediate relief",
+      impact: "Families sleep comfortably, children can focus on studies",
+      color: "from-red-500 to-orange-500"
     },
     {
-      icon: Zap,
-      title: "Battery Storage System",
-      description: "Advanced batteries store energy for nighttime and cloudy days",
-      details: "Lithium-ion technology ensures families have power 24/7, even during grid outages",
+      problem: "16 Hours Daily Without Power",
+      solution: "Continuous Energy Supply",
+      icon: Clock,
+      beforeIcon: "⚫",
+      afterIcon: "💡",
+      timeframe: "24/7 power",
+      impact: "Businesses operate, medical equipment works, life continues",
       color: "from-blue-500 to-purple-600"
     },
     {
-      icon: Home,
-      title: "Smart Home Integration",
-      description: "Intelligent power management for optimal energy distribution",
-      details: "Automatic switching between solar, battery, and grid power for maximum efficiency",
-      color: "from-green-500 to-teal-600"
-    },
-    {
-      icon: Heart,
-      title: "Life Transformation",
-      description: "Immediate relief and long-term empowerment for families",
-      details: "Children can study at night, businesses can operate, and families can live with dignity",
-      color: "from-red-500 to-pink-600"
+      problem: "High Electricity Bills",
+      solution: "Zero Energy Costs",
+      icon: Battery,
+      beforeIcon: "💸",
+      afterIcon: "💰",
+      timeframe: "Savings start Day 1",
+      impact: "Money saved goes to education, healthcare, and growth",
+      color: "from-green-500 to-emerald-600"
     }
   ];
 
-  const benefits = [
-    { icon: Fan, text: "Cool homes with AC & fans", impact: "Comfortable living in 45°C heat" },
-    { icon: Lightbulb, text: "24/7 lighting for all rooms", impact: "Children can study after dark" },
-    { icon: Wifi, text: "Reliable internet & devices", impact: "Connection to opportunities" },
-    { icon: Home, text: "Refrigeration for food", impact: "Healthier meals & less waste" }
+  const techSpecs = [
+    { label: "Solar Panels", power: "300W each", lifespan: "25+ years", efficiency: "22%" },
+    { label: "Battery Storage", capacity: "10kWh", backup: "3-5 days", type: "Lithium-ion" },
+    { label: "Installation", time: "1 day", warranty: "10 years", maintenance: "Minimal" }
   ];
 
   return (
@@ -104,62 +96,108 @@ export default function EnhancedSolutionSection() {
           </p>
         </div>
 
-        {/* Cost Breakdown & Donation Impact */}
-        <div className="bg-white rounded-3xl p-8 shadow-2xl mb-16 border border-gray-100">
-          <h3 className="text-3xl font-bold text-center mb-4 text-gray-800">See Exactly Where Your Money Goes</h3>
-          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-            Complete transparency. Every dollar makes a direct impact. Click to see how much each component costs and what it provides.
+        {/* Problem → Solution Transformation */}
+        <div className="mb-16">
+          <h3 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-gray-800 to-blue-600 bg-clip-text text-transparent">
+            Every Problem Has Our Solution
+          </h3>
+          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto text-lg">
+            We don't just install solar panels—we solve the specific problems Pakistani families face every day. 
+            Hover over each card to see the transformation.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {solutionSteps.map((step, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {problemSolutions.map((item, index) => (
               <div
                 key={index}
-                className={`p-6 rounded-2xl transition-all duration-500 cursor-pointer border-2 group hover:scale-105 ${
-                  activeStep === index
-                    ? 'bg-gradient-to-br ' + step.color + ' text-white border-transparent shadow-2xl scale-105'
-                    : 'bg-gray-50 border-gray-200 hover:border-blue-300 hover:shadow-lg'
-                }`}
-                onClick={() => setActiveStep(index)}
+                className="relative group cursor-pointer"
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
               >
-                <div className="text-center">
-                  <div className={`p-4 rounded-xl mx-auto mb-4 w-fit ${activeStep === index ? 'bg-white/20' : 'bg-white group-hover:bg-blue-50'}`}>
-                    <step.icon className={`w-10 h-10 ${activeStep === index ? 'text-white' : 'text-gray-600 group-hover:text-blue-600'}`} />
-                  </div>
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 transition-all duration-500 transform group-hover:scale-105 group-hover:shadow-2xl overflow-hidden relative">
+                  {/* Background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-3xl`}></div>
                   
-                  <h4 className={`text-xl font-bold mb-3 ${activeStep === index ? 'text-white' : 'text-gray-800'}`}>
-                    {step.title}
-                  </h4>
-                  
-                  <div className={`text-3xl font-bold mb-2 ${activeStep === index ? 'text-white' : 'text-blue-600'}`}>
-                    ${index === 0 ? '150' : index === 1 ? '200' : index === 2 ? '100' : '50'}
-                  </div>
-                  
-                  <p className={`text-sm mb-4 ${activeStep === index ? 'text-white/90' : 'text-gray-600'}`}>
-                    {step.description}
-                  </p>
-                  
-                  <div className={`text-xs font-semibold px-3 py-2 rounded-full ${
-                    activeStep === index ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    Click to see impact
+                  <div className="relative z-10">
+                    {/* Icon and emoji transition */}
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="text-6xl transition-all duration-500 group-hover:scale-110">
+                        {hoveredCard === index ? item.afterIcon : item.beforeIcon}
+                      </div>
+                    </div>
+                    
+                    {/* Problem/Solution text */}
+                    <div className="text-center mb-6">
+                      <h4 className="text-xl font-bold text-red-600 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                        {hoveredCard === index ? "SOLVED:" : "PROBLEM:"}
+                      </h4>
+                      <p className="text-lg font-semibold text-gray-800 mb-2">
+                        {hoveredCard === index ? item.solution : item.problem}
+                      </p>
+                      <div className="text-sm text-blue-600 font-medium">
+                        {item.timeframe}
+                      </div>
+                    </div>
+                    
+                    {/* Impact description */}
+                    <div className="bg-gray-50 group-hover:bg-green-50 rounded-xl p-4 transition-colors duration-300">
+                      <p className="text-sm text-gray-600 group-hover:text-green-700 transition-colors duration-300">
+                        {item.impact}
+                      </p>
+                    </div>
+                    
+                    {/* Transformation arrow */}
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ArrowRight className="w-6 h-6 text-green-600" />
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Dynamic Impact Details */}
-          <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200">
-            <div className="text-center">
-              <h4 className="text-2xl font-bold text-gray-800 mb-3">
-                {solutionSteps[activeStep].title} Impact
-              </h4>
-              <p className="text-lg text-gray-600 mb-4">
-                {solutionSteps[activeStep].details}
+        {/* Technical Excellence */}
+        <div className="bg-gradient-to-br from-slate-800 to-blue-900 rounded-3xl p-8 text-white mb-16 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-8 left-8 w-24 h-24 border border-white rounded-full"></div>
+            <div className="absolute bottom-8 right-8 w-16 h-16 border border-white rounded-full"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <div className="text-center mb-12">
+              <h3 className="text-4xl font-bold mb-4">World-Class Technology</h3>
+              <p className="text-xl opacity-90 max-w-3xl mx-auto">
+                We use only the highest quality solar equipment, designed specifically for Pakistan's challenging climate conditions.
               </p>
-              <div className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-full font-semibold">
-                <span>Total System Cost: $500 = One Family Transformed Forever</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {techSpecs.map((spec, index) => (
+                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <h4 className="text-2xl font-bold mb-4 text-yellow-300">{spec.label}</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="opacity-90">Power/Capacity:</span>
+                      <span className="font-semibold">{spec.power || spec.capacity}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="opacity-90">Lifespan/Backup:</span>
+                      <span className="font-semibold">{spec.lifespan || spec.backup}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="opacity-90">Efficiency/Type:</span>
+                      <span className="font-semibold">{spec.efficiency || spec.type}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <div className="inline-flex items-center bg-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold">
+                <Shield className="w-6 h-6 mr-3" />
+                <span>10-Year Warranty • 25-Year Performance Guarantee</span>
               </div>
             </div>
           </div>
