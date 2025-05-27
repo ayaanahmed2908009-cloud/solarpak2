@@ -272,18 +272,7 @@ export default function VirtualVillageTour() {
         </div>
       </div>
 
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 24px;
-          width: 24px;
-          border-radius: 50%;
-          background: #ffffff;
-          border: 3px solid #3b82f6;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          cursor: pointer;
-        }
-      `}</style>
+
     </div>
   );
 }
