@@ -2,6 +2,9 @@ import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import KeyStats from "@/components/KeyStats";
 import LiveImpactTracker from "@/components/LiveImpactTracker";
+import InteractiveImpactCounter from "@/components/InteractiveImpactCounter";
+import FloatingTestimonials from "@/components/FloatingTestimonials";
+import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
 import ProblemSection from "@/components/ProblemSection";
 import SolutionSection from "@/components/SolutionSection";
 import VirtualVillageTour from "@/components/VirtualVillageTour";
@@ -51,6 +54,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navbar />
+      <FloatingTestimonials />
+      <PakistanWeatherWidget />
       <main ref={mainRef} className="relative w-full">
         {/* Mobile Hero - Original Design */}
         <section className="md:hidden snap-section">
@@ -291,6 +296,11 @@ export default function Home() {
         {/* Cultural Donation Experience - Pakistani-focused giving */}
         <section className="snap-section">
           <CulturalDonationExperience />
+        </section>
+        
+        {/* Interactive Impact Counter - Animated global impact */}
+        <section className="snap-section">
+          <InteractiveImpactCounter />
         </section>
         
         <section id="testimonials" className="snap-section">
