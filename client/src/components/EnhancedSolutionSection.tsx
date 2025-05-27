@@ -104,74 +104,62 @@ export default function EnhancedSolutionSection() {
           </p>
         </div>
 
-        {/* Interactive Solution Process */}
+        {/* Cost Breakdown & Donation Impact */}
         <div className="bg-white rounded-3xl p-8 shadow-2xl mb-16 border border-gray-100">
-          <h3 className="text-3xl font-bold text-center mb-12 text-gray-800">How We Transform Lives</h3>
+          <h3 className="text-3xl font-bold text-center mb-4 text-gray-800">See Exactly Where Your Money Goes</h3>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Complete transparency. Every dollar makes a direct impact. Click to see how much each component costs and what it provides.
+          </p>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Process Steps */}
-            <div className="space-y-6">
-              {solutionSteps.map((step, index) => (
-                <div
-                  key={index}
-                  className={`p-6 rounded-2xl transition-all duration-500 cursor-pointer border-2 ${
-                    activeStep === index
-                      ? 'bg-gradient-to-r ' + step.color + ' text-white border-transparent transform scale-105 shadow-xl'
-                      : 'bg-gray-50 border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setActiveStep(index)}
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className={`p-3 rounded-xl ${activeStep === index ? 'bg-white/20' : 'bg-white'}`}>
-                      <step.icon className={`w-8 h-8 ${activeStep === index ? 'text-white' : 'text-gray-600'}`} />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className={`text-xl font-bold mb-2 ${activeStep === index ? 'text-white' : 'text-gray-800'}`}>
-                        {step.title}
-                      </h4>
-                      <p className={`text-sm mb-3 ${activeStep === index ? 'text-white/90' : 'text-gray-600'}`}>
-                        {step.description}
-                      </p>
-                      <p className={`text-xs ${activeStep === index ? 'text-white/80' : 'text-gray-500'}`}>
-                        {step.details}
-                      </p>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {solutionSteps.map((step, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-2xl transition-all duration-500 cursor-pointer border-2 group hover:scale-105 ${
+                  activeStep === index
+                    ? 'bg-gradient-to-br ' + step.color + ' text-white border-transparent shadow-2xl scale-105'
+                    : 'bg-gray-50 border-gray-200 hover:border-blue-300 hover:shadow-lg'
+                }`}
+                onClick={() => setActiveStep(index)}
+              >
+                <div className="text-center">
+                  <div className={`p-4 rounded-xl mx-auto mb-4 w-fit ${activeStep === index ? 'bg-white/20' : 'bg-white group-hover:bg-blue-50'}`}>
+                    <step.icon className={`w-10 h-10 ${activeStep === index ? 'text-white' : 'text-gray-600 group-hover:text-blue-600'}`} />
+                  </div>
+                  
+                  <h4 className={`text-xl font-bold mb-3 ${activeStep === index ? 'text-white' : 'text-gray-800'}`}>
+                    {step.title}
+                  </h4>
+                  
+                  <div className={`text-3xl font-bold mb-2 ${activeStep === index ? 'text-white' : 'text-blue-600'}`}>
+                    ${index === 0 ? '150' : index === 1 ? '200' : index === 2 ? '100' : '50'}
+                  </div>
+                  
+                  <p className={`text-sm mb-4 ${activeStep === index ? 'text-white/90' : 'text-gray-600'}`}>
+                    {step.description}
+                  </p>
+                  
+                  <div className={`text-xs font-semibold px-3 py-2 rounded-full ${
+                    activeStep === index ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    Click to see impact
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
-            {/* Visual Representation */}
-            <div className="relative">
-              <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-8 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-transparent"></div>
-                <div className="relative z-10">
-                  <div className="text-center mb-8">
-                    <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Home className="w-10 h-10 text-white" />
-                    </div>
-                    <h4 className="text-2xl font-bold mb-2">Pakistani Family Home</h4>
-                    <p className="text-white/80">Powered by Solar Energy</p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {benefits.map((benefit, index) => (
-                      <div
-                        key={index}
-                        className={`bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 transition-all duration-300 ${
-                          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                        }`}
-                        style={{ transitionDelay: `${index * 200}ms` }}
-                      >
-                        <div className="flex items-center mb-2">
-                          <benefit.icon className="w-5 h-5 text-yellow-300 mr-2" />
-                          <span className="font-semibold text-sm">{benefit.text}</span>
-                        </div>
-                        <p className="text-xs text-white/70">{benefit.impact}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          {/* Dynamic Impact Details */}
+          <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200">
+            <div className="text-center">
+              <h4 className="text-2xl font-bold text-gray-800 mb-3">
+                {solutionSteps[activeStep].title} Impact
+              </h4>
+              <p className="text-lg text-gray-600 mb-4">
+                {solutionSteps[activeStep].details}
+              </p>
+              <div className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-full font-semibold">
+                <span>Total System Cost: $500 = One Family Transformed Forever</span>
               </div>
             </div>
           </div>
