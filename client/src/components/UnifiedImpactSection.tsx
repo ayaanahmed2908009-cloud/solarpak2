@@ -289,6 +289,21 @@ export default function UnifiedImpactSection() {
             Your continued support transforms lives daily.
           </p>
         </div>
+
+        {/* Live Updates Ticker */}
+        <div className="mt-8 bg-gray-900 rounded-xl p-4 overflow-hidden">
+          <div className="flex items-center text-white">
+            <div className="flex items-center mr-4">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
+              <span className="text-sm font-medium">Live Updates</span>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <div className="animate-scroll whitespace-nowrap text-sm text-gray-300">
+                ⚡ Ahmed family in Karachi now has 24/7 power • 🏠 New installation completed in Hyderabad • 🌞 Solar panels generating peak energy in Lahore • 💡 Night lighting restored for 12 families in Multan • ⚡ Ahmed family in Karachi now has 24/7 power • 🏠 New installation completed in Hyderabad
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

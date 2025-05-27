@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import KeyStats from "@/components/KeyStats";
-import LiveImpactTracker from "@/components/LiveImpactTracker";
+
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
@@ -264,10 +264,7 @@ export default function Home() {
           </div>
         </section>
         
-        {/* Live Impact Tracker - Real-time dashboard */}
-        <section className="snap-section">
-          <LiveImpactTracker />
-        </section>
+
         
         <section id="problem" className="snap-section relative bg-white">
           <ProblemSection />
