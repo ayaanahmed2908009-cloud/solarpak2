@@ -25,6 +25,8 @@ interface VillageScene {
   beforeConditions: string[];
   afterBenefits: string[];
   emotionalImpact: string;
+  beforeSituation: string;
+  afterSituation: string;
 }
 
 export default function VirtualVillageTour() {
@@ -69,7 +71,9 @@ export default function VirtualVillageTour() {
         "Children excel in studies",
         "Food stays fresh, medicines safe"
       ],
-      emotionalImpact: "From despair to hope - Fatima's family now thrives with dignity and comfort."
+      emotionalImpact: "From despair to hope - Fatima's family now thrives with dignity and comfort.",
+      beforeSituation: "It's 3 PM and 45°C outside. Fatima's children are crying from the heat, unable to nap. The power has been out for 12 hours straight. Their medicine is spoiling in the warm fridge, and Fatima can't prepare lessons for her students because her laptop overheats. The family huddles in one room, fanning themselves with papers, praying for electricity that may not come until midnight.",
+      afterSituation: "Same time, same heat outside - but inside it's wonderfully cool. The children are peacefully doing homework under bright LED lights while fans hum quietly. Fatima prepares tomorrow's lessons on her laptop, the fridge keeps medicine and food fresh, and the family enjoys quality time together in comfort. No more counting hours until power returns - it's always there when they need it."
     },
     {
       id: "rural-sindh",
@@ -104,7 +108,9 @@ export default function VirtualVillageTour() {
         "Money saved for education",
         "Quality family time together"
       ],
-      emotionalImpact: "From educational limitations to unlimited potential - Hassan's daughter now aims for medical school."
+      emotionalImpact: "From educational limitations to unlimited potential - Hassan's daughter now aims for medical school.",
+      beforeSituation: "It's 8 PM and Hassan's 12-year-old daughter Ayesha sits hunched over her books by a flickering candle. Her eyes strain and water from the dim light, but homework must be done. Hassan worries constantly about the diesel generator costs - ₹200 per day just for 3 hours of power. The family goes to bed early not from tiredness, but because they can't afford to keep lights on. Dreams of education feel impossible in this darkness.",
+      afterSituation: "Same evening, but now Ayesha studies under bright, steady LED lights at a proper desk. Her books and laptop (bought with money saved on diesel) are spread out comfortably. Hassan watches proudly as she practices on Khan Academy, planning her path to medical school. The house is filled with light and laughter instead of worry about fuel costs. Education is no longer a luxury - it's their reality."
     },
     {
       id: "lahore-suburbs",
@@ -139,7 +145,9 @@ export default function VirtualVillageTour() {
         "Financial peace of mind",
         "Dreams becoming reality"
       ],
-      emotionalImpact: "From financial stress to family prosperity - Aisha's family now builds their future with confidence."
+      emotionalImpact: "From financial stress to family prosperity - Aisha's family now builds their future with confidence.",
+      beforeSituation: "It's the end of the month and Aisha stares at the electricity bill: ₹18,000. Her nurse salary of ₹30,000 barely covers this plus rent and food. Her 8-year-old son asks for new school books, but she has to say 'next month' again. The AC runs constantly in the heat, but each hour increases their debt. Aisha lies awake at night, calculating if they can afford groceries this week. Financial stress consumes every thought.",
+      afterSituation: "Same month-end, but now Aisha opens an empty electricity bill - ₹0. She transfers ₹18,000 to her children's education fund instead. Her son not only gets new books but also art supplies he's wanted for months. The family plans their first vacation in years to northern Pakistan. Aisha sleeps peacefully, dreaming of her children's bright futures instead of worrying about bills. Freedom feels wonderful."
     }
   ];
 
@@ -280,6 +288,22 @@ export default function VirtualVillageTour() {
                     </div>
                   </div>
                   {getTimeIcon()}
+                </div>
+
+                {/* Situation Description */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <div className={`transition-all duration-500 ${showAfter ? 'opacity-30' : 'opacity-100'}`}>
+                    <h4 className="font-bold text-red-700 mb-2">BEFORE: The Daily Struggle</h4>
+                    <p className="text-sm text-gray-700">
+                      {currentVillage.beforeSituation}
+                    </p>
+                  </div>
+                  <div className={`transition-all duration-500 mt-4 ${showAfter ? 'opacity-100' : 'opacity-30'}`}>
+                    <h4 className="font-bold text-green-700 mb-2">AFTER: Life Transformed</h4>
+                    <p className="text-sm text-gray-700">
+                      {currentVillage.afterSituation}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Before/After Visualization */}
