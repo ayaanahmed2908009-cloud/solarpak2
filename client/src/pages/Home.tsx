@@ -2,13 +2,12 @@ import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import KeyStats from "@/components/KeyStats";
 import LiveImpactTracker from "@/components/LiveImpactTracker";
-import InteractiveImpactCounter from "@/components/InteractiveImpactCounter";
+import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
 import ProblemSection from "@/components/ProblemSection";
 import SolutionSection from "@/components/SolutionSection";
 import VirtualVillageTour from "@/components/VirtualVillageTour";
-import ImpactSection from "@/components/ImpactSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import CulturalDonationExperience from "@/components/CulturalDonationExperience";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -283,10 +282,9 @@ export default function Home() {
           <SolutionSection />
         </section>
         
-        {/* Combined Impact Section - Comprehensive impact showcase */}
+        {/* Unified Impact Section - Comprehensive impact showcase */}
         <section id="impact" className="snap-section">
-          <ImpactSection />
-          <InteractiveImpactCounter />
+          <UnifiedImpactSection />
         </section>
         
         <section id="projects" className="snap-section">
