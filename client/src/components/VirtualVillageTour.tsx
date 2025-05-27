@@ -290,17 +290,26 @@ export default function VirtualVillageTour() {
                   {getTimeIcon()}
                 </div>
 
-                {/* Situation Description */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                  <div className={`transition-all duration-500 ${showAfter ? 'opacity-30' : 'opacity-100'}`}>
-                    <h4 className="font-bold text-red-700 mb-2">BEFORE: The Daily Struggle</h4>
-                    <p className="text-sm text-gray-700">
+                {/* Situation Description - Clean Separation */}
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Before Panel */}
+                  <div className={`p-4 bg-red-50 border-l-4 border-red-400 rounded-lg transition-all duration-500 ${showAfter ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+                    <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">
+                      <span className="text-2xl">{currentVillage.beforeImage}</span>
+                      BEFORE
+                    </h4>
+                    <p className="text-sm text-red-800 leading-relaxed">
                       {currentVillage.beforeSituation}
                     </p>
                   </div>
-                  <div className={`transition-all duration-500 mt-4 ${showAfter ? 'opacity-100' : 'opacity-30'}`}>
-                    <h4 className="font-bold text-green-700 mb-2">AFTER: Life Transformed</h4>
-                    <p className="text-sm text-gray-700">
+                  
+                  {/* After Panel */}
+                  <div className={`p-4 bg-green-50 border-l-4 border-green-400 rounded-lg transition-all duration-500 ${showAfter ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}>
+                    <h4 className="font-bold text-green-700 mb-2 flex items-center gap-2">
+                      <span className="text-2xl">{currentVillage.afterImage}</span>
+                      AFTER
+                    </h4>
+                    <p className="text-sm text-green-800 leading-relaxed">
                       {currentVillage.afterSituation}
                     </p>
                   </div>
