@@ -7,7 +7,7 @@ import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
 
-import SolutionSection from "@/components/SolutionSection";
+import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
 import VirtualVillageTour from "@/components/VirtualVillageTour";
 import ProjectsSection from "@/components/ProjectsSection";
 import CulturalDonationExperience from "@/components/CulturalDonationExperience";
@@ -278,7 +278,7 @@ export default function Home() {
         </section>
         
         <section id="solution" className="snap-section">
-          <SolutionSection />
+          <EnhancedSolutionSection />
         </section>
         
         {/* Unified Impact Section - Comprehensive impact showcase */}
