@@ -293,7 +293,7 @@ export default function VirtualVillageTour() {
                 {/* Situation Description - Clean Separation */}
                 <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Before Panel */}
-                  <div className={`p-4 bg-red-50 border-l-4 border-red-400 rounded-lg transition-all duration-500 ${showAfter ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+                  <div className={`relative p-4 bg-red-50 border-l-4 border-red-400 rounded-lg transition-all duration-500 ${showAfter ? 'opacity-70 scale-95' : 'opacity-100 scale-100'}`}>
                     <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">
                       <span className="text-2xl">{currentVillage.beforeImage}</span>
                       BEFORE
@@ -303,8 +303,8 @@ export default function VirtualVillageTour() {
                     </p>
                   </div>
                   
-                  {/* After Panel */}
-                  <div className={`p-4 bg-green-50 border-l-4 border-green-400 rounded-lg transition-all duration-500 ${showAfter ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}>
+                  {/* After Panel with Translucent Barrier */}
+                  <div className={`relative p-4 bg-green-50 border-l-4 border-green-400 rounded-lg transition-all duration-500 ${showAfter ? 'opacity-100 scale-100' : 'opacity-100 scale-95'}`}>
                     <h4 className="font-bold text-green-700 mb-2 flex items-center gap-2">
                       <span className="text-2xl">{currentVillage.afterImage}</span>
                       AFTER
@@ -312,6 +312,17 @@ export default function VirtualVillageTour() {
                     <p className="text-sm text-green-800 leading-relaxed">
                       {currentVillage.afterSituation}
                     </p>
+                    
+                    {/* Translucent Barrier Overlay */}
+                    <div className={`absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center transition-all duration-500 ${
+                      showAfter ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                    }`}>
+                      <div className="text-center p-4">
+                        <div className="text-4xl mb-2">🔒</div>
+                        <p className="text-sm font-semibold text-gray-700 mb-1">Slide to unlock transformation</p>
+                        <p className="text-xs text-gray-600">See how life changes with solar power</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
