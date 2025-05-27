@@ -283,8 +283,10 @@ export default function Home() {
           <SolutionSection />
         </section>
         
+        {/* Combined Impact Section - Comprehensive impact showcase */}
         <section id="impact" className="snap-section">
           <ImpactSection />
+          <InteractiveImpactCounter />
         </section>
         
         <section id="projects" className="snap-section">
@@ -294,11 +296,6 @@ export default function Home() {
         {/* Cultural Donation Experience - Pakistani-focused giving */}
         <section className="snap-section">
           <CulturalDonationExperience />
-        </section>
-        
-        {/* Interactive Impact Counter - Animated global impact */}
-        <section className="snap-section">
-          <InteractiveImpactCounter />
         </section>
         
         <section id="testimonials" className="snap-section">
