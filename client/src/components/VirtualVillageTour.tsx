@@ -59,14 +59,14 @@ export default function VirtualVillageTour() {
       occupation: "School Teacher",
       beforeConditions: [
         "16 hours daily without power",
-        "₹15,000 monthly electricity bills",
+        "PKR 15,000 monthly electricity bills",
         "Children couldn't sleep in heat",
         "Teaching at home impossible",
         "Spoiled food and medicines"
       ],
       afterBenefits: [
         "24/7 reliable electricity",
-        "₹0 monthly electricity bills",
+        "PKR 0 monthly electricity bills",
         "Cool, comfortable home",
         "Children excel in studies",
         "Food stays fresh, medicines safe"
@@ -97,19 +97,19 @@ export default function VirtualVillageTour() {
       beforeConditions: [
         "20 hours daily without power",
         "Children studied by candlelight",
-        "₹8,000 spent on diesel generators",
+        "PKR 8,000 spent on diesel generators",
         "Constant worry about fuel costs",
         "Limited evening family time"
       ],
       afterBenefits: [
         "Consistent power for evening study",
         "Bright lights for homework",
-        "₹0 spent on fuel or electricity",
+        "PKR 0 spent on fuel or electricity",
         "Money saved for education",
         "Quality family time together"
       ],
       emotionalImpact: "From educational limitations to unlimited potential - Hassan's daughter now aims for medical school.",
-      beforeSituation: "It's 8 PM and Hassan's 12-year-old daughter Ayesha sits hunched over her books by a flickering candle. Her eyes strain and water from the dim light, but homework must be done. Hassan worries constantly about the diesel generator costs - ₹200 per day just for 3 hours of power. The family goes to bed early not from tiredness, but because they can't afford to keep lights on. Dreams of education feel impossible in this darkness.",
+      beforeSituation: "It's 8 PM and Hassan's 12-year-old daughter Ayesha sits hunched over her books by a flickering candle. Her eyes strain and water from the dim light, but homework must be done. Hassan worries constantly about the diesel generator costs - PKR 200 per day just for 3 hours of power. The family goes to bed early not from tiredness, but because they can't afford to keep lights on. Dreams of education feel impossible in this darkness.",
       afterSituation: "Same evening, but now Ayesha studies under bright, steady LED lights at a proper desk. Her books and laptop (bought with money saved on diesel) are spread out comfortably. Hassan watches proudly as she practices on Khan Academy, planning her path to medical school. The house is filled with light and laughter instead of worry about fuel costs. Education is no longer a luxury - it's their reality."
     },
     {
@@ -132,22 +132,22 @@ export default function VirtualVillageTour() {
       villagerAge: 29,
       occupation: "Nurse",
       beforeConditions: [
-        "₹18,000 monthly electricity bills",
+        "PKR 18,000 monthly electricity bills",
         "60% of income on power costs",
         "No money for children's extras",
         "Constant financial stress",
         "Dreams seemed impossible"
       ],
       afterBenefits: [
-        "₹0 monthly electricity costs",
-        "₹18,000 saved every month",
+        "PKR 0 monthly electricity costs",
+        "PKR 18,000 saved every month",
         "Money for education and trips",
         "Financial peace of mind",
         "Dreams becoming reality"
       ],
       emotionalImpact: "From financial stress to family prosperity - Aisha's family now builds their future with confidence.",
-      beforeSituation: "It's the end of the month and Aisha stares at the electricity bill: ₹18,000. Her nurse salary of ₹30,000 barely covers this plus rent and food. Her 8-year-old son asks for new school books, but she has to say 'next month' again. The AC runs constantly in the heat, but each hour increases their debt. Aisha lies awake at night, calculating if they can afford groceries this week. Financial stress consumes every thought.",
-      afterSituation: "Same month-end, but now Aisha opens an empty electricity bill - ₹0. She transfers ₹18,000 to her children's education fund instead. Her son not only gets new books but also art supplies he's wanted for months. The family plans their first vacation in years to northern Pakistan. Aisha sleeps peacefully, dreaming of her children's bright futures instead of worrying about bills. Freedom feels wonderful."
+      beforeSituation: "It's the end of the month and Aisha stares at the electricity bill: PKR 18,000. Her nurse salary of PKR 30,000 barely covers this plus rent and food. Her 8-year-old son asks for new school books, but she has to say 'next month' again. The AC runs constantly in the heat, but each hour increases their debt. Aisha lies awake at night, calculating if they can afford groceries this week. Financial stress consumes every thought.",
+      afterSituation: "Same month-end, but now Aisha opens an empty electricity bill - PKR 0. She transfers PKR 18,000 to her children's education fund instead. Her son not only gets new books but also art supplies he's wanted for months. The family plans their first vacation in years to northern Pakistan. Aisha sleeps peacefully, dreaming of her children's bright futures instead of worrying about bills. Freedom feels wonderful."
     }
   ];
 
@@ -503,18 +503,18 @@ export default function VirtualVillageTour() {
                 </h5>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-2xl font-bold text-red-600">₹{currentVillage.monthlyBillBefore.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-red-600">PKR {currentVillage.monthlyBillBefore.toLocaleString()}</div>
                     <div className="text-sm text-red-700">Monthly Before</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-green-600">₹{currentVillage.monthlyBillAfter}</div>
+                    <div className="text-2xl font-bold text-green-600">PKR {currentVillage.monthlyBillAfter}</div>
                     <div className="text-sm text-green-700">Monthly After</div>
                   </div>
                 </div>
                 <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
                   <div className="text-center">
                     <div className="text-lg font-bold text-yellow-800">
-                      ₹{(currentVillage.monthlyBillBefore * 12).toLocaleString()} saved annually!
+                      PKR {(currentVillage.monthlyBillBefore * 12).toLocaleString()} saved annually!
                     </div>
                     <div className="text-sm text-yellow-700">
                       {currentVillage.solarPanelsInstalled} solar panels installed
