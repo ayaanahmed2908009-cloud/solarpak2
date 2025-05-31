@@ -1,4 +1,4 @@
-import VirtualVillageTour from "@/components/VirtualVillageTour";
+import SimpleVillageStories from "@/components/SimpleVillageStories";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -19,9 +19,9 @@ export default function VillageExperience() {
         </div>
       </section>
       
-      {/* Village Experience Section */}
+      {/* Simple Village Stories Section */}
       <section className="relative">
-        <VirtualVillageTour />
+        <SimpleVillageStories />
       </section>
       
       <Footer />
