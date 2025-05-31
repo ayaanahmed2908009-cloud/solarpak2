@@ -277,7 +277,7 @@ export default function Home() {
         </section>
         
         {/* Virtual Village Tour - Interactive experience */}
-        <section className="snap-section">
+        <section id="village" className="snap-section">
           <VirtualVillageTour />
         </section>
         
