@@ -8,7 +8,6 @@ import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
 
 import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
-import VirtualVillageTour from "@/components/VirtualVillageTour";
 import ProjectsSection from "@/components/ProjectsSection";
 import CulturalDonationExperience from "@/components/CulturalDonationExperience";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -276,11 +275,7 @@ export default function Home() {
           <EnhancedSolutionSection />
         </section>
         
-        {/* Virtual Village Tour - Interactive experience */}
-        <section id="village" className="snap-section">
-          <VirtualVillageTour />
-        </section>
-        
+
         {/* Unified Impact Section - Comprehensive impact showcase */}
         <section id="impact" className="snap-section">
           <UnifiedImpactSection />

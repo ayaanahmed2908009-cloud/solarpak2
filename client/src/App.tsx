@@ -11,6 +11,7 @@ import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Membership from "@/pages/Membership";
+import VillageExperience from "@/pages/VillageExperience";
 import { useEffect } from "react";
 import { AuthProvider } from "@/hooks/useAuth";
 
@@ -90,6 +91,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/impact" component={Impact} />
+      <Route path="/village" component={VillageExperience} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/success" component={Success} />
       <Route path="/login" component={Login} />
