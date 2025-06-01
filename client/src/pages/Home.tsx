@@ -22,15 +22,7 @@ import DonationModal from "@/components/DonationModal";
 export default function Home() {
   // State to control the visibility of the back-to-top button
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [displayedText, setDisplayedText] = useState("");
-  const [displayedSubtext, setDisplayedSubtext] = useState("");
-  const [showScrollPrompt, setShowScrollPrompt] = useState(false);
-  const [hasTriggeredAnimation, setHasTriggeredAnimation] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
-  const interactiveSectionRef = useRef<HTMLElement>(null);
-  
-  const mainText = "Are you ready to see the reality for many in Pakistan today?";
-  const subText = "Scroll down to learn more";
 
   useEffect(() => {
     // Handle scroll event to show/hide back-to-top button
@@ -50,63 +42,7 @@ export default function Home() {
     };
   }, []);
 
-  // Scroll-triggered typewriter effect
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasTriggeredAnimation) {
-            setHasTriggeredAnimation(true);
-            
-            // Reset states
-            setDisplayedText("");
-            setDisplayedSubtext("");
-            setShowScrollPrompt(false);
-            
-            // Start main text typing animation
-            let currentIndex = 0;
-            const typingInterval = setInterval(() => {
-              if (currentIndex <= mainText.length) {
-                setDisplayedText(mainText.slice(0, currentIndex));
-                currentIndex++;
-              } else {
-                clearInterval(typingInterval);
-                
-                // Start subtext typing after main text is complete
-                setTimeout(() => {
-                  let subtextIndex = 0;
-                  const subtextInterval = setInterval(() => {
-                    if (subtextIndex <= subText.length) {
-                      setDisplayedSubtext(subText.slice(0, subtextIndex));
-                      subtextIndex++;
-                    } else {
-                      clearInterval(subtextInterval);
-                      // Show scroll prompt after subtext is complete
-                      setTimeout(() => setShowScrollPrompt(true), 500);
-                    }
-                  }, 60); // Slightly faster for subtext
-                }, 800);
-              }
-            }, 80); // Typing speed for main text
-          }
-        });
-      },
-      {
-        threshold: 0.5, // Trigger when 50% of the section is visible
-        rootMargin: '0px'
-      }
-    );
 
-    if (interactiveSectionRef.current) {
-      observer.observe(interactiveSectionRef.current);
-    }
-
-    return () => {
-      if (interactiveSectionRef.current) {
-        observer.unobserve(interactiveSectionRef.current);
-      }
-    };
-  }, [hasTriggeredAnimation, mainText, subText]);
 
   // Scroll to top function
   const scrollToTop = () => {
@@ -159,10 +95,10 @@ export default function Home() {
                     fullWidth={true}
                   />
                   <button 
-                    onClick={() => document.getElementById('interactive-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
                     className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-semibold transition-all"
                   >
-                    See the Reality
+                    Learn More
                   </button>
                 </div>
                 
@@ -330,34 +266,6 @@ export default function Home() {
           </div>
         </section>
         
-        {/* Interactive Typewriter Section */}
-        <section ref={interactiveSectionRef} id="interactive-section" className="min-h-screen flex items-center justify-center bg-white relative">
-          <div className="text-center max-w-4xl mx-auto px-6">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-8 leading-tight min-h-[200px] flex items-center justify-center">
-              <span className="border-r-2 border-gray-900 pr-1 animate-pulse">
-                {displayedText}
-              </span>
-            </h1>
-            
-            {displayedSubtext && (
-              <p className="text-xl md:text-2xl text-gray-600 mb-12">
-                <span className="border-r-2 border-gray-600 pr-1 animate-pulse">
-                  {displayedSubtext}
-                </span>
-              </p>
-            )}
-            
-            {showScrollPrompt && (
-              <button 
-                onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group flex flex-col items-center mx-auto animate-bounce opacity-0 animate-fade-in-delayed"
-              >
-                <ChevronDown className="w-8 h-8 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </button>
-            )}
-          </div>
-        </section>
-
         {/* Crisis Section - Immediate impact after hero */}
         <section id="problem" className="snap-section">
           <CrisisSection />
