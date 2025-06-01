@@ -16,13 +16,19 @@ import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import { useState, useEffect, useRef } from "react";
-import { ChevronUp, Sun, Zap, Users, ThermometerSun } from "lucide-react";
+import { ChevronUp, Sun, Zap, Users, ThermometerSun, ChevronDown } from "lucide-react";
 import DonationModal from "@/components/DonationModal";
 
 export default function Home() {
   // State to control the visibility of the back-to-top button
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [displayedText, setDisplayedText] = useState("");
+  const [showSubtext, setShowSubtext] = useState(false);
+  const [showScrollPrompt, setShowScrollPrompt] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
+  
+  const mainText = "Are you ready to see the reality for many in Pakistan today?";
+  const subText = "Scroll down to learn more";
 
   useEffect(() => {
     // Handle scroll event to show/hide back-to-top button
@@ -40,6 +46,29 @@ export default function Home() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
+  }, []);
+
+  // Typewriter effect for the interactive section
+  useEffect(() => {
+    // Start typing animation after a short delay when component mounts
+    const timer = setTimeout(() => {
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex <= mainText.length) {
+          setDisplayedText(mainText.slice(0, currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+          // Show subtext after main text is complete
+          setTimeout(() => setShowSubtext(true), 500);
+          setTimeout(() => setShowScrollPrompt(true), 1000);
+        }
+      }, 80); // Typing speed
+
+      return () => clearInterval(typingInterval);
+    }, 1000); // Wait 1 second before starting to type
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Scroll to top function
@@ -93,10 +122,10 @@ export default function Home() {
                     fullWidth={true}
                   />
                   <button 
-                    onClick={() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => document.getElementById('interactive-section')?.scrollIntoView({ behavior: 'smooth' })}
                     className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-semibold transition-all"
                   >
-                    Learn More
+                    See the Reality
                   </button>
                 </div>
                 
@@ -264,8 +293,34 @@ export default function Home() {
           </div>
         </section>
         
+        {/* Interactive Typewriter Section */}
+        <section id="interactive-section" className="min-h-screen flex items-center justify-center bg-white relative">
+          <div className="text-center max-w-4xl mx-auto px-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-8 leading-tight min-h-[200px] flex items-center justify-center">
+              <span className="border-r-2 border-gray-900 pr-1 animate-pulse">
+                {displayedText}
+              </span>
+            </h1>
+            
+            {showSubtext && (
+              <p className="text-xl md:text-2xl text-gray-600 mb-12 opacity-0 animate-fade-in">
+                {subText}
+              </p>
+            )}
+            
+            {showScrollPrompt && (
+              <button 
+                onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
+                className="group flex flex-col items-center mx-auto animate-bounce opacity-0 animate-fade-in-delayed"
+              >
+                <ChevronDown className="w-8 h-8 text-gray-400 group-hover:text-gray-600 transition-colors" />
+              </button>
+            )}
+          </div>
+        </section>
+
         {/* Crisis Section - Immediate impact after hero */}
-        <section className="snap-section">
+        <section id="problem" className="snap-section">
           <CrisisSection />
         </section>
         
