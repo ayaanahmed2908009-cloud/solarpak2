@@ -68,45 +68,64 @@ const families: FamilyStory[] = [
 export default function SimpleVillageStories() {
   const [currentFamily, setCurrentFamily] = useState(0);
   const [showAfter, setShowAfter] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const family = families[currentFamily];
 
   const nextFamily = () => {
-    setCurrentFamily((prev) => (prev + 1) % families.length);
-    setShowAfter(false);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentFamily((prev) => (prev + 1) % families.length);
+      setShowAfter(false);
+      setIsTransitioning(false);
+    }, 150);
   };
 
   const prevFamily = () => {
-    setCurrentFamily((prev) => (prev - 1 + families.length) % families.length);
-    setShowAfter(false);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentFamily((prev) => (prev - 1 + families.length) % families.length);
+      setShowAfter(false);
+      setIsTransitioning(false);
+    }, 150);
+  };
+
+  const switchFamily = (index: number) => {
+    if (index !== currentFamily) {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentFamily(index);
+        setShowAfter(false);
+        setIsTransitioning(false);
+      }, 150);
+    }
   };
 
   return (
     <div className="max-w-6xl mx-auto py-16 px-4">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
-          Real Stories, Real Impact
-        </h2>
-        <p className="text-xl text-gray-600 mb-8">
-          Meet families whose lives were transformed by solar power
-        </p>
+      {/* Header with Cuberto-style animation */}
+      <div className="text-center mb-16 overflow-hidden">
+        <div className="animate-slide-up">
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            Real Stories, Real Impact
+          </h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Meet families whose lives were transformed by solar power
+          </p>
+        </div>
       </div>
 
-      {/* Family Navigation */}
-      <div className="flex justify-center mb-8">
-        <div className="flex space-x-4">
+      {/* Enhanced Family Navigation with hover effects */}
+      <div className="flex justify-center mb-12">
+        <div className="flex space-x-2 bg-gray-100 rounded-2xl p-2">
           {families.map((f, index) => (
             <button
               key={f.id}
-              onClick={() => {
-                setCurrentFamily(index);
-                setShowAfter(false);
-              }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              onClick={() => switchFamily(index)}
+              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
                 index === currentFamily
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-white text-gray-900 shadow-lg'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
               }`}
             >
               {f.name}
@@ -115,142 +134,199 @@ export default function SimpleVillageStories() {
         </div>
       </div>
 
-      {/* Main Story Card */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Family Info Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold">{family.name}</h3>
-              <p className="text-blue-100">{family.age} years old, {family.occupation}</p>
-              <div className="flex items-center gap-4 mt-2 text-blue-100">
-                <div className="flex items-center gap-1">
+      {/* Main Story Card with Cuberto-style design */}
+      <div className={`bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 ${
+        isTransitioning ? 'opacity-80 scale-98' : 'opacity-100 scale-100'
+      } hover:shadow-3xl`}>
+        {/* Family Info Header with gradient and glassmorphism */}
+        <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 text-white p-8">
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="space-y-2">
+              <h3 className="text-3xl font-bold tracking-tight">{family.name}</h3>
+              <p className="text-blue-100 text-lg">{family.age} years old, {family.occupation}</p>
+              <div className="flex items-center gap-6 mt-4 text-blue-100">
+                <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full">
                   <MapPin className="w-4 h-4" />
                   <span>{family.location}</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full">
                   <Users className="w-4 h-4" />
                   <span>{family.familySize} family members</span>
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={prevFamily}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-3 bg-white/20 rounded-xl hover:bg-white/30 transition-all duration-200 hover:scale-110"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={nextFamily}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-3 bg-white/20 rounded-xl hover:bg-white/30 transition-all duration-200 hover:scale-110"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Before/After Toggle */}
-        <div className="p-6">
-          <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 rounded-lg p-1 flex">
-              <button
-                onClick={() => setShowAfter(false)}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                  !showAfter
-                    ? 'bg-red-500 text-white'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                Before Solar
-              </button>
-              <button
-                onClick={() => setShowAfter(true)}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                  showAfter
-                    ? 'bg-green-500 text-white'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                After Solar
-              </button>
+        {/* Enhanced Before/After Toggle with Cuberto-style morphing */}
+        <div className="p-8">
+          <div className="flex justify-center mb-8">
+            <div className="relative bg-gray-100 rounded-2xl p-2 shadow-inner">
+              <div className={`absolute top-2 bottom-2 w-1/2 bg-gradient-to-r rounded-xl shadow-lg transition-all duration-500 ease-out ${
+                showAfter 
+                  ? 'left-1/2 from-green-500 to-emerald-600' 
+                  : 'left-2 from-red-500 to-orange-600'
+              }`}></div>
+              <div className="relative flex">
+                <button
+                  onClick={() => setShowAfter(false)}
+                  className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex-1 text-center ${
+                    !showAfter
+                      ? 'text-white'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  Before Solar
+                </button>
+                <button
+                  onClick={() => setShowAfter(true)}
+                  className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex-1 text-center ${
+                    showAfter
+                      ? 'text-white'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  After Solar
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Image */}
-            <div className="relative">
-              <img
-                src={showAfter ? family.afterImage : family.beforeImage}
-                alt={`${family.name} ${showAfter ? 'after' : 'before'} solar installation`}
-                className="w-full h-64 object-cover rounded-lg"
-              />
-              <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-white font-medium ${
-                showAfter ? 'bg-green-500' : 'bg-red-500'
-              }`}>
-                {showAfter ? 'With Solar Power' : 'Without Solar Power'}
+          {/* Content with enhanced animations */}
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Enhanced Image Section */}
+            <div className="relative group">
+              <div className="relative overflow-hidden rounded-2xl shadow-xl">
+                <img
+                  src={showAfter ? family.afterImage : family.beforeImage}
+                  alt={`${family.name} ${showAfter ? 'after' : 'before'} solar installation`}
+                  className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className={`absolute top-6 left-6 px-4 py-2 rounded-full text-white font-semibold backdrop-blur-sm transition-all duration-500 ${
+                  showAfter ? 'bg-green-500/90' : 'bg-red-500/90'
+                }`}>
+                  {showAfter ? '✨ With Solar Power' : '⚡ Without Solar Power'}
+                </div>
               </div>
+              
+              {/* Floating elements for visual interest */}
+              <div className={`absolute -top-4 -right-4 w-8 h-8 rounded-full transition-all duration-500 ${
+                showAfter ? 'bg-green-400' : 'bg-red-400'
+              } animate-pulse`}></div>
+              <div className={`absolute -bottom-4 -left-4 w-6 h-6 rounded-full transition-all duration-700 ${
+                showAfter ? 'bg-green-300' : 'bg-red-300'
+              } animate-pulse delay-300`}></div>
             </div>
 
-            {/* Story Content */}
-            <div className="space-y-6">
-              <div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">
-                  {showAfter ? 'The Solution' : 'The Challenge'}
+            {/* Enhanced Story Content */}
+            <div className="space-y-8">
+              <div className="relative">
+                <div className={`absolute -left-4 top-0 w-1 h-full rounded-full transition-all duration-500 ${
+                  showAfter ? 'bg-green-500' : 'bg-red-500'
+                }`}></div>
+                <h4 className={`text-2xl font-bold mb-4 transition-colors duration-300 ${
+                  showAfter ? 'text-green-800' : 'text-red-800'
+                }`}>
+                  {showAfter ? '✨ The Solution' : '⚡ The Challenge'}
                 </h4>
-                <p className="text-gray-700">
+                <p className="text-gray-700 text-lg leading-relaxed">
                   {showAfter ? family.solution : family.challenge}
                 </p>
               </div>
 
               {showAfter && (
-                <div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Impact</h4>
-                  <p className="text-gray-700">{family.impact}</p>
+                <div className="animate-slide-up">
+                  <h4 className="text-2xl font-bold text-green-800 mb-4">🌟 Life-Changing Impact</h4>
+                  <p className="text-gray-700 text-lg leading-relaxed">{family.impact}</p>
                 </div>
               )}
 
-              {/* Monthly Cost Comparison */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              {/* Enhanced Monthly Cost Comparison */}
+              <div className={`relative overflow-hidden rounded-2xl p-6 transition-all duration-500 ${
+                showAfter ? 'bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200' : 'bg-gradient-to-br from-red-50 to-orange-50 border border-red-200'
+              }`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h5 className="font-bold text-gray-900 flex items-center gap-2">
-                      <DollarSign className="w-5 h-5" />
+                    <h5 className={`font-bold text-xl flex items-center gap-3 transition-colors duration-300 ${
+                      showAfter ? 'text-green-800' : 'text-red-800'
+                    }`}>
+                      <DollarSign className="w-6 h-6" />
                       Monthly Electricity Cost
                     </h5>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-gray-600 mt-1">
                       {showAfter ? 'After solar installation' : 'Before solar installation'}
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className={`text-3xl font-bold ${
+                    <div className={`text-4xl font-bold transition-all duration-500 ${
                       showAfter ? 'text-green-600' : 'text-red-600'
                     }`}>
                       PKR {showAfter ? family.monthlyBillAfter.toLocaleString() : family.monthlyBillBefore.toLocaleString()}
                     </div>
                     {showAfter && family.monthlyBillAfter === 0 && (
-                      <div className="text-sm text-green-600 font-medium">
-                        Saving PKR {family.monthlyBillBefore.toLocaleString()}/month!
+                      <div className="text-green-600 font-semibold mt-2 animate-pulse">
+                        💰 Saving PKR {family.monthlyBillBefore.toLocaleString()}/month!
                       </div>
                     )}
                   </div>
                 </div>
+                
+                {/* Decorative elements */}
+                <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl transition-all duration-500 ${
+                  showAfter ? 'bg-green-200/50' : 'bg-red-200/50'
+                }`}></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Call to Action */}
-      <div className="text-center mt-12">
-        <p className="text-lg text-gray-600 mb-6">
-          Help more families like {family.name} get access to solar power
-        </p>
-        <button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-3 rounded-lg transition-all transform hover:scale-105 shadow-lg">
-          Make a Donation
-        </button>
+      {/* Enhanced Call to Action with Cuberto-style design */}
+      <div className="text-center mt-16 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-purple-50 to-orange-50 rounded-3xl transform -rotate-1"></div>
+        <div className="relative bg-white rounded-3xl p-12 shadow-2xl border border-gray-100">
+          <div className="max-w-2xl mx-auto">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              Help More Families Like {family.name}
+            </h3>
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              Every donation brings clean, reliable solar power to families who need it most. 
+              Transform lives, one solar panel at a time.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="group relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-10 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                <span className="relative z-10">Make a Donation</span>
+                <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </button>
+              
+              <div className="text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-full">
+                <span className="font-medium">PKR {family.monthlyBillBefore.toLocaleString()}</span> can sponsor one family for a month
+              </div>
+            </div>
+          </div>
+          
+          {/* Floating decorative elements */}
+          <div className="absolute top-4 right-8 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-8 left-8 w-4 h-4 bg-blue-400 rounded-full animate-pulse delay-500"></div>
+          <div className="absolute top-1/2 right-4 w-2 h-2 bg-green-400 rounded-full animate-pulse delay-1000"></div>
+        </div>
       </div>
     </div>
   );
