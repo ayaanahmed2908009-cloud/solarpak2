@@ -65,25 +65,27 @@ export default function Home() {
         <section className="hidden md:block relative h-screen w-full overflow-hidden">
           <div className="flex h-full">
             {/* Left Half - Content */}
-            <div className="w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center relative overflow-hidden">
-              {/* Background decorative elements */}
+            <div className="w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 flex items-center justify-center relative overflow-hidden">
+              {/* Modern background elements */}
               <div className="absolute inset-0">
-                <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 right-20 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-green-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-amber-400/20 to-orange-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-blue-400/20 to-cyan-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-gradient-to-r from-emerald-400/20 to-teal-500/20 rounded-full blur-3xl"></div>
               </div>
               
-              <div className="relative z-10 text-center text-white max-w-lg px-8">
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                  <span className="block text-shadow-lg">Bringing Light to</span>
-                  <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent font-extrabold">
-                    Pakistan
-                  </span>
-                  <span className="block text-shadow-lg">Through Solar Power</span>
-                </h1>
+              <div className="relative z-10 text-center text-white max-w-xl px-8">
+                <div className="mb-8">
+                  <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[0.9] tracking-tight">
+                    <span className="block text-white">Bringing</span>
+                    <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent font-black">
+                      Light
+                    </span>
+                    <span className="block text-white">to Pakistan</span>
+                  </h1>
+                </div>
                 
-                <p className="text-lg md:text-xl mb-8 text-blue-100 leading-relaxed opacity-90">
-                  Help us combat electricity shortages and improve lives by funding solar panel installations for families across Pakistan.
+                <p className="text-xl mb-10 text-slate-300 leading-relaxed max-w-lg mx-auto">
+                  Empowering communities through clean, sustainable solar energy solutions across Pakistan.
                 </p>
                 
                 <div className="flex flex-col gap-4 mb-8">

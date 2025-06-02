@@ -7,43 +7,43 @@ export default function CrisisSection() {
   });
 
   return (
-    <div className="py-20 bg-gradient-to-br from-red-600 via-orange-600 to-red-700 text-white relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-4 left-4 w-20 h-20 border border-white rounded-full"></div>
-        <div className="absolute bottom-8 right-8 w-16 h-16 border border-white rounded-full"></div>
-        <div className="absolute top-1/2 left-1/4 w-12 h-12 border border-white rounded-full"></div>
-        <div className="absolute top-8 right-1/4 w-8 h-8 border border-white rounded-full"></div>
-        <div className="absolute bottom-1/4 left-8 w-14 h-14 border border-white rounded-full"></div>
+    <div className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+      {/* Modern background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-6">
-            <div className="w-3 h-3 bg-red-300 rounded-full animate-pulse mr-3"></div>
-            <span className="font-semibold text-sm">URGENT: Current Crisis</span>
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center bg-red-500/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-red-400/30">
+            <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse mr-3"></div>
+            <span className="font-semibold text-sm tracking-wide">URGENT CRISIS</span>
           </div>
-          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-red-100 bg-clip-text text-transparent">
-            The Reality in Pakistan Today
+          <h2 className="text-5xl md:text-6xl font-bold mb-8 leading-tight">
+            <span className="block text-white">The Reality in</span>
+            <span className="bg-gradient-to-r from-red-400 via-orange-400 to-amber-400 bg-clip-text text-transparent">
+              Pakistan Today
+            </span>
           </h2>
-          <p className="text-xl opacity-90 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
             Right now, millions of Pakistani families are enduring extreme heat without reliable electricity. 
             This is not just a statistic—it's a daily struggle for survival.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-            <div className="flex items-center mb-6">
-              <div className="p-4 bg-red-500 rounded-xl mr-6 group-hover:scale-110 transition-transform duration-300">
-                <Thermometer className="w-10 h-10 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-200 group">
+            <div className="flex items-start mb-6">
+              <div className="p-4 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl mr-6 group-hover:scale-110 transition-transform duration-200 shadow-xl">
+                <Thermometer className="w-8 h-8 text-white" />
               </div>
               <div>
-                <div className="text-5xl font-bold">{stats?.temperature || 45}°C</div>
-                <div className="text-lg opacity-90">Extreme Heat</div>
+                <div className="text-4xl font-bold text-white">{stats?.temperature || 45}°C</div>
+                <div className="text-lg text-slate-300 font-medium">Extreme Heat</div>
               </div>
             </div>
-            <p className="text-base opacity-80 leading-relaxed">
+            <p className="text-slate-400 leading-relaxed">
               Temperatures regularly exceed 45°C, making life unbearable without cooling. 
               Children cannot study, elderly suffer, and families struggle to sleep.
             </p>

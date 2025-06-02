@@ -27,53 +27,45 @@ export default function Navbar() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-6 py-5">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center space-x-4 group">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-20 scale-110 group-hover:opacity-30 transition-all duration-300"></div>
-              <div className="relative bg-gradient-to-br from-blue-600 to-blue-700 p-2 rounded-full group-hover:scale-105 transition-transform duration-300">
-                <Sun className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                <Sun className="w-7 h-7 text-white" />
               </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full animate-pulse"></div>
             </div>
             <div className="flex flex-col">
-              <span className="font-heading font-bold text-2xl bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              <span className="font-bold text-2xl bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                 Solar Light Pakistan
               </span>
-              <span className="text-xs text-gray-500 font-medium tracking-wide">Bringing Energy to Communities</span>
+              <span className="text-sm text-slate-500 font-medium">Powering Communities</span>
             </div>
           </Link>
           
-          <nav className="hidden md:flex items-center space-x-1">
-            <a href="#problem" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
-              <span className="relative z-10">The Crisis</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
+          <nav className="hidden md:flex items-center space-x-2">
+            <a href="#problem" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Crisis
             </a>
-            <a href="#solution" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
-              <span className="relative z-10">Our Solution</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
+            <a href="#solution" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Solution
             </a>
-            <Link href="/village" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
-              <span className="relative z-10">Village Stories</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
+            <Link href="/village" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Stories
             </Link>
-            <a href="#impact" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
-              <span className="relative z-10">Impact</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
+            <a href="#impact" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Impact
             </a>
-            <Link href="/impact" className="relative group px-4 py-2 rounded-lg font-medium text-blue-600 hover:text-blue-700 transition-all duration-300 bg-blue-50 hover:bg-blue-100">
-              <span className="relative z-10 flex items-center">
-                <Zap className="w-4 h-4 mr-1" />
-                Impact Map
-              </span>
+            <Link href="/impact" className="flex items-center px-4 py-2.5 rounded-xl font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all duration-200">
+              <Zap className="w-4 h-4 mr-2" />
+              Map
             </Link>
-            <a href="#projects" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
-              <span className="relative z-10">Projects</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
+            <a href="#projects" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Projects
             </a>
-            <Link href="/membership" className="relative group px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50">
-              <span className="relative z-10">Membership</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-300"></div>
+            <Link href="/membership" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Membership
             </Link>
           </nav>
           
