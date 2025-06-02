@@ -49,33 +49,33 @@ export default function CrisisSection() {
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-            <div className="flex items-center mb-6">
-              <div className="p-4 bg-orange-500 rounded-xl mr-6 group-hover:scale-110 transition-transform duration-300">
-                <Clock className="w-10 h-10 text-white" />
+          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-200 group">
+            <div className="flex items-start mb-6">
+              <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mr-6 group-hover:scale-110 transition-transform duration-200 shadow-xl">
+                <Clock className="w-8 h-8 text-white" />
               </div>
               <div>
-                <div className="text-5xl font-bold">{stats?.hoursWithoutPower || 16}h</div>
-                <div className="text-lg opacity-90">Daily Blackouts</div>
+                <div className="text-4xl font-bold text-white">{(stats as any)?.hoursWithoutPower || 16}h</div>
+                <div className="text-lg text-slate-300 font-medium">Daily Blackouts</div>
               </div>
             </div>
-            <p className="text-base opacity-80 leading-relaxed">
+            <p className="text-slate-400 leading-relaxed">
               Daily blackouts leave families without fans, lights, or refrigeration. 
               Food spoils, businesses close, and hope fades.
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-            <div className="flex items-center mb-6">
-              <div className="p-4 bg-yellow-500 rounded-xl mr-6 group-hover:scale-110 transition-transform duration-300">
-                <Users className="w-10 h-10 text-white" />
+          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-200 group">
+            <div className="flex items-start mb-6">
+              <div className="p-4 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl mr-6 group-hover:scale-110 transition-transform duration-200 shadow-xl">
+                <Users className="w-8 h-8 text-white" />
               </div>
               <div>
-                <div className="text-5xl font-bold">50M+</div>
-                <div className="text-lg opacity-90">People Affected</div>
+                <div className="text-4xl font-bold text-white">50M+</div>
+                <div className="text-lg text-slate-300 font-medium">People Affected</div>
               </div>
             </div>
-            <p className="text-base opacity-80 leading-relaxed">
+            <p className="text-slate-400 leading-relaxed">
               Millions of Pakistani families struggle with unreliable electricity daily. 
               Your support can change this reality, one family at a time.
             </p>
