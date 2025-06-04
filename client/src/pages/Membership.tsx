@@ -184,7 +184,7 @@ export default function Membership() {
               Get detailed information about all membership tiers, benefits, and exclusive opportunities available to our supporters.
             </p>
             <a 
-              href="/attached_assets/Untitled document_1749063535427.pdf" 
+              href="/membership-guide.pdf" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"

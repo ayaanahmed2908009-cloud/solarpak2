@@ -8,6 +8,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Serve static files from the public directory
+app.use(express.static('public'));
+
 // Set up session middleware
 const MemStore = MemoryStore(session);
 app.use(
