@@ -176,6 +176,23 @@ export default function Membership() {
             ))}
           </div>
           
+          <div className="max-w-3xl mx-auto text-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg p-8 border border-blue-100 mb-8">
+            <h2 className="font-heading text-2xl font-semibold mb-4 text-blue-900">
+              Learn More About Our Memberships
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Get detailed information about all membership tiers, benefits, and exclusive opportunities available to our supporters.
+            </p>
+            <a 
+              href="/attached_assets/Untitled document_1749063535427.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              📄 Download Membership Guide (PDF)
+            </a>
+          </div>
+
           <div className="max-w-3xl mx-auto text-center bg-white rounded-xl shadow-lg p-8 border border-gray-100">
             <h2 className="font-heading text-2xl font-semibold mb-4">
               Frequently Asked Questions
