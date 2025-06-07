@@ -187,7 +187,7 @@ export default function DonationModal({
         <Button
           variant={buttonVariant || "default"}
           size={buttonSize}
-          className={`${fullWidth ? "w-full" : ""} ${buttonVariant === "default" ? "btn-glow bg-primary hover:bg-primary/90" : ""}`}
+          className={`${fullWidth ? "w-full" : ""} ${buttonVariant === "default" ? "bg-black hover:bg-gray-800 text-white font-semibold" : "border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900"}`}
         >
           <Heart className="mr-2 h-4 w-4" />
           {buttonText}
@@ -391,7 +391,7 @@ export default function DonationModal({
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full btn-glow bg-primary hover:bg-primary/90 text-lg py-6"
+              className="w-full bg-black hover:bg-gray-800 text-white font-semibold text-lg py-6 transition-all duration-200 shadow-lg hover:shadow-xl"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
