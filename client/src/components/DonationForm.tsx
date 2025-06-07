@@ -110,14 +110,18 @@ export default function DonationForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
-          <h3 className="font-heading font-semibold text-lg text-gray-700">Choose Donation Amount</h3>
+          <h3 className="font-heading font-semibold text-lg text-gray-900">Choose Donation Amount</h3>
           
           <div className="grid grid-cols-2 gap-3">
             <Button
               type="button"
               variant={selectedAmount === 50 && !isCustomAmount ? "default" : "outline"}
               onClick={() => selectAmount(50)}
-              className="h-12 text-lg"
+              className={`h-12 text-lg font-semibold transition-all duration-200 ${
+                selectedAmount === 50 && !isCustomAmount 
+                  ? "bg-black hover:bg-gray-800 text-white border-black" 
+                  : "border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900"
+              }`}
             >
               $50
             </Button>
@@ -126,7 +130,11 @@ export default function DonationForm() {
               type="button"
               variant={selectedAmount === 100 && !isCustomAmount ? "default" : "outline"}
               onClick={() => selectAmount(100)}
-              className="h-12 text-lg"
+              className={`h-12 text-lg font-semibold transition-all duration-200 ${
+                selectedAmount === 100 && !isCustomAmount 
+                  ? "bg-black hover:bg-gray-800 text-white border-black" 
+                  : "border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900"
+              }`}
             >
               $100
             </Button>
@@ -135,7 +143,11 @@ export default function DonationForm() {
               type="button"
               variant={selectedAmount === 250 && !isCustomAmount ? "default" : "outline"}
               onClick={() => selectAmount(250)}
-              className="h-12 text-lg"
+              className={`h-12 text-lg font-semibold transition-all duration-200 ${
+                selectedAmount === 250 && !isCustomAmount 
+                  ? "bg-black hover:bg-gray-800 text-white border-black" 
+                  : "border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900"
+              }`}
             >
               $250
             </Button>
@@ -144,7 +156,11 @@ export default function DonationForm() {
               type="button"
               variant={selectedAmount === 500 && !isCustomAmount ? "default" : "outline"}
               onClick={() => selectAmount(500)}
-              className="h-12 text-lg"
+              className={`h-12 text-lg font-semibold transition-all duration-200 ${
+                selectedAmount === 500 && !isCustomAmount 
+                  ? "bg-black hover:bg-gray-800 text-white border-black" 
+                  : "border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900"
+              }`}
             >
               $500
             </Button>
@@ -263,13 +279,13 @@ export default function DonationForm() {
         
         <Button 
           type="submit" 
-          className="w-full py-6 text-lg"
+          className="w-full py-6 text-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? "Processing..." : "Donate Now"}
         </Button>
         
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-gray-600">
           <p>Secure payment processing. 100% of your donation goes directly to solar installations.</p>
         </div>
       </form>
