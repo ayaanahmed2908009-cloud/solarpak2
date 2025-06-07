@@ -124,6 +124,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             currency: 'usd',
             product_data: {
               name: `Solar Panel Donation${projectId ? ` - Project ${projectId}` : ''}`,
+              description: 'Supporting solar energy access for families in Pakistan',
+              images: ['https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&h=300&fit=crop'],
             },
             unit_amount: Math.round(amount * 100), // Convert to cents
           },
