@@ -38,8 +38,8 @@ export default function InteractiveImpactCounter() {
   }, [isVisible]);
 
   const animateCounters = () => {
-    const duration = 6000; // 6 seconds (slower)
-    const steps = 120;
+    const duration = 2500; // 2.5 seconds 
+    const steps = 50;
     const stepDuration = duration / steps;
 
     let currentStep = 0;
