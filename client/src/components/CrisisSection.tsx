@@ -55,7 +55,7 @@ export default function CrisisSection() {
                 <Clock className="w-8 h-8 text-white" />
               </div>
               <div>
-                <div className="text-4xl font-bold text-white">{(stats as any)?.hoursWithoutPower || 16}h</div>
+                <div className="text-4xl font-bold text-white">{(stats as any)?.hoursWithoutPower || 12}h</div>
                 <div className="text-lg text-slate-300 font-medium">Daily Blackouts</div>
               </div>
             </div>

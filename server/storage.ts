@@ -296,7 +296,7 @@ export class MemStorage implements IStorage {
       ...insertDonation, 
       id, 
       paymentStatus: 'pending',
-      paymentIntentId: undefined,
+      paymentIntentId: null,
       createdAt: timestamp
     };
     this.donations.set(id, donation);
@@ -488,12 +488,12 @@ export class MemStorage implements IStorage {
       id: 1,
       hoursWithoutPower: 12,
       temperature: 35,
-      homesHelped: 127,
-      solarPanelsInstalled: 486,
-      co2Reduced: 254,
-      peopleImpacted: 635,
-      cleanEnergy: 381,
-      amountRaised: 128450,
+      homesHelped: 5,
+      solarPanelsInstalled: 5,
+      co2Reduced: 10,
+      peopleImpacted: 30,
+      cleanEnergy: 15,
+      amountRaised: 5000,
       goal: 200000,
       updatedAt: timestamp
     };
