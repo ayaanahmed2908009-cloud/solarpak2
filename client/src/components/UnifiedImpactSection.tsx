@@ -24,12 +24,12 @@ export default function UnifiedImpactSection() {
   });
 
   const finalNumbers = {
-    livesImpacted: 2847,
-    energyGenerated: 456789,
-    co2Prevented: 234567,
-    hoursOfPower: 123456,
-    panelsInstalled: 847,
-    homesEmpowered: 234
+    livesImpacted: 15,
+    energyGenerated: 45,
+    co2Prevented: 56.7,
+    hoursOfPower: 3,
+    panelsInstalled: 3,
+    homesEmpowered: 3
   };
 
   useEffect(() => {
@@ -51,8 +51,8 @@ export default function UnifiedImpactSection() {
   }, [isVisible]);
 
   const animateCounters = () => {
-    const duration = 3000;
-    const steps = 60;
+    const duration = 6000; // 6 seconds (slower)
+    const steps = 120;
     const stepDuration = duration / steps;
 
     let currentStep = 0;
@@ -63,7 +63,7 @@ export default function UnifiedImpactSection() {
       setCounters({
         livesImpacted: Math.floor(finalNumbers.livesImpacted * progress),
         energyGenerated: Math.floor(finalNumbers.energyGenerated * progress),
-        co2Prevented: Math.floor(finalNumbers.co2Prevented * progress),
+        co2Prevented: Math.round(finalNumbers.co2Prevented * progress * 10) / 10,
         hoursOfPower: Math.floor(finalNumbers.hoursOfPower * progress),
         panelsInstalled: Math.floor(finalNumbers.panelsInstalled * progress),
         homesEmpowered: Math.floor(finalNumbers.homesEmpowered * progress)
@@ -150,7 +150,7 @@ export default function UnifiedImpactSection() {
               <div className="bg-blue-50 rounded-lg p-3">
                 <div className="flex items-center text-blue-800 text-sm">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                  +8 families this month
+                  +1 family this month
                 </div>
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function UnifiedImpactSection() {
                 style={{ width: '78%' }}
               ></div>
             </div>
-            <p className="text-sm text-green-700">Enough to power 1,520 homes for an entire month</p>
+            <p className="text-sm text-green-700">Enough to power 2 homes for a day</p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 border border-blue-200">
@@ -209,7 +209,7 @@ export default function UnifiedImpactSection() {
               </div>
               <div>
                 <h3 className="text-3xl font-bold text-blue-800 font-mono">
-                  {counters.co2Prevented.toLocaleString()} kg
+                  {counters.co2Prevented.toFixed(1)} kg
                 </h3>
                 <p className="text-blue-600">CO₂ Emissions Prevented</p>
               </div>
@@ -220,7 +220,7 @@ export default function UnifiedImpactSection() {
                 style={{ width: '65%' }}
               ></div>
             </div>
-            <p className="text-sm text-blue-700">Equivalent to planting 2,847 trees this year</p>
+            <p className="text-sm text-blue-700">Equivalent to planting 3 trees this year</p>
           </div>
         </div>
 
