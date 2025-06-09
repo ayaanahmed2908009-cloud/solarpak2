@@ -224,6 +224,35 @@ export default function UnifiedImpactSection() {
           </div>
         </div>
 
+        {/* Solar Panel Progress Goal */}
+        <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-3xl p-8 border border-orange-200 mb-16">
+          <div className="text-center mb-6">
+            <h3 className="text-3xl font-bold text-gray-800 mb-2">🎯 Our Solar Panel Goal</h3>
+            <p className="text-gray-600 text-lg">Working toward 100 solar panels across Pakistan</p>
+          </div>
+          
+          <div className="max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-gray-800 font-semibold">Progress: 3 / 100 panels</span>
+              <span className="text-gray-600">3%</span>
+            </div>
+            
+            <div className="bg-gray-200 rounded-full h-4 mb-4 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-4 rounded-full transition-all duration-2000 ease-out relative"
+                style={{ width: '3%' }}
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full"></div>
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-gray-700 text-lg font-medium">We'll get there soon! 🚀</p>
+              <p className="text-gray-500 text-sm mt-1">Every donation brings us closer to transforming 100 communities</p>
+            </div>
+          </div>
+        </div>
+
         {/* Real Impact Stories */}
         <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 mb-16">
           <h3 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
