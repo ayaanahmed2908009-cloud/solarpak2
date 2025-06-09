@@ -148,6 +148,35 @@ export default function InteractiveImpactCounter() {
           </div>
         </div>
 
+        {/* Solar Panel Progress Goal */}
+        <div className="mt-16 bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+          <div className="text-center mb-6">
+            <h3 className="text-3xl font-bold text-white mb-2">🎯 Our Solar Panel Goal</h3>
+            <p className="text-purple-200 text-lg">Working toward 100 solar panels across Pakistan</p>
+          </div>
+          
+          <div className="max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-white font-semibold">Progress: 3 / 100 panels</span>
+              <span className="text-purple-200">3%</span>
+            </div>
+            
+            <div className="bg-white/20 rounded-full h-4 mb-4 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-4 rounded-full transition-all duration-2000 ease-out relative"
+                style={{ width: '3%' }}
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full"></div>
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-purple-100 text-lg font-medium">We'll get there soon! 🚀</p>
+              <p className="text-purple-300 text-sm mt-1">Every donation brings us closer to transforming 100 communities</p>
+            </div>
+          </div>
+        </div>
+
         {/* Global Stats Bar */}
         <div className="mt-16 bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
