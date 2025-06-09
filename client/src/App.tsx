@@ -12,6 +12,7 @@ import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import Membership from "@/pages/Membership";
 import VillageExperience from "@/pages/VillageExperience";
+import CaseStudy from "@/pages/CaseStudy";
 import { useEffect } from "react";
 import { AuthProvider } from "@/hooks/useAuth";
 
@@ -92,6 +93,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/impact" component={Impact} />
       <Route path="/village" component={VillageExperience} />
+      <Route path="/case-study" component={CaseStudy} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/success" component={Success} />
       <Route path="/login" component={Login} />

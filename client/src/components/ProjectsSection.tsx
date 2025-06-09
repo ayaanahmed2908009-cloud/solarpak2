@@ -116,7 +116,7 @@ export default function ProjectsSection() {
                   </div>
                   
                   <Link 
-                    href={`/checkout?projectId=${project.id}`}
+                    href="/case-study"
                     className="group block text-center bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-6 py-3 rounded-md transition-all duration-300 shadow-md hover:shadow-lg"
                   >
                     <span className="flex items-center justify-center">
