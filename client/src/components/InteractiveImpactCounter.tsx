@@ -13,10 +13,10 @@ export default function InteractiveImpactCounter() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const finalNumbers = {
-    livesImpacted: 2847,
-    energyGenerated: 456789,
-    co2Prevented: 234567,
-    hoursOfPower: 123456
+    livesImpacted: 15,
+    energyGenerated: 45,
+    co2Prevented: 56.7,
+    hoursOfPower: 3
   };
 
   useEffect(() => {
@@ -38,8 +38,8 @@ export default function InteractiveImpactCounter() {
   }, [isVisible]);
 
   const animateCounters = () => {
-    const duration = 3000; // 3 seconds
-    const steps = 60;
+    const duration = 6000; // 6 seconds (slower)
+    const steps = 120;
     const stepDuration = duration / steps;
 
     let currentStep = 0;
@@ -50,7 +50,7 @@ export default function InteractiveImpactCounter() {
       setCounters({
         livesImpacted: Math.floor(finalNumbers.livesImpacted * progress),
         energyGenerated: Math.floor(finalNumbers.energyGenerated * progress),
-        co2Prevented: Math.floor(finalNumbers.co2Prevented * progress),
+        co2Prevented: Math.round(finalNumbers.co2Prevented * progress * 10) / 10,
         hoursOfPower: Math.floor(finalNumbers.hoursOfPower * progress)
       });
 
@@ -101,7 +101,7 @@ export default function InteractiveImpactCounter() {
                 {counters.livesImpacted.toLocaleString()}
               </div>
               <div className="text-purple-200 font-medium">Lives Transformed</div>
-              <div className="text-sm text-purple-300 mt-2">+12 families this hour</div>
+              <div className="text-sm text-purple-300 mt-2">+2 families this week</div>
             </div>
           </div>
 
@@ -115,7 +115,7 @@ export default function InteractiveImpactCounter() {
                 {counters.energyGenerated.toLocaleString()}
               </div>
               <div className="text-purple-200 font-medium">kWh Generated</div>
-              <div className="text-sm text-purple-300 mt-2">+847 kWh today</div>
+              <div className="text-sm text-purple-300 mt-2">+3 kWh today</div>
             </div>
           </div>
 
@@ -126,7 +126,7 @@ export default function InteractiveImpactCounter() {
                 <Globe className="w-10 h-10 text-white" />
               </div>
               <div className="text-4xl font-bold text-white mb-2 font-mono">
-                {counters.co2Prevented.toLocaleString()}
+                {counters.co2Prevented.toFixed(1)}
               </div>
               <div className="text-purple-200 font-medium">kg CO₂ Prevented</div>
               <div className="text-sm text-purple-300 mt-2">Saving our planet</div>
