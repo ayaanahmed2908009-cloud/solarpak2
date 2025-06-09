@@ -120,7 +120,7 @@ export default function ProjectsSection() {
                     className="group block text-center bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-6 py-3 rounded-md transition-all duration-300 shadow-md hover:shadow-lg"
                   >
                     <span className="flex items-center justify-center">
-                      Support This Project 
+                      Read Case Study 
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 transform group-hover:translate-x-1" />
                     </span>
                   </Link>

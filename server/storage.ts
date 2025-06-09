@@ -503,27 +503,11 @@ export class MemStorage implements IStorage {
     // Seed projects
     const projects: InsertProject[] = [
       {
-        name: "Sindh Province Initiative",
-        description: "Bringing solar power to 5 families in rural Sindh villages facing 12+ hour power outages daily.",
-        location: "Sindh, Pakistan",
+        name: "Bringing Light to Khairpur Mirs Sindh",
+        description: "Bringing solar power to families in Khairpur Mirs, Sindh facing 12+ hour power outages daily in extreme heat conditions.",
+        location: "Khairpur Mirs, Sindh, Pakistan",
         imageUrl: "",
-        totalFundingGoal: 5000,
-        isActive: true
-      },
-      {
-        name: "Punjab School Project",
-        description: "Installing solar systems at 2 rural schools to provide reliable electricity for 150+ students.",
-        location: "Punjab, Pakistan", 
-        imageUrl: "",
-        totalFundingGoal: 8000,
-        isActive: true
-      },
-      {
-        name: "Medical Clinics Initiative",
-        description: "Powering 1 rural medical clinic with solar energy to ensure continuous healthcare services.",
-        location: "Various locations, Pakistan",
-        imageUrl: "",
-        totalFundingGoal: 6000,
+        totalFundingGoal: 10000,
         isActive: true
       }
     ];
@@ -533,7 +517,7 @@ export class MemStorage implements IStorage {
       this.projects.set(id, {
         ...project,
         id,
-        currentFunding: id === 1 ? 1500 : id === 2 ? 2000 : 1000, // Set current funding based on project
+        currentFunding: 0, // Set to 0% funding progress
         isActive: project.isActive ?? true,
         createdAt: timestamp
       });
