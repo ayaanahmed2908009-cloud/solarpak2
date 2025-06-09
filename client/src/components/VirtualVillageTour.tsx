@@ -95,7 +95,7 @@ export default function VirtualVillageTour() {
       villagerAge: 41,
       occupation: "Farmer",
       beforeConditions: [
-        "20 hours daily without power",
+        "12 hours daily without power",
         "Children studied by candlelight",
         "PKR 8,000 spent on diesel generators",
         "Constant worry about fuel costs",
@@ -118,7 +118,7 @@ export default function VirtualVillageTour() {
       description: "From crushing bills to saving for the future",
       beforeImage: "💸😫📉",
       afterImage: "💰😄📈",
-      temperature: 40,
+      temperature: 45,
       powerOutageHours: 12,
       familiesAffected: 1,
       location: "Lahore, Punjab",
