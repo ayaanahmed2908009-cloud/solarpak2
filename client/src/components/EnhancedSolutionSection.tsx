@@ -35,7 +35,7 @@ export default function EnhancedSolutionSection() {
       color: "from-red-500 to-orange-500"
     },
     {
-      problem: "16 Hours Daily Without Power",
+      problem: "12 Hours Daily Without Power",
       solution: "Continuous Energy Supply",
       icon: Clock,
       beforeIcon: "⚫",
