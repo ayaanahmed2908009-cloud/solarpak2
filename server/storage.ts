@@ -295,6 +295,8 @@ export class MemStorage implements IStorage {
     const donation: Donation = { 
       ...insertDonation, 
       id, 
+      projectId: insertDonation.projectId ?? null,
+      isRecurring: insertDonation.isRecurring ?? false,
       paymentStatus: 'pending',
       paymentIntentId: null,
       createdAt: timestamp
@@ -502,26 +504,26 @@ export class MemStorage implements IStorage {
     const projects: InsertProject[] = [
       {
         name: "Sindh Province Initiative",
-        description: "Bringing solar power to 30 families in rural Sindh villages facing 16+ hour power outages daily.",
+        description: "Bringing solar power to 5 families in rural Sindh villages facing 12+ hour power outages daily.",
         location: "Sindh, Pakistan",
         imageUrl: "",
-        totalFundingGoal: 30000,
+        totalFundingGoal: 5000,
         isActive: true
       },
       {
         name: "Punjab School Project",
-        description: "Installing solar systems at 5 rural schools to provide reliable electricity for 600+ students.",
+        description: "Installing solar systems at 2 rural schools to provide reliable electricity for 150+ students.",
         location: "Punjab, Pakistan", 
         imageUrl: "",
-        totalFundingGoal: 60000,
+        totalFundingGoal: 8000,
         isActive: true
       },
       {
         name: "Medical Clinics Initiative",
-        description: "Powering 3 rural medical clinics with solar energy to ensure continuous healthcare services.",
+        description: "Powering 1 rural medical clinic with solar energy to ensure continuous healthcare services.",
         location: "Various locations, Pakistan",
         imageUrl: "",
-        totalFundingGoal: 50000,
+        totalFundingGoal: 6000,
         isActive: true
       }
     ];
@@ -531,7 +533,8 @@ export class MemStorage implements IStorage {
       this.projects.set(id, {
         ...project,
         id,
-        currentFunding: id === 1 ? 19500 : id === 2 ? 24000 : 37500, // Set current funding based on project
+        currentFunding: id === 1 ? 1500 : id === 2 ? 2000 : 1000, // Set current funding based on project
+        isActive: project.isActive ?? true,
         createdAt: timestamp
       });
     });
