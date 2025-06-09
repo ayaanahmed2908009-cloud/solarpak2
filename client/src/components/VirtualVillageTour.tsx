@@ -45,10 +45,10 @@ export default function VirtualVillageTour() {
       beforeImage: "🔥😰💔",
       afterImage: "❄️😌💚",
       temperature: 45,
-      powerOutageHours: 16,
+      powerOutageHours: 12,
       familiesAffected: 1,
       location: "Karachi, Sindh",
-      story: "Meet Fatima Malik, a school teacher whose family suffered through 16-hour power outages in 45°C heat. Watch their incredible transformation.",
+      story: "Meet Fatima Malik, a school teacher whose family suffered through 12-hour power outages in 45°C heat. Watch their incredible transformation.",
       villagerName: "Fatima Malik",
       villagerQuote: "My children can finally sleep peacefully at night. The fans work all day, and we don't worry about electricity bills anymore. It's like we have a new life.",
       timeOfDay: "afternoon",
@@ -58,7 +58,7 @@ export default function VirtualVillageTour() {
       villagerAge: 34,
       occupation: "School Teacher",
       beforeConditions: [
-        "16 hours daily without power",
+        "12 hours daily without power",
         "PKR 15,000 monthly electricity bills",
         "Children couldn't sleep in heat",
         "Teaching at home impossible",
@@ -72,7 +72,7 @@ export default function VirtualVillageTour() {
         "Food stays fresh, medicines safe"
       ],
       emotionalImpact: "From despair to hope - Fatima's family now thrives with dignity and comfort.",
-      beforeSituation: "It's 3 PM and 45°C outside. Fatima's children are crying from the heat, unable to nap. The power has been out for 12 hours straight. Their medicine is spoiling in the warm fridge, and Fatima can't prepare lessons for her students because her laptop overheats. The family huddles in one room, fanning themselves with papers, praying for electricity that may not come until midnight.",
+      beforeSituation: "It's 3 PM and 45°C outside. Fatima's children are crying from the heat, unable to nap. The power has been out for 8 hours straight. Their medicine is spoiling in the warm fridge, and Fatima can't prepare lessons for her students because her laptop overheats. The family huddles in one room, fanning themselves with papers, praying for electricity that may not come until evening.",
       afterSituation: "Same time, same heat outside - but inside it's wonderfully cool. The children are peacefully doing homework under bright LED lights while fans hum quietly. Fatima prepares tomorrow's lessons on her laptop, the fridge keeps medicine and food fresh, and the family enjoys quality time together in comfort. No more counting hours until power returns - it's always there when they need it."
     },
     {
@@ -81,8 +81,8 @@ export default function VirtualVillageTour() {
       description: "From candlelight studies to bright educational futures",
       beforeImage: "🕯️📚😢",
       afterImage: "💡📖😊",
-      temperature: 42,
-      powerOutageHours: 20,
+      temperature: 45,
+      powerOutageHours: 12,
       familiesAffected: 1,
       location: "Interior Sindh",
       story: "Hassan Ahmed, a farmer whose daughter studied by candlelight, now watches her dream of becoming a doctor under bright solar-powered lights.",

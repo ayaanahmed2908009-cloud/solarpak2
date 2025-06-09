@@ -34,7 +34,7 @@ export default function KeyStats() {
               <Bolt className="w-8 h-8" />
             </div>
             <div className="font-heading font-bold text-3xl md:text-4xl">
-              {stats?.hoursWithoutPower}+
+              12+
             </div>
             <p className="text-gray-600">Hours without power daily</p>
           </div>
@@ -44,7 +44,7 @@ export default function KeyStats() {
               <Thermometer className="w-8 h-8" />
             </div>
             <div className="font-heading font-bold text-3xl md:text-4xl">
-              {stats?.temperature}°C+
+              45°C+
             </div>
             <p className="text-gray-600">Summer temperatures</p>
           </div>

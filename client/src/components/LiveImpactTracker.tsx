@@ -30,8 +30,8 @@ export default function LiveImpactTracker() {
     homesEmpowered: (stats as any)?.homesHelped || 5,
     energyGenerated: 150, // kWh generated today
     co2Saved: 75, // kg CO2 saved
-    currentTemp: (stats as any)?.temperature || 35,
-    hoursWithoutPower: (stats as any)?.hoursWithoutPower || 12
+    currentTemp: 45, // Constant temperature
+    hoursWithoutPower: 12 // Constant hours without power
   };
 
   useEffect(() => {

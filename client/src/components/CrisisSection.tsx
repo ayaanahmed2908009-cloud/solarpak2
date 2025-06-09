@@ -39,12 +39,12 @@ export default function CrisisSection() {
                 <Thermometer className="w-8 h-8 text-white" />
               </div>
               <div>
-                <div className="text-4xl font-bold text-white">{(stats as any)?.temperature || 35}°C</div>
+                <div className="text-4xl font-bold text-white">45°C</div>
                 <div className="text-lg text-slate-300 font-medium">Extreme Heat</div>
               </div>
             </div>
             <p className="text-slate-400 leading-relaxed">
-              Temperatures regularly exceed 35°C, making life unbearable without cooling. 
+              Temperatures regularly exceed 45°C, making life unbearable without cooling. 
               Children cannot study, elderly suffer, and families struggle to sleep.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default function CrisisSection() {
                 <Clock className="w-8 h-8 text-white" />
               </div>
               <div>
-                <div className="text-4xl font-bold text-white">{(stats as any)?.hoursWithoutPower || 12}h</div>
+                <div className="text-4xl font-bold text-white">12h</div>
                 <div className="text-lg text-slate-300 font-medium">Daily Blackouts</div>
               </div>
             </div>
