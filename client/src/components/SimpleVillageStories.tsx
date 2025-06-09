@@ -29,7 +29,7 @@ const families: FamilyStory[] = [
     afterImage: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=300&fit=crop",
     monthlyBillBefore: 15000,
     monthlyBillAfter: 0,
-    challenge: "Power outages for 14 hours daily. Children can't study after sunset. Generator costs PKR 500 per day.",
+    challenge: "Power outages for 12 hours daily. Children can't study after sunset. Generator costs PKR 500 per day.",
     solution: "Solar panels installed on rooftop providing 24/7 clean electricity for the entire household.",
     impact: "Children now study in the evening. Family saves PKR 15,000 monthly. Small business started from home."
   },

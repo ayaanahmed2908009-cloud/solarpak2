@@ -35,7 +35,7 @@ export default function EnhancedSolutionSection() {
       color: "from-red-500 to-orange-500"
     },
     {
-      problem: "16 Hours Daily Without Power",
+      problem: "12 Hours Daily Without Power",
       solution: "Continuous Energy Supply",
       icon: Clock,
       beforeIcon: "⚫",
@@ -218,7 +218,7 @@ export default function EnhancedSolutionSection() {
               </div>
               <div className="flex items-center text-red-700">
                 <span className="text-2xl mr-3">⚡</span>
-                <span>16+ hours daily without power</span>
+                <span>12+ hours daily without power</span>
               </div>
               <div className="flex items-center text-red-700">
                 <span className="text-2xl mr-3">📚</span>

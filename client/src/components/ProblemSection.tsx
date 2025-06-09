@@ -10,7 +10,7 @@ export default function ProblemSection() {
               The Crisis
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              12+ hours of daily power outages in 35°C+ heat leaves millions without basic electricity
+              12+ hours of daily power outages in 45°C+ heat leaves millions without basic electricity
             </p>
           </div>
           
@@ -27,7 +27,7 @@ export default function ProblemSection() {
               <div className="bg-primary/5 p-6 rounded-xl border border-primary/10">
                 <h4 className="font-semibold text-lg mb-2 text-primary">Personal Connection</h4>
                 <p className="text-gray-700 italic">
-                  "Experiencing 35°C+ heat without electricity during childhood visits to Pakistan inspired this mission. 
+                  "Experiencing 45°C+ heat without electricity during childhood visits to Pakistan inspired this mission. 
                   Solar panels transformed our family's comfort, but most can't access this solution."
                 </p>
               </div>
@@ -48,7 +48,7 @@ export default function ProblemSection() {
                     <div className="w-16 h-16 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
                       <Heart className="w-8 h-8 text-orange-600" />
                     </div>
-                    <div className="text-3xl font-bold text-orange-600 mb-2">35°C+</div>
+                    <div className="text-3xl font-bold text-orange-600 mb-2">45°C+</div>
                     <div className="text-sm text-gray-600">Extreme heat temperatures</div>
                   </div>
                 </div>
