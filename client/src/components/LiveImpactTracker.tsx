@@ -26,12 +26,12 @@ export default function LiveImpactTracker() {
   });
 
   const targetMetrics: LiveMetrics = {
-    panelsInstalled: stats?.solarPanelsInstalled || 5,
-    homesEmpowered: stats?.homesHelped || 5,
+    panelsInstalled: (stats as any)?.solarPanelsInstalled || 5,
+    homesEmpowered: (stats as any)?.homesHelped || 5,
     energyGenerated: 150, // kWh generated today
     co2Saved: 75, // kg CO2 saved
-    currentTemp: stats?.temperature || 35,
-    hoursWithoutPower: stats?.hoursWithoutPower || 12
+    currentTemp: (stats as any)?.temperature || 35,
+    hoursWithoutPower: (stats as any)?.hoursWithoutPower || 12
   };
 
   useEffect(() => {

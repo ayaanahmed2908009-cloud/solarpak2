@@ -164,12 +164,12 @@ export default function PakistanWeatherWidget() {
         )}
 
         {/* Heat Warning */}
-        {(stats?.temperature ?? 35) >= 40 && (
+        {((stats as any)?.temperature ?? 35) >= 35 && (
           <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-3">
             <div className="flex items-center text-red-800">
               <Thermometer className="w-4 h-4 mr-2" />
               <div className="text-xs">
-                <strong>Extreme heat alert!</strong> Families desperately need relief from {stats?.temperature ?? 42}°C temperatures.
+                <strong>Extreme heat alert!</strong> Families desperately need relief from {(stats as any)?.temperature ?? 35}°C temperatures.
               </div>
             </div>
           </div>
