@@ -100,10 +100,7 @@ export default function LiveImpactTracker() {
                 <div className="text-sm text-gray-500">Panels Installed</div>
               </div>
             </div>
-            <div className="flex items-center text-green-600 text-sm">
-              <TrendingUp className="w-4 h-4 mr-1" />
-              +23 this week
-            </div>
+
           </div>
 
           {/* Homes Empowered */}
