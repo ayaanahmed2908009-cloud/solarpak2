@@ -56,21 +56,8 @@ export default function AdminDashboard() {
   // Add user impact mutation
   const addImpactMutation = useMutation({
     mutationFn: async (impactData: any) => {
-      const response = await fetch('/api/admin/user-impact', {
-        method: 'POST',
-        body: JSON.stringify(impactData),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to add impact');
-      }
-      
-      return response.json();
+      const res = await apiRequest('POST', '/api/admin/user-impact', impactData);
+      return res.json();
     },
     onSuccess: () => {
       toast({
