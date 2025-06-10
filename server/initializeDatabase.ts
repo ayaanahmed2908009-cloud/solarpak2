@@ -23,7 +23,6 @@ export async function initializeDatabase() {
           password: ayaanPasswordHash,
           fullName: 'Ayaan Administrator',
           username: 'ayaan',
-          isVerified: true,
           role: 'admin',
           membershipTier: 'platinum',
           totalDonated: 5000,
@@ -34,7 +33,6 @@ export async function initializeDatabase() {
           password: test1PasswordHash,
           fullName: 'Test Administrator',
           username: 'test1',
-          isVerified: true,
           role: 'admin',
           membershipTier: 'platinum',
           totalDonated: 5000,
@@ -58,8 +56,7 @@ export async function initializeDatabase() {
         peopleImpacted: 30,
         cleanEnergy: 15,
         amountRaised: 5000,
-        goal: 200000,
-        updatedAt: new Date()
+        goal: 200000
       };
 
       await db.insert(stats).values(initialStats);
@@ -76,7 +73,6 @@ export async function initializeDatabase() {
           location: "Khairpur Mirs, Sindh, Pakistan",
           imageUrl: "",
           totalFundingGoal: 10000,
-          currentFunding: 0,
           isActive: true
         }
       ];
