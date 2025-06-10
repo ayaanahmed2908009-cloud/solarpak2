@@ -5,7 +5,8 @@ import {
   impactStories, type ImpactStory, type InsertImpactStory,
   testimonials, type Testimonial, type InsertTestimonial,
   stats, type Stats, type InsertStats,
-  subscribers, type Subscriber, type InsertSubscriber
+  subscribers, type Subscriber, type InsertSubscriber,
+  userImpacts, type UserImpact, type InsertUserImpact
 } from "@shared/schema";
 
 // Storage interface
@@ -52,6 +53,11 @@ export interface IStorage {
 
   // Newsletter operations
   addSubscriber(subscriber: InsertSubscriber): Promise<Subscriber>;
+
+  // User impact operations
+  getUserImpacts(userId: number): Promise<UserImpact[]>;
+  addUserImpact(impact: InsertUserImpact): Promise<UserImpact>;
+  deleteUserImpact(id: number): Promise<boolean>;
 }
 
 // In-memory storage implementation
@@ -63,6 +69,7 @@ export class MemStorage implements IStorage {
   private testimonials: Map<number, Testimonial>;
   private statsData: Stats | undefined;
   private subscribers: Map<number, Subscriber>;
+  private userImpacts: Map<number, UserImpact>;
   private adminAccountsCreated: boolean = false;
   private currentIds: {
     users: number;
@@ -72,6 +79,7 @@ export class MemStorage implements IStorage {
     testimonials: number;
     stats: number;
     subscribers: number;
+    userImpacts: number;
   };
 
   constructor() {
@@ -81,6 +89,7 @@ export class MemStorage implements IStorage {
     this.impactStories = new Map();
     this.testimonials = new Map();
     this.subscribers = new Map();
+    this.userImpacts = new Map();
     this.currentIds = {
       users: 1,
       projects: 1,
@@ -88,7 +97,8 @@ export class MemStorage implements IStorage {
       impactStories: 1,
       testimonials: 1,
       stats: 1,
-      subscribers: 1
+      subscribers: 1,
+      userImpacts: 1
     };
 
     // Initialize with some default data
@@ -428,13 +438,13 @@ export class MemStorage implements IStorage {
       const { hashPassword } = await import('./auth');
       
       // Create admin account: Ayaan
-      const ayaanPasswordHash = await hashPassword('12345');
+      const ayaanPasswordHash = await hashPassword('ayaan.123');
       const ayaanUser: User = {
         id: this.currentIds.users++,
         email: 'ayaan@solarlightpakistan.org',
         password: ayaanPasswordHash,
         fullName: 'Ayaan Administrator',
-        username: 'Ayaan',
+        username: 'ayaan',
         profileImageUrl: null,
         provider: 'local',
         providerId: null,

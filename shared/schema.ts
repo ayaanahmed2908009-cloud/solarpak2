@@ -159,6 +159,23 @@ export const insertSubscriberSchema = createInsertSchema(subscribers).omit({
   createdAt: true,
 });
 
+// User impact media table
+export const userImpacts = pgTable("user_impacts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  mediaType: text("media_type").notNull(), // 'photo' or 'video'
+  mediaUrl: text("media_url").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  addedBy: integer("added_by").notNull().references(() => users.id), // admin who added it
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertUserImpactSchema = createInsertSchema(userImpacts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -180,3 +197,6 @@ export type InsertStats = z.infer<typeof insertStatsSchema>;
 
 export type Subscriber = typeof subscribers.$inferSelect;
 export type InsertSubscriber = z.infer<typeof insertSubscriberSchema>;
+
+export type UserImpact = typeof userImpacts.$inferSelect;
+export type InsertUserImpact = z.infer<typeof insertUserImpactSchema>;
