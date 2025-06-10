@@ -8,6 +8,9 @@ import {
   subscribers, type Subscriber, type InsertSubscriber,
   userImpacts, type UserImpact, type InsertUserImpact
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
+import { hashPassword } from "./auth";
 
 // Storage interface
 export interface IStorage {
@@ -640,4 +643,229 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const normalizedEmail = email.toLowerCase().trim();
+    const [user] = await db.select().from(users).where(eq(users.email, normalizedEmail));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    // Normalize email to prevent duplicates
+    const userWithNormalizedEmail = {
+      ...insertUser,
+      email: insertUser.email.toLowerCase().trim()
+    };
+    
+    const [user] = await db
+      .insert(users)
+      .values(userWithNormalizedEmail)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async updateStripeCustomerId(userId: number, customerId: string): Promise<User | undefined> {
+    return this.updateUser(userId, { stripeCustomerId: customerId });
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async updateUserRole(id: number, role: string): Promise<User | undefined> {
+    return this.updateUser(id, { role });
+  }
+
+  async updateUserMembership(id: number, tier: string): Promise<User | undefined> {
+    return this.updateUser(id, { membershipTier: tier });
+  }
+
+  async updateUserDonationStats(id: number, amount: number): Promise<User | undefined> {
+    const user = await this.getUser(id);
+    if (!user) return undefined;
+    
+    return this.updateUser(id, {
+      totalDonated: (user.totalDonated || 0) + amount,
+      lastDonationDate: new Date()
+    });
+  }
+
+  async getProjects(): Promise<Project[]> {
+    return db.select().from(projects).orderBy(desc(projects.createdAt));
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project || undefined;
+  }
+
+  async createProject(project: InsertProject): Promise<Project> {
+    const [newProject] = await db
+      .insert(projects)
+      .values(project)
+      .returning();
+    return newProject;
+  }
+
+  async updateProjectFunding(id: number, additionalAmount: number): Promise<Project | undefined> {
+    const project = await this.getProject(id);
+    if (!project) return undefined;
+    
+    const [updatedProject] = await db
+      .update(projects)
+      .set({ currentFunding: (project.currentFunding || 0) + additionalAmount })
+      .where(eq(projects.id, id))
+      .returning();
+    return updatedProject || undefined;
+  }
+
+  async getDonations(): Promise<Donation[]> {
+    return db.select().from(donations).orderBy(desc(donations.createdAt));
+  }
+
+  async getDonation(id: number): Promise<Donation | undefined> {
+    const [donation] = await db.select().from(donations).where(eq(donations.id, id));
+    return donation || undefined;
+  }
+
+  async createDonation(donation: InsertDonation): Promise<Donation> {
+    const [newDonation] = await db
+      .insert(donations)
+      .values(donation)
+      .returning();
+    return newDonation;
+  }
+
+  async updateDonationStatus(id: number, status: string, paymentIntentId?: string): Promise<Donation | undefined> {
+    const updateData: any = { status };
+    if (paymentIntentId) {
+      updateData.paymentIntentId = paymentIntentId;
+    }
+    
+    const [donation] = await db
+      .update(donations)
+      .set(updateData)
+      .where(eq(donations.id, id))
+      .returning();
+    return donation || undefined;
+  }
+
+  async getImpactStories(): Promise<ImpactStory[]> {
+    return db.select().from(impactStories).orderBy(desc(impactStories.createdAt));
+  }
+
+  async getImpactStory(id: number): Promise<ImpactStory | undefined> {
+    const [story] = await db.select().from(impactStories).where(eq(impactStories.id, id));
+    return story || undefined;
+  }
+
+  async createImpactStory(story: InsertImpactStory): Promise<ImpactStory> {
+    const [newStory] = await db
+      .insert(impactStories)
+      .values(story)
+      .returning();
+    return newStory;
+  }
+
+  async getTestimonials(): Promise<Testimonial[]> {
+    return db.select().from(testimonials).orderBy(desc(testimonials.createdAt));
+  }
+
+  async getTestimonial(id: number): Promise<Testimonial | undefined> {
+    const [testimonial] = await db.select().from(testimonials).where(eq(testimonials.id, id));
+    return testimonial || undefined;
+  }
+
+  async createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial> {
+    const [newTestimonial] = await db
+      .insert(testimonials)
+      .values(testimonial)
+      .returning();
+    return newTestimonial;
+  }
+
+  async getStats(): Promise<Stats | undefined> {
+    const [statsData] = await db.select().from(stats).limit(1);
+    return statsData || undefined;
+  }
+
+  async updateStats(newStats: Partial<Stats>): Promise<Stats | undefined> {
+    const currentStats = await this.getStats();
+    
+    if (currentStats) {
+      const [updatedStats] = await db
+        .update(stats)
+        .set({ ...newStats, updatedAt: new Date() })
+        .where(eq(stats.id, currentStats.id))
+        .returning();
+      return updatedStats || undefined;
+    } else {
+      const [createdStats] = await db
+        .insert(stats)
+        .values({ ...newStats, updatedAt: new Date() } as InsertStats)
+        .returning();
+      return createdStats;
+    }
+  }
+
+  async incrementStatsHomesHelped(additionalHomes: number): Promise<Stats | undefined> {
+    const currentStats = await this.getStats();
+    const newHomesHelped = (currentStats?.homesHelped || 0) + additionalHomes;
+    return this.updateStats({ homesHelped: newHomesHelped });
+  }
+
+  async incrementStatsSolarPanels(additionalPanels: number): Promise<Stats | undefined> {
+    const currentStats = await this.getStats();
+    const newPanels = (currentStats?.solarPanelsInstalled || 0) + additionalPanels;
+    return this.updateStats({ solarPanelsInstalled: newPanels });
+  }
+
+  async addSubscriber(subscriber: InsertSubscriber): Promise<Subscriber> {
+    const [newSubscriber] = await db
+      .insert(subscribers)
+      .values(subscriber)
+      .returning();
+    return newSubscriber;
+  }
+
+  async getUserImpacts(userId: number): Promise<UserImpact[]> {
+    return db.select().from(userImpacts)
+      .where(eq(userImpacts.userId, userId))
+      .orderBy(desc(userImpacts.createdAt));
+  }
+
+  async addUserImpact(impact: InsertUserImpact): Promise<UserImpact> {
+    const [newImpact] = await db
+      .insert(userImpacts)
+      .values(impact)
+      .returning();
+    return newImpact;
+  }
+
+  async deleteUserImpact(id: number): Promise<boolean> {
+    const result = await db.delete(userImpacts).where(eq(userImpacts.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+}
+
+export const storage = new DatabaseStorage();
