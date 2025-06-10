@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { User, Plus, Image, Video } from "lucide-react";
+import { User, Plus, Image, Video, Upload, FileText, Trash2 } from "lucide-react";
 
 interface AdminUser {
   id: number;
@@ -40,8 +40,10 @@ export default function AdminDashboard() {
     mediaType: 'photo',
     mediaUrl: '',
     title: '',
-    description: ''
+    description: '',
+    file: null as File | null
   });
+  const [uploadMethod, setUploadMethod] = useState<'url' | 'file'>('url');
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -80,8 +82,10 @@ export default function AdminDashboard() {
         mediaType: 'photo',
         mediaUrl: '',
         title: '',
-        description: ''
+        description: '',
+        file: null
       });
+      setUploadMethod('url');
       // Refresh user impacts if viewing a user
       if (selectedUser) {
         queryClient.invalidateQueries({ queryKey: ['/api/user-impacts', selectedUser.id] });
