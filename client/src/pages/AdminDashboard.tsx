@@ -56,8 +56,32 @@ export default function AdminDashboard() {
   // Add user impact mutation
   const addImpactMutation = useMutation({
     mutationFn: async (impactData: any) => {
-      const res = await apiRequest('POST', '/api/admin/user-impact', impactData);
-      return res.json();
+      console.log('Submitting impact data:', impactData);
+      try {
+        const response = await fetch('/api/admin/user-impact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(impactData),
+          credentials: 'include',
+        });
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Error response:', errorData);
+          throw new Error(errorData.message || `HTTP ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Success result:', result);
+        return result;
+      } catch (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({
@@ -79,6 +103,7 @@ export default function AdminDashboard() {
       }
     },
     onError: (error: any) => {
+      console.error('Mutation error:', error);
       toast({
         title: "Error",
         description: error.message || "Failed to add impact media",
@@ -143,12 +168,50 @@ export default function AdminDashboard() {
     );
   }
 
+  if (!users || users.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-8 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+              <p className="text-gray-600">Manage users and their impact media</p>
+            </div>
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = '/'}
+            >
+              ← Back to Landing Page
+            </Button>
+          </div>
+          <div className="text-center py-12">
+            <p className="text-gray-500">Please log in as an admin to access this dashboard.</p>
+            <Button 
+              className="mt-4"
+              onClick={() => window.location.href = '/login'}
+            >
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage users and their impact media</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Manage users and their impact media</p>
+          </div>
+          <Button 
+            variant="outline"
+            onClick={() => window.location.href = '/'}
+          >
+            ← Back to Landing Page
+          </Button>
         </div>
 
         {selectedUser ? (
