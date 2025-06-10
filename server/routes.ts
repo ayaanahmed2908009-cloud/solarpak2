@@ -255,8 +255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           interval: 'month',
         },
         product_data: {
-          name: 'Monthly Donation',
-          description: 'Monthly donation to SolarHelp Pakistan',
+          name: 'Monthly Donation to SolarPak',
         },
         metadata: {
           donationId: donationId ? donationId.toString() : undefined,
@@ -617,21 +616,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/user-impact/:impactId", isAuthenticated, isAdmin, async (req, res) => {
+  app.delete("/api/admin/user-impact/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const impactId = parseInt(req.params.impactId);
+      const impactId = parseInt(req.params.id);
       const success = await storage.deleteUserImpact(impactId);
-
-      if (success) {
-        res.json({ message: "Impact deleted successfully" });
-      } else {
-        res.status(404).json({ message: "Impact not found" });
+      
+      if (!success) {
+        return res.status(404).json({ message: "Impact not found" });
       }
+      
+      res.json({ message: "Impact deleted successfully" });
     } catch (error) {
       console.error("Error deleting user impact:", error);
       res.status(500).json({ message: "Failed to delete user impact" });
     }
   });
+
+
 
   const httpServer = createServer(app);
   return httpServer;
