@@ -429,7 +429,11 @@ export default function Dashboard() {
       });
       navigate("/login");
     }
-  }, [isAuthenticated, isLoading, navigate, toast]);
+    // Redirect admin users to admin dashboard
+    if (!isLoading && isAuthenticated && user?.role === 'admin') {
+      navigate("/admin");
+    }
+  }, [isAuthenticated, isLoading, navigate, toast, user]);
   
   if (isLoading) {
     return (
