@@ -10,6 +10,7 @@ import Impact from "@/pages/Impact";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
+import AdminDashboard from "@/pages/AdminDashboard";
 import Membership from "@/pages/Membership";
 import VillageExperience from "@/pages/VillageExperience";
 import CaseStudy from "@/pages/CaseStudy";
@@ -99,6 +100,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route path="/membership" component={Membership} />
       <Route component={NotFound} />
     </Switch>

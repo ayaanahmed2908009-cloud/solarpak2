@@ -17,6 +17,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { User } from "@/hooks/useAuth";
+import { Image, Video } from "lucide-react";
+
+interface UserImpact {
+  id: number;
+  userId: number;
+  mediaType: string;
+  mediaUrl: string;
+  title: string;
+  description?: string;
+  createdAt: string;
+}
 
 // Helper function to get badge color based on membership tier
 const getMembershipBadgeColor = (tier: string) => {
@@ -33,6 +44,69 @@ const getMembershipBadgeColor = (tier: string) => {
       return 'bg-gray-500 hover:bg-gray-600';
   }
 };
+
+// Your Impact Section Component
+function YourImpactSection({ userId }: { userId: number }) {
+  const { data: impacts, isLoading } = useQuery<UserImpact[]>({
+    queryKey: ['/api/user-impacts', userId],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="pt-4">
+        <h4 className="font-semibold mb-2">Your Personal Impact:</h4>
+        <div className="text-center py-4">Loading your impact media...</div>
+      </div>
+    );
+  }
+
+  if (!impacts || impacts.length === 0) {
+    return (
+      <div className="pt-4">
+        <h4 className="font-semibold mb-2">Your Personal Impact:</h4>
+        <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-200 rounded-lg">
+          <p>Our team will share photos and videos of the impact your donations have made!</p>
+          <p className="text-sm mt-2">Check back soon for updates from the field.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-4">
+      <h4 className="font-semibold mb-2">Your Personal Impact:</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {impacts.map((impact) => (
+          <div key={impact.id} className="border rounded-lg p-4 bg-white shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                {impact.mediaType === 'photo' ? (
+                  <Image className="h-5 w-5 text-blue-500" />
+                ) : (
+                  <Video className="h-5 w-5 text-purple-500" />
+                )}
+              </div>
+              <div className="flex-1">
+                <h5 className="font-medium text-gray-900">{impact.title}</h5>
+                {impact.description && (
+                  <p className="text-sm text-gray-600 mt-1">{impact.description}</p>
+                )}
+                <a 
+                  href={impact.mediaUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+                >
+                  View {impact.mediaType === 'photo' ? 'Photo' : 'Video'} →
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // User Management Table Component for Admin
 function UserManagementTable() {
@@ -264,6 +338,8 @@ function MemberDashboardContent({ user }: { user: User }) {
                 <p className="text-sm">Families Helped</p>
               </div>
             </div>
+            
+            <YourImpactSection userId={user.id} />
             
             <div className="pt-4">
               <h4 className="font-semibold mb-2">Latest Updates:</h4>
