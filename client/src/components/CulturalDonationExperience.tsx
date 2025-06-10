@@ -23,32 +23,12 @@ export default function CulturalDonationExperience() {
     {
       id: "1",
       name: "Ahmed Family",
-      location: "Interior Sindh",
-      story: "Ahmed's children study by candlelight. Their small business struggles without reliable electricity. Solar panels would transform their daily life.",
+      location: "Khairpur Mirs, Sindh",
+      story: "Ahmed's children study by candlelight during 12-hour daily blackouts in 45°C heat. Their small business struggles without reliable electricity. Solar panels would transform their daily life.",
       needAmount: 500,
-      raisedAmount: 320,
+      raisedAmount: 0,
       image: "👨‍👩‍👧‍👦",
       culturalGreeting: "السلام علیکم - Your kindness brings light to our home"
-    },
-    {
-      id: "2", 
-      name: "Fatima's Tailoring Shop",
-      location: "Rural Punjab",
-      story: "Fatima runs a tailoring business from home but loses customers due to power outages. Solar energy would secure her family's income.",
-      needAmount: 750,
-      raisedAmount: 450,
-      image: "✂️",
-      culturalGreeting: "آپ کا شکریہ - Thank you for believing in our dreams"
-    },
-    {
-      id: "3",
-      name: "Ali's Medical Clinic",
-      location: "Balochistan",
-      story: "Dr. Ali serves remote villages but equipment fails during outages. Solar power would save lives in his community clinic.",
-      needAmount: 1200,
-      raisedAmount: 800,
-      image: "🏥",
-      culturalGreeting: "بہت شکریہ - Your donation heals our community"
     }
   ];
 

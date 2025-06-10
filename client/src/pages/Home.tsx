@@ -104,29 +104,7 @@ export default function Home() {
                   </button>
                 </div>
                 
-                {/* Key stats indicators */}
-                <div className="grid grid-cols-2 gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                  <div className="text-center">
-                    <ThermometerSun className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
-                    <p className="text-xs font-medium text-gray-200">Average Temp</p>
-                    <p className="text-lg font-bold text-white">35°C</p>
-                  </div>
-                  <div className="text-center">
-                    <Zap className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
-                    <p className="text-xs font-medium text-gray-200">Daily Outages</p>
-                    <p className="text-lg font-bold text-white">12 hrs</p>
-                  </div>
-                  <div className="text-center">
-                    <Users className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
-                    <p className="text-xs font-medium text-gray-200">People Affected</p>
-                    <p className="text-lg font-bold text-white">210M+</p>
-                  </div>
-                  <div className="text-center">
-                    <Sun className="h-5 w-5 mx-auto mb-1 text-yellow-400" />
-                    <p className="text-xs font-medium text-gray-200">Solar Potential</p>
-                    <p className="text-lg font-bold text-white">High</p>
-                  </div>
-                </div>
+                
               </div>
             </div>
             
