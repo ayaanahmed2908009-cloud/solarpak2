@@ -134,17 +134,15 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   try {
     const { email, password, fullName } = req.body;
     
-    // Check if email already exists
-    const existingUser = await storage.getUserByEmail(email);
-    
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
     }
     
     // Hash password
     const hashedPassword = await hashPassword(password);
     
-    // Create user
+    // Create user (storage layer handles email uniqueness validation)
     const userData: InsertUser = {
       email,
       password: hashedPassword,
