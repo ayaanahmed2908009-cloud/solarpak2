@@ -100,12 +100,46 @@ export default function AdminDashboard() {
     },
   });
 
-  const handleAddImpact = () => {
+  const handleAddImpact = async () => {
     if (!selectedUser) return;
+    
+    let mediaUrl = impactForm.mediaUrl;
+    
+    // Handle file upload if file is selected
+    if (uploadMethod === 'file' && impactForm.file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', impactForm.file);
+        formData.append('userId', selectedUser.id.toString());
+        
+        const uploadResponse = await fetch('/api/admin/upload-media', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('File upload failed');
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        mediaUrl = uploadResult.fileUrl;
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to upload file",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
     
     const impactData = {
       userId: selectedUser.id,
-      ...impactForm
+      mediaType: impactForm.mediaType,
+      mediaUrl,
+      title: impactForm.title,
+      description: impactForm.description
     };
     
     addImpactMutation.mutate(impactData);
@@ -208,18 +242,65 @@ export default function AdminDashboard() {
                             <SelectContent>
                               <SelectItem value="photo">Photo</SelectItem>
                               <SelectItem value="video">Video</SelectItem>
+                              <SelectItem value="document">Document</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
+                        
                         <div>
-                          <Label htmlFor="mediaUrl">Media URL</Label>
-                          <Input
-                            id="mediaUrl"
-                            value={impactForm.mediaUrl}
-                            onChange={(e) => setImpactForm({...impactForm, mediaUrl: e.target.value})}
-                            placeholder="https://example.com/image.jpg"
-                          />
+                          <Label>Upload Method</Label>
+                          <div className="flex gap-4 mt-2">
+                            <Button
+                              type="button"
+                              variant={uploadMethod === 'url' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setUploadMethod('url')}
+                            >
+                              <FileText className="h-4 w-4 mr-2" />
+                              URL
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={uploadMethod === 'file' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setUploadMethod('file')}
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload File
+                            </Button>
+                          </div>
                         </div>
+
+                        {uploadMethod === 'url' ? (
+                          <div>
+                            <Label htmlFor="mediaUrl">Media URL</Label>
+                            <Input
+                              id="mediaUrl"
+                              value={impactForm.mediaUrl}
+                              onChange={(e) => setImpactForm({...impactForm, mediaUrl: e.target.value})}
+                              placeholder="https://example.com/image.jpg"
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <Label htmlFor="fileUpload">Select File</Label>
+                            <Input
+                              id="fileUpload"
+                              type="file"
+                              accept="image/*,video/*,.pdf,.doc,.docx"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                setImpactForm({...impactForm, file});
+                              }}
+                              className="cursor-pointer"
+                            />
+                            {impactForm.file && (
+                              <p className="text-sm text-gray-600 mt-1">
+                                Selected: {impactForm.file.name} ({(impactForm.file.size / (1024 * 1024)).toFixed(2)} MB)
+                              </p>
+                            )}
+                          </div>
+                        )}
                         <div>
                           <Label htmlFor="title">Title</Label>
                           <Input
@@ -240,7 +321,12 @@ export default function AdminDashboard() {
                         </div>
                         <Button 
                           onClick={handleAddImpact}
-                          disabled={addImpactMutation.isPending || !impactForm.mediaUrl || !impactForm.title}
+                          disabled={
+                            addImpactMutation.isPending || 
+                            !impactForm.title ||
+                            (uploadMethod === 'url' && !impactForm.mediaUrl) ||
+                            (uploadMethod === 'file' && !impactForm.file)
+                          }
                           className="w-full"
                         >
                           {addImpactMutation.isPending ? "Adding..." : "Add Impact Media"}
@@ -303,8 +389,41 @@ export default function AdminDashboard() {
 }
 
 function UserImpactList({ userId }: { userId: number }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const { data: impacts, isLoading } = useQuery<UserImpact[]>({
     queryKey: ['/api/user-impacts', userId],
+  });
+
+  const deleteImpactMutation = useMutation({
+    mutationFn: async (impactId: number) => {
+      const response = await fetch(`/api/admin/user-impact/${impactId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete impact');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Impact media deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-impacts', userId] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete impact media",
+        variant: "destructive",
+      });
+    },
   });
 
   if (isLoading) {
@@ -327,8 +446,10 @@ function UserImpactList({ userId }: { userId: number }) {
             <div className="flex-shrink-0">
               {impact.mediaType === 'photo' ? (
                 <Image className="h-5 w-5 text-blue-500" />
-              ) : (
+              ) : impact.mediaType === 'video' ? (
                 <Video className="h-5 w-5 text-purple-500" />
+              ) : (
+                <FileText className="h-5 w-5 text-green-500" />
               )}
             </div>
             <div className="flex-1 min-w-0">
@@ -336,14 +457,25 @@ function UserImpactList({ userId }: { userId: number }) {
               {impact.description && (
                 <p className="text-xs text-gray-500 mt-1">{impact.description}</p>
               )}
-              <a 
-                href={impact.mediaUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:underline mt-1 block"
-              >
-                View Media
-              </a>
+              <div className="flex items-center gap-2 mt-2">
+                <a 
+                  href={impact.mediaUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  View {impact.mediaType === 'photo' ? 'Photo' : impact.mediaType === 'video' ? 'Video' : 'Document'} →
+                </a>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => deleteImpactMutation.mutate(impact.id)}
+                  disabled={deleteImpactMutation.isPending}
+                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
