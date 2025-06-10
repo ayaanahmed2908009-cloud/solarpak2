@@ -77,28 +77,81 @@ function YourImpactSection({ userId }: { userId: number }) {
       <h4 className="font-semibold mb-2">Your Personal Impact:</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {impacts.map((impact) => (
-          <div key={impact.id} className="border rounded-lg p-4 bg-white shadow-sm">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0">
-                {impact.mediaType === 'photo' ? (
-                  <Image className="h-5 w-5 text-blue-500" />
-                ) : (
-                  <Video className="h-5 w-5 text-purple-500" />
-                )}
+          <div key={impact.id} className="border rounded-lg overflow-hidden bg-white shadow-sm">
+            {impact.mediaType === 'photo' && (
+              <div className="aspect-video bg-gray-100">
+                <img 
+                  src={impact.mediaUrl} 
+                  alt={impact.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden flex items-center justify-center h-full bg-gray-100">
+                  <div className="text-center text-gray-500">
+                    <Image className="h-8 w-8 mx-auto mb-2" />
+                    <p className="text-sm">Image unavailable</p>
+                    <a 
+                      href={impact.mediaUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline text-xs"
+                    >
+                      View original link
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1">
-                <h5 className="font-medium text-gray-900">{impact.title}</h5>
-                {impact.description && (
-                  <p className="text-sm text-gray-600 mt-1">{impact.description}</p>
-                )}
-                <a 
-                  href={impact.mediaUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-block mt-2 text-sm text-blue-600 hover:underline"
-                >
-                  View {impact.mediaType === 'photo' ? 'Photo' : 'Video'} →
-                </a>
+            )}
+            
+            {impact.mediaType === 'video' && (
+              <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                <div className="text-center">
+                  <Video className="h-8 w-8 mx-auto mb-2 text-purple-500" />
+                  <a 
+                    href={impact.mediaUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline text-sm font-medium"
+                  >
+                    Watch Video
+                  </a>
+                </div>
+              </div>
+            )}
+            
+            {impact.mediaType === 'document' && (
+              <div className="aspect-video bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="h-8 w-8 mx-auto mb-2 bg-green-100 rounded flex items-center justify-center">
+                    <span className="text-green-600 text-xs font-bold">PDF</span>
+                  </div>
+                  <a 
+                    href={impact.mediaUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline text-sm font-medium"
+                  >
+                    View Document
+                  </a>
+                </div>
+              </div>
+            )}
+            
+            <div className="p-4">
+              <h5 className="font-medium text-gray-900 mb-1">{impact.title}</h5>
+              {impact.description && (
+                <p className="text-sm text-gray-600">{impact.description}</p>
+              )}
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="outline" className="text-xs">
+                  {impact.mediaType === 'photo' ? 'Photo' : impact.mediaType === 'video' ? 'Video' : 'Document'}
+                </Badge>
+                <span className="text-xs text-gray-400">
+                  {new Date(impact.createdAt).toLocaleDateString()}
+                </span>
               </div>
             </div>
           </div>
