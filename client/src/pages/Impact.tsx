@@ -91,27 +91,27 @@ export default function Impact() {
                   </p>
                   <div className="space-y-4">
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-gray-800 mb-1">Phase 1: Sindh Province</h3>
+                      <h3 className="font-medium text-gray-800 mb-1">Phase 1: Khairpur Mirs Sindh</h3>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-primary h-2.5 rounded-full" style={{ width: "65%" }}></div>
+                        <div className="bg-primary h-2.5 rounded-full" style={{ width: "3%" }}></div>
                       </div>
-                      <p className="text-sm text-gray-500 mt-2">65% complete - 90 families powered</p>
+                      <p className="text-sm text-gray-500 mt-2">3 out of 100 panels installed</p>
                     </div>
                     
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-gray-800 mb-1">Phase 2: Punjab Province</h3>
+                      <h3 className="font-medium text-gray-800 mb-1">Phase 2: Sukkur Province</h3>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-primary h-2.5 rounded-full" style={{ width: "25%" }}></div>
+                        <div className="bg-primary h-2.5 rounded-full" style={{ width: "0%" }}></div>
                       </div>
-                      <p className="text-sm text-gray-500 mt-2">25% complete - 35 families powered</p>
+                      <p className="text-sm text-gray-500 mt-2">0% complete - Planned for future expansion</p>
                     </div>
                     
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-gray-800 mb-1">Phase 3: Balochistan Province</h3>
+                      <h3 className="font-medium text-gray-800 mb-1">Phase 3: Karachi</h3>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-primary h-2.5 rounded-full" style={{ width: "10%" }}></div>
+                        <div className="bg-primary h-2.5 rounded-full" style={{ width: "0%" }}></div>
                       </div>
-                      <p className="text-sm text-gray-500 mt-2">10% complete - 15 families powered</p>
+                      <p className="text-sm text-gray-500 mt-2">0% complete - Long-term expansion goal</p>
                     </div>
                   </div>
                 </div>

@@ -53,13 +53,13 @@ export default function ImpactMap() {
   const installations: Installation[] = [
     {
       id: 1,
-      village: "Thar Desert Community",
-      coordinates: [24.896, 70.2],
-      date: "March 15, 2023",
-      households: 35,
-      kwhGenerated: 4200,
-      co2Saved: 2100,
-      moneySaved: 84000,
+      village: "Khairpur Mirs",
+      coordinates: [27.5293, 68.7593],
+      date: "March 15, 2024",
+      households: 3,
+      kwhGenerated: 45,
+      co2Saved: 56.7,
+      moneySaved: 1200,
       imageUrls: [
         "https://images.pexels.com/photos/9875441/pexels-photo-9875441.jpeg",
         "https://images.pexels.com/photos/9875442/pexels-photo-9875442.jpeg"
@@ -67,78 +67,6 @@ export default function ImpactMap() {
       videoUrls: [
         "https://www.youtube.com/embed/qM_XUa6Mj7s",
         "https://www.youtube.com/embed/GBcFI5XbMwU"
-      ]
-    },
-    {
-      id: 2,
-      village: "Umerkot District",
-      coordinates: [25.3601, 69.7463],
-      date: "June 10, 2023",
-      households: 28,
-      kwhGenerated: 3600,
-      co2Saved: 1800,
-      moneySaved: 72000,
-      imageUrls: [
-        "https://images.pexels.com/photos/7233096/pexels-photo-7233096.jpeg",
-        "https://images.pexels.com/photos/7233097/pexels-photo-7233097.jpeg"
-      ],
-      videoUrls: [
-        "https://www.youtube.com/embed/y50Xj9YbH0Q",
-        "https://www.youtube.com/embed/1i7-UCwpxzM"
-      ]
-    },
-    {
-      id: 3,
-      village: "Sanghar Community",
-      coordinates: [26.0453, 68.9483],
-      date: "September 5, 2023",
-      households: 42,
-      kwhGenerated: 5040,
-      co2Saved: 2520,
-      moneySaved: 100800,
-      imageUrls: [
-        "https://images.pexels.com/photos/3652782/pexels-photo-3652782.jpeg",
-        "https://images.pexels.com/photos/2800816/pexels-photo-2800816.jpeg"
-      ],
-      videoUrls: [
-        "https://www.youtube.com/embed/lZlxnRsE1Nk",
-        "https://www.youtube.com/embed/rXfSi7QOVV0"
-      ]
-    },
-    {
-      id: 4,
-      village: "Mirpurkhas Region",
-      coordinates: [25.5276, 69.0126],
-      date: "November 20, 2023",
-      households: 31,
-      kwhGenerated: 3720,
-      co2Saved: 1860,
-      moneySaved: 74400,
-      imageUrls: [
-        "https://images.pexels.com/photos/247599/pexels-photo-247599.jpeg",
-        "https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg"
-      ],
-      videoUrls: [
-        "https://www.youtube.com/embed/AjnDFBaN0lA",
-        "https://www.youtube.com/embed/iNnJqXvcR4M"
-      ]
-    },
-    {
-      id: 5,
-      village: "Nawabshah Community",
-      coordinates: [26.2442, 68.4100],
-      date: "January 15, 2024",
-      households: 38,
-      kwhGenerated: 4560,
-      co2Saved: 2280,
-      moneySaved: 91200,
-      imageUrls: [
-        "https://images.pexels.com/photos/2467323/pexels-photo-2467323.jpeg",
-        "https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg"
-      ],
-      videoUrls: [
-        "https://www.youtube.com/embed/KE28QVaQ770",
-        "https://www.youtube.com/embed/RLtR2riNPgM"
       ]
     }
   ];
@@ -205,11 +133,6 @@ export default function ImpactMap() {
               minWidth={300}
               maxWidth={500}
               className="custom-popup"
-              onClose={() => {
-                setActiveInstallation(null);
-                setMediaType('photo');
-                setCurrentMediaIndex(0);
-              }}
             >
               <div className="py-2">
                 <h3 className="font-heading font-bold text-xl mb-2">{installation.village}</h3>
@@ -364,7 +287,7 @@ export default function ImpactMap() {
       </MapContainer>
       
       {/* Custom CSS for map popups */}
-      <style jsx>{`
+      <style>{`
         :global(.custom-popup .leaflet-popup-content-wrapper) {
           border-radius: 0.75rem;
           padding: 0.5rem;
