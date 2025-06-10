@@ -24,10 +24,15 @@ export const setupAuth = (app: any) => {
             return done(null, false, { message: "Invalid email or password" });
           }
           
+          // Check if user has a password (local auth)
+          if (!user.password) {
+            return done(null, false, { message: "Invalid email or password" });
+          }
+          
           // Check password
           const isPasswordValid = await verifyPassword(
             password,
-            user.password || ""
+            user.password
           );
           
           if (!isPasswordValid) {
@@ -164,6 +169,16 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       });
     });
   } catch (error: any) {
+    console.error("Registration error:", error);
+    
+    // Handle specific error messages
+    if (error.message === 'Email already in use') {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+    if (error.message === 'Username already in use') {
+      return res.status(400).json({ message: "Username already in use" });
+    }
+    
     return res.status(500).json({
       message: "Error during registration",
       error: error.message,

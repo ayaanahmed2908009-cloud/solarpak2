@@ -123,6 +123,20 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    // Check for existing email
+    const existingUserByEmail = await this.getUserByEmail(insertUser.email);
+    if (existingUserByEmail) {
+      throw new Error('Email already in use');
+    }
+    
+    // Check for existing username if provided
+    if (insertUser.username) {
+      const existingUserByUsername = await this.getUserByUsername(insertUser.username);
+      if (existingUserByUsername) {
+        throw new Error('Username already in use');
+      }
+    }
+    
     const id = this.currentIds.users++;
     const now = new Date();
     
