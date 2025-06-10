@@ -126,12 +126,9 @@ export class MemStorage implements IStorage {
     // Normalize email to lowercase for consistency
     const normalizedEmail = insertUser.email.toLowerCase().trim();
     
-    // Check for existing email with debug logging
+    // Check for existing email
     const existingUserByEmail = await this.getUserByEmail(normalizedEmail);
-    console.log(`[EMAIL CHECK] Checking email: ${normalizedEmail}, Found existing: ${!!existingUserByEmail}`);
-    
     if (existingUserByEmail) {
-      console.log(`[EMAIL CONFLICT] Attempted registration with existing email: ${normalizedEmail}`);
       throw new Error('Email already in use');
     }
     
@@ -139,7 +136,6 @@ export class MemStorage implements IStorage {
     if (insertUser.username) {
       const existingUserByUsername = await this.getUserByUsername(insertUser.username);
       if (existingUserByUsername) {
-        console.log(`[USERNAME CONFLICT] Attempted registration with existing username: ${insertUser.username}`);
         throw new Error('Username already in use');
       }
     }
