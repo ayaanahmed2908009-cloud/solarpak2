@@ -18,8 +18,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
   
   // Authentication routes
+  app.post("/api/login", login);
+  app.post("/api/register", register);
   app.post("/api/auth/login", login);
   app.post("/api/auth/register", register);
+  app.get("/api/logout", logout);
   app.get("/api/auth/logout", logout);
   app.get("/api/auth/user", getCurrentUser);
   
