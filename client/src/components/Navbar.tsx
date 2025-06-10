@@ -45,23 +45,23 @@ export default function Navbar() {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-2">
-            <a href="#problem" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#problem" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
               Crisis
             </a>
-            <a href="#solution" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#solution" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
               Solution
             </a>
             <Link href="/village" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
               Stories
             </Link>
-            <a href="#impact" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#impact" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
               Impact
             </a>
             <Link href="/impact" className="flex items-center px-4 py-2.5 rounded-xl font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all duration-200">
               <Zap className="w-4 h-4 mr-2" />
               Map
             </Link>
-            <a href="#projects" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#projects" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
               Projects
             </a>
             <Link href="/membership" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
@@ -71,7 +71,7 @@ export default function Navbar() {
           
           <div className="flex items-center space-x-4">
             <a 
-              href="#donate" 
+              href="/#donate" 
               className="hidden md:block relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl group"
             >
               <span className="relative z-10 flex items-center">
@@ -145,21 +145,21 @@ export default function Navbar() {
         <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="flex flex-col space-y-2 mt-4 pb-4 bg-gradient-to-b from-blue-50/50 to-white rounded-lg p-4 mx-2">
             <a 
-              href="#problem" 
+              href="/#problem" 
               className="font-heading font-medium hover:text-primary transition py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               The Problem
             </a>
             <a 
-              href="#solution" 
+              href="/#solution" 
               className="font-heading font-medium hover:text-primary transition py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Our Solution
             </a>
             <a 
-              href="#impact" 
+              href="/#impact" 
               className="font-heading font-medium hover:text-primary transition py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -173,19 +173,19 @@ export default function Navbar() {
               Impact Map
             </Link>
             <a 
-              href="#projects" 
+              href="/#projects" 
               className="font-heading font-medium hover:text-primary transition py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Projects
             </a>
-            <a 
-              href="#stories" 
+            <Link
+              href="/village" 
               className="font-heading font-medium hover:text-primary transition py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Stories
-            </a>
+            </Link>
             
             {isAuthenticated && user ? (
               <>
