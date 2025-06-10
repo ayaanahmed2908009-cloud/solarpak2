@@ -427,6 +427,28 @@ export class MemStorage implements IStorage {
     this.subscribers.set(id, subscriber);
     return subscriber;
   }
+
+  // User impact operations
+  async getUserImpacts(userId: number): Promise<UserImpact[]> {
+    return Array.from(this.userImpacts.values()).filter(impact => impact.userId === userId);
+  }
+
+  async addUserImpact(insertUserImpact: InsertUserImpact): Promise<UserImpact> {
+    const id = this.currentIds.userImpacts++;
+    const timestamp = new Date();
+    const userImpact: UserImpact = { 
+      ...insertUserImpact, 
+      id, 
+      createdAt: timestamp,
+      description: insertUserImpact.description || null
+    };
+    this.userImpacts.set(id, userImpact);
+    return userImpact;
+  }
+
+  async deleteUserImpact(id: number): Promise<boolean> {
+    return this.userImpacts.delete(id);
+  }
   
   // Create admin accounts
   private async createAdminAccounts() {

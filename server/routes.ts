@@ -451,18 +451,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
   
-  // Get all users (admin only)
+  // Get all users (admin only) - includes password hashes for admin view
   app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsers();
       
-      // Remove sensitive information
-      const safeUsers = users.map(user => {
-        const { password, ...userInfo } = user;
-        return userInfo;
-      });
+      // Include password hashes for admin view as requested
+      const adminUserView = users.map(user => ({
+        ...user,
+        passwordHash: user.password // Expose password hash for admin
+      }));
       
-      res.json(safeUsers);
+      res.json(adminUserView);
     } catch (error) {
       res.status(500).json({ message: "Error fetching users" });
     }
@@ -515,6 +515,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(userInfo);
     } catch (error) {
       res.status(500).json({ message: "Error updating user membership" });
+    }
+  });
+
+  // User impact routes
+  app.post("/api/admin/user-impact", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { userId, mediaType, mediaUrl, title, description } = req.body;
+      const adminId = (req as any).user.id;
+
+      if (!userId || !mediaType || !mediaUrl || !title) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const impact = await storage.addUserImpact({
+        userId: parseInt(userId),
+        mediaType,
+        mediaUrl,
+        title,
+        description: description || null,
+        addedBy: adminId
+      });
+
+      res.json(impact);
+    } catch (error) {
+      console.error("Error adding user impact:", error);
+      res.status(500).json({ message: "Failed to add user impact" });
+    }
+  });
+
+  app.get("/api/user-impacts/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const impacts = await storage.getUserImpacts(userId);
+      res.json(impacts);
+    } catch (error) {
+      console.error("Error fetching user impacts:", error);
+      res.status(500).json({ message: "Failed to fetch user impacts" });
+    }
+  });
+
+  app.delete("/api/admin/user-impact/:impactId", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const impactId = parseInt(req.params.impactId);
+      const success = await storage.deleteUserImpact(impactId);
+
+      if (success) {
+        res.json({ message: "Impact deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Impact not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting user impact:", error);
+      res.status(500).json({ message: "Failed to delete user impact" });
     }
   });
 
