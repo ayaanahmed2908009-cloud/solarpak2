@@ -38,7 +38,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-2xl bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Solar Light Pakistan
+                SolarPak
               </span>
               <span className="text-sm text-slate-500 font-medium">Powering Communities</span>
             </div>
