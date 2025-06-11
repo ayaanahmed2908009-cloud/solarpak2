@@ -14,10 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { User } from "@/hooks/useAuth";
 import { Image, Video, FileText } from "lucide-react";
+import { wsClient } from "@/lib/websocket";
 
 interface UserImpact {
   id: number;
@@ -142,9 +143,36 @@ const getMembershipBadgeColor = (tier: string) => {
 
 // Your Impact Section Component
 function YourImpactSection({ userId }: { userId: number }) {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
   const { data: impacts, isLoading } = useQuery<UserImpact[]>({
     queryKey: ['/api/user-impacts', userId],
   });
+
+  useEffect(() => {
+    // Connect to WebSocket for real-time updates
+    wsClient.connect(userId, false);
+
+    // Listen for impact updates
+    const handleImpactUpdate = (data: any) => {
+      toast({
+        title: "New Impact Media Added!",
+        description: `Your admin has shared: ${data.data.title}`,
+      });
+      
+      // Refresh the impact data
+      queryClient.invalidateQueries({ queryKey: ['/api/user-impacts', userId] });
+    };
+
+    wsClient.on('impact_update', handleImpactUpdate);
+
+    // Cleanup on unmount
+    return () => {
+      wsClient.off('impact_update', handleImpactUpdate);
+      wsClient.disconnect();
+    };
+  }, [userId, queryClient, toast]);
 
   if (isLoading) {
     return (

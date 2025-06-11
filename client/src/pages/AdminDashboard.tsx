@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { User, Plus, Image, Video, Upload, FileText, Trash2 } from "lucide-react";
+import { wsClient } from "@/lib/websocket";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AdminUser {
   id: number;
@@ -47,6 +49,18 @@ export default function AdminDashboard() {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Connect admin to WebSocket
+  useEffect(() => {
+    if (user?.id) {
+      wsClient.connect(user.id, true);
+    }
+
+    return () => {
+      wsClient.disconnect();
+    };
+  }, [user?.id]);
 
   // Fetch all users
   const { data: users, isLoading } = useQuery<AdminUser[]>({
