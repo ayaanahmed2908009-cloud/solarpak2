@@ -11,7 +11,7 @@ class WebSocketManager {
   private clients: Map<number, AuthenticatedWebSocket[]> = new Map();
 
   initialize(server: Server) {
-    this.wss = new WebSocketServer({ port: 8080, host: '0.0.0.0' });
+    this.wss = new WebSocketServer({ port: 8081, host: '0.0.0.0' });
 
     this.wss.on('connection', (ws: AuthenticatedWebSocket, req) => {
       console.log('WebSocket connection established');

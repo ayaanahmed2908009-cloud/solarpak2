@@ -8,7 +8,7 @@ class WebSocketClient {
 
   connect(userId: number, isAdmin: boolean = false) {
     try {
-      const wsUrl = `ws://${window.location.hostname}:8080`;
+      const wsUrl = `ws://${window.location.hostname}:8081`;
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
