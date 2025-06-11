@@ -3,7 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./initializeDatabase";
 import session from "express-session";
-import MemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
 
 const app = express();
 app.use(express.json());
@@ -12,15 +12,17 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files from the public directory
 app.use(express.static('public'));
 
-// Set up session middleware
-const MemStore = MemoryStore(session);
+// Set up session middleware with PostgreSQL store for persistence
+const PgStore = connectPg(session);
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "solar-impact-secret",
     resave: false,
     saveUninitialized: false,
-    store: new MemStore({
-      checkPeriod: 86400000, // prune expired entries every 24h
+    store: new PgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      tableName: 'sessions'
     }),
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
