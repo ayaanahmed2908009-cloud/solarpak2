@@ -26,6 +26,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 // Registration data interface
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Fetch current user with TanStack Query
   const { data: userData, isLoading, refetch } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // Always fetch fresh data
     retry: false,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
@@ -149,6 +150,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Function to refresh user data
+  const refreshUser = async () => {
+    try {
+      await refetch();
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+    }
+  };
+
   // Auth context value
   const authContextValue: AuthContextType = {
     user,
@@ -157,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     register,
     logout,
+    refreshUser,
   };
 
   return (
