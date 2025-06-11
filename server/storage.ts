@@ -757,7 +757,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateDonationStatus(id: number, status: string, paymentIntentId?: string): Promise<Donation | undefined> {
-    const updateData: any = { status };
+    const updateData: any = { paymentStatus: status };
     if (paymentIntentId) {
       updateData.paymentIntentId = paymentIntentId;
     }
