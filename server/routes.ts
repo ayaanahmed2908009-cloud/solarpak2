@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, login, logout, register, isAuthenticated, getCurrentUser } from "./auth";
+import { wsManager } from "./websocket";
 import Stripe from "stripe";
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
@@ -615,6 +616,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: description || null,
         addedBy: adminId
       });
+
+      // Send real-time notification to the user
+      wsManager.notifyUserImpactUpdate(parseInt(userId), impact);
 
       res.json(impact);
     } catch (error) {
