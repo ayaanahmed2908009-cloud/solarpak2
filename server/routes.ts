@@ -581,6 +581,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user impacts (for user dashboard)
+  app.get("/api/user-impacts/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const impacts = await storage.getUserImpacts(userId);
+      res.json(impacts);
+    } catch (error) {
+      console.error("Error fetching user impacts:", error);
+      res.status(500).json({ message: "Failed to fetch user impacts" });
+    }
+  });
+
   // User impact routes
   app.post("/api/admin/user-impact", isAuthenticated, isAdmin, async (req, res) => {
     try {
