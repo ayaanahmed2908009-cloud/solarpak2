@@ -488,11 +488,6 @@ function MemberDashboardContent({ user }: { user: User }) {
             </div>
             
             <YourImpactSection userId={user.id} />
-            
-            <div className="pt-4">
-              <h4 className="font-semibold mb-2">Your Impact Media:</h4>
-              <UserImpactDisplay userId={user.id} />
-            </div>
           </CardContent>
         </Card>
       </div>
