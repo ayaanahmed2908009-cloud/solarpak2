@@ -484,7 +484,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     const user = req.user as any;
-    if (user.role !== 'admin') {
+    console.log('Admin check - User:', { id: user?.id, email: user?.email, role: user?.role });
+    
+    if (!user || user.role !== 'admin') {
       return res.status(403).json({ message: "Forbidden - Admin access required" });
     }
     

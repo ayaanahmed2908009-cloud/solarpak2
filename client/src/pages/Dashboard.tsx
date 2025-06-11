@@ -395,17 +395,8 @@ function MemberDashboardContent({ user }: { user: User }) {
             <YourImpactSection userId={user.id} />
             
             <div className="pt-4">
-              <h4 className="font-semibold mb-2">Latest Updates:</h4>
-              <div className="space-y-4">
-                <div className="border rounded-lg p-4">
-                  <h5 className="font-medium">New Solar Installation in Sindh</h5>
-                  <p className="text-sm text-gray-600">Our team just completed a new installation that will help 5 families with consistent electricity.</p>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <h5 className="font-medium">Impact Report: Q2 2025</h5>
-                  <p className="text-sm text-gray-600">View our latest quarterly report detailing all installations and their impact.</p>
-                </div>
-              </div>
+              <h4 className="font-semibold mb-2">Your Impact Media:</h4>
+              <UserImpactDisplay userId={user.id} />
             </div>
           </CardContent>
         </Card>
