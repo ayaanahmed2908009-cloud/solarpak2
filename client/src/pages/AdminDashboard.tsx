@@ -459,6 +459,9 @@ function UserImpactList({ userId }: { userId: number }) {
   
   const { data: impacts, isLoading } = useQuery<UserImpact[]>({
     queryKey: ['/api/user-impacts', userId],
+    queryFn: () => fetch(`/api/user-impacts/${userId}`, { credentials: 'include' }).then(res => res.json()),
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const deleteImpactMutation = useMutation({
