@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { User } from "@/hooks/useAuth";
-import { Image, Video } from "lucide-react";
+import { Image, Video, FileText } from "lucide-react";
 
 interface UserImpact {
   id: number;
@@ -27,6 +27,101 @@ interface UserImpact {
   title: string;
   description?: string;
   createdAt: string;
+}
+
+// User Impact Display Component
+function UserImpactDisplay({ userId }: { userId: number }) {
+  const { data: impacts, isLoading } = useQuery<UserImpact[]>({
+    queryKey: ['/api/user-impacts', userId],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="border rounded-lg p-4 animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div className="h-3 bg-gray-200 rounded w-full"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!impacts || impacts.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="border rounded-lg p-4 text-center">
+          <h5 className="font-medium text-gray-600">No impact media yet</h5>
+          <p className="text-sm text-gray-500">Your admin will upload photos and videos of the solar installations you've helped fund.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {impacts.map((impact) => (
+        <div key={impact.id} className="border rounded-lg p-4">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              {impact.mediaType === 'photo' && (
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Image className="w-6 h-6 text-blue-600" />
+                </div>
+              )}
+              {impact.mediaType === 'video' && (
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Video className="w-6 h-6 text-green-600" />
+                </div>
+              )}
+              {impact.mediaType === 'document' && (
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-purple-600" />
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <h5 className="font-medium">{impact.title}</h5>
+              {impact.description && (
+                <p className="text-sm text-gray-600 mt-1">{impact.description}</p>
+              )}
+              <p className="text-xs text-gray-400 mt-2">
+                {new Date(impact.createdAt).toLocaleDateString()}
+              </p>
+              {impact.mediaUrl && (
+                <div className="mt-3">
+                  {impact.mediaType === 'photo' && (
+                    <img
+                      src={impact.mediaUrl}
+                      alt={impact.title}
+                      className="max-w-full h-48 object-cover rounded-lg border"
+                    />
+                  )}
+                  {impact.mediaType === 'video' && (
+                    <video
+                      src={impact.mediaUrl}
+                      controls
+                      className="max-w-full h-48 rounded-lg border"
+                    />
+                  )}
+                  {impact.mediaType === 'document' && (
+                    <a
+                      href={impact.mediaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View Document
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 // Helper function to get badge color based on membership tier
