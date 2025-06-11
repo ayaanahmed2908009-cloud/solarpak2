@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useSearch, Link } from "wouter";
+import { useLocation, useSearch, Link, useRouter } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -193,14 +193,19 @@ export default function Checkout() {
     // Show a toast notification
     toast({
       title: "Payment successful!",
-      description: "Thank you for your generous donation",
+      description: "Redirecting to confirmation page...",
       variant: "default",
     });
     
-    // Redirect to success page after a short delay
+    // Redirect to donation success page with details
     setTimeout(() => {
-      navigate("/success");
-    }, 2000);
+      const params = new URLSearchParams({
+        amount: donation?.amount?.toString() || '',
+        type: donation?.isRecurring ? 'subscription' : 'payment',
+        donationId: donation?.id?.toString() || ''
+      });
+      navigate(`/donation-success?${params.toString()}`);
+    }, 1500);
   };
 
   const handlePaymentError = (message: string) => {

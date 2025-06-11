@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Checkout from "@/pages/Checkout";
 import Success from "@/pages/Success";
+import DonationSuccess from "@/pages/DonationSuccess";
 import Impact from "@/pages/Impact";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
@@ -97,6 +98,7 @@ function Router() {
       <Route path="/case-study" component={CaseStudy} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/success" component={Success} />
+      <Route path="/donation-success" component={DonationSuccess} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
       <Route path="/dashboard" component={Dashboard} />
