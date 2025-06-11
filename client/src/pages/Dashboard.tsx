@@ -148,6 +148,8 @@ function YourImpactSection({ userId }: { userId: number }) {
   
   const { data: impacts, isLoading } = useQuery<UserImpact[]>({
     queryKey: ['/api/user-impacts', userId],
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always fetch fresh data
   });
 
   useEffect(() => {

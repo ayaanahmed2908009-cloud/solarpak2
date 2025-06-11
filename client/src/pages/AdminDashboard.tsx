@@ -111,9 +111,10 @@ export default function AdminDashboard() {
         file: null
       });
       setUploadMethod('url');
-      // Refresh user impacts if viewing a user
+      // Force refresh of user impacts for the selected user
       if (selectedUser) {
         queryClient.invalidateQueries({ queryKey: ['/api/user-impacts', selectedUser.id] });
+        queryClient.refetchQueries({ queryKey: ['/api/user-impacts', selectedUser.id] });
       }
     },
     onError: (error: any) => {
