@@ -830,7 +830,7 @@ export class DatabaseStorage implements IStorage {
 
   async incrementStatsHomesHelped(additionalHomes: number): Promise<Stats | undefined> {
     const currentStats = await this.getStats();
-    const newHomesHelped = (currentStats?.homesHelped || 0) + additionalHomes;
+    const newHomesHelped = (currentStats?.homesHelped || 0) + Math.floor(additionalHomes);
     return this.updateStats({ homesHelped: newHomesHelped });
   }
 

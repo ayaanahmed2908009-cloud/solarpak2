@@ -338,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             
             // Update stats for successful donations
-            await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
+            await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
             await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
             
             // Find the user by email and update their membership status
@@ -377,7 +377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
               
               // Update stats for successful donations
-              await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
+              await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
               await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
               
               // Find the user by email and update their membership status
@@ -442,7 +442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Update stats for successful donations
-        await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0.1);
+        await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
         await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
         
         // Find the user by email and update their membership status
