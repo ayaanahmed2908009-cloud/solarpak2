@@ -427,31 +427,115 @@ function UserManagementTable() {
 // Member Dashboard Content
 function MemberDashboardContent({ user }: { user: User }) {
   const membershipBadgeColor = getMembershipBadgeColor(user.membershipTier || 'none');
+  const tierLevel = user.membershipTier || 'none';
+
+  // Enhanced tier display messages
+  const getTierMessage = (tier: string) => {
+    switch (tier) {
+      case 'platinum':
+        return {
+          title: '🌟 PLATINUM CHANGEMAKER 🌟',
+          subtitle: 'Elite Solar Champion',
+          description: 'You are among our most valued supporters, directly transforming lives across Pakistan',
+          gradient: 'from-purple-600 via-purple-500 to-indigo-600'
+        };
+      case 'gold':
+        return {
+          title: '✨ GOLD AMBASSADOR ✨',
+          subtitle: 'Distinguished Donor',
+          description: 'Your generous contributions are making a significant impact in rural communities',
+          gradient: 'from-yellow-400 via-yellow-500 to-amber-600'
+        };
+      case 'silver':
+        return {
+          title: '🏆 SILVER SUPPORTER 🏆',
+          subtitle: 'Valued Contributor',
+          description: 'Thank you for being a dedicated supporter of sustainable energy access',
+          gradient: 'from-gray-400 via-gray-500 to-slate-600'
+        };
+      case 'bronze':
+        return {
+          title: '🥉 BRONZE BENEFACTOR 🥉',
+          subtitle: 'Community Builder',
+          description: 'Every contribution matters - you are helping families access clean energy',
+          gradient: 'from-amber-600 via-amber-700 to-amber-800'
+        };
+      default:
+        return {
+          title: '💡 RISING SUPPORTER 💡',
+          subtitle: 'Solar Advocate',
+          description: 'Welcome to our mission! Your support helps bring light to families in need',
+          gradient: 'from-blue-500 via-blue-600 to-blue-700'
+        };
+    }
+  };
+
+  const tierInfo = getTierMessage(tierLevel);
 
   return (
     <div className="space-y-6">
+      {/* Hero Membership Banner */}
+      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${tierInfo.gradient} p-8 text-white shadow-2xl`}>
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <Avatar className="h-24 w-24 border-4 border-white/30 shadow-xl">
+              <AvatarImage src={user.profileImageUrl || ""} />
+              <AvatarFallback className="text-2xl bg-white/20">{user.fullName?.charAt(0) || user.email.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="text-center md:text-left flex-1">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-wide">
+                {tierInfo.title}
+              </h1>
+              <p className="text-xl opacity-90 mb-2">{tierInfo.subtitle}</p>
+              <p className="text-lg opacity-80 max-w-2xl">{tierInfo.description}</p>
+              <div className="mt-4 flex flex-wrap gap-4 justify-center md:justify-start">
+                <div className="bg-white/20 px-4 py-2 rounded-full">
+                  <span className="font-semibold">${user.totalDonated?.toFixed(2) || "0.00"}</span>
+                  <span className="text-sm opacity-80 ml-1">Total Donated</span>
+                </div>
+                <div className="bg-white/20 px-4 py-2 rounded-full">
+                  <span className="font-semibold">{Math.floor((user.totalDonated || 0) / 200)}</span>
+                  <span className="text-sm opacity-80 ml-1">Solar Panels Funded</span>
+                </div>
+                <div className="bg-white/20 px-4 py-2 rounded-full">
+                  <span className="font-semibold">{Math.floor((user.totalDonated || 0) / 1000)}</span>
+                  <span className="text-sm opacity-80 ml-1">Families Helped</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Decorative elements */}
+        <div className="absolute top-4 right-4 opacity-20">
+          <div className="w-32 h-32 rounded-full border-4 border-white/30"></div>
+        </div>
+        <div className="absolute bottom-4 left-4 opacity-20">
+          <div className="w-24 h-24 rounded-full border-4 border-white/30"></div>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-6">
-        <Card className="w-full md:w-1/3">
+        <Card className="w-full md:w-1/3 border-2 border-primary/20">
           <CardHeader>
-            <CardTitle>Membership Status</CardTitle>
-            <CardDescription>Your current membership level and benefits</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">🎯</span>
+              Membership Perks
+            </CardTitle>
+            <CardDescription>Exclusive benefits for {tierInfo.subtitle.toLowerCase()}s</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={user.profileImageUrl || ""} />
-                <AvatarFallback className="text-xl">{user.fullName?.charAt(0) || user.email.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-xl font-bold">{user.fullName || user.email}</h3>
-                <Badge className={membershipBadgeColor}>
-                  {user.membershipTier === 'none' ? 'Basic Member' : `${user.membershipTier?.charAt(0).toUpperCase()}${user.membershipTier?.slice(1)} Member`}
-                </Badge>
-              </div>
+            <div className="text-center">
+              <Badge className={`${membershipBadgeColor} text-lg px-4 py-2`}>
+                {user.membershipTier === 'none' ? 'Rising Supporter' : `${user.membershipTier?.charAt(0).toUpperCase()}${user.membershipTier?.slice(1)} Member`}
+              </Badge>
             </div>
             
             <div className="pt-4">
-              <h4 className="font-semibold mb-2">Membership Benefits:</h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <span className="text-lg">🎁</span>
+                Your Exclusive Benefits:
+              </h4>
               <ul className="list-disc pl-5 space-y-1">
                 {user.membershipTier === 'platinum' && (
                   <>
@@ -477,13 +561,13 @@ function MemberDashboardContent({ user }: { user: User }) {
                     <li>All Bronze benefits</li>
                   </>
                 )}
-                {user.membershipTier === 'bronze' || user.membershipTier === 'none' ? (
+                {(user.membershipTier === 'bronze' || user.membershipTier === 'none') && (
                   <>
                     <li>Access to member-only updates</li>
                     <li>Monthly newsletter</li>
                     <li>Impact statistics</li>
                   </>
-                ) : null}
+                )}
               </ul>
             </div>
           </CardContent>

@@ -704,9 +704,24 @@ export class DatabaseStorage implements IStorage {
     const user = await this.getUser(id);
     if (!user) return undefined;
     
+    const newTotal = (user.totalDonated || 0) + amount;
+    
+    // Determine membership tier based on total donations
+    let membershipTier = 'none';
+    if (newTotal >= 5000) {
+      membershipTier = 'platinum';
+    } else if (newTotal >= 1000) {
+      membershipTier = 'gold';
+    } else if (newTotal >= 500) {
+      membershipTier = 'silver';
+    } else if (newTotal >= 100) {
+      membershipTier = 'bronze';
+    }
+    
     return this.updateUser(id, {
-      totalDonated: (user.totalDonated || 0) + amount,
-      lastDonationDate: new Date()
+      totalDonated: newTotal,
+      lastDonationDate: new Date(),
+      membershipTier
     });
   }
 
