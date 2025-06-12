@@ -254,21 +254,21 @@ export class MemStorage implements IStorage {
     // Determine membership tier based on total donation amount
     let membershipTier = user.membershipTier || 'none';
     
-    // Membership thresholds should match those on the membership page
-    if (totalDonated >= 1000) {
+    // Correct membership thresholds
+    if (totalDonated >= 5000) {
       membershipTier = 'platinum';
-    } else if (totalDonated >= 500) {
+    } else if (totalDonated >= 1000) {
       membershipTier = 'gold';
-    } else if (totalDonated >= 250) {
+    } else if (totalDonated >= 500) {
       membershipTier = 'silver';
-    } else if (totalDonated >= 50) {
+    } else if (totalDonated >= 100) {
       membershipTier = 'bronze';
     }
     
     // Update user with new donation stats and membership tier
     const updatedUser = {
       ...user,
-      role: user.role === 'admin' ? 'admin' : 'member', // Become a member after donation
+      role: user.role === 'admin' ? 'admin' : 'user', // Keep as user after donation
       totalDonated,
       membershipTier,
       lastDonationDate: new Date(),
@@ -276,6 +276,7 @@ export class MemStorage implements IStorage {
     };
     
     this.users.set(id, updatedUser);
+    console.log(`Updated user ${id}: $${totalDonated} total, ${membershipTier} tier`);
     return updatedUser;
   }
 

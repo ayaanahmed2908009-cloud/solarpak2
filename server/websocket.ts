@@ -85,6 +85,44 @@ class WebSocketManager {
     }
   }
 
+  // Notify a specific user about account updates (donations, tier changes)
+  notifyUserUpdate(userId: number, updateData: any) {
+    const userClients = this.clients.get(userId);
+    if (userClients && userClients.length > 0) {
+      const message = JSON.stringify({
+        type: 'user_update',
+        data: updateData,
+        timestamp: new Date().toISOString()
+      });
+
+      userClients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
+      
+      console.log(`Notified user ${userId} about account update`);
+    }
+  }
+
+  // Broadcast to admin users only
+  broadcastToAdmins(message: any) {
+    const messageStr = JSON.stringify({
+      ...message,
+      timestamp: new Date().toISOString()
+    });
+    
+    this.clients.forEach((clientList) => {
+      clientList.forEach(client => {
+        if (client.readyState === WebSocket.OPEN && client.isAdmin) {
+          client.send(messageStr);
+        }
+      });
+    });
+    
+    console.log('Broadcasted message to admin users');
+  }
+
   // Broadcast to all connected clients (for general updates)
   broadcast(message: any) {
     const messageStr = JSON.stringify(message);

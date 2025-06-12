@@ -345,8 +345,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const user = await storage.getUserByEmail(donation.email);
             if (user) {
               // Update user's donation stats and membership tier
-              await storage.updateUserDonationStats(user.id, donation.amount);
+              const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
               console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
+              
+              // Notify via WebSocket for real-time updates
+              if (updatedUser) {
+                const { wsManager } = await import('./websocket');
+                wsManager.notifyUserUpdate(updatedUser.id, {
+                  type: 'donation_processed',
+                  user: updatedUser,
+                  donation: donation
+                });
+                
+                // Notify all admin users about the new donation
+                wsManager.broadcastToAdmins({
+                  type: 'new_donation_processed',
+                  user: updatedUser,
+                  donation: donation
+                });
+              }
             }
             
             console.log(`Payment succeeded for donation ${donationId}`);
@@ -384,8 +401,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const user = await storage.getUserByEmail(donation.email);
               if (user) {
                 // Update user's donation stats and membership tier
-                await storage.updateUserDonationStats(user.id, donation.amount);
+                const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
                 console.log(`Updated membership for user ${user.id} after subscription payment of $${donation.amount}`);
+                
+                // Notify via WebSocket for real-time updates
+                if (updatedUser) {
+                  const { wsManager } = await import('./websocket');
+                  wsManager.notifyUserUpdate(updatedUser.id, {
+                    type: 'subscription_payment_processed',
+                    user: updatedUser,
+                    donation: donation
+                  });
+                  
+                  // Notify all admin users about the subscription payment
+                  wsManager.broadcastToAdmins({
+                    type: 'new_subscription_payment_processed',
+                    user: updatedUser,
+                    donation: donation
+                  });
+                }
               }
               
               console.log(`Subscription payment succeeded for donation ${donationId}`);
