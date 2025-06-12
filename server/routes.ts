@@ -483,8 +483,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const user = await storage.getUserByEmail(donation.email);
         if (user) {
           // Update user's donation stats and membership tier
-          await storage.updateUserDonationStats(user.id, donation.amount);
+          const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
           console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
+          
+          // Notify via WebSocket for real-time updates
+          if (updatedUser) {
+            const { wsManager } = await import('./websocket');
+            wsManager.notifyUserUpdate(updatedUser.id, {
+              type: 'manual_donation_processed',
+              user: updatedUser,
+              donation: donation
+            });
+            
+            // Notify all admin users about the donation
+            wsManager.broadcastToAdmins({
+              type: 'new_manual_donation_processed',
+              user: updatedUser,
+              donation: donation
+            });
+          }
         }
       }
 

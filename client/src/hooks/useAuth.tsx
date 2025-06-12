@@ -42,6 +42,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Auth provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -62,6 +63,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
     }
   }, [userData]);
+
+  // Set up WebSocket connection for real-time updates
+  useEffect(() => {
+    if (user && !wsConnection) {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.hostname}:8081`;
+      
+      try {
+        const ws = new WebSocket(wsUrl);
+        
+        ws.onopen = () => {
+          console.log('WebSocket connected for user updates');
+          // Authenticate the WebSocket connection
+          ws.send(JSON.stringify({
+            type: 'authenticate',
+            userId: user.id,
+            isAdmin: user.role === 'admin'
+          }));
+          setWsConnection(ws);
+        };
+        
+        ws.onmessage = (event) => {
+          try {
+            const message = JSON.parse(event.data);
+            
+            // Handle user account updates (donations, tier changes)
+            if (message.type === 'user_update' || message.type === 'donation_processed') {
+              console.log('Received user update via WebSocket');
+              // Refresh user data automatically
+              queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+              
+              // Show notification for successful donation processing
+              if (message.data?.type?.includes('donation_processed')) {
+                toast({
+                  title: "Payment Processed",
+                  description: "Your donation has been successfully processed and your account updated.",
+                });
+              }
+            }
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        };
+        
+        ws.onclose = () => {
+          console.log('WebSocket connection closed');
+          setWsConnection(null);
+        };
+        
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          setWsConnection(null);
+        };
+      } catch (error) {
+        console.error('Failed to create WebSocket connection:', error);
+      }
+    }
+    
+    // Cleanup WebSocket connection when user logs out
+    return () => {
+      if (!user && wsConnection) {
+        wsConnection.close();
+        setWsConnection(null);
+      }
+    };
+  }, [user, wsConnection, queryClient, toast]);
 
   // Login function
   const login = async (email: string, password: string) => {
