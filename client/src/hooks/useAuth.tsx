@@ -49,6 +49,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Fetch current user with TanStack Query
   const { data: userData, isLoading, refetch } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/auth/user", {
+          credentials: "include",
+        });
+        if (response.status === 401) {
+          return null;
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Auth query error:", error);
+        return null;
+      }
+    },
     staleTime: 0, // Always fetch fresh data
     retry: false,
     refetchOnWindowFocus: true,
