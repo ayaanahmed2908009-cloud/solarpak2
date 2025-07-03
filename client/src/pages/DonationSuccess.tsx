@@ -1,176 +1,238 @@
 import { useEffect, useState } from "react";
-import { Link, useSearch } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, Heart, ArrowRight, Users, Home } from "lucide-react";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, Heart, Users, Zap, ArrowRight, Star } from "lucide-react";
+
+interface DonationSessionData {
+  amount: number;
+  currency: string;
+  isMonthly: boolean;
+  projectId?: string;
+  donorName: string;
+  donorEmail: string;
+}
+
+interface UserTierInfo {
+  currentTier: string;
+  totalDonated: number;
+  nextTier?: string;
+  nextTierAmount?: number;
+}
 
 export default function DonationSuccess() {
+  const [, navigate] = useLocation();
   const { user, refreshUser } = useAuth();
-  const searchParams = new URLSearchParams(useSearch());
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  
-  const donationAmount = searchParams.get('amount');
-  const donationType = searchParams.get('type');
-  const donationId = searchParams.get('donationId');
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
+  // Extract session ID from URL parameters
   useEffect(() => {
-    // Refresh user data when the page loads to ensure updated donation totals
-    const refreshData = async () => {
-      setIsRefreshing(true);
-      await refreshUser();
-      setIsRefreshing(false);
-    };
-    
-    if (user) {
-      refreshData();
+    const urlParams = new URLSearchParams(window.location.search);
+    const session = urlParams.get('session_id');
+    setSessionId(session);
+  }, []);
+
+  // Fetch donation session details
+  const { data: sessionData, isLoading: sessionLoading } = useQuery<DonationSessionData>({
+    queryKey: ['/api/donation-session', sessionId],
+    enabled: !!sessionId,
+  });
+
+  // Refetch user data to get updated tier information
+  useEffect(() => {
+    if (sessionId && user) {
+      // Refetch user data after a small delay to ensure webhook has processed
+      setTimeout(() => {
+        refreshUser();
+      }, 2000);
     }
-  }, [user, refreshUser]);
+  }, [sessionId, user, refreshUser]);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex flex-col">
-      <Navbar />
-      
-      <div className="flex-grow flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl space-y-6">
-          {/* Success Animation Card */}
-          <Card className="text-center border-green-200 bg-green-50/50 shadow-2xl">
-            <CardHeader className="pb-4">
-              <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-pulse">
-                <CheckCircle className="w-12 h-12 text-green-600" />
-              </div>
-              <CardTitle className="text-3xl font-bold text-green-800 mb-2">
-                Donation Successful!
-              </CardTitle>
-              <CardDescription className="text-lg text-green-700">
-                Thank you for bringing light to families in Pakistan
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {donationAmount && (
-                <div className="bg-white rounded-lg p-6 border border-green-200">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    Your Contribution
-                  </h3>
-                  <p className="text-3xl font-bold text-green-600">
-                    ${donationAmount}
-                  </p>
-                  {donationType === 'subscription' && (
-                    <p className="text-sm text-gray-600 mt-1">Monthly Donation</p>
-                  )}
-                </div>
-              )}
+  const getTierInfo = (totalDonated: number): UserTierInfo => {
+    let currentTier = 'none';
+    let nextTier: string | undefined = 'bronze';
+    let nextTierAmount: number | undefined = 100;
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white rounded-lg p-4 border border-green-200">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Users className="w-6 h-6 text-blue-600" />
-                    <h4 className="font-semibold text-gray-800">Impact Created</h4>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Your donation will help provide solar panels to families without electricity
-                  </p>
-                </div>
-                
-                <div className="bg-white rounded-lg p-4 border border-green-200">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Heart className="w-6 h-6 text-red-500" />
-                    <h4 className="font-semibold text-gray-800">Lives Changed</h4>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Bringing clean energy and hope to communities in Khairpur Mirs, Sindh
-                  </p>
-                </div>
-              </div>
+    if (totalDonated >= 5000) {
+      currentTier = 'platinum';
+      nextTier = undefined;
+      nextTierAmount = undefined;
+    } else if (totalDonated >= 1000) {
+      currentTier = 'gold';
+      nextTier = 'platinum';
+      nextTierAmount = 5000;
+    } else if (totalDonated >= 500) {
+      currentTier = 'silver';
+      nextTier = 'gold';
+      nextTierAmount = 1000;
+    } else if (totalDonated >= 100) {
+      currentTier = 'bronze';
+      nextTier = 'silver';
+      nextTierAmount = 500;
+    }
 
-              <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
-                  <Home className="w-5 h-5 mr-2" />
-                  What Happens Next?
-                </h3>
-                <div className="space-y-3 text-left">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                      1
-                    </div>
-                    <p className="text-sm text-blue-700">
-                      Our team will identify a family in need and begin the solar panel installation process
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                      2
-                    </div>
-                    <p className="text-sm text-blue-700">
-                      You'll receive photos and videos of the installation on your dashboard
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                      3
-                    </div>
-                    <p className="text-sm text-blue-700">
-                      Watch your personal impact grow as more families receive clean energy
-                    </p>
-                  </div>
-                </div>
-              </div>
+    return { currentTier, totalDonated, nextTier, nextTierAmount };
+  };
 
-              <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                <p className="text-yellow-800 font-medium text-center">
-                  📧 A receipt has been sent to your email address
-                </p>
-                <p className="text-yellow-700 text-sm text-center mt-1">
-                  Keep it for your tax-deductible records
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'platinum': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'gold': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'silver': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'bronze': return 'bg-orange-100 text-orange-800 border-orange-200';
+      default: return 'bg-blue-100 text-blue-800 border-blue-200';
+    }
+  };
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/dashboard">
-              <Button 
-                size="lg" 
-                className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-lg px-8 py-3"
-                disabled={isRefreshing}
-              >
-                {isRefreshing ? "Updating..." : "View Your Dashboard"}
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            
-            <Link href="/">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-full sm:w-auto border-2 text-lg px-8 py-3"
-              >
-                Return to Homepage
-              </Button>
-            </Link>
-          </div>
+  const getTierIcon = (tier: string) => {
+    switch (tier) {
+      case 'platinum': return <Star className="h-4 w-4" />;
+      case 'gold': return <Star className="h-4 w-4" />;
+      case 'silver': return <Star className="h-4 w-4" />;
+      case 'bronze': return <Star className="h-4 w-4" />;
+      default: return <Heart className="h-4 w-4" />;
+    }
+  };
 
-          {/* Social Sharing Encouragement */}
-          <Card className="border-gray-200">
-            <CardContent className="pt-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Share Your Impact
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Inspire others to join the mission of bringing solar power to families in need
-              </p>
-              <div className="text-sm text-gray-500">
-                Share your story on social media and help us reach more donors
-              </div>
-            </CardContent>
-          </Card>
+  const getImpactMessage = (amount: number) => {
+    if (amount >= 1000) {
+      return "Your generous donation can provide a complete solar system for a family home!";
+    } else if (amount >= 250) {
+      return "Your donation can provide a small solar system for essential appliances!";
+    } else if (amount >= 100) {
+      return "Your donation can provide solar lighting for multiple rooms!";
+    } else if (amount >= 50) {
+      return "Your donation can provide basic solar lighting setup!";
+    } else {
+      return "Your contribution helps towards solar equipment for families in need!";
+    }
+  };
+
+  if (sessionLoading || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Processing your donation...</p>
         </div>
       </div>
-      
-      <Footer />
+    );
+  }
+
+  const tierInfo = getTierInfo(user.totalDonated || 0);
+  const donationAmount = sessionData?.amount || 50; // Fallback amount
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Success Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+            <CheckCircle2 className="h-12 w-12 text-green-600" />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Thank You!
+          </h1>
+          <p className="text-xl text-gray-600">
+            Your donation has been successfully processed
+          </p>
+        </div>
+
+        {/* Donation Details Card */}
+        <Card className="mb-6 border-2 border-green-200 shadow-lg">
+          <CardContent className="p-8">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                Donation Confirmed
+              </h2>
+              <div className="text-3xl font-bold text-green-600 mb-2">
+                ${donationAmount}
+                {sessionData?.isMonthly && <span className="text-lg text-gray-500">/month</span>}
+              </div>
+              <p className="text-gray-600">
+                {getImpactMessage(donationAmount)}
+              </p>
+            </div>
+
+            {/* Membership Tier Update */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Your Membership Status
+              </h3>
+              
+              <Badge className={`text-lg px-4 py-2 mb-3 ${getTierColor(tierInfo.currentTier)}`}>
+                {getTierIcon(tierInfo.currentTier)}
+                <span className="ml-2 capitalize">{tierInfo.currentTier} Member</span>
+              </Badge>
+              
+              <p className="text-gray-600 mb-2">
+                Total Contributed: <span className="font-semibold">${tierInfo.totalDonated}</span>
+              </p>
+              
+              {tierInfo.nextTier && tierInfo.nextTierAmount && (
+                <p className="text-sm text-gray-500">
+                  ${tierInfo.nextTierAmount - tierInfo.totalDonated} more to reach {tierInfo.nextTier} status
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Impact Tracking Notice */}
+        <Card className="mb-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <Users className="h-8 w-8 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Track Your Impact
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Keep a close lookout on your user dashboard for updates on where your money goes. 
+                  You'll receive detailed reports showing exactly how your contribution is helping 
+                  families in Pakistan get access to clean, reliable solar energy.
+                </p>
+                <div className="flex items-center text-sm text-yellow-700">
+                  <Zap className="h-4 w-4 mr-1" />
+                  <span>Real-time impact updates coming to your dashboard</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button 
+            onClick={() => navigate('/dashboard')}
+            className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3"
+          >
+            <Users className="mr-2 h-5 w-5" />
+            View Dashboard
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+          
+          <Button 
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900 px-8 py-3"
+          >
+            Return Home
+          </Button>
+        </div>
+
+        {/* Share Success */}
+        <div className="text-center mt-8">
+          <p className="text-gray-500 text-sm">
+            Help us spread the word about solar energy access in Pakistan
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

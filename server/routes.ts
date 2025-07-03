@@ -174,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           quantity: 1,
         }],
         mode: isMonthly ? 'subscription' : 'payment',
-        success_url: `${req.protocol}://${req.get('host')}/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${req.protocol}://${req.get('host')}/donation-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.protocol}://${req.get('host')}/`,
         metadata: {
           userId: user.id.toString(),
@@ -319,8 +319,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     // Handle specific event types
     try {
-      // Handle one-time payment success
-      if (event.type === 'payment_intent.succeeded') {
+      // Handle checkout session completion (primary donation flow)
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        
+        if (session.metadata?.userId && session.metadata?.amount) {
+          const userId = parseInt(session.metadata.userId);
+          const amount = parseFloat(session.metadata.amount);
+          const projectId = session.metadata.projectId ? parseInt(session.metadata.projectId) : null;
+          const isMonthly = session.metadata.type === 'monthly';
+          
+          // Create donation record
+          const donationData = {
+            name: session.customer_details?.name || 'Anonymous',
+            email: session.customer_details?.email || session.customer_email || '',
+            amount: amount,
+            message: `Donation through Stripe checkout - ${isMonthly ? 'Monthly' : 'One-time'}`,
+            projectId: projectId,
+            isRecurring: isMonthly,
+            paymentStatus: 'succeeded',
+            paymentIntentId: session.payment_intent || session.id
+          };
+          
+          const donation = await storage.createDonation(donationData);
+          console.log(`Created donation record ${donation.id} for user ${userId}`);
+          
+          // Update user donation stats and membership tier
+          const updatedUser = await storage.updateUserDonationStats(userId, amount);
+          
+          // Update project funding if specific project
+          if (projectId) {
+            await storage.updateProjectFunding(projectId, amount);
+          }
+          
+          // Update global stats
+          await storage.incrementStatsHomesHelped(amount >= 1000 ? 1 : 0);
+          await storage.incrementStatsSolarPanels(Math.ceil(amount / 200));
+          
+          if (updatedUser) {
+            console.log(`Updated user ${userId} membership to ${updatedUser.membershipTier} after $${amount} donation`);
+            
+            // Notify via WebSocket for real-time updates
+            const { wsManager } = await import('./websocket');
+            wsManager.notifyUserUpdate(updatedUser.id, {
+              type: 'donation_processed',
+              user: updatedUser,
+              donation: donation
+            });
+            
+            // Notify all admin users about the new donation
+            wsManager.broadcastToAdmins({
+              type: 'new_donation_processed',
+              user: updatedUser,
+              donation: donation
+            });
+          }
+        }
+      }
+      
+      // Handle one-time payment success (legacy support)
+      else if (event.type === 'payment_intent.succeeded') {
         const paymentIntent = event.data.object;
         
         // Find the donation associated with this payment
@@ -449,6 +507,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     // Always return a 200 response to acknowledge receipt of the event
     res.json({ received: true });
+  });
+
+  // Get donation session details for success page
+  app.get("/api/donation-session/:sessionId", isAuthenticated, async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID is required" });
+      }
+
+      // Retrieve session from Stripe
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      // Extract donation details from session
+      const donationData = {
+        amount: session.amount_total ? session.amount_total / 100 : 0, // Convert from cents
+        currency: session.currency || 'usd',
+        isMonthly: session.mode === 'subscription',
+        projectId: session.metadata?.projectId,
+        donorName: session.customer_details?.name || '',
+        donorEmail: session.customer_details?.email || session.customer_email || '',
+        status: session.payment_status,
+        sessionId: session.id
+      };
+
+      res.json(donationData);
+    } catch (error: any) {
+      console.error("Error retrieving donation session:", error);
+      res.status(500).json({ message: "Error retrieving session details" });
+    }
   });
 
   // Manual payment confirmation (for testing without webhook setup)
