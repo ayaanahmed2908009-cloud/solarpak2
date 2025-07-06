@@ -38,6 +38,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Zap, Sun, Users, Loader2 } from "lucide-react";
+import PayPalButton from "./PayPalButton";
 
 // Donation form schema
 const donationSchema = z.object({
@@ -130,21 +131,52 @@ export default function DonationModal({
     try {
       setIsSubmitting(true);
 
-      // Create Stripe checkout session
-      const response = await apiRequest("POST", "/api/create-checkout-session", {
+      // Create donation record first
+      const response = await apiRequest("POST", "/api/create-donation", {
         amount: data.amount,
         isMonthly: data.donationType === "monthly",
-        projectId: data.projectId
+        projectId: data.projectId,
+        name: data.name,
+        email: data.email,
+        message: data.message
       });
 
       if (response.ok) {
-        const { checkoutUrl } = await response.json();
+        const donationData = await response.json();
         
-        // Redirect to Stripe checkout page
-        window.location.href = checkoutUrl;
+        // Store donation ID for success page
+        sessionStorage.setItem('pendingDonationId', donationData.donationId.toString());
+        
+        toast({
+          title: "Donation Created",
+          description: "Redirecting to PayPal for secure payment...",
+        });
+        
+        // Create PayPal order
+        const paypalOrder = await apiRequest("POST", "/api/paypal/order", {
+          amount: data.amount.toString(),
+          currency: "USD",
+          intent: "CAPTURE"
+        });
+
+        if (paypalOrder.ok) {
+          const orderData = await paypalOrder.json();
+          
+          // Get approval URL from PayPal response
+          const approvalUrl = orderData.links?.find((link: any) => link.rel === 'approve')?.href;
+          
+          if (approvalUrl) {
+            // Redirect to PayPal for payment
+            window.location.href = approvalUrl;
+          } else {
+            throw new Error("PayPal approval URL not found");
+          }
+        } else {
+          throw new Error("Failed to create PayPal order");
+        }
       } else {
         const error = await response.json();
-        throw new Error(error.message || "Failed to create checkout session");
+        throw new Error(error.message || "Failed to create donation");
       }
     } catch (error: any) {
       console.error("Donation error:", error);

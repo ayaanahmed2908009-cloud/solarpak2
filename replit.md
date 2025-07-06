@@ -39,11 +39,11 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 - User registration and login flows
 
 ### Payment Integration
-- **Stripe** integration for secure payment processing
-- Support for one-time and recurring donations
+- **PayPal** integration for secure payment processing
+- Support for one-time donations with PayPal checkout
 - Automatic membership tier updates based on donation amounts
-- Webhook handling for payment status updates
-- Secure payment form with Stripe Elements
+- PayPal order creation and capture flow
+- Return URL handling for payment success and cancellation
 
 ### User Management
 - Comprehensive user profiles with donation history
@@ -86,9 +86,9 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 ## External Dependencies
 
 ### Payment Processing
-- **Stripe** for secure payment processing
-- Stripe Elements for PCI-compliant payment forms
-- Webhook endpoints for payment status updates
+- **PayPal** for secure payment processing
+- PayPal Server SDK for order creation and capture
+- PayPal sandbox environment for development testing
 
 ### Database
 - **Neon Database** for serverless PostgreSQL hosting
@@ -132,6 +132,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 3, 2025. Replaced Stripe with PayPal integration for donation processing
 - June 26, 2025. Initial setup
 
 ## User Preferences

@@ -1,21 +1,16 @@
 import type { Express, Request, Response } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, login, logout, register, isAuthenticated, getCurrentUser } from "./auth";
 import { wsManager } from "./websocket";
-import Stripe from "stripe";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'public', 'uploads');
@@ -64,8 +59,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/logout", logout);
   app.get("/api/auth/logout", logout);
   app.get("/api/auth/user", getCurrentUser);
-  
-  // Prefix all routes with /api
   
   // Get stats
   app.get("/api/stats", async (req, res) => {
@@ -126,6 +119,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all donations
+  app.get("/api/donations", async (req, res) => {
+    try {
+      const donations = await storage.getDonations();
+      res.json(donations);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching donations" });
+    }
+  });
+
   // Create a donation (initial record before payment) - requires authentication
   app.post("/api/donations", isAuthenticated, async (req, res) => {
     try {
@@ -147,400 +150,164 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create Stripe checkout session for donations
-  app.post("/api/create-checkout-session", isAuthenticated, async (req, res) => {
+  // PayPal routes
+  app.get("/api/paypal/setup", async (req, res) => {
+    await loadPaypalDefault(req, res);
+  });
+
+  app.post("/api/paypal/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
+  });
+
+  // PayPal return URLs
+  app.get("/paypal/success", async (req, res) => {
+    const { token, PayerID } = req.query;
+    
+    if (!token) {
+      return res.redirect('/');
+    }
+
+    // Redirect to success page with order details
+    res.redirect(`/donation-success?order=${token}&payer=${PayerID}`);
+  });
+
+  app.get("/paypal/cancel", (req, res) => {
+    res.redirect('/?payment=cancelled');
+  });
+
+  // Create donation with PayPal integration
+  app.post("/api/create-donation", isAuthenticated, async (req, res) => {
     try {
-      const { amount, isMonthly, projectId } = req.body;
+      const { amount, isMonthly, projectId, name, email, message } = req.body;
       const user = req.user as any;
       
       if (!amount || amount <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
       }
 
-      // Create the checkout session configuration
-      const sessionConfig: any = {
-        payment_method_types: ['card'],
-        customer_email: user.email,
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Solar Panel Donation${projectId ? ` - Project ${projectId}` : ''}`,
-              description: 'Supporting solar energy access for families in Pakistan',
-              images: ['https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&h=300&fit=crop'],
-            },
-            unit_amount: Math.round(amount * 100), // Convert to cents
-          },
-          quantity: 1,
-        }],
-        mode: isMonthly ? 'subscription' : 'payment',
-        success_url: `${req.protocol}://${req.get('host')}/donation-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.protocol}://${req.get('host')}/`,
-        metadata: {
-          userId: user.id.toString(),
-          projectId: projectId || '',
-          amount: amount.toString(),
-          type: isMonthly ? 'monthly' : 'one-time'
-        }
+      // Create donation record first
+      const donationData = {
+        name: name || user.fullName || 'Anonymous',
+        email: email || user.email,
+        amount: amount,
+        message: message || `${isMonthly ? 'Monthly' : 'One-time'} donation`,
+        projectId: projectId || null,
+        isRecurring: isMonthly || false,
+        paymentStatus: 'pending'
       };
 
-      // For monthly payments, set up recurring billing
-      if (isMonthly) {
-        sessionConfig.line_items[0].price_data.recurring = {
-          interval: 'month'
-        };
-      }
-
-      const session = await stripe.checkout.sessions.create(sessionConfig);
-
+      const donation = await storage.createDonation(donationData);
+      
       res.json({ 
-        checkoutUrl: session.url,
-        sessionId: session.id 
+        donationId: donation.id,
+        amount: amount,
+        currency: 'USD',
+        intent: 'CAPTURE'
       });
     } catch (error: any) {
-      console.error("Stripe checkout error:", error);
+      console.error("PayPal donation error:", error);
       res.status(500).json({ 
-        message: "Error creating checkout session", 
+        message: "Error creating donation", 
         error: error.message 
       });
     }
   });
-  
-  // Create subscription for recurring donation - requires authentication
-  app.post("/api/create-subscription", isAuthenticated, async (req, res) => {
+
+  // PayPal donation success handler
+  app.post("/api/paypal-donation-success", isAuthenticated, async (req, res) => {
     try {
-      const { amount, donationId, email, name } = req.body;
+      const { donationId, orderID, amount } = req.body;
+      const user = req.user as any;
       
-      if (!amount || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
+      if (!donationId || !orderID) {
+        return res.status(400).json({ message: "Missing donation ID or order ID" });
       }
+
+      // Update donation status
+      await storage.updateDonationStatus(donationId, "succeeded", orderID);
+      const donation = await storage.getDonation(donationId);
       
-      // Get the donation details if we have an ID
-      let donationEmail = email;
-      let donationName = name;
-      
-      if (donationId) {
-        const donation = await storage.getDonation(donationId);
-        if (donation) {
-          donationEmail = donation.email;
-          donationName = donation.name;
+      if (donation) {
+        // Update user donation stats and membership tier
+        const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
+        
+        // Update project funding if specific project
+        if (donation.projectId) {
+          await storage.updateProjectFunding(donation.projectId, donation.amount);
         }
-      }
-      
-      if (!donationEmail) {
-        return res.status(400).json({ message: "Email is required for subscriptions" });
-      }
-      
-      // First, create or retrieve the customer
-      let customer;
-      
-      // Try to find an existing customer with this email
-      const customers = await stripe.customers.list({ email: donationEmail });
-      
-      if (customers.data.length > 0) {
-        customer = customers.data[0];
-      } else {
-        // Create a new customer
-        customer = await stripe.customers.create({
-          email: donationEmail,
-          name: donationName || undefined,
+        
+        // Update global stats
+        await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
+        await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
+        
+        if (updatedUser) {
+          console.log(`Updated user ${user.id} membership to ${updatedUser.membershipTier} after $${donation.amount} donation`);
+          
+          // Notify via WebSocket for real-time updates
+          wsManager.notifyUserUpdate(updatedUser.id, {
+            type: 'donation_processed',
+            user: updatedUser,
+            donation: donation
+          });
+          
+          // Notify all admin users about the new donation
+          wsManager.broadcastToAdmins({
+            type: 'new_donation_processed',
+            user: updatedUser,
+            donation: donation
+          });
+        }
+        
+        res.json({ 
+          success: true, 
+          donation: donation,
+          user: updatedUser 
         });
+      } else {
+        res.status(404).json({ message: "Donation not found" });
       }
-      
-      // Create a price for this donation amount
-      // In a production app, you would probably have predefined price IDs
-      const price = await stripe.prices.create({
-        unit_amount: Math.round(amount * 100), // Convert to cents
-        currency: 'usd',
-        recurring: {
-          interval: 'month',
-        },
-        product_data: {
-          name: 'Monthly Donation to SolarPak',
-        },
-        metadata: {
-          donationId: donationId ? donationId.toString() : undefined,
-        },
-      });
-      
-      // Create the subscription
-      const subscription = await stripe.subscriptions.create({
-        customer: customer.id,
-        items: [{ price: price.id }],
-        payment_behavior: 'default_incomplete',
-        payment_settings: { save_default_payment_method: 'on_subscription' },
-        expand: ['latest_invoice.payment_intent'],
-        metadata: {
-          donationId: donationId ? donationId.toString() : undefined,
-        },
-      });
-      
-      // Access the client secret
-      const invoice = subscription.latest_invoice as any;
-      const clientSecret = invoice?.payment_intent?.client_secret;
-      
-      // If we have a donation ID, update its status
-      if (donationId) {
-        await storage.updateDonationStatus(donationId, "pending", subscription.id);
-      }
-      
-      res.json({
-        subscriptionId: subscription.id,
-        clientSecret: clientSecret,
-      });
     } catch (error: any) {
-      console.error("Error creating subscription:", error.message);
-      res.status(500).json({ message: "Error creating subscription", error: error.message });
+      console.error("Error processing PayPal donation success:", error);
+      res.status(500).json({ message: "Error processing donation", error: error.message });
     }
-  });
-
-  // Webhook for Stripe payment confirmation
-  app.post("/api/webhook", async (req, res) => {
-    const payload = req.body;
-    const sig = req.headers['stripe-signature'] as string;
-
-    let event;
-
-    try {
-      // This is just a basic implementation - in production, you'd want to verify signatures
-      // using a webhook secret from the Stripe dashboard
-      event = payload;
-      
-      // If this were a real implementation with webhook signature verification:
-      // event = stripe.webhooks.constructEvent(
-      //   req.body,
-      //   sig,
-      //   'your_webhook_secret'
-      // );
-    } catch (err: any) {
-      console.error(`Webhook Error: ${err.message}`);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    // Handle specific event types
-    try {
-      // Handle checkout session completion (primary donation flow)
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        
-        if (session.metadata?.userId && session.metadata?.amount) {
-          const userId = parseInt(session.metadata.userId);
-          const amount = parseFloat(session.metadata.amount);
-          const projectId = session.metadata.projectId ? parseInt(session.metadata.projectId) : null;
-          const isMonthly = session.metadata.type === 'monthly';
-          
-          // Create donation record
-          const donationData = {
-            name: session.customer_details?.name || 'Anonymous',
-            email: session.customer_details?.email || session.customer_email || '',
-            amount: amount,
-            message: `Donation through Stripe checkout - ${isMonthly ? 'Monthly' : 'One-time'}`,
-            projectId: projectId,
-            isRecurring: isMonthly,
-            paymentStatus: 'succeeded',
-            paymentIntentId: session.payment_intent || session.id
-          };
-          
-          const donation = await storage.createDonation(donationData);
-          console.log(`Created donation record ${donation.id} for user ${userId}`);
-          
-          // Update user donation stats and membership tier
-          const updatedUser = await storage.updateUserDonationStats(userId, amount);
-          
-          // Update project funding if specific project
-          if (projectId) {
-            await storage.updateProjectFunding(projectId, amount);
-          }
-          
-          // Update global stats
-          await storage.incrementStatsHomesHelped(amount >= 1000 ? 1 : 0);
-          await storage.incrementStatsSolarPanels(Math.ceil(amount / 200));
-          
-          if (updatedUser) {
-            console.log(`Updated user ${userId} membership to ${updatedUser.membershipTier} after $${amount} donation`);
-            
-            // Notify via WebSocket for real-time updates
-            const { wsManager } = await import('./websocket');
-            wsManager.notifyUserUpdate(updatedUser.id, {
-              type: 'donation_processed',
-              user: updatedUser,
-              donation: donation
-            });
-            
-            // Notify all admin users about the new donation
-            wsManager.broadcastToAdmins({
-              type: 'new_donation_processed',
-              user: updatedUser,
-              donation: donation
-            });
-          }
-        }
-      }
-      
-      // Handle one-time payment success (legacy support)
-      else if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object;
-        
-        // Find the donation associated with this payment
-        if (paymentIntent.metadata?.donationId) {
-          const donationId = parseInt(paymentIntent.metadata.donationId);
-          const donation = await storage.getDonation(donationId);
-          
-          if (donation) {
-            // Update donation status
-            await storage.updateDonationStatus(donationId, "succeeded", paymentIntent.id);
-            
-            // If it's for a specific project, update project funding
-            if (donation.projectId) {
-              await storage.updateProjectFunding(donation.projectId, donation.amount);
-            }
-            
-            // Update stats for successful donations
-            await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
-            await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
-            
-            // Find the user by email and update their membership status
-            const user = await storage.getUserByEmail(donation.email);
-            if (user) {
-              // Update user's donation stats and membership tier
-              const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
-              console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
-              
-              // Notify via WebSocket for real-time updates
-              if (updatedUser) {
-                const { wsManager } = await import('./websocket');
-                wsManager.notifyUserUpdate(updatedUser.id, {
-                  type: 'donation_processed',
-                  user: updatedUser,
-                  donation: donation
-                });
-                
-                // Notify all admin users about the new donation
-                wsManager.broadcastToAdmins({
-                  type: 'new_donation_processed',
-                  user: updatedUser,
-                  donation: donation
-                });
-              }
-            }
-            
-            console.log(`Payment succeeded for donation ${donationId}`);
-          }
-        }
-      }
-      
-      // Handle subscription payment success
-      else if (event.type === 'invoice.payment_succeeded') {
-        const invoice = event.data.object;
-        
-        // Check if this is a subscription payment
-        if (invoice.subscription) {
-          // Get the subscription details to find the metadata
-          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
-          
-          if (subscription.metadata?.donationId) {
-            const donationId = parseInt(subscription.metadata.donationId);
-            const donation = await storage.getDonation(donationId);
-            
-            if (donation) {
-              // Update donation status
-              await storage.updateDonationStatus(donationId, "succeeded", subscription.id);
-              
-              // If it's for a specific project, update project funding
-              if (donation.projectId) {
-                await storage.updateProjectFunding(donation.projectId, donation.amount);
-              }
-              
-              // Update stats for successful donations
-              await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
-              await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
-              
-              // Find the user by email and update their membership status
-              const user = await storage.getUserByEmail(donation.email);
-              if (user) {
-                // Update user's donation stats and membership tier
-                const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
-                console.log(`Updated membership for user ${user.id} after subscription payment of $${donation.amount}`);
-                
-                // Notify via WebSocket for real-time updates
-                if (updatedUser) {
-                  const { wsManager } = await import('./websocket');
-                  wsManager.notifyUserUpdate(updatedUser.id, {
-                    type: 'subscription_payment_processed',
-                    user: updatedUser,
-                    donation: donation
-                  });
-                  
-                  // Notify all admin users about the subscription payment
-                  wsManager.broadcastToAdmins({
-                    type: 'new_subscription_payment_processed',
-                    user: updatedUser,
-                    donation: donation
-                  });
-                }
-              }
-              
-              console.log(`Subscription payment succeeded for donation ${donationId}`);
-            }
-          }
-        }
-      }
-      
-      // Handle subscription creation (first payment)
-      else if (event.type === 'customer.subscription.created') {
-        const subscription = event.data.object;
-        
-        if (subscription.metadata?.donationId) {
-          const donationId = parseInt(subscription.metadata.donationId);
-          const donation = await storage.getDonation(donationId);
-          
-          if (donation) {
-            // Update donation status
-            await storage.updateDonationStatus(donationId, "active", subscription.id);
-            console.log(`Subscription created for donation ${donationId}`);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error processing webhook event:', error);
-    }
-
-    // Always return a 200 response to acknowledge receipt of the event
-    res.json({ received: true });
   });
 
   // Get donation session details for success page
-  app.get("/api/donation-session/:sessionId", isAuthenticated, async (req, res) => {
+  app.get("/api/donation-session/:donationId", isAuthenticated, async (req, res) => {
     try {
-      const { sessionId } = req.params;
+      const { donationId } = req.params;
       
-      if (!sessionId) {
-        return res.status(400).json({ message: "Session ID is required" });
+      if (!donationId) {
+        return res.status(400).json({ message: "Donation ID is required" });
       }
 
-      // Retrieve session from Stripe
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      const donation = await storage.getDonation(parseInt(donationId));
       
-      if (!session) {
-        return res.status(404).json({ message: "Session not found" });
+      if (!donation) {
+        return res.status(404).json({ message: "Donation not found" });
       }
 
-      // Extract donation details from session
+      // Return donation details for success page
       const donationData = {
-        amount: session.amount_total ? session.amount_total / 100 : 0, // Convert from cents
-        currency: session.currency || 'usd',
-        isMonthly: session.mode === 'subscription',
-        projectId: session.metadata?.projectId,
-        donorName: session.customer_details?.name || '',
-        donorEmail: session.customer_details?.email || session.customer_email || '',
-        status: session.payment_status,
-        sessionId: session.id
+        amount: donation.amount,
+        currency: 'USD',
+        isMonthly: donation.isRecurring,
+        projectId: donation.projectId?.toString(),
+        donorName: donation.name,
+        donorEmail: donation.email,
+        status: donation.paymentStatus,
+        donationId: donation.id
       };
 
       res.json(donationData);
     } catch (error: any) {
-      console.error("Error retrieving donation session:", error);
-      res.status(500).json({ message: "Error retrieving session details" });
+      console.error("Error retrieving donation details:", error);
+      res.status(500).json({ message: "Error retrieving donation details" });
     }
   });
 
@@ -561,56 +328,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update donation status
       await storage.updateDonationStatus(donationId, status || "succeeded");
 
-      // If payment succeeded
-      if (status === "succeeded" || !status) {
-        // If it's for a specific project, update project funding
-        if (donation.projectId) {
-          await storage.updateProjectFunding(donation.projectId, donation.amount);
-        }
-        
-        // Update stats for successful donations
+      // If donation is successful, update stats
+      if (status === "succeeded") {
         await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
         await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
-        
-        // Find the user by email and update their membership status
-        const user = await storage.getUserByEmail(donation.email);
-        if (user) {
-          // Update user's donation stats and membership tier
-          const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
-          console.log(`Updated membership for user ${user.id} after donation of $${donation.amount}`);
-          
-          // Notify via WebSocket for real-time updates
-          if (updatedUser) {
-            const { wsManager } = await import('./websocket');
-            wsManager.notifyUserUpdate(updatedUser.id, {
-              type: 'manual_donation_processed',
-              user: updatedUser,
-              donation: donation
-            });
-            
-            // Notify all admin users about the donation
-            wsManager.broadcastToAdmins({
-              type: 'new_manual_donation_processed',
-              user: updatedUser,
-              donation: donation
-            });
-          }
-        }
       }
 
-      res.json({ success: true });
+      res.json({ message: "Payment status updated" });
     } catch (error) {
-      console.error("Error processing payment webhook:", error);
-      res.status(500).json({ message: "Error processing payment webhook" });
+      res.status(500).json({ message: "Error updating payment status" });
     }
   });
 
-  // Newsletter subscription
+  // Admin routes (require authentication)
+  const isAdmin = async (req: Request, res: Response, next: Function) => {
+    const user = req.user as any;
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+    next();
+  };
+
+  // Get all users (admin only)
+  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching users" });
+    }
+  });
+
+  // Update user role (admin only)
+  app.put("/api/admin/users/:id/role", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { role } = req.body;
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const user = await storage.updateUserRole(userId, role);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating user role" });
+    }
+  });
+
+  // Create project (admin only)
+  app.post("/api/admin/projects", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { name, description, location, imageUrl, totalFundingGoal } = req.body;
+      
+      if (!name || !description || !location || !totalFundingGoal) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const project = await storage.createProject({
+        name,
+        description,
+        location,
+        imageUrl: imageUrl || "",
+        totalFundingGoal,
+        isActive: true
+      });
+
+      res.status(201).json(project);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating project" });
+    }
+  });
+
+  // Create impact story (admin only)
+  app.post("/api/admin/impact-stories", isAuthenticated, isAdmin, upload.single('media'), async (req, res) => {
+    try {
+      const { title, description, location } = req.body;
+      
+      if (!title || !description || !location) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
+
+      const story = await storage.createImpactStory({
+        title,
+        description,
+        location,
+        imageUrl
+      });
+
+      res.status(201).json(story);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating impact story" });
+    }
+  });
+
+  // Create testimonial (admin only)
+  app.post("/api/admin/testimonials", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { name, location, message, imageUrl, rating } = req.body;
+      
+      if (!name || !location || !message || !rating) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const testimonial = await storage.createTestimonial({
+        name,
+        location,
+        message,
+        imageUrl: imageUrl || "",
+        rating
+      });
+
+      res.status(201).json(testimonial);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating testimonial" });
+    }
+  });
+
+  // Subscribe to newsletter
   app.post("/api/subscribe", async (req, res) => {
     try {
       const validatedData = insertSubscriberSchema.parse(req.body);
       const subscriber = await storage.addSubscriber(validatedData);
-      res.status(201).json({ success: true });
+      res.status(201).json(subscriber);
     } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
@@ -619,199 +465,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error subscribing to newsletter" });
     }
   });
-  
-  // ======== User Management APIs (Admin only) ========
-  
-  // Middleware to check if user is an admin
-  const isAdmin = async (req: Request, res: Response, next: Function) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    
-    const user = req.user as any;
-    console.log('Admin check - User:', { id: user?.id, email: user?.email, role: user?.role });
-    
-    if (!user || user.role !== 'admin') {
-      return res.status(403).json({ message: "Forbidden - Admin access required" });
-    }
-    
-    next();
-  };
-  
-  // Get all users (admin only) - includes password hashes for admin view
-  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const users = await storage.getAllUsers();
-      
-      // Include password hashes for admin view as requested
-      const adminUserView = users.map(user => ({
-        ...user,
-        passwordHash: user.password // Expose password hash for admin
-      }));
-      
-      res.json(adminUserView);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching users" });
-    }
-  });
-  
-  // Update user role (admin only)
-  app.patch("/api/admin/users/:id/role", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const userId = parseInt(req.params.id);
-      const { role } = req.body;
-      
-      if (!role || !['user', 'member', 'admin'].includes(role)) {
-        return res.status(400).json({ message: "Invalid role" });
-      }
-      
-      const updatedUser = await storage.updateUserRole(userId, role);
-      
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Remove sensitive information
-      const { password, ...userInfo } = updatedUser;
-      
-      res.json(userInfo);
-    } catch (error) {
-      res.status(500).json({ message: "Error updating user role" });
-    }
-  });
-  
-  // Update user membership tier (admin only)
-  app.patch("/api/admin/users/:id/membership", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const userId = parseInt(req.params.id);
-      const { tier } = req.body;
-      
-      if (!tier || !['none', 'bronze', 'silver', 'gold', 'platinum'].includes(tier)) {
-        return res.status(400).json({ message: "Invalid membership tier" });
-      }
-      
-      const updatedUser = await storage.updateUserMembership(userId, tier);
-      
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Remove sensitive information
-      const { password, ...userInfo } = updatedUser;
-      
-      res.json(userInfo);
-    } catch (error) {
-      res.status(500).json({ message: "Error updating user membership" });
-    }
-  });
 
-  // File upload endpoint for admin users
-  app.post("/api/admin/upload-media", isAuthenticated, isAdmin, upload.single('file'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-
-      const fileUrl = `/uploads/${req.file.filename}`;
-      
-      res.json({
-        message: "File uploaded successfully",
-        fileUrl,
-        originalName: req.file.originalname,
-        size: req.file.size
-      });
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      res.status(500).json({ message: "Failed to upload file" });
-    }
-  });
-
-  // Get user impacts (for user dashboard)
-  app.get("/api/user-impacts/:userId", isAuthenticated, async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
-      }
-
-      const impacts = await storage.getUserImpacts(userId);
-      res.json(impacts);
-    } catch (error) {
-      console.error("Error fetching user impacts:", error);
-      res.status(500).json({ message: "Failed to fetch user impacts" });
-    }
-  });
-
-  // User impact routes
-  app.post("/api/admin/user-impact", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const { userId, mediaType, mediaUrl, title, description } = req.body;
-      const adminId = (req as any).user.id;
-
-      if (!userId || !mediaType || !mediaUrl || !title) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      const impact = await storage.addUserImpact({
-        userId: parseInt(userId),
-        mediaType,
-        mediaUrl,
-        title,
-        description: description || null,
-        addedBy: adminId
-      });
-
-      // Send real-time notification to the user
-      wsManager.notifyUserImpactUpdate(parseInt(userId), impact);
-
-      res.json(impact);
-    } catch (error) {
-      console.error("Error adding user impact:", error);
-      res.status(500).json({ message: "Failed to add user impact" });
-    }
-  });
-
-  // Get user impacts for specific user (for user dashboard and admin viewing specific user)
-  app.get("/api/user-impacts/:userId", isAuthenticated, async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const impacts = await storage.getUserImpacts(userId);
-      res.json(impacts);
-    } catch (error) {
-      console.error("Error fetching user impacts:", error);
-      res.status(500).json({ message: "Failed to fetch user impacts" });
-    }
-  });
-
-  // Get current user's impacts (for user dashboard)
-  app.get("/api/user-impacts", isAuthenticated, async (req, res) => {
-    try {
-      const userId = (req as any).user.id;
-      const impacts = await storage.getUserImpacts(userId);
-      res.json(impacts);
-    } catch (error) {
-      console.error("Error fetching user impacts:", error);
-      res.status(500).json({ message: "Failed to fetch user impacts" });
-    }
-  });
-
-  app.delete("/api/admin/user-impact/:id", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const impactId = parseInt(req.params.id);
-      const success = await storage.deleteUserImpact(impactId);
-      
-      if (!success) {
-        return res.status(404).json({ message: "Impact not found" });
-      }
-      
-      res.json({ message: "Impact deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting user impact:", error);
-      res.status(500).json({ message: "Failed to delete user impact" });
-    }
-  });
-
-
+  // Serve static files
+  app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
   const httpServer = createServer(app);
   return httpServer;
