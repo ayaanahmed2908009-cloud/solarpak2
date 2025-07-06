@@ -149,11 +149,11 @@ export default function DonationModal({
         
         toast({
           title: "Donation Successful!",
-          description: "Thank you for your generous contribution.",
+          description: "Redirecting to complete your donation...",
         });
         
-        // Redirect to success page
-        navigate('/donation-success');
+        // Redirect to Ko-fi for actual donation processing
+        window.location.href = 'https://ko-fi.com/solarpak';
       } else {
         const error = await response.json();
         throw new Error(error.message || "Failed to create donation");

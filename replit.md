@@ -39,10 +39,11 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 - User registration and login flows
 
 ### Donation System
-- Simple donation recording without payment processing
+- Donation form that redirects to Ko-fi for payment processing
 - Automatic membership tier updates based on donation amounts
 - Donation tracking and success confirmation
 - User impact metrics and progress tracking
+- Integration with Ko-fi platform (ko-fi.com/solarpak)
 
 ### User Management
 - Comprehensive user profiles with donation history
@@ -131,6 +132,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 6, 2025. Added Ko-fi integration - donations now redirect to ko-fi.com/solarpak for payment processing
 - July 6, 2025. Removed PayPal integration - system now tracks donations without payment processing
 - July 3, 2025. Replaced Stripe with PayPal integration for donation processing
 - June 26, 2025. Initial setup
