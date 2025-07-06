@@ -1,5 +1,4 @@
 import { useState } from "react";
-import DonationModal from "./DonationModal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -75,19 +74,20 @@ export default function DonationSection() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <DonationModal
-                suggestedAmount={selectedAmount}
-                buttonText="Donate Once"
-                fullWidth={true}
-              />
+              <Button
+                className="w-full"
+                onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+              >
+                Donate Once
+              </Button>
               
-              <DonationModal
-                suggestedAmount={selectedAmount}
-                buttonText="Donate Monthly"
-                buttonVariant="outline"
-                fullWidth={true}
-                projectId="1" // Optional, can be removed if not needed
-              />
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+              >
+                Donate Monthly
+              </Button>
             </div>
             
             <div className="mt-6 text-center text-sm text-gray-500">

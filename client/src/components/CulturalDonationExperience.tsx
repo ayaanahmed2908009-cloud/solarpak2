@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Heart, Star, Moon, Sun, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DonationModal from "@/components/DonationModal";
 
 interface FamilyStory {
   id: string;
@@ -152,13 +151,12 @@ export default function CulturalDonationExperience() {
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3">{family.story}</p>
 
                 {/* Action Button */}
-                <DonationModal 
-                  buttonText="Help This Family 💝"
-                  buttonVariant="default"
-                  buttonSize="sm"
-                  fullWidth={true}
-                  suggestedAmount={family.needAmount - family.raisedAmount}
-                />
+                <Button 
+                  className="w-full"
+                  onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+                >
+                  Help This Family 💝
+                </Button>
               </div>
             );
           })}
@@ -198,30 +196,34 @@ export default function CulturalDonationExperience() {
         <div className="text-center mt-12">
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Quick Impact Donations</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <DonationModal 
-              buttonText="$25 - One Day Power"
-              buttonVariant="outline"
-              suggestedAmount={25}
-              fullWidth={true}
-            />
-            <DonationModal 
-              buttonText="$50 - One Week Light"
-              buttonVariant="outline"
-              suggestedAmount={50}
-              fullWidth={true}
-            />
-            <DonationModal 
-              buttonText="$100 - One Month Relief"
-              buttonVariant="outline"
-              suggestedAmount={100}
-              fullWidth={true}
-            />
-            <DonationModal 
-              buttonText="$500 - Full Solar Kit"
-              buttonVariant="default"
-              suggestedAmount={500}
-              fullWidth={true}
-            />
+            <Button 
+              variant="outline"
+              className="w-full"
+              onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+            >
+              $25 - One Day Power
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full"
+              onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+            >
+              $50 - One Week Light
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full"
+              onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+            >
+              $100 - One Month Relief
+            </Button>
+            <Button 
+              variant="default"
+              className="w-full"
+              onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+            >
+              $500 - Full Solar Kit
+            </Button>
           </div>
         </div>
       </div>

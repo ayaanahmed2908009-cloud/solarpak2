@@ -17,7 +17,7 @@ import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import { useState, useEffect, useRef } from "react";
 import { ChevronUp, Sun, Zap, Users, ThermometerSun, ChevronDown } from "lucide-react";
-import DonationModal from "@/components/DonationModal";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   // State to control the visibility of the back-to-top button
@@ -89,13 +89,13 @@ export default function Home() {
                 </p>
                 
                 <div className="flex flex-col gap-4 mb-8">
-                  <DonationModal 
-                    suggestedAmount={100}
-                    buttonText="Make a Donation"
-                    buttonVariant="default"
-                    buttonSize="lg"
-                    fullWidth={true}
-                  />
+                  <Button 
+                    size="lg"
+                    className="w-full"
+                    onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+                  >
+                    Make a Donation
+                  </Button>
                   <button 
                     onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
                     className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-semibold transition-all"

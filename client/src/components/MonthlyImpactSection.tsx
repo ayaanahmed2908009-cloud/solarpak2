@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import DonationModal from "./DonationModal";
+import { Button } from "@/components/ui/button";
 
 export default function MonthlyImpactSection() {
   const [monthlyAmount, setMonthlyAmount] = useState<number>(50);
@@ -145,11 +145,12 @@ export default function MonthlyImpactSection() {
                 </div>
               </div>
               
-              <DonationModal
-                suggestedAmount={monthlyAmount}
-                buttonText="Become a Monthly Donor"
-                fullWidth={true}
-              />
+              <Button
+                className="w-full"
+                onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+              >
+                Become a Monthly Donor
+              </Button>
               
               <p className="text-center text-sm text-gray-500 mt-4">
                 Your recurring donation helps us plan long-term projects and provide continuous support
