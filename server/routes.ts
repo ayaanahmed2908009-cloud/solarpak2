@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { setupAuth, login, logout, register, isAuthenticated, getCurrentUser } from "./auth";
 import { wsManager } from "./websocket";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import { createMonthlyPaypalOrder, captureMonthlyPaypalOrder, loadMonthlyPaypalDefault } from "./paypal-monthly";
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -162,6 +163,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
+  });
+
+  // Monthly PayPal endpoints
+  app.get("/api/paypal/monthly/setup", async (req, res) => {
+    await loadMonthlyPaypalDefault(req, res);
+  });
+
+  app.post("/api/paypal/monthly/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createMonthlyPaypalOrder(req, res);
+  });
+
+  app.post("/api/paypal/monthly/order/:orderID/capture", async (req, res) => {
+    await captureMonthlyPaypalOrder(req, res);
   });
 
   // PayPal return URLs
