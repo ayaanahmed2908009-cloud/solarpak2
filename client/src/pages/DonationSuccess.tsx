@@ -28,76 +28,22 @@ export default function DonationSuccess() {
   const { user, refreshUser } = useAuth();
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // Extract order details from URL parameters
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const order = urlParams.get('order');
-    const payer = urlParams.get('payer');
-    
-    if (order && payer) {
-      setSessionId(order);
-      // Process PayPal payment completion
-      handlePayPalSuccess(order, payer);
-    }
-  }, []);
-
-  const handlePayPalSuccess = async (orderID: string, payerID: string) => {
-    try {
-      const donationId = sessionStorage.getItem('pendingDonationId');
-      
-      if (!donationId) {
-        console.error('No pending donation ID found');
-        return;
-      }
-
-      // Capture the PayPal payment
-      const captureResponse = await fetch(`/api/paypal/order/${orderID}/capture`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (captureResponse.ok) {
-        // Update donation status
-        const successResponse = await fetch('/api/paypal-donation-success', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            donationId: parseInt(donationId),
-            orderID: orderID,
-            payerID: payerID
-          })
-        });
-
-        if (successResponse.ok) {
-          const result = await successResponse.json();
-          console.log('Donation processed successfully:', result);
-          
-          // Clear the pending donation ID
-          sessionStorage.removeItem('pendingDonationId');
-          
-          // Refresh user data to show updated tier
-          refreshUser();
-        }
-      }
-    } catch (error) {
-      console.error('Error processing PayPal success:', error);
-    }
-  };
-
-  // Get donation ID from session storage
-  const [donationId, setDonationId] = useState<string | null>(null);
-  
+  // Get donation ID from session storage  
   useEffect(() => {
     const storedDonationId = sessionStorage.getItem('pendingDonationId');
     if (storedDonationId) {
-      setDonationId(storedDonationId);
+      setSessionId(storedDonationId);
+      // Clear the pending donation ID
+      sessionStorage.removeItem('pendingDonationId');
+      // Refresh user data to show updated tier
+      refreshUser();
     }
-  }, []);
+  }, [refreshUser]);
 
   // Fetch donation details
   const { data: sessionData, isLoading: sessionLoading } = useQuery<DonationSessionData>({
-    queryKey: ['/api/donation-session', donationId],
-    enabled: !!donationId,
+    queryKey: ['/api/donation-session', sessionId],
+    enabled: !!sessionId,
   });
 
   // Refetch user data to get updated tier information

@@ -148,36 +148,12 @@ export default function DonationModal({
         sessionStorage.setItem('pendingDonationId', donationData.donationId.toString());
         
         toast({
-          title: "Donation Created",
-          description: "Redirecting to PayPal for secure payment...",
+          title: "Donation Successful!",
+          description: "Thank you for your generous contribution.",
         });
         
-        // Create PayPal order - use different endpoint for monthly donations
-        const isMonthly = data.donationType === "monthly";
-        const paypalEndpoint = isMonthly ? "/api/paypal/monthly/order" : "/api/paypal/order";
-        
-        const paypalOrder = await apiRequest("POST", paypalEndpoint, {
-          amount: data.amount.toString(),
-          currency: "USD",
-          intent: "CAPTURE"
-        });
-
-        if (paypalOrder.ok) {
-          const orderData = await paypalOrder.json();
-          
-          // Get approval URL from PayPal response
-          const approvalUrl = orderData.links?.find((link: any) => link.rel === 'approve')?.href;
-          
-          if (approvalUrl) {
-            // Redirect to PayPal for payment
-            window.location.href = approvalUrl;
-          } else {
-            throw new Error("PayPal approval URL not found");
-          }
-        } else {
-          const paypalError = await paypalOrder.json();
-          throw new Error(paypalError.error || "Failed to create PayPal order");
-        }
+        // Redirect to success page
+        navigate('/donation-success');
       } else {
         const error = await response.json();
         throw new Error(error.message || "Failed to create donation");

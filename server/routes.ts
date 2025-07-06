@@ -4,8 +4,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, login, logout, register, isAuthenticated, getCurrentUser } from "./auth";
 import { wsManager } from "./websocket";
-import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
-import { createMonthlyPaypalOrder, captureMonthlyPaypalOrder, loadMonthlyPaypalDefault } from "./paypal-monthly";
+
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -151,67 +150,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayPal routes
-  app.get("/api/paypal/setup", async (req, res) => {
-    await loadPaypalDefault(req, res);
-  });
 
-  app.post("/api/paypal/order", async (req, res) => {
-    // Request body should contain: { intent, amount, currency }
-    await createPaypalOrder(req, res);
-  });
 
-  app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
-    await capturePaypalOrder(req, res);
-  });
 
-  // Monthly PayPal endpoints
-  app.get("/api/paypal/monthly/setup", async (req, res) => {
-    await loadMonthlyPaypalDefault(req, res);
-  });
 
-  app.post("/api/paypal/monthly/order", async (req, res) => {
-    // Request body should contain: { intent, amount, currency }
-    await createMonthlyPaypalOrder(req, res);
-  });
-
-  app.post("/api/paypal/monthly/order/:orderID/capture", async (req, res) => {
-    await captureMonthlyPaypalOrder(req, res);
-  });
-
-  // PayPal return URLs
-  app.get("/paypal/success", async (req, res) => {
-    const { token, PayerID } = req.query;
-    
-    if (!token) {
-      return res.redirect('/');
-    }
-
-    // Redirect to success page with order details
-    res.redirect(`/donation-success?order=${token}&payer=${PayerID}`);
-  });
-
-  app.get("/paypal/cancel", (req, res) => {
-    res.redirect('/?payment=cancelled');
-  });
-
-  // Monthly PayPal return URLs
-  app.get("/paypal/monthly-success", async (req, res) => {
-    const { token, PayerID } = req.query;
-    
-    if (!token) {
-      return res.redirect('/');
-    }
-
-    // Redirect to success page with monthly order details
-    res.redirect(`/monthly-donation-success?order=${token}&payer=${PayerID}`);
-  });
-
-  app.get("/paypal/monthly-cancel", (req, res) => {
-    res.redirect('/?payment=cancelled');
-  });
-
-  // Create donation with PayPal integration
+  // Create donation without payment processing
   app.post("/api/create-donation", isAuthenticated, async (req, res) => {
     try {
       const { amount, isMonthly, projectId, name, email, message } = req.body;
@@ -221,27 +164,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid amount" });
       }
 
-      // Create donation record first
+      // Create donation record as completed (no payment processing)
       const donationData = {
         name: name || user.fullName || 'Anonymous',
         email: email || user.email,
         amount: amount,
-        message: message || `${isMonthly ? 'Monthly' : 'One-time'} donation`,
         projectId: projectId || null,
-        isRecurring: isMonthly || false,
-        paymentStatus: 'pending'
+        isRecurring: isMonthly || false
       };
 
       const donation = await storage.createDonation(donationData);
       
+      // Update user's total donated amount and membership tier
+      if (user) {
+        await storage.updateUserDonationStats(user.id, amount);
+        
+        // Notify admins of the donation
+        wsManager.broadcastToAdmins({
+          type: 'new_donation',
+          data: {
+            donorName: donation.name,
+            amount: donation.amount,
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+      
       res.json({ 
+        success: true,
         donationId: donation.id,
         amount: amount,
-        currency: 'USD',
-        intent: 'CAPTURE'
+        message: "Donation recorded successfully"
       });
     } catch (error: any) {
-      console.error("PayPal donation error:", error);
+      console.error("Donation creation error:", error);
       res.status(500).json({ 
         message: "Error creating donation", 
         error: error.message 
@@ -249,64 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayPal donation success handler
-  app.post("/api/paypal-donation-success", isAuthenticated, async (req, res) => {
-    try {
-      const { donationId, orderID, amount } = req.body;
-      const user = req.user as any;
-      
-      if (!donationId || !orderID) {
-        return res.status(400).json({ message: "Missing donation ID or order ID" });
-      }
 
-      // Update donation status
-      await storage.updateDonationStatus(donationId, "succeeded", orderID);
-      const donation = await storage.getDonation(donationId);
-      
-      if (donation) {
-        // Update user donation stats and membership tier
-        const updatedUser = await storage.updateUserDonationStats(user.id, donation.amount);
-        
-        // Update project funding if specific project
-        if (donation.projectId) {
-          await storage.updateProjectFunding(donation.projectId, donation.amount);
-        }
-        
-        // Update global stats
-        await storage.incrementStatsHomesHelped(donation.amount >= 1000 ? 1 : 0);
-        await storage.incrementStatsSolarPanels(Math.ceil(donation.amount / 200));
-        
-        if (updatedUser) {
-          console.log(`Updated user ${user.id} membership to ${updatedUser.membershipTier} after $${donation.amount} donation`);
-          
-          // Notify via WebSocket for real-time updates
-          wsManager.notifyUserUpdate(updatedUser.id, {
-            type: 'donation_processed',
-            user: updatedUser,
-            donation: donation
-          });
-          
-          // Notify all admin users about the new donation
-          wsManager.broadcastToAdmins({
-            type: 'new_donation_processed',
-            user: updatedUser,
-            donation: donation
-          });
-        }
-        
-        res.json({ 
-          success: true, 
-          donation: donation,
-          user: updatedUser 
-        });
-      } else {
-        res.status(404).json({ message: "Donation not found" });
-      }
-    } catch (error: any) {
-      console.error("Error processing PayPal donation success:", error);
-      res.status(500).json({ message: "Error processing donation", error: error.message });
-    }
-  });
 
   // Get donation session details for success page
   app.get("/api/donation-session/:donationId", isAuthenticated, async (req, res) => {
