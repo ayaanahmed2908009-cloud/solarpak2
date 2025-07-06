@@ -17,8 +17,8 @@ import { Request, Response } from "express";
 
 /* PayPal Monthly Subscription Controllers Setup */
 
-const PAYPAL_MONTHLY_CLIENT_ID = "AR_8SYw61rT5dxQC8XhTcT7bLn65U8NxUH-lHyDudoLabgiHZpA22GxWKUCYV5EPF8FSbqeB5puYYOwv";
-const PAYPAL_MONTHLY_CLIENT_SECRET = "EHwCbdc3rD0t_jShMXQj8wqWk_D4R9baIQrJZEgeonn90lxc7jCENfant6ma3iAbqavwHDpvgJoNyXJs";
+const PAYPAL_MONTHLY_CLIENT_ID = "ASAtyTB76wyKfzxzsFKPkDyytJDAdBZenEDuC20RDT1B4miaV_3ngTwh6YSeMSC3f3Ko1usUgW_5vokV";
+const PAYPAL_MONTHLY_CLIENT_SECRET = "EBCNmjODW0NQuBlwr3tu_jVAbN6nBduRenJ4PpiBwBvtGq9pcO2k-RG0ghN_FE4i8jHBrkCVMPZGW9Hk";
 
 if (!PAYPAL_MONTHLY_CLIENT_ID) {
   throw new Error("Missing PAYPAL_MONTHLY_CLIENT_ID");

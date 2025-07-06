@@ -152,8 +152,11 @@ export default function DonationModal({
           description: "Redirecting to PayPal for secure payment...",
         });
         
-        // Create PayPal order
-        const paypalOrder = await apiRequest("POST", "/api/paypal/order", {
+        // Create PayPal order - use different endpoint for monthly donations
+        const isMonthly = data.donationType === "monthly";
+        const paypalEndpoint = isMonthly ? "/api/paypal/monthly/order" : "/api/paypal/order";
+        
+        const paypalOrder = await apiRequest("POST", paypalEndpoint, {
           amount: data.amount.toString(),
           currency: "USD",
           intent: "CAPTURE"

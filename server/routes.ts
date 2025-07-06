@@ -195,6 +195,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/?payment=cancelled');
   });
 
+  // Monthly PayPal return URLs
+  app.get("/paypal/monthly-success", async (req, res) => {
+    const { token, PayerID } = req.query;
+    
+    if (!token) {
+      return res.redirect('/');
+    }
+
+    // Redirect to success page with monthly order details
+    res.redirect(`/monthly-donation-success?order=${token}&payer=${PayerID}`);
+  });
+
+  app.get("/paypal/monthly-cancel", (req, res) => {
+    res.redirect('/?payment=cancelled');
+  });
+
   // Create donation with PayPal integration
   app.post("/api/create-donation", isAuthenticated, async (req, res) => {
     try {
