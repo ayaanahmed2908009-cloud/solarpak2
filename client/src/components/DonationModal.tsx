@@ -172,7 +172,8 @@ export default function DonationModal({
             throw new Error("PayPal approval URL not found");
           }
         } else {
-          throw new Error("Failed to create PayPal order");
+          const paypalError = await paypalOrder.json();
+          throw new Error(paypalError.error || "Failed to create PayPal order");
         }
       } else {
         const error = await response.json();

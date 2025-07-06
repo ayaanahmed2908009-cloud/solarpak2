@@ -118,8 +118,17 @@ export async function createPaypalOrder(req: Request, res: Response) {
     const httpStatusCode = httpResponse.statusCode;
 
     res.status(httpStatusCode).json(jsonResponse);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create order:", error);
+    
+    // Check if it's an authentication error
+    if (error.statusCode === 401) {
+      return res.status(500).json({ 
+        error: "PayPal authentication failed. Please check your PayPal credentials.",
+        details: "Make sure you have valid PayPal Client ID and Client Secret configured for the correct environment (sandbox or live)."
+      });
+    }
+    
     res.status(500).json({ error: "Failed to create order." });
   }
 }
