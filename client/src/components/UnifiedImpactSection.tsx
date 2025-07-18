@@ -41,8 +41,8 @@ export default function UnifiedImpactSection() {
         }
       },
       { 
-        threshold: [0.1, 0.3],
-        rootMargin: '50px'
+        threshold: [0.05, 0.2],
+        rootMargin: '100px'
       }
     );
 
@@ -50,19 +50,34 @@ export default function UnifiedImpactSection() {
       observer.observe(sectionRef.current);
     }
 
-    // Fallback for mobile devices where intersection observer might not work properly
+    // Stronger fallback for mobile devices - trigger animation after 1 second
     const fallbackTimer = setTimeout(() => {
       if (!isVisible) {
         setIsVisible(true);
         animateCounters();
       }
-    }, 3000);
+    }, 1000);
 
     return () => {
       observer.disconnect();
       clearTimeout(fallbackTimer);
     };
   }, [isVisible]);
+
+  // Additional effect to immediately set final numbers on mobile if needed
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      const mobileTimer = setTimeout(() => {
+        if (!isVisible) {
+          setCounters(finalNumbers);
+          setIsVisible(true);
+        }
+      }, 500);
+
+      return () => clearTimeout(mobileTimer);
+    }
+  }, []);
 
   const animateCounters = () => {
     const duration = 2500; // 2.5 seconds
