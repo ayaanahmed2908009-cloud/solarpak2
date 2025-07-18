@@ -18,18 +18,7 @@ export default function CulturalDonationExperience() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showRamadanSpecial, setShowRamadanSpecial] = useState(false);
 
-  const families: FamilyStory[] = [
-    {
-      id: "1",
-      name: "Ahmed Family",
-      location: "Khairpur Mirs, Sindh",
-      story: "Ahmed's children study by candlelight during 12-hour daily blackouts in 45°C heat. Their small business struggles without reliable electricity. Solar panels would transform their daily life.",
-      needAmount: 500,
-      raisedAmount: 0,
-      image: "👨‍👩‍👧‍👦",
-      culturalGreeting: "السلام علیکم - Your kindness brings light to our home"
-    }
-  ];
+  const families: FamilyStory[] = [];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -105,62 +94,64 @@ export default function CulturalDonationExperience() {
           )}
         </div>
 
-        {/* Family Stories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {families.map((family) => {
-            const progressPercentage = (family.raisedAmount / family.needAmount) * 100;
-            
-            return (
-              <div 
-                key={family.id}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group cursor-pointer"
-                onClick={() => setSelectedFamily(family)}
-              >
-                {/* Family Emoji/Image */}
-                <div className="text-center mb-4">
-                  <div className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                    {family.image}
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-800">{family.name}</h3>
-                  <p className="text-sm text-gray-500 flex items-center justify-center">
-                    📍 {family.location}
-                  </p>
-                </div>
-
-                {/* Cultural Greeting */}
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 mb-4 text-center">
-                  <p className="text-sm text-gray-700 italic">"{family.culturalGreeting}"</p>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-600">Raised</span>
-                    <span className="font-medium">${family.raisedAmount} / ${family.needAmount}</span>
-                  </div>
-                  <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div 
-                      className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: `${progressPercentage}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">{Math.round(progressPercentage)}% funded</p>
-                </div>
-
-                {/* Story Preview */}
-                <p className="text-sm text-gray-600 mb-4 line-clamp-3">{family.story}</p>
-
-                {/* Action Button */}
-                <Button 
-                  className="w-full"
-                  onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+        {/* Family Stories Grid - Only show if families exist */}
+        {families.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {families.map((family) => {
+              const progressPercentage = (family.raisedAmount / family.needAmount) * 100;
+              
+              return (
+                <div 
+                  key={family.id}
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group cursor-pointer"
+                  onClick={() => setSelectedFamily(family)}
                 >
-                  Help This Family 💝
-                </Button>
-              </div>
-            );
-          })}
-        </div>
+                  {/* Family Emoji/Image */}
+                  <div className="text-center mb-4">
+                    <div className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                      {family.image}
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800">{family.name}</h3>
+                    <p className="text-sm text-gray-500 flex items-center justify-center">
+                      📍 {family.location}
+                    </p>
+                  </div>
+
+                  {/* Cultural Greeting */}
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 mb-4 text-center">
+                    <p className="text-sm text-gray-700 italic">"{family.culturalGreeting}"</p>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="mb-4">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-600">Raised</span>
+                      <span className="font-medium">${family.raisedAmount} / ${family.needAmount}</span>
+                    </div>
+                    <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${progressPercentage}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{Math.round(progressPercentage)}% funded</p>
+                  </div>
+
+                  {/* Story Preview */}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">{family.story}</p>
+
+                  {/* Action Button */}
+                  <Button 
+                    className="w-full"
+                    onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+                  >
+                    Help This Family 💝
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Islamic Values Section */}
         <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-8 border border-emerald-200">
