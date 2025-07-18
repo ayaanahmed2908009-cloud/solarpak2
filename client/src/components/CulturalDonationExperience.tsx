@@ -54,10 +54,10 @@ export default function CulturalDonationExperience() {
 
   const getTimeOfDayMessage = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return { message: "Good Morning! Start your day with kindness", icon: "🌅" };
-    if (hour < 17) return { message: "Afternoon Blessings! Help families stay cool", icon: "☀️" };
-    if (hour < 20) return { message: "Evening Peace! Light up homes after dark", icon: "🌆" };
-    return { message: "Night Mercy! Bring comfort to families", icon: "🌙" };
+    if (hour < 12) return { message: "Blessed Giving! Start your day with kindness", icon: "🌅" };
+    if (hour < 17) return { message: "Blessed Giving! Help families stay cool", icon: "☀️" };
+    if (hour < 20) return { message: "Blessed Giving! Light up homes after dark", icon: "🌆" };
+    return { message: "Blessed Giving! Bring comfort to families", icon: "🌙" };
   };
 
   const timeMessage = getTimeOfDayMessage();
