@@ -142,7 +142,7 @@ export default function UnifiedImpactSection() {
               <div className="bg-yellow-50 rounded-lg p-3">
                 <div className="flex items-center text-yellow-800 text-sm">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                  +4 families this month
+                  +4 panels this month
                 </div>
               </div>
             </div>
