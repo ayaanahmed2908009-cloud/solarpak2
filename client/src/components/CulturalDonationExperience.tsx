@@ -33,12 +33,13 @@ export default function CulturalDonationExperience() {
   }, []);
 
   const getPakistanTime = () => {
-    const pakistanTime = new Date(currentTime.getTime() + (5 * 60 * 60 * 1000)); // UTC+5
-    return pakistanTime.toLocaleTimeString('en-US', { 
+    const pakistanTime = new Date().toLocaleString('en-US', {
+      timeZone: 'Asia/Karachi',
       hour12: true,
       hour: '2-digit',
       minute: '2-digit'
     });
+    return pakistanTime;
   };
 
   const getTimeOfDayMessage = () => {
