@@ -228,7 +228,7 @@ export default function UnifiedImpactSection() {
                 style={{ width: '78%' }}
               ></div>
             </div>
-            <p className="text-sm text-green-700">Enough to power 2 homes for a day</p>
+            <p className="text-sm text-green-700">Enough to power 30 homes for a day</p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 md:p-8 border border-blue-200">
