@@ -25,8 +25,8 @@ export default function UnifiedImpactSection() {
 
   const finalNumbers = {
     livesImpacted: 35,
-    energyGenerated: 45,
-    co2Prevented: 56.7,
+    energyGenerated: 90,
+    co2Prevented: 120,
     hoursOfPower: 3,
     panelsInstalled: 8,
     homesEmpowered: 8
@@ -142,7 +142,7 @@ export default function UnifiedImpactSection() {
               <div className="bg-yellow-50 rounded-lg p-3">
                 <div className="flex items-center text-yellow-800 text-sm">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                  +1 family this month
+                  +4 families this month
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@ export default function UnifiedImpactSection() {
               <div className="bg-blue-50 rounded-lg p-3">
                 <div className="flex items-center text-blue-800 text-sm">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                  +1 family this month
+                  +4 families this month
                 </div>
               </div>
             </div>
