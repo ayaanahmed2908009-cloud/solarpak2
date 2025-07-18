@@ -249,7 +249,7 @@ export default function UnifiedImpactSection() {
                 style={{ width: '65%' }}
               ></div>
             </div>
-            <p className="text-sm text-blue-700">Equivalent to planting 3 trees this year</p>
+            <p className="text-sm text-blue-700">Equivalent to planting 6 trees this year</p>
           </div>
         </div>
 
