@@ -16,21 +16,21 @@ const roadmapSteps: RoadmapStep[] = [
     id: 1,
     title: "Make Your Donation",
     description: "Support Pakistani families through our Ko-fi donation platform",
-    icon: <Coffee className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />,
+    icon: <span className="text-3xl">☕</span>,
     detail: "Choose your donation amount and complete the secure payment through Ko-fi. Your contribution directly funds solar panel installations for families in need."
   },
   {
     id: 2,
     title: "Share Your Contact Details",
     description: "We'll request your email and phone number through Ko-fi",
-    icon: <Mail className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />,
+    icon: <span className="text-3xl">📧</span>,
     detail: "After your donation, we'll reach out through Ko-fi to collect your contact information so we can send you personalized impact updates."
   },
   {
     id: 3,
     title: "Receive Impact Updates",
     description: "Get photos and videos of your direct impact via email and SMS",
-    icon: <Camera className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />,
+    icon: <span className="text-3xl">📸</span>,
     detail: "Watch your donation transform lives! Receive real photos and videos showing the solar panels being installed and the families they're helping."
   }
 ];
@@ -235,7 +235,7 @@ export default function TrustRoadmapSection() {
           }`}>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
               <div className="w-12 h-12 bg-white border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />
+                <span className="text-2xl">✅</span>
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">100% Transparent</h4>
               <p className="text-sm text-gray-600">Every donation is tracked and documented with real photos and videos</p>
@@ -243,7 +243,7 @@ export default function TrustRoadmapSection() {
             
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
               <div className="w-12 h-12 bg-white border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />
+                <span className="text-2xl">💚</span>
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Direct Impact</h4>
               <p className="text-sm text-gray-600">Your donation goes directly to solar panel installations for families</p>
@@ -251,7 +251,7 @@ export default function TrustRoadmapSection() {
             
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
               <div className="w-12 h-12 bg-white border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Camera className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />
+                <span className="text-2xl">📱</span>
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Personal Updates</h4>
               <p className="text-sm text-gray-600">Receive personalized impact reports directly to your email and phone</p>
