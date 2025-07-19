@@ -1,0 +1,5 @@
+Contact: https://ko-fi.com/solarpak
+Expires: 2026-07-18T12:00:00.000Z
+Acknowledgments: https://solarpak.replit.app/
+Preferred-Languages: en, ur
+Canonical: https://solarpak.replit.app/.well-known/security.txt

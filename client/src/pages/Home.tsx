@@ -15,6 +15,8 @@ import DonationSection from "@/components/DonationSection";
 import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
+import { SEOOptimizedContent, SEOFAQSection } from "@/components/SEOOptimizedContent";
+import { SEOBlogContent, SEOLocationContent } from "@/components/SEOBlogContent";
 import { useState, useEffect, useRef } from "react";
 import { ChevronUp, Sun, Zap, Users, ThermometerSun, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -53,9 +55,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
-      <Navbar />
-      <main ref={mainRef} className="relative w-full">
+    <SEOOptimizedContent 
+      title="SolarPak - Solar Energy Donations for Pakistan | Bringing Light to Families"
+      description="Help Pakistani families access clean solar energy. Donate to install solar panels, provide 24/7 electricity, and transform lives in Pakistan. 8 families already empowered with sustainable energy solutions."
+      keywords={["solar energy Pakistan", "solar panels donation", "Pakistan electricity crisis", "renewable energy charity", "sustainable energy Pakistan", "solar installation Pakistan", "clean energy donation"]}
+    >
+      <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
+        <Navbar />
+        <main ref={mainRef} className="relative w-full">
         {/* Mobile Hero - Original Design */}
         <section className="md:hidden snap-section">
           <HeroBanner />
@@ -293,14 +300,20 @@ export default function Home() {
       
       {/* Back to top button with smooth animation */}
       <button 
-        onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 bg-primary text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50 ${
-          showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-        }`}
-        aria-label="Back to top"
-      >
-        <ChevronUp className="h-6 w-6" />
-      </button>
-    </div>
+          onClick={scrollToTop}
+          className={`fixed bottom-8 right-8 bg-primary text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50 ${
+            showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+          }`}
+          aria-label="Back to top"
+        >
+          <ChevronUp className="h-6 w-6" />
+        </button>
+      </div>
+      
+      {/* SEO Content Sections */}
+      <SEOFAQSection />
+      <SEOBlogContent />
+      <SEOLocationContent />
+    </SEOOptimizedContent>
   );
 }

@@ -1,0 +1,37 @@
+# Robots.txt for SolarPak - Solar Energy Donations for Pakistan
+
+User-agent: *
+Allow: /
+
+# Important pages for crawling
+Allow: /donate
+Allow: /impact
+Allow: /about
+Allow: /projects
+
+# Disallow admin and private areas
+Disallow: /admin
+Disallow: /api/
+Disallow: /dashboard/admin
+
+# Sitemap location
+Sitemap: https://solarpak.replit.app/sitemap.xml
+
+# Crawl delay for better server performance
+Crawl-delay: 1
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
