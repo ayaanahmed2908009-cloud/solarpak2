@@ -11,6 +11,7 @@ import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import CulturalDonationExperience from "@/components/CulturalDonationExperience";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import TrustRoadmapSection from "@/components/TrustRoadmapSection";
 import DonationSection from "@/components/DonationSection";
 import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
@@ -281,6 +282,10 @@ export default function Home() {
         
         <section id="testimonials" className="snap-section">
           <TestimonialsSection />
+        </section>
+        
+        <section id="trust" className="snap-section">
+          <TrustRoadmapSection />
         </section>
         
         <section id="donate" className="snap-section">
