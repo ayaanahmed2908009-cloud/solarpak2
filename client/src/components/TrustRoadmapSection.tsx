@@ -16,21 +16,21 @@ const roadmapSteps: RoadmapStep[] = [
     id: 1,
     title: "Make Your Donation",
     description: "Support Pakistani families through our Ko-fi donation platform",
-    icon: <Coffee className="h-8 w-8 text-amber-600" />,
+    icon: <Coffee className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />,
     detail: "Choose your donation amount and complete the secure payment through Ko-fi. Your contribution directly funds solar panel installations for families in need."
   },
   {
     id: 2,
     title: "Share Your Contact Details",
     description: "We'll request your email and phone number through Ko-fi",
-    icon: <Mail className="h-8 w-8 text-blue-600" />,
+    icon: <Mail className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />,
     detail: "After your donation, we'll reach out through Ko-fi to collect your contact information so we can send you personalized impact updates."
   },
   {
     id: 3,
     title: "Receive Impact Updates",
     description: "Get photos and videos of your direct impact via email and SMS",
-    icon: <Camera className="h-8 w-8 text-green-600" />,
+    icon: <Camera className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />,
     detail: "Watch your donation transform lives! Receive real photos and videos showing the solar panels being installed and the families they're helping."
   }
 ];
@@ -126,8 +126,8 @@ export default function TrustRoadmapSection() {
                     {/* Step Circle */}
                     <div className={`relative w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all duration-500 mb-4 ${
                       index <= activeStep 
-                        ? 'bg-white border-blue-500 shadow-lg scale-110' 
-                        : 'bg-gray-100 border-gray-300'
+                        ? 'bg-white border-green-500 shadow-lg scale-110' 
+                        : 'bg-white border-gray-300'
                     }`}>
                       {step.icon}
                       
@@ -174,8 +174,8 @@ export default function TrustRoadmapSection() {
                     <div className="flex items-start gap-4">
                       <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center transition-all duration-500 ${
                         index <= activeStep 
-                          ? 'bg-white border-blue-500 shadow-lg' 
-                          : 'bg-gray-100 border-gray-300'
+                          ? 'bg-white border-green-500 shadow-lg' 
+                          : 'bg-white border-gray-300'
                       }`}>
                         {step.icon}
                       </div>
@@ -205,17 +205,17 @@ export default function TrustRoadmapSection() {
           <div className={`mt-12 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-            <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200 shadow-xl">
+            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-xl">
               <CardContent className="p-8">
                 <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center text-white shadow-lg">
+                  <div className="w-16 h-16 rounded-full bg-white border-4 border-green-500 flex items-center justify-center shadow-lg">
                     {roadmapSteps[activeStep].icon}
                   </div>
                   
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-sm font-medium text-blue-600">Currently Highlighted</span>
-                      <ArrowRight className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-green-600">Currently Highlighted</span>
+                      <ArrowRight className="h-4 w-4 text-green-600" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">
                       {roadmapSteps[activeStep].title}
@@ -234,24 +234,24 @@ export default function TrustRoadmapSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-white border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">100% Transparent</h4>
               <p className="text-sm text-gray-600">Every donation is tracked and documented with real photos and videos</p>
             </div>
             
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-6 w-6 text-green-600" />
+              <div className="w-12 h-12 bg-white border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Direct Impact</h4>
               <p className="text-sm text-gray-600">Your donation goes directly to solar panel installations for families</p>
             </div>
             
             <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Camera className="h-6 w-6 text-amber-600" />
+              <div className="w-12 h-12 bg-white border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Camera className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-green-700" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">Personal Updates</h4>
               <p className="text-sm text-gray-600">Receive personalized impact reports directly to your email and phone</p>
@@ -264,7 +264,7 @@ export default function TrustRoadmapSection() {
           }`}>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
             >
               Start Your Impact Journey
