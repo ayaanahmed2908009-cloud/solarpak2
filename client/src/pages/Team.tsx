@@ -106,7 +106,8 @@ const teamDirectors: TeamMember[] = [
     expertise: ["Social Media Strategy", "Content Creation", "Digital Marketing", "Community Management"],
     achievements: [
       "Built upon established social media presence from founder",
-      "Increased online engagement by 5%"
+      "Increased online engagement by 5%",
+      "Member of board of directors"
     ],
     image: "/ibrahim-murtaza.jpg",
     teamId: "social-media",
@@ -126,7 +127,8 @@ const teamDirectors: TeamMember[] = [
     expertise: ["Event Management", "Community Relations"],
     achievements: [
       "Organised 10 events for the next year alongside the team",
-      "Organised a clash royale competition"
+      "Organised a clash royale competition",
+      "Member of board of directors"
     ],
     image: "/ayaan-omer.jpg",
     teamId: "events-outreach",
@@ -146,7 +148,8 @@ const teamDirectors: TeamMember[] = [
     expertise: ["Fundraising Strategy", "Corporate Partnerships", "AI-Powered Outreach", "Strategic Negotiations"],
     achievements: [
       "Using an AI platform to send cold outreach to numerous CEOs and founders",
-      "Currently in talks of a sponsorship with a test prep agency"
+      "Currently in talks of a sponsorship with a test prep agency",
+      "Member of board of directors"
     ],
     image: "/ramin-tihami.jpg",
     teamId: "sponsorships",
