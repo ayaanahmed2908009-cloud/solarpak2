@@ -510,11 +510,11 @@ export default function Team() {
                                     Profile
                                   </h4>
                                   {director.image && director.image.startsWith('/') ? (
-                                    <div className="border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
+                                    <div className={`border-2 border-blue-400 rounded-lg shadow-md ${director.teamId === 'events-outreach' ? '' : 'overflow-hidden'}`}>
                                       <img 
                                         src={director.image} 
                                         alt={director.name}
-                                        className={`w-full ${director.teamId === 'events-outreach' ? 'h-auto max-h-96 object-contain bg-gray-50' : 'h-96 object-cover'}`}
+                                        className={`w-full rounded-lg ${director.teamId === 'events-outreach' ? 'h-auto max-h-96 object-contain bg-gray-50' : 'h-96 object-cover'}`}
                                       />
                                     </div>
                                   ) : (
@@ -633,11 +633,11 @@ export default function Team() {
                                             Profile
                                           </h4>
                                           {member.image && member.image.startsWith('/') ? (
-                                            <div className="border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
+                                            <div className={`border-2 border-blue-400 rounded-lg shadow-md ${member.teamId === 'events-outreach' ? '' : 'overflow-hidden'}`}>
                                               <img 
                                                 src={member.image} 
                                                 alt={member.name}
-                                                className={`w-full ${member.teamId === 'events-outreach' ? 'h-auto max-h-96 object-contain bg-gray-50' : 'h-96 object-cover'}`}
+                                                className={`w-full rounded-lg ${member.teamId === 'events-outreach' ? 'h-auto max-h-96 object-contain bg-gray-50' : 'h-96 object-cover'}`}
                                               />
                                             </div>
                                           ) : (
