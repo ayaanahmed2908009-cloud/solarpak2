@@ -434,9 +434,6 @@ export default function Team() {
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-bold mb-1">{team.name}</h3>
-                          <p className="text-white/90 text-sm font-medium">
-                            {team.memberCount} Team Members
-                          </p>
                         </div>
                         <div className="text-white/80">
                           {selectedTeam === team.id ? '▲' : '▼'}
