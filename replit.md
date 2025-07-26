@@ -144,6 +144,9 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated Social Media team: Added Jonathan Joseph as Content Creator specializing in brand promotion content, graphic design, and Canva
+- July 27, 2025. Enhanced team profile layouts: All team members now have same professional layout as directors with larger photos and consistent spacing
+- July 27, 2025. Added Ibrahim Murtaza's actual profile photo with blue frame border in updated layout structure
 - July 27, 2025. Created comprehensive Team page with team member profiles, mission & values, and career opportunities
 - July 27, 2025. Added Trust Roadmap Section with animated 3-step donation workflow before donation section
 - July 27, 2025. Updated Trust Roadmap icons to visible emojis with white backgrounds and green borders
