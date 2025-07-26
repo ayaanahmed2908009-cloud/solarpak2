@@ -113,8 +113,7 @@ const teamDirectors: TeamMember[] = [
     teamId: "social-media",
     isDirector: true,
     social: {
-      email: "social@solarpak.com",
-      linkedin: "#"
+      email: "social@solarpak.com"
     }
   },
   {
@@ -134,8 +133,7 @@ const teamDirectors: TeamMember[] = [
     teamId: "events-outreach",
     isDirector: true,
     social: {
-      email: "events@solarpak.com",
-      linkedin: "#"
+      email: "events@solarpak.com"
     }
   },
   {
@@ -155,8 +153,7 @@ const teamDirectors: TeamMember[] = [
     teamId: "sponsorships",
     isDirector: true,
     social: {
-      email: "partnerships@solarpak.com",
-      linkedin: "#"
+      email: "partnerships@solarpak.com"
     }
   },
   {
@@ -177,8 +174,7 @@ const teamDirectors: TeamMember[] = [
     teamId: "predictive-healthcare",
     isDirector: true,
     social: {
-      email: "research@solarpak.com",
-      linkedin: "#"
+      email: "research@solarpak.com"
     }
   }
 ];
@@ -191,8 +187,8 @@ const teamMembers: TeamMember[] = [
   { id: 8, name: "[Social Media Specialist 3]", role: "Digital Marketing Specialist", description: "Driving growth through targeted digital campaigns", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Digital Advertising", "Analytics"], achievements: ["Increased reach by 250%"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
   
   // Events & Community Outreach Team Members (2 additional)
-  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: { email: "adnan@solarpak.com", linkedin: "#" } },
-  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "#" } },
+  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
+  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "https://www.linkedin.com/in/zaid-afzal-619546306/" } },
 
   
   // Note: Sponsorships & Fundraising and Predictive Systems & Healthcare teams have directors only (no additional team members)
