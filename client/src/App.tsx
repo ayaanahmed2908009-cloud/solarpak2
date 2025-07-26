@@ -16,6 +16,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import Membership from "@/pages/Membership";
 import VillageExperience from "@/pages/VillageExperience";
 import CaseStudy from "@/pages/CaseStudy";
+import Team from "@/pages/Team";
 import { useEffect } from "react";
 import { AuthProvider } from "@/hooks/useAuth";
 
@@ -106,6 +107,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/membership" component={Membership} />
+      <Route path="/team" component={Team} />
       <Route component={NotFound} />
     </Switch>
   );

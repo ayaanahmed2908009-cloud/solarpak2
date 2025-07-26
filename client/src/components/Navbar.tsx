@@ -67,6 +67,9 @@ export default function Navbar() {
             <Link href="/membership" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
               Membership
             </Link>
+            <Link href="/team" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+              Team
+            </Link>
           </nav>
           
           <div className="flex items-center space-x-4">
@@ -185,6 +188,13 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Stories
+            </Link>
+            <Link
+              href="/team" 
+              className="font-heading font-medium hover:text-primary transition py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Team
             </Link>
             
             {isAuthenticated && user ? (
