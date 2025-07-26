@@ -448,14 +448,9 @@ export default function Team() {
                     </div>
                     <div className="p-6">
                       <p className="text-gray-600 mb-4">{team.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">
-                          4 members
-                        </span>
-                        <Badge variant="secondary" className={`${selectedTeam === team.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-                          {selectedTeam === team.id ? 'Selected' : 'Click to View'}
-                        </Badge>
-                      </div>
+                      <Badge variant="secondary" className={`${selectedTeam === team.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {selectedTeam === team.id ? 'Selected' : 'Click to View'}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
