@@ -133,7 +133,8 @@ const teamDirectors: TeamMember[] = [
     teamId: "events-outreach",
     isDirector: true,
     social: {
-      email: "events@solarpak.com"
+      email: "events@solarpak.com",
+      linkedin: "https://www.linkedin.com/in/ayaan-ahmed-14a8792b1/"
     }
   },
   {

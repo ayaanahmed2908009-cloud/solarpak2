@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated social links: Added Ayaan Ahmed's LinkedIn profile to Events Director
 - July 27, 2025. Updated social links: Removed LinkedIn links from all directors except founder, added Zaid Afal's LinkedIn profile
 - July 27, 2025. Updated all directors: Added "Member of board of directors" to all four department directors' achievements
 - July 27, 2025. Updated Predictive Systems & Healthcare: Added Moiz Ali as Director with achievements in healthcare expansion and board leadership
