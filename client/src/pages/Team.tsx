@@ -197,7 +197,7 @@ const teamMembers: TeamMember[] = [
 ];
 
 const organizationStats = [
-  { label: "Solar Panels Installed", value: "8", description: "Across Pakistan" },
+  { label: "Solar Panels Installed", value: "8", description: "" },
   { label: "Families Empowered", value: "8", description: "With clean energy" },
   { label: "Lives Transformed", value: "35", description: "and more to come" },
   { label: "CO₂ Prevented", value: "120kg", description: "Environmental impact" },
