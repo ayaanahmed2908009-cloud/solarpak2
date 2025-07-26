@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated team structure: Removed placeholder outreach coordinators 3 and 4 from Events team
 - July 27, 2025. Updated Sponsorships & Fundraising: Added Ramin Tihami as Director with expertise in AI-powered outreach and strategic negotiations
 - July 27, 2025. Updated Events & Community Outreach: Added Zaid Afal as Event Coordinator with expertise in community relations and organisation
 - July 27, 2025. Updated Events & Community Outreach: Added Adnan Syed as Community Liaison with expertise in community relations, organisation, and talent acquisition
