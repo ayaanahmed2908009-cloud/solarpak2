@@ -473,33 +473,18 @@ export default function Team() {
                         }`}>
                           <CardContent className="p-0">
                             <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
-                              <div className="flex flex-col md:flex-row items-center gap-6">
-                                <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-blue-400">
-                                  {director.image && director.image.startsWith('/') ? (
-                                    <img 
-                                      src={director.image} 
-                                      alt={director.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full bg-white flex items-center justify-center text-3xl font-bold text-gray-700">
-                                      {director.name.includes('[') ? '👤' : director.name.split(' ').map(n => n[0]).join('')}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="text-center md:text-left flex-1">
-                                  <h3 className="text-2xl md:text-3xl font-bold mb-2">{director.name}</h3>
-                                  <p className="text-white/90 font-semibold text-lg mb-3">{director.role}</p>
-                                  <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-white/80">
-                                    <span className="flex items-center gap-1">
-                                      <span className="w-2 h-2 bg-white rounded-full"></span>
-                                      {team?.name} Team
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Calendar className="h-4 w-4" />
-                                      Joined {new Date(director.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                    </span>
-                                  </div>
+                              <div className="text-center">
+                                <h3 className="text-2xl md:text-3xl font-bold mb-2">{director.name}</h3>
+                                <p className="text-white/90 font-semibold text-lg mb-3">{director.role}</p>
+                                <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-white/80">
+                                  <span className="flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-white rounded-full"></span>
+                                    {team?.name} Team
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="h-4 w-4" />
+                                    Joined {new Date(director.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -507,7 +492,7 @@ export default function Team() {
                             <div className="p-8">
                               <p className="text-gray-600 mb-8 text-lg leading-relaxed">{director.description}</p>
 
-                              <div className="grid md:grid-cols-2 gap-8">
+                              <div className="grid md:grid-cols-3 gap-8">
                                 <div>
                                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                     <Heart className="h-5 w-5 text-purple-600" />
@@ -535,6 +520,27 @@ export default function Team() {
                                       </Badge>
                                     ))}
                                   </div>
+                                </div>
+
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                    <Users className="h-5 w-5 text-purple-600" />
+                                    Profile
+                                  </h4>
+                                  {director.image && director.image.startsWith('/') ? (
+                                    <div className="border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
+                                      <img 
+                                        src={director.image} 
+                                        alt={director.name}
+                                        className="w-full h-48 object-cover"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="border-2 border-gray-200 rounded-lg p-4 text-center bg-gray-50">
+                                      <div className="text-4xl mb-2">👤</div>
+                                      <p className="text-sm text-gray-600">No photo available</p>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
 
