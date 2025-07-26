@@ -108,7 +108,8 @@ const teamDirectors: TeamMember[] = [
     achievements: [
       "Built upon established social media presence from founder",
       "Increased online engagement by 5%",
-      "Member of board of directors"
+      "Member of board of directors",
+      "Influences major strategic decisions through board participation"
     ],
     image: "/ibrahim-murtaza.jpg",
     teamId: "social-media",
@@ -128,7 +129,8 @@ const teamDirectors: TeamMember[] = [
     achievements: [
       "Organised 10 events for the next year alongside the team",
       "Organised a clash royale competition",
-      "Member of board of directors"
+      "Member of board of directors",
+      "Influences major strategic decisions through board participation"
     ],
     image: "/ayaan-omer.jpg",
     teamId: "events-outreach",
@@ -149,7 +151,8 @@ const teamDirectors: TeamMember[] = [
     achievements: [
       "Using an AI platform to send cold outreach to numerous CEOs and founders",
       "Currently in talks of a sponsorship with a test prep agency",
-      "Member of board of directors"
+      "Member of board of directors",
+      "Influences major strategic decisions through board participation"
     ],
     image: "/ramin-tihami.jpg",
     teamId: "sponsorships",
@@ -170,7 +173,7 @@ const teamDirectors: TeamMember[] = [
       "Developing a pilot model for high risk environments that has enabled us to expand towards healthcare",
       "Established healthcare wing of operations",
       "Member of board of directors",
-      "Contributing to key decisions made by the organisation"
+      "Influences major strategic decisions through board participation"
     ],
     image: "/moiz-ali.jpg",
     teamId: "predictive-healthcare",
