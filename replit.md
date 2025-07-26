@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated team display: Simplified member count to show "4 members" for all teams
 - July 27, 2025. Updated team statistics: Removed "Across Pakistan" from Solar Panels Installed description
 - July 27, 2025. Updated team statistics: Changed "Lives Transformed" description to "and more to come"
 - July 27, 2025. Updated team statistics: Changed team member count from 12 to 9 members
