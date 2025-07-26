@@ -118,17 +118,15 @@ const teamDirectors: TeamMember[] = [
   },
   {
     id: 3,
-    name: "[Events Director Name]",
+    name: "Ayaan Omer",
     role: "Director of Events & Community Outreach",
     description: "Orchestrating community events and building grassroots connections to expand SolarPak's reach across Pakistani communities.",
     location: "Pakistan",
     joinedDate: "2024-07-15",
-    expertise: ["Event Management", "Community Relations", "Public Speaking", "Partnership Building"],
+    expertise: ["Event Management", "Community Relations"],
     achievements: [
-      "Organized 15+ community awareness events",
-      "Established partnerships with 20+ local organizations",
-      "Trained 3-person outreach team",
-      "98% positive community feedback rating"
+      "Organised 10 events for the next year alongside the team",
+      "Organised a clash royale competition"
     ],
     image: "/api/placeholder/150/150",
     teamId: "events-outreach",
