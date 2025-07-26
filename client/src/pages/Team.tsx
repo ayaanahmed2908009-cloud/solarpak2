@@ -584,67 +584,109 @@ export default function Team() {
                         </p>
                       </div>
 
-                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="space-y-12">
                         {teamMembers
                           .filter(member => member.teamId === selectedTeam)
                           .map((member, index) => {
                             const team = teams.find(t => t.id === member.teamId);
                             return (
-                              <Card 
-                                key={member.id}
-                                className={`overflow-hidden hover:shadow-lg transition-all duration-700 ${
+                              <div key={member.id} className="max-w-4xl mx-auto">
+                                <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
                                   showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                                }`}
-                                style={{ transitionDelay: `${index * 100}ms` }}
-                              >
-                                <CardContent className="p-0">
-                                  <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-4 text-white`}>
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-lg font-bold text-gray-700">
-                                        {member.name.includes('[') ? '👤' : member.name.split(' ').map(n => n[0]).join('')}
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <h3 className="font-bold text-sm truncate">{member.name}</h3>
-                                        <p className="text-white/90 text-xs font-medium">{member.role}</p>
+                                }`} style={{ transitionDelay: `${index * 100}ms` }}>
+                                  <CardContent className="p-0">
+                                    <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
+                                      <div className="text-center">
+                                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{member.name}</h3>
+                                        <p className="text-white/90 font-semibold text-lg mb-3">{member.role}</p>
+                                        <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-white/80">
+                                          <span className="flex items-center gap-1">
+                                            <span className="w-2 h-2 bg-white rounded-full"></span>
+                                            {team?.name} Team
+                                          </span>
+                                          <span className="flex items-center gap-1">
+                                            <Calendar className="h-4 w-4" />
+                                            Joined {new Date(member.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
 
-                                  <div className="p-4">
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{member.description}</p>
+                                    <div className="p-8">
+                                      <p className="text-gray-600 mb-8 text-lg leading-relaxed">{member.description}</p>
 
-                                    <div className="mb-4">
-                                      <h4 className="font-semibold text-gray-900 text-sm mb-2">Expertise</h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {member.expertise.slice(0, 2).map((skill, skillIndex) => (
-                                          <Badge key={skillIndex} variant="secondary" className="text-xs bg-gray-50 text-gray-600">
-                                            {skill}
-                                          </Badge>
-                                        ))}
-                                        {member.expertise.length > 2 && (
-                                          <Badge variant="secondary" className="text-xs bg-gray-50 text-gray-600">
-                                            +{member.expertise.length - 2} more
-                                          </Badge>
+                                      <div className="grid md:grid-cols-2 gap-8">
+                                        <div>
+                                          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                            <Users className="h-5 w-5 text-purple-600" />
+                                            Profile
+                                          </h4>
+                                          {member.image && member.image.startsWith('/') ? (
+                                            <div className="border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
+                                              <img 
+                                                src={member.image} 
+                                                alt={member.name}
+                                                className="w-full h-64 object-cover"
+                                              />
+                                            </div>
+                                          ) : (
+                                            <div className="border-2 border-gray-200 rounded-lg p-8 text-center bg-gray-50">
+                                              <div className="text-6xl mb-4">👤</div>
+                                              <p className="text-sm text-gray-600">No photo available</p>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        <div className="space-y-8">
+                                          <div>
+                                            <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                              <Heart className="h-5 w-5 text-purple-600" />
+                                              Key Achievements
+                                            </h4>
+                                            <ul className="space-y-2">
+                                              {member.achievements.map((achievement, achIndex) => (
+                                                <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
+                                                  <span className="text-purple-500 mt-1">•</span>
+                                                  {achievement}
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </div>
+
+                                          <div>
+                                            <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                              <Award className="h-5 w-5 text-purple-600" />
+                                              Expertise
+                                            </h4>
+                                            <div className="flex flex-wrap gap-2">
+                                              {member.expertise.map((skill, skillIndex) => (
+                                                <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
+                                                  {skill}
+                                                </Badge>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex gap-3 pt-6 border-t border-gray-100 mt-6">
+                                        {member.social.email && (
+                                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                                            <Mail className="h-4 w-4 mr-2" />
+                                            Contact Member
+                                          </Button>
+                                        )}
+                                        {member.social.linkedin && (
+                                          <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                                            <Linkedin className="h-4 w-4 mr-2" />
+                                            LinkedIn
+                                          </Button>
                                         )}
                                       </div>
                                     </div>
-
-                                    <div className="mb-4">
-                                      <h4 className="font-semibold text-gray-900 text-sm mb-2">Recent Achievement</h4>
-                                      <p className="text-xs text-gray-600">
-                                        {member.achievements[0] || 'Contributing to team success'}
-                                      </p>
-                                    </div>
-
-                                    <div className="flex gap-2 pt-3 border-t border-gray-100">
-                                      <Button size="sm" variant="outline" className="flex-1 text-xs">
-                                        <Mail className="h-3 w-3 mr-1" />
-                                        Contact
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
+                                  </CardContent>
+                                </Card>
+                              </div>
                             );
                           })}
                       </div>
