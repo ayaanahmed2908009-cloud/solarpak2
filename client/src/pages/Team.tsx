@@ -781,10 +781,10 @@ export default function Team() {
                 <Button 
                   size="lg" 
                   className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
-                  onClick={() => window.open('mailto:careers@solarpak.com', '_blank')}
+                  onClick={() => window.open('mailto:solarpakinitiative@gmail.com', '_blank')}
                 >
                   <Mail className="mr-2 h-5 w-5" />
-                  careers@solarpak.com
+                  solarpakinitiative@gmail.com
                 </Button>
                 <Button 
                   size="lg" 
