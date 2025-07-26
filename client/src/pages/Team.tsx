@@ -170,7 +170,7 @@ const teamDirectors: TeamMember[] = [
       "Member of board of directors",
       "Contributing to key decisions made by the organisation"
     ],
-    image: "/api/placeholder/150/150",
+    image: "/moiz-ali.jpg",
     teamId: "predictive-healthcare",
     isDirector: true,
     social: {
