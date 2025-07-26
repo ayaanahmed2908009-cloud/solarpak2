@@ -108,7 +108,7 @@ const teamDirectors: TeamMember[] = [
       "Built upon established social media presence from founder",
       "Increased online engagement by 5%"
     ],
-    image: "/api/placeholder/150/150",
+    image: "@assets/1000064757_1753544848379.jpg",
     teamId: "social-media",
     isDirector: true,
     social: {
@@ -474,8 +474,18 @@ export default function Team() {
                           <CardContent className="p-0">
                             <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
                               <div className="flex flex-col md:flex-row items-center gap-6">
-                                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-gray-700 shadow-lg">
-                                  {director.name.includes('[') ? '👤' : director.name.split(' ').map(n => n[0]).join('')}
+                                <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-blue-400">
+                                  {director.image && director.image.startsWith('@assets/') ? (
+                                    <img 
+                                      src={director.image.replace('@assets/', '/attached_assets/')} 
+                                      alt={director.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-white flex items-center justify-center text-3xl font-bold text-gray-700">
+                                      {director.name.includes('[') ? '👤' : director.name.split(' ').map(n => n[0]).join('')}
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="text-center md:text-left flex-1">
                                   <h3 className="text-2xl md:text-3xl font-bold mb-2">{director.name}</h3>
@@ -500,20 +510,6 @@ export default function Team() {
                               <div className="grid md:grid-cols-2 gap-8">
                                 <div>
                                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Award className="h-5 w-5 text-purple-600" />
-                                    Expertise
-                                  </h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {director.expertise.map((skill, skillIndex) => (
-                                      <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
-                                        {skill}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                     <Heart className="h-5 w-5 text-purple-600" />
                                     Key Achievements
                                   </h4>
@@ -525,6 +521,20 @@ export default function Team() {
                                       </li>
                                     ))}
                                   </ul>
+                                </div>
+
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                    <Award className="h-5 w-5 text-purple-600" />
+                                    Expertise
+                                  </h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {director.expertise.map((skill, skillIndex) => (
+                                      <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
+                                        {skill}
+                                      </Badge>
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
 
