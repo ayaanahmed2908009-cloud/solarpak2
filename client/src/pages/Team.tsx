@@ -478,7 +478,7 @@ export default function Team() {
                   .map((director, index) => {
                     const team = teams.find(t => t.id === director.teamId);
                     return (
-                      <div key={director.id} className="max-w-6xl mx-auto">
+                      <div key={director.id} className="max-w-4xl mx-auto">
                         <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
                           selectedTeam ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                         }`}>
@@ -503,7 +503,7 @@ export default function Team() {
                             <div className="p-8">
                               <p className="text-gray-600 mb-8 text-lg leading-relaxed">{director.description}</p>
 
-                              <div className="grid lg:grid-cols-2 gap-12">
+                              <div className="grid md:grid-cols-2 gap-8">
                                 <div>
                                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                     <Users className="h-5 w-5 text-purple-600" />
@@ -601,7 +601,7 @@ export default function Team() {
                           .map((member, index) => {
                             const team = teams.find(t => t.id === member.teamId);
                             return (
-                              <div key={member.id} className="max-w-6xl mx-auto">
+                              <div key={member.id} className="max-w-4xl mx-auto">
                                 <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
                                   showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                                 }`} style={{ transitionDelay: `${index * 100}ms` }}>
@@ -626,7 +626,7 @@ export default function Team() {
                                     <div className="p-8">
                                       <p className="text-gray-600 mb-8 text-lg leading-relaxed">{member.description}</p>
 
-                                      <div className="grid lg:grid-cols-2 gap-12">
+                                      <div className="grid md:grid-cols-2 gap-8">
                                         <div>
                                           <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                             <Users className="h-5 w-5 text-purple-600" />

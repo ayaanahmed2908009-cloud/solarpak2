@@ -3,7 +3,7 @@ import HeroBanner from "@/components/HeroBanner";
 import KeyStats from "@/components/KeyStats";
 
 import CrisisSection from "@/components/CrisisSection";
-
+import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
 
@@ -266,7 +266,10 @@ export default function Home() {
         </section>
         
 
-
+        {/* Unified Impact Section - Comprehensive impact showcase */}
+        <section id="impact" className="snap-section">
+          <UnifiedImpactSection />
+        </section>
         
         <section id="projects" className="snap-section">
           <ProjectsSection />
