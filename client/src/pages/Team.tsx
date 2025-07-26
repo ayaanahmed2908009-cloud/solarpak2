@@ -89,9 +89,7 @@ const founder: TeamMember = {
   ],
   image: "/ayaan-ahmed.jpg",
   social: {
-    email: "ayaan@solarpak.com",
-    linkedin: "#",
-    twitter: "#"
+    email: "ayaan@solarpak.com"
   }
 };
 
@@ -136,8 +134,7 @@ const teamDirectors: TeamMember[] = [
     teamId: "events-outreach",
     isDirector: true,
     social: {
-      email: "events@solarpak.com",
-      linkedin: "https://www.linkedin.com/in/ayaan-ahmed-14a8792b1/"
+      email: "events@solarpak.com"
     }
   },
   {
@@ -193,7 +190,7 @@ const teamMembers: TeamMember[] = [
   
   // Events & Community Outreach Team Members (2 additional)
   { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/adnan-syed.jpg", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
-  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "https://www.linkedin.com/in/zaid-afzal-619546306/" } },
+  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com" } },
 
   
   // Note: Sponsorships & Fundraising and Predictive Systems & Healthcare teams have directors only (no additional team members)
