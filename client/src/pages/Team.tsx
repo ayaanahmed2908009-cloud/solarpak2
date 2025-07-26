@@ -324,31 +324,54 @@ export default function Team() {
                     <div className="grid md:grid-cols-2 gap-8">
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                          <Award className="h-5 w-5 text-amber-600" />
-                          Leadership Expertise
+                          <Users className="h-5 w-5 text-amber-600" />
+                          Profile
                         </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {founder.expertise.map((skill, skillIndex) => (
-                            <Badge key={skillIndex} variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
+                        {founder.image && founder.image.startsWith('/') ? (
+                          <div className="border-2 border-amber-400 rounded-lg overflow-hidden shadow-md">
+                            <img 
+                              src={founder.image} 
+                              alt={founder.name}
+                              className="w-full h-80 object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="border-2 border-gray-200 rounded-lg p-8 text-center bg-gray-50">
+                            <div className="text-6xl mb-4">👤</div>
+                            <p className="text-sm text-gray-600">No photo available</p>
+                          </div>
+                        )}
                       </div>
 
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                          <Heart className="h-5 w-5 text-amber-600" />
-                          Key Achievements
-                        </h4>
-                        <ul className="space-y-2">
-                          {founder.achievements.map((achievement, achIndex) => (
-                            <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
-                              <span className="text-amber-500 mt-1">•</span>
-                              {achievement}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="space-y-8">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <Heart className="h-5 w-5 text-amber-600" />
+                            Key Achievements
+                          </h4>
+                          <ul className="space-y-2">
+                            {founder.achievements.map((achievement, achIndex) => (
+                              <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
+                                <span className="text-amber-500 mt-1">•</span>
+                                {achievement}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <Award className="h-5 w-5 text-amber-600" />
+                            Leadership Expertise
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {founder.expertise.map((skill, skillIndex) => (
+                              <Badge key={skillIndex} variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
