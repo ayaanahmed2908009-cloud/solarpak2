@@ -57,7 +57,7 @@ const teams: Team[] = [
     name: "Sponsorships & Fundraising",
     description: "Securing partnerships and funding to expand our solar energy impact",
     icon: "💰",
-    memberCount: 2, // 1 director + 1 member
+    memberCount: 1, // 1 director only
     color: "from-green-500 to-emerald-500"
   },
   {
@@ -65,7 +65,7 @@ const teams: Team[] = [
     name: "Predictive Systems & Healthcare",
     description: "Leveraging data analytics and health initiatives to maximize community impact",
     icon: "🔬",
-    memberCount: 2, // 1 director + 1 member
+    memberCount: 1, // 1 director only
     color: "from-purple-500 to-indigo-500"
   }
 ];
@@ -199,11 +199,7 @@ const teamMembers: TeamMember[] = [
   { id: 11, name: "[Outreach Coordinator 3]", role: "Volunteer Manager", description: "Recruiting and managing volunteer networks", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Volunteer Management", "Training"], achievements: ["Built network of 30+ volunteers"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: {} },
   { id: 14, name: "[Outreach Coordinator 4]", role: "Regional Manager", description: "Managing outreach operations across different regions", location: "Pakistan", joinedDate: "2024-10-15", expertise: ["Regional Coordination", "Strategic Planning"], achievements: ["Expanded reach to 5 new regions"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: {} },
   
-  // Sponsorships & Fundraising Team Member (1 additional)
-  { id: 12, name: "[Fundraising Specialist]", role: "Grant Writer", description: "Securing grants and institutional funding", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Grant Writing", "Research"], achievements: ["Secured 3 major grants"], image: "/api/placeholder/150/150", teamId: "sponsorships", social: {} },
-  
-  // Predictive Systems & Healthcare Team Member (1 additional)
-  { id: 13, name: "[Data Analyst]", role: "Research Associate", description: "Supporting data analysis and health research initiatives", location: "Pakistan", joinedDate: "2024-10-15", expertise: ["Statistical Analysis", "Health Research"], achievements: ["Analyzed impact on 100+ families"], image: "/api/placeholder/150/150", teamId: "predictive-healthcare", social: {} }
+  // Note: Sponsorships & Fundraising and Predictive Systems & Healthcare teams have directors only (no additional team members)
 ];
 
 const organizationStats = [
@@ -211,7 +207,7 @@ const organizationStats = [
   { label: "Families Empowered", value: "8", description: "With clean energy" },
   { label: "Lives Transformed", value: "35", description: "Including children" },
   { label: "CO₂ Prevented", value: "120kg", description: "Environmental impact" },
-  { label: "Team Members", value: "14", description: "Dedicated professionals" },
+  { label: "Team Members", value: "12", description: "Dedicated professionals" },
   { label: "Specialized Teams", value: "4", description: "Expert departments" }
 ];
 
@@ -437,7 +433,7 @@ export default function Team() {
                       <p className="text-gray-600 mb-4">{team.description}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-500">
-                          1 Director + {team.memberCount - 1} {team.memberCount - 1 === 1 ? 'Member' : 'Members'}
+                          {team.memberCount === 1 ? '1 Director' : `1 Director + ${team.memberCount - 1} ${team.memberCount - 1 === 1 ? 'Member' : 'Members'}`}
                         </span>
                         <Badge variant="secondary" className={`${selectedTeam === team.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
                           {selectedTeam === team.id ? 'Selected' : 'Click to View'}
@@ -559,81 +555,95 @@ export default function Team() {
               {/* Team Members Section */}
               {showTeamMembers && (
                 <div className={`transition-all duration-1000 ${showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                  <div className="text-center mb-12">
-                    <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-200">
-                      <Users className="h-4 w-4 mr-1" />
-                      Team Members
-                    </Badge>
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Meet the Team</h2>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                      The dedicated professionals working under the {teams.find(t => t.id === selectedTeam)?.name} department
-                    </p>
-                  </div>
+                  {teamMembers.filter(member => member.teamId === selectedTeam).length > 0 ? (
+                    <>
+                      <div className="text-center mb-12">
+                        <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-200">
+                          <Users className="h-4 w-4 mr-1" />
+                          Team Members
+                        </Badge>
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Meet the Team</h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                          The dedicated professionals working under the {teams.find(t => t.id === selectedTeam)?.name} department
+                        </p>
+                      </div>
 
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {teamMembers
-                      .filter(member => member.teamId === selectedTeam)
-                      .map((member, index) => {
-                        const team = teams.find(t => t.id === member.teamId);
-                        return (
-                          <Card 
-                            key={member.id}
-                            className={`overflow-hidden hover:shadow-lg transition-all duration-700 ${
-                              showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                            }`}
-                            style={{ transitionDelay: `${index * 100}ms` }}
-                          >
-                            <CardContent className="p-0">
-                              <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-4 text-white`}>
-                                <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-lg font-bold text-gray-700">
-                                    {member.name.includes('[') ? '👤' : member.name.split(' ').map(n => n[0]).join('')}
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {teamMembers
+                          .filter(member => member.teamId === selectedTeam)
+                          .map((member, index) => {
+                            const team = teams.find(t => t.id === member.teamId);
+                            return (
+                              <Card 
+                                key={member.id}
+                                className={`overflow-hidden hover:shadow-lg transition-all duration-700 ${
+                                  showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                                }`}
+                                style={{ transitionDelay: `${index * 100}ms` }}
+                              >
+                                <CardContent className="p-0">
+                                  <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-4 text-white`}>
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-lg font-bold text-gray-700">
+                                        {member.name.includes('[') ? '👤' : member.name.split(' ').map(n => n[0]).join('')}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <h3 className="font-bold text-sm truncate">{member.name}</h3>
+                                        <p className="text-white/90 text-xs font-medium">{member.role}</p>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-sm truncate">{member.name}</h3>
-                                    <p className="text-white/90 text-xs font-medium">{member.role}</p>
+
+                                  <div className="p-4">
+                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{member.description}</p>
+
+                                    <div className="mb-4">
+                                      <h4 className="font-semibold text-gray-900 text-sm mb-2">Expertise</h4>
+                                      <div className="flex flex-wrap gap-1">
+                                        {member.expertise.slice(0, 2).map((skill, skillIndex) => (
+                                          <Badge key={skillIndex} variant="secondary" className="text-xs bg-gray-50 text-gray-600">
+                                            {skill}
+                                          </Badge>
+                                        ))}
+                                        {member.expertise.length > 2 && (
+                                          <Badge variant="secondary" className="text-xs bg-gray-50 text-gray-600">
+                                            +{member.expertise.length - 2} more
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    <div className="mb-4">
+                                      <h4 className="font-semibold text-gray-900 text-sm mb-2">Recent Achievement</h4>
+                                      <p className="text-xs text-gray-600">
+                                        {member.achievements[0] || 'Contributing to team success'}
+                                      </p>
+                                    </div>
+
+                                    <div className="flex gap-2 pt-3 border-t border-gray-100">
+                                      <Button size="sm" variant="outline" className="flex-1 text-xs">
+                                        <Mail className="h-3 w-3 mr-1" />
+                                        Contact
+                                      </Button>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-
-                              <div className="p-4">
-                                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{member.description}</p>
-
-                                <div className="mb-4">
-                                  <h4 className="font-semibold text-gray-900 text-sm mb-2">Expertise</h4>
-                                  <div className="flex flex-wrap gap-1">
-                                    {member.expertise.slice(0, 2).map((skill, skillIndex) => (
-                                      <Badge key={skillIndex} variant="secondary" className="text-xs bg-gray-50 text-gray-600">
-                                        {skill}
-                                      </Badge>
-                                    ))}
-                                    {member.expertise.length > 2 && (
-                                      <Badge variant="secondary" className="text-xs bg-gray-50 text-gray-600">
-                                        +{member.expertise.length - 2} more
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </div>
-
-                                <div className="mb-4">
-                                  <h4 className="font-semibold text-gray-900 text-sm mb-2">Recent Achievement</h4>
-                                  <p className="text-xs text-gray-600">
-                                    {member.achievements[0] || 'Contributing to team success'}
-                                  </p>
-                                </div>
-
-                                <div className="flex gap-2 pt-3 border-t border-gray-100">
-                                  <Button size="sm" variant="outline" className="flex-1 text-xs">
-                                    <Mail className="h-3 w-3 mr-1" />
-                                    Contact
-                                  </Button>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                  </div>
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Users className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Director-Only Department</h3>
+                      <p className="text-gray-600 max-w-md mx-auto">
+                        This department is currently led by the director only. The {teams.find(t => t.id === selectedTeam)?.name} operations are managed independently by the department head.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
