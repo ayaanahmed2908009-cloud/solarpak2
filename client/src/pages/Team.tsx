@@ -49,7 +49,7 @@ const teams: Team[] = [
     name: "Events & Community Outreach",
     description: "Organizing community events and establishing grassroots connections across Pakistan",
     icon: "🤝",
-    memberCount: 4, // 1 director + 3 members
+    memberCount: 5, // 1 director + 4 members
     color: "from-blue-500 to-cyan-500"
   },
   {
@@ -193,10 +193,11 @@ const teamMembers: TeamMember[] = [
   { id: 7, name: "[Social Media Specialist 2]", role: "Community Manager", description: "Managing online communities and engagement", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Community Management", "Customer Service"], achievements: ["Maintained 95% response rate"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
   { id: 8, name: "[Social Media Specialist 3]", role: "Digital Marketing Specialist", description: "Driving growth through targeted digital campaigns", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Digital Advertising", "Analytics"], achievements: ["Increased reach by 250%"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
   
-  // Events & Community Outreach Team Members (3 additional)
+  // Events & Community Outreach Team Members (4 additional)
   { id: 9, name: "[Outreach Coordinator 1]", role: "Community Liaison", description: "Building relationships with local communities", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Community Relations", "Local Languages"], achievements: ["Connected with 50+ families"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: {} },
   { id: 10, name: "[Outreach Coordinator 2]", role: "Event Coordinator", description: "Organizing and executing community events", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Event Planning", "Logistics"], achievements: ["Organized 12 successful events"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: {} },
   { id: 11, name: "[Outreach Coordinator 3]", role: "Volunteer Manager", description: "Recruiting and managing volunteer networks", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Volunteer Management", "Training"], achievements: ["Built network of 30+ volunteers"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: {} },
+  { id: 14, name: "[Outreach Coordinator 4]", role: "Regional Manager", description: "Managing outreach operations across different regions", location: "Pakistan", joinedDate: "2024-10-15", expertise: ["Regional Coordination", "Strategic Planning"], achievements: ["Expanded reach to 5 new regions"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: {} },
   
   // Sponsorships & Fundraising Team Member (1 additional)
   { id: 12, name: "[Fundraising Specialist]", role: "Grant Writer", description: "Securing grants and institutional funding", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Grant Writing", "Research"], achievements: ["Secured 3 major grants"], image: "/api/placeholder/150/150", teamId: "sponsorships", social: {} },
@@ -210,7 +211,7 @@ const organizationStats = [
   { label: "Families Empowered", value: "8", description: "With clean energy" },
   { label: "Lives Transformed", value: "35", description: "Including children" },
   { label: "CO₂ Prevented", value: "120kg", description: "Environmental impact" },
-  { label: "Team Members", value: "13", description: "Dedicated professionals" },
+  { label: "Team Members", value: "14", description: "Dedicated professionals" },
   { label: "Specialized Teams", value: "4", description: "Expert departments" }
 ];
 
@@ -436,7 +437,7 @@ export default function Team() {
                       <p className="text-gray-600 mb-4">{team.description}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-500">
-                          1 Director + {team.memberCount - 1} {team.memberCount === 2 ? 'Member' : 'Members'}
+                          1 Director + {team.memberCount - 1} {team.memberCount - 1 === 1 ? 'Member' : 'Members'}
                         </span>
                         <Badge variant="secondary" className={`${selectedTeam === team.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
                           {selectedTeam === team.id ? 'Selected' : 'Click to View'}
