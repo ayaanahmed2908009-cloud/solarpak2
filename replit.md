@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated team structure: Removed Social Media Specialist 3 placeholder from Social Media team
 - July 27, 2025. Updated team photos: Added Zaid Afal's actual photo to Event Coordinator profile
 - July 27, 2025. Updated team display: Simplified member count to show "4 members" for all teams
 - July 27, 2025. Updated team statistics: Removed "Across Pakistan" from Solar Panels Installed description
