@@ -216,6 +216,8 @@ const organizationStats = [
 
 export default function Team() {
   const [isVisible, setIsVisible] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [showTeamMembers, setShowTeamMembers] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -224,6 +226,20 @@ export default function Team() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  const handleTeamSelect = (teamId: string) => {
+    if (selectedTeam === teamId) {
+      setSelectedTeam(null);
+      setShowTeamMembers(false);
+    } else {
+      setSelectedTeam(teamId);
+      setShowTeamMembers(false);
+      // Auto-scroll to show team members after a delay
+      setTimeout(() => {
+        setShowTeamMembers(true);
+      }, 300);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -378,8 +394,11 @@ export default function Team() {
                 Our Teams
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Specialized Departments</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                 Four expert teams working together to maximize SolarPak's impact across Pakistan
+              </p>
+              <p className="text-sm text-gray-500">
+                Click on any team below to view their director and team members
               </p>
             </div>
 
@@ -387,13 +406,14 @@ export default function Team() {
               {teams.map((team, index) => (
                 <Card 
                   key={team.id}
-                  className={`overflow-hidden hover:shadow-xl transition-all duration-700 ${
+                  className={`overflow-hidden hover:shadow-xl transition-all duration-700 cursor-pointer transform hover:scale-105 ${
                     isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                  }`}
+                  } ${selectedTeam === team.id ? 'ring-2 ring-blue-500 shadow-2xl' : ''}`}
                   style={{ transitionDelay: `${index * 200}ms` }}
+                  onClick={() => handleTeamSelect(team.id)}
                 >
                   <CardContent className="p-0">
-                    <div className={`bg-gradient-to-r ${team.color} p-6 text-white`}>
+                    <div className={`bg-gradient-to-r ${team.color} p-6 text-white relative`}>
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-2xl">
                           {team.icon}
@@ -404,7 +424,13 @@ export default function Team() {
                             {team.memberCount} Team Members
                           </p>
                         </div>
+                        <div className="text-white/80">
+                          {selectedTeam === team.id ? '▲' : '▼'}
+                        </div>
                       </div>
+                      {selectedTeam === team.id && (
+                        <div className="absolute inset-0 bg-white/10 rounded-t-lg"></div>
+                      )}
                     </div>
                     <div className="p-6">
                       <p className="text-gray-600 mb-4">{team.description}</p>
@@ -412,8 +438,8 @@ export default function Team() {
                         <span className="text-sm text-gray-500">
                           1 Director + {team.memberCount - 1} {team.memberCount === 2 ? 'Member' : 'Members'}
                         </span>
-                        <Badge variant="secondary" className="bg-gray-100 text-gray-700">
-                          Active Team
+                        <Badge variant="secondary" className={`${selectedTeam === team.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
+                          {selectedTeam === team.id ? 'Selected' : 'Click to View'}
                         </Badge>
                       </div>
                     </div>
@@ -424,98 +450,194 @@ export default function Team() {
           </div>
         </section>
 
-        {/* Team Directors Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Department Directors</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Experienced leaders guiding each specialized team toward maximum impact
-              </p>
-            </div>
+        {/* Selected Team Details Section */}
+        {selectedTeam && (
+          <section className="py-16 bg-gray-50">
+            <div className="container mx-auto px-4">
+              {/* Director Section */}
+              <div className="mb-16">
+                <div className={`text-center mb-12 transition-all duration-1000 ${selectedTeam ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                  <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-200">
+                    <Award className="h-4 w-4 mr-1" />
+                    Director
+                  </Badge>
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Team Leadership</h2>
+                  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Meet the director leading the {teams.find(t => t.id === selectedTeam)?.name} team
+                  </p>
+                </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              {teamDirectors.map((director, index) => {
-                const team = teams.find(t => t.id === director.teamId);
-                return (
-                  <Card 
-                    key={director.id}
-                    className={`overflow-hidden hover:shadow-xl transition-all duration-700 ${
-                      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    }`}
-                    style={{ transitionDelay: `${(index + 1) * 200}ms` }}
-                  >
-                    <CardContent className="p-0">
-                      <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-6 text-white`}>
-                        <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-2xl font-bold text-gray-700">
-                            {director.name.includes('[') ? '👤' : director.name.split(' ').map(n => n[0]).join('')}
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold">{director.name}</h3>
-                            <p className="text-white/90 font-medium mb-2">{director.role}</p>
-                            <div className="flex items-center gap-1 text-sm text-white/80">
-                              <span className="w-2 h-2 bg-white rounded-full"></span>
-                              {team?.name} Team
+                {teamDirectors
+                  .filter(director => director.teamId === selectedTeam)
+                  .map((director, index) => {
+                    const team = teams.find(t => t.id === director.teamId);
+                    return (
+                      <div key={director.id} className="max-w-4xl mx-auto">
+                        <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
+                          selectedTeam ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                        }`}>
+                          <CardContent className="p-0">
+                            <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
+                              <div className="flex flex-col md:flex-row items-center gap-6">
+                                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-gray-700 shadow-lg">
+                                  {director.name.includes('[') ? '👤' : director.name.split(' ').map(n => n[0]).join('')}
+                                </div>
+                                <div className="text-center md:text-left flex-1">
+                                  <h3 className="text-2xl md:text-3xl font-bold mb-2">{director.name}</h3>
+                                  <p className="text-white/90 font-semibold text-lg mb-3">{director.role}</p>
+                                  <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-white/80">
+                                    <span className="flex items-center gap-1">
+                                      <span className="w-2 h-2 bg-white rounded-full"></span>
+                                      {team?.name} Team
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="h-4 w-4" />
+                                      Joined {new Date(director.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+
+                            <div className="p-8">
+                              <p className="text-gray-600 mb-8 text-lg leading-relaxed">{director.description}</p>
+
+                              <div className="grid md:grid-cols-2 gap-8">
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                    <Award className="h-5 w-5 text-purple-600" />
+                                    Expertise
+                                  </h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {director.expertise.map((skill, skillIndex) => (
+                                      <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
+                                        {skill}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                    <Heart className="h-5 w-5 text-purple-600" />
+                                    Key Achievements
+                                  </h4>
+                                  <ul className="space-y-2">
+                                    {director.achievements.map((achievement, achIndex) => (
+                                      <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
+                                        <span className="text-purple-500 mt-1">•</span>
+                                        {achievement}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-3 pt-6 border-t border-gray-100 mt-6">
+                                {director.social.email && (
+                                  <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                                    <Mail className="h-4 w-4 mr-2" />
+                                    Contact Director
+                                  </Button>
+                                )}
+                                {director.social.linkedin && (
+                                  <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                                    <Linkedin className="h-4 w-4 mr-2" />
+                                    LinkedIn
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
+                    );
+                  })}
+              </div>
 
-                      <div className="p-6">
-                        <p className="text-gray-600 mb-6">{director.description}</p>
+              {/* Team Members Section */}
+              {showTeamMembers && (
+                <div className={`transition-all duration-1000 ${showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                  <div className="text-center mb-12">
+                    <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-200">
+                      <Users className="h-4 w-4 mr-1" />
+                      Team Members
+                    </Badge>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Meet the Team</h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                      The dedicated professionals working under the {teams.find(t => t.id === selectedTeam)?.name} department
+                    </p>
+                  </div>
 
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <Award className="h-4 w-4 text-gray-600" />
-                            Expertise
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {director.expertise.map((skill, skillIndex) => (
-                              <Badge key={skillIndex} variant="secondary" className="bg-gray-50 text-gray-700 border-gray-200">
-                                {skill}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {teamMembers
+                      .filter(member => member.teamId === selectedTeam)
+                      .map((member, index) => {
+                        const team = teams.find(t => t.id === member.teamId);
+                        return (
+                          <Card 
+                            key={member.id}
+                            className={`overflow-hidden hover:shadow-lg transition-all duration-700 ${
+                              showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                            }`}
+                            style={{ transitionDelay: `${index * 100}ms` }}
+                          >
+                            <CardContent className="p-0">
+                              <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-4 text-white`}>
+                                <div className="flex items-center gap-3">
+                                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-lg font-bold text-gray-700">
+                                    {member.name.includes('[') ? '👤' : member.name.split(' ').map(n => n[0]).join('')}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-sm truncate">{member.name}</h3>
+                                    <p className="text-white/90 text-xs font-medium">{member.role}</p>
+                                  </div>
+                                </div>
+                              </div>
 
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <Heart className="h-4 w-4 text-gray-600" />
-                            Key Achievements
-                          </h4>
-                          <ul className="space-y-2">
-                            {director.achievements.map((achievement, achIndex) => (
-                              <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
-                                <span className="text-gray-400 mt-1">•</span>
-                                {achievement}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                              <div className="p-4">
+                                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{member.description}</p>
 
-                        <div className="flex gap-3 pt-4 border-t border-gray-100">
-                          {director.social.email && (
-                            <Button size="sm" variant="outline" className="flex items-center gap-2">
-                              <Mail className="h-4 w-4" />
-                              Email
-                            </Button>
-                          )}
-                          {director.social.linkedin && (
-                            <Button size="sm" variant="outline" className="flex items-center gap-2">
-                              <Linkedin className="h-4 w-4" />
-                              LinkedIn
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                                <div className="mb-4">
+                                  <h4 className="font-semibold text-gray-900 text-sm mb-2">Expertise</h4>
+                                  <div className="flex flex-wrap gap-1">
+                                    {member.expertise.slice(0, 2).map((skill, skillIndex) => (
+                                      <Badge key={skillIndex} variant="secondary" className="text-xs bg-gray-50 text-gray-600">
+                                        {skill}
+                                      </Badge>
+                                    ))}
+                                    {member.expertise.length > 2 && (
+                                      <Badge variant="secondary" className="text-xs bg-gray-50 text-gray-600">
+                                        +{member.expertise.length - 2} more
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="mb-4">
+                                  <h4 className="font-semibold text-gray-900 text-sm mb-2">Recent Achievement</h4>
+                                  <p className="text-xs text-gray-600">
+                                    {member.achievements[0] || 'Contributing to team success'}
+                                  </p>
+                                </div>
+
+                                <div className="flex gap-2 pt-3 border-t border-gray-100">
+                                  <Button size="sm" variant="outline" className="flex-1 text-xs">
+                                    <Mail className="h-3 w-3 mr-1" />
+                                    Contact
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Mission & Values Section */}
         <section className="py-16 bg-white">
