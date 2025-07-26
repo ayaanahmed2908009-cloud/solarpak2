@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated team statistics: Changed team member count from 12 to 9 members
 - July 27, 2025. Updated team achievements: Added content production willingness achievement to Jonathan Joseph
 - July 27, 2025. Updated team expertise: Added "Cold Outreach" and "Brand Image" to Jonathan Joseph's expertise areas
 - July 27, 2025. Updated team achievements: Changed Roham Jan's achievement to "Grew social media account by 30% in likes"
