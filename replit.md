@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated founder photo: Added Ayaan Ahmed's actual photo showing desert landscape triumph
 - July 27, 2025. Updated board directors: Added "Influences major strategic decisions through board participation" to all directors' achievements
 - July 27, 2025. Updated founder details: Changed location to Riyadh, Saudi Arabia and founding date to March 2025
 - July 27, 2025. Updated team photos: Added Adnan Syed's actual photo to Community Liaison profile

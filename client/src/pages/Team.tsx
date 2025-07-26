@@ -87,7 +87,7 @@ const founder: TeamMember = {
     "Certified Solar Energy Specialist and Social Entrepreneur",
     "Website developer"
   ],
-  image: "/api/placeholder/150/150",
+  image: "/ayaan-ahmed.jpg",
   social: {
     email: "ayaan@solarpak.com",
     linkedin: "#",
