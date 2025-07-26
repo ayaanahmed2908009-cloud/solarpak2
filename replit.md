@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated Events & Community Outreach: Added Adnan Syed as Community Liaison with expertise in community relations, organisation, and talent acquisition
 - July 27, 2025. Updated Events & Community Outreach: Added Ayaan Omer as Director with achievements in organizing 10 events and clash royale competition
 - July 27, 2025. Updated Social Media team: Added Roham Jan as Social Media Manager with expertise in editing and CapCut, achievements in posting and engagement
 - July 27, 2025. Updated Social Media team: Added Jonathan Joseph as Content Creator specializing in brand promotion content, graphic design, and Canva
