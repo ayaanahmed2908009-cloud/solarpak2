@@ -492,36 +492,7 @@ export default function Team() {
                             <div className="p-8">
                               <p className="text-gray-600 mb-8 text-lg leading-relaxed">{director.description}</p>
 
-                              <div className="grid md:grid-cols-3 gap-8">
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Heart className="h-5 w-5 text-purple-600" />
-                                    Key Achievements
-                                  </h4>
-                                  <ul className="space-y-2">
-                                    {director.achievements.map((achievement, achIndex) => (
-                                      <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
-                                        <span className="text-purple-500 mt-1">•</span>
-                                        {achievement}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Award className="h-5 w-5 text-purple-600" />
-                                    Expertise
-                                  </h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {director.expertise.map((skill, skillIndex) => (
-                                      <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
-                                        {skill}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-
+                              <div className="grid md:grid-cols-2 gap-8">
                                 <div>
                                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                     <Users className="h-5 w-5 text-purple-600" />
@@ -532,15 +503,46 @@ export default function Team() {
                                       <img 
                                         src={director.image} 
                                         alt={director.name}
-                                        className="w-full h-48 object-cover"
+                                        className="w-full h-64 object-cover"
                                       />
                                     </div>
                                   ) : (
-                                    <div className="border-2 border-gray-200 rounded-lg p-4 text-center bg-gray-50">
-                                      <div className="text-4xl mb-2">👤</div>
+                                    <div className="border-2 border-gray-200 rounded-lg p-8 text-center bg-gray-50">
+                                      <div className="text-6xl mb-4">👤</div>
                                       <p className="text-sm text-gray-600">No photo available</p>
                                     </div>
                                   )}
+                                </div>
+
+                                <div className="space-y-8">
+                                  <div>
+                                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                      <Heart className="h-5 w-5 text-purple-600" />
+                                      Key Achievements
+                                    </h4>
+                                    <ul className="space-y-2">
+                                      {director.achievements.map((achievement, achIndex) => (
+                                        <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
+                                          <span className="text-purple-500 mt-1">•</span>
+                                          {achievement}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  <div>
+                                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                      <Award className="h-5 w-5 text-purple-600" />
+                                      Expertise
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                      {director.expertise.map((skill, skillIndex) => (
+                                        <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
+                                          {skill}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
 
