@@ -98,17 +98,15 @@ const founder: TeamMember = {
 const teamDirectors: TeamMember[] = [
   {
     id: 2,
-    name: "[Social Media Director Name]",
+    name: "Ibrahim Murtaza",
     role: "Director of Social Media",
     description: "Leading digital strategy and online community engagement to amplify SolarPak's impact story across social platforms.",
     location: "Pakistan",
     joinedDate: "2024-07-01",
     expertise: ["Social Media Strategy", "Content Creation", "Digital Marketing", "Community Management"],
     achievements: [
-      "Built social media presence from ground up",
-      "Increased online engagement by 300%",
-      "Created viral impact content",
-      "Managed team of 3 content creators"
+      "Built upon established social media presence from founder",
+      "Increased online engagement by 5%"
     ],
     image: "/api/placeholder/150/150",
     teamId: "social-media",
