@@ -128,7 +128,7 @@ const teamDirectors: TeamMember[] = [
       "Organised 10 events for the next year alongside the team",
       "Organised a clash royale competition"
     ],
-    image: "/api/placeholder/150/150",
+    image: "/ayaan-omer.jpg",
     teamId: "events-outreach",
     isDirector: true,
     social: {
