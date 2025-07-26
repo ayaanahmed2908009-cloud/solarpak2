@@ -108,7 +108,7 @@ const teamDirectors: TeamMember[] = [
       "Built upon established social media presence from founder",
       "Increased online engagement by 5%"
     ],
-    image: "@assets/1000064757_1753544848379.jpg",
+    image: "/ibrahim-murtaza.jpg",
     teamId: "social-media",
     isDirector: true,
     social: {
@@ -475,9 +475,9 @@ export default function Team() {
                             <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
                               <div className="flex flex-col md:flex-row items-center gap-6">
                                 <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-blue-400">
-                                  {director.image && director.image.startsWith('@assets/') ? (
+                                  {director.image && director.image.startsWith('/') ? (
                                     <img 
-                                      src={director.image.replace('@assets/', '/attached_assets/')} 
+                                      src={director.image} 
                                       alt={director.name}
                                       className="w-full h-full object-cover"
                                     />
