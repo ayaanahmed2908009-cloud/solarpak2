@@ -138,17 +138,15 @@ const teamDirectors: TeamMember[] = [
   },
   {
     id: 4,
-    name: "[Sponsorships Director Name]",
+    name: "Ramin Tihami",
     role: "Director of Sponsorships & Fundraising",
     description: "Securing strategic partnerships and funding opportunities to scale SolarPak's impact across Pakistan.",
     location: "Pakistan",
     joinedDate: "2024-08-01",
-    expertise: ["Fundraising Strategy", "Corporate Partnerships", "Grant Writing", "Financial Planning"],
+    expertise: ["Fundraising Strategy", "Corporate Partnerships", "AI-Powered Outreach", "Strategic Negotiations"],
     achievements: [
-      "Secured $50,000+ in funding commitments",
-      "Established partnerships with 5 major sponsors",
-      "Created sustainable fundraising pipeline",
-      "Achieved 40% month-over-month donation growth"
+      "Using an AI platform to send cold outreach to numerous CEOs and founders",
+      "Currently in talks of a sponsorship with a test prep agency"
     ],
     image: "/api/placeholder/150/150",
     teamId: "sponsorships",
