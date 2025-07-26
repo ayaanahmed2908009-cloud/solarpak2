@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated team achievements: Changed Roham Jan's achievement to "Grew social media account by 30% in likes"
 - July 27, 2025. Updated team expertise: Added "Content Creation" and "Engagement" to Roham Jan's expertise areas
 - July 27, 2025. Updated social links: Removed LinkedIn and Twitter from all team members, keeping only email contacts
 - July 27, 2025. Updated founder photo: Added Ayaan Ahmed's actual photo showing desert landscape triumph
