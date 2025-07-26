@@ -84,7 +84,8 @@ const founder: TeamMember = {
     "Led 8 successful solar installations across Pakistan",
     "Transformed 35 lives through clean energy access",
     "Built partnerships with local communities and suppliers",
-    "Certified Solar Energy Specialist and Social Entrepreneur"
+    "Certified Solar Energy Specialist and Social Entrepreneur",
+    "Website developer"
   ],
   image: "/api/placeholder/150/150",
   social: {
