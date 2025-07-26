@@ -76,8 +76,8 @@ const founder: TeamMember = {
   name: "Ayaan Ahmed",
   role: "Founder & CEO",
   description: "Visionary leader passionate about bringing sustainable energy solutions to underserved communities across Pakistan. Founded SolarPak to address the electricity crisis through innovative solar installations and community-driven impact.",
-  location: "Karachi, Pakistan",
-  joinedDate: "2025-07-01",
+  location: "Riyadh, Saudi Arabia",
+  joinedDate: "2025-03-01",
   expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
