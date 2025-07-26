@@ -514,7 +514,7 @@ export default function Team() {
                                       <img 
                                         src={director.image} 
                                         alt={director.name}
-                                        className={`w-full h-96 ${director.teamId === 'events-outreach' ? 'object-contain bg-gray-50' : 'object-cover'}`}
+                                        className={`w-full ${director.teamId === 'events-outreach' ? 'h-auto max-h-96 object-contain bg-gray-50' : 'h-96 object-cover'}`}
                                       />
                                     </div>
                                   ) : (
@@ -637,7 +637,7 @@ export default function Team() {
                                               <img 
                                                 src={member.image} 
                                                 alt={member.name}
-                                                className={`w-full h-96 ${member.teamId === 'events-outreach' ? 'object-contain bg-gray-50' : 'object-cover'}`}
+                                                className={`w-full ${member.teamId === 'events-outreach' ? 'h-auto max-h-96 object-contain bg-gray-50' : 'h-96 object-cover'}`}
                                               />
                                             </div>
                                           ) : (
