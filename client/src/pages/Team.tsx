@@ -158,17 +158,17 @@ const teamDirectors: TeamMember[] = [
   },
   {
     id: 5,
-    name: "[Healthcare Director Name]",
+    name: "Moiz Ali",
     role: "Director of Predictive Systems & Healthcare",
     description: "Leading data-driven initiatives and health programs to maximize community impact and predict optimal solar installation sites.",
     location: "Pakistan",
     joinedDate: "2024-08-15",
-    expertise: ["Data Analytics", "Predictive Modeling", "Healthcare Administration", "Research Methods"],
+    expertise: ["Data Analytics", "Predictive Modeling", "Healthcare Administration", "Strategic Leadership"],
     achievements: [
-      "Developed predictive models for optimal solar placement",
-      "Launched health impact assessment program",
-      "Reduced installation planning time by 60%",
-      "Published research on solar energy health benefits"
+      "Developing a pilot model for high risk environments that has enabled us to expand towards healthcare",
+      "Established healthcare wing of operations",
+      "Member of board of directors",
+      "Contributing to key decisions made by the organisation"
     ],
     image: "/api/placeholder/150/150",
     teamId: "predictive-healthcare",
