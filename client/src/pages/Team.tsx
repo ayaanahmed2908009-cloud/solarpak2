@@ -77,7 +77,7 @@ const founder: TeamMember = {
   role: "Founder & CEO",
   description: "Visionary leader passionate about bringing sustainable energy solutions to underserved communities across Pakistan. Founded SolarPak to address the electricity crisis through innovative solar installations and community-driven impact.",
   location: "Karachi, Pakistan",
-  joinedDate: "2024-06-01",
+  joinedDate: "2025-07-01",
   expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
@@ -103,7 +103,7 @@ const teamDirectors: TeamMember[] = [
     role: "Director of Social Media",
     description: "Leading digital strategy and online community engagement to amplify SolarPak's impact story across social platforms.",
     location: "Pakistan",
-    joinedDate: "2024-07-01",
+    joinedDate: "2025-07-01",
     expertise: ["Social Media Strategy", "Content Creation", "Digital Marketing", "Community Management"],
     achievements: [
       "Built upon established social media presence from founder",
@@ -123,7 +123,7 @@ const teamDirectors: TeamMember[] = [
     role: "Director of Events & Community Outreach",
     description: "Orchestrating community events and building grassroots connections to expand SolarPak's reach across Pakistani communities.",
     location: "Pakistan",
-    joinedDate: "2024-07-15",
+    joinedDate: "2025-07-15",
     expertise: ["Event Management", "Community Relations"],
     achievements: [
       "Organised 10 events for the next year alongside the team",
@@ -144,7 +144,7 @@ const teamDirectors: TeamMember[] = [
     role: "Director of Sponsorships & Fundraising",
     description: "Securing strategic partnerships and funding opportunities to scale SolarPak's impact across Pakistan.",
     location: "Pakistan",
-    joinedDate: "2024-08-01",
+    joinedDate: "2025-07-01",
     expertise: ["Fundraising Strategy", "Corporate Partnerships", "AI-Powered Outreach", "Strategic Negotiations"],
     achievements: [
       "Using an AI platform to send cold outreach to numerous CEOs and founders",
@@ -164,7 +164,7 @@ const teamDirectors: TeamMember[] = [
     role: "Director of Predictive Systems & Healthcare",
     description: "Leading data-driven initiatives and health programs to maximize community impact and predict optimal solar installation sites.",
     location: "Pakistan",
-    joinedDate: "2024-08-15",
+    joinedDate: "2025-07-15",
     expertise: ["Data Analytics", "Predictive Modeling", "Healthcare Administration", "Strategic Leadership"],
     achievements: [
       "Developing a pilot model for high risk environments that has enabled us to expand towards healthcare",
@@ -184,13 +184,13 @@ const teamDirectors: TeamMember[] = [
 // Team Members (placeholder entries for the additional team members)
 const teamMembers: TeamMember[] = [
   // Social Media Team Members (3 additional)
-  { id: 7, name: "Roham Jan", role: "Social Media Manager", description: "Managing social media presence and engagement across multiple platforms", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Editing", "CapCut"], achievements: ["Posted over 4 times", "Generated over 30 likes", "Maintained posts over both platforms"], image: "/roham-jan.jpg", teamId: "social-media", social: {} },
-  { id: 6, name: "Jonathan Joseph", role: "Head of Event and Brand Promotion", description: "Specializing in creating brand promotion content for events and marketing initiatives", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Graphic Design", "Canva"], achievements: ["Created 2 flyers for future events"], image: "/jonathan-joseph.jpg", teamId: "social-media", social: {} },
-  { id: 8, name: "[Social Media Specialist 3]", role: "Digital Marketing Specialist", description: "Driving growth through targeted digital campaigns", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Digital Advertising", "Analytics"], achievements: ["Increased reach by 250%"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
+  { id: 7, name: "Roham Jan", role: "Social Media Manager", description: "Managing social media presence and engagement across multiple platforms", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Editing", "CapCut"], achievements: ["Posted over 4 times", "Generated over 30 likes", "Maintained posts over both platforms"], image: "/roham-jan.jpg", teamId: "social-media", social: {} },
+  { id: 6, name: "Jonathan Joseph", role: "Head of Event and Brand Promotion", description: "Specializing in creating brand promotion content for events and marketing initiatives", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Graphic Design", "Canva"], achievements: ["Created 2 flyers for future events"], image: "/jonathan-joseph.jpg", teamId: "social-media", social: {} },
+  { id: 8, name: "[Social Media Specialist 3]", role: "Digital Marketing Specialist", description: "Driving growth through targeted digital campaigns", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Digital Advertising", "Analytics"], achievements: ["Increased reach by 250%"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
   
   // Events & Community Outreach Team Members (2 additional)
-  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
-  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "https://www.linkedin.com/in/zaid-afzal-619546306/" } },
+  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/api/placeholder/150/150", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
+  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "https://www.linkedin.com/in/zaid-afzal-619546306/" } },
 
   
   // Note: Sponsorships & Fundraising and Predictive Systems & Healthcare teams have directors only (no additional team members)

@@ -144,6 +144,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- July 27, 2025. Updated team dates: Changed all team members' join dates to July 2025
 - July 27, 2025. Updated team roles: Changed Jonathan Joseph's title to "Head of Event and Brand Promotion"
 - July 27, 2025. Updated team photos: Added Roham Jan's actual professional photo to Social Media Manager profile
 - July 27, 2025. Updated social links: Added Ayaan Ahmed's LinkedIn profile to Events Director
