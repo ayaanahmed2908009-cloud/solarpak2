@@ -501,7 +501,7 @@ export default function Team() {
                                       <img 
                                         src={director.image} 
                                         alt={director.name}
-                                        className="w-full h-64 object-cover"
+                                        className="w-full h-80 object-cover"
                                       />
                                     </div>
                                   ) : (
@@ -624,7 +624,7 @@ export default function Team() {
                                               <img 
                                                 src={member.image} 
                                                 alt={member.name}
-                                                className="w-full h-64 object-cover"
+                                                className="w-full h-80 object-cover"
                                               />
                                             </div>
                                           ) : (
