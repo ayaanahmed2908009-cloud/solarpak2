@@ -187,7 +187,7 @@ const teamDirectors: TeamMember[] = [
 // Team Members (placeholder entries for the additional team members)
 const teamMembers: TeamMember[] = [
   // Social Media Team Members (3 additional)
-  { id: 6, name: "Jonathan Joseph", role: "Content Creator", description: "Specializing in creating brand promotion content for events and marketing initiatives", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Graphic Design", "Canva"], achievements: ["Created 2 flyers for future events"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
+  { id: 6, name: "Jonathan Joseph", role: "Content Creator", description: "Specializing in creating brand promotion content for events and marketing initiatives", location: "Pakistan", joinedDate: "2024-09-01", expertise: ["Graphic Design", "Canva"], achievements: ["Created 2 flyers for future events"], image: "/jonathan-joseph.jpg", teamId: "social-media", social: {} },
   { id: 7, name: "[Social Media Specialist 2]", role: "Community Manager", description: "Managing online communities and engagement", location: "Pakistan", joinedDate: "2024-09-15", expertise: ["Community Management", "Customer Service"], achievements: ["Maintained 95% response rate"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
   { id: 8, name: "[Social Media Specialist 3]", role: "Digital Marketing Specialist", description: "Driving growth through targeted digital campaigns", location: "Pakistan", joinedDate: "2024-10-01", expertise: ["Digital Advertising", "Analytics"], achievements: ["Increased reach by 250%"], image: "/api/placeholder/150/150", teamId: "social-media", social: {} },
   
