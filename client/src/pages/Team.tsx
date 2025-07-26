@@ -148,7 +148,7 @@ const teamDirectors: TeamMember[] = [
       "Using an AI platform to send cold outreach to numerous CEOs and founders",
       "Currently in talks of a sponsorship with a test prep agency"
     ],
-    image: "/api/placeholder/150/150",
+    image: "/ramin-tihami.jpg",
     teamId: "sponsorships",
     isDirector: true,
     social: {
