@@ -14,6 +14,11 @@ import Membership from "@/pages/Membership";
 import VillageExperience from "@/pages/VillageExperience";
 import CaseStudy from "@/pages/CaseStudy";
 import Team from "@/pages/Team";
+
+// Worker portal pages
+import WorkerLogin from "@/pages/worker/WorkerLogin";
+import WorkerRegister from "@/pages/worker/WorkerRegister";
+import WorkerDashboard from "@/pages/worker/WorkerDashboard";
 import { useEffect } from "react";
 
 
@@ -102,6 +107,12 @@ function Router() {
 
       <Route path="/membership" component={Membership} />
       <Route path="/team" component={Team} />
+      
+      {/* Worker portal routes */}
+      <Route path="/worker/login" component={WorkerLogin} />
+      <Route path="/worker/register" component={WorkerRegister} />
+      <Route path="/worker/dashboard" component={WorkerDashboard} />
+      
       <Route component={NotFound} />
     </Switch>
   );

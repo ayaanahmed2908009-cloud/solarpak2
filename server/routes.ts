@@ -2,7 +2,8 @@ import type { Express, Request, Response } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-
+import { setupWorkerAuth, workerLogin, workerRegister, workerLogout, getCurrentWorker, isWorkerAuthenticated, isWorkerAdmin } from "./worker-auth";
+import { workerStorage } from "./worker-storage";
 import { wsManager } from "./websocket";
 
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
@@ -48,7 +49,44 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Public platform - no authentication needed
+  // Set up worker authentication middleware
+  setupWorkerAuth(app);
+  
+  // Worker authentication routes
+  app.post("/worker/api/login", workerLogin);
+  app.post("/worker/api/register", workerRegister);
+  app.post("/worker/api/logout", workerLogout);
+  app.get("/worker/api/user", getCurrentWorker);
+  
+  // Worker management routes (admin only)
+  app.get("/worker/api/workers", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
+    try {
+      const workers = await workerStorage.getAllWorkers();
+      // Remove passwords from response
+      const safeWorkers = workers.map(({ password, ...worker }) => worker);
+      res.json(safeWorkers);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching workers" });
+    }
+  });
+  
+  app.get("/worker/api/activity/:workerId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { workerId } = req.params;
+      
+      // Workers can only see their own activity unless they're admin
+      if (req.worker.id !== workerId && req.worker.role !== "admin" && req.worker.role !== "manager") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const logs = await workerStorage.getWorkerLogs(workerId);
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching activity logs" });
+    }
+  });
+  
+  // Public platform routes below
   
   // Get stats
   app.get("/api/stats", async (req, res) => {

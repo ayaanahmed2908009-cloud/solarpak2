@@ -6,6 +6,12 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## System Architecture
 
+### Dual Platform Architecture
+The application now operates as a **dual platform system**:
+
+1. **Public Donation Platform** - Completely open access with no authentication
+2. **Worker Management System** - Secure internal portal for team members
+
 ### Frontend Architecture
 - **React 18** with TypeScript for type-safe component development
 - **Vite** as the build tool for fast development and optimized production builds
@@ -18,9 +24,10 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 ### Backend Architecture
 - **Express.js** server with TypeScript for type safety
 - **RESTful API** design with structured endpoints
-- **Passport.js** with local strategy for authentication
-- **Session-based authentication** with PostgreSQL session storage
-- **Express sessions** with connect-pg-simple for persistent sessions
+- **Dual Authentication System**:
+  - **Public routes** - No authentication required
+  - **Worker authentication** - Session-based auth with bcrypt password hashing
+- **Express sessions** with connect-pg-simple for worker session storage
 - **WebSocket** server for real-time updates and notifications
 
 ### Database Layer
@@ -28,15 +35,26 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 - **Drizzle ORM** for type-safe database operations and migrations
 - **Neon Database** as the serverless PostgreSQL provider
 - **Schema-first approach** with shared TypeScript types
+- **Dual Schema Design**:
+  - **Public schema** (`shared/schema.ts`) - For donation platform data
+  - **Worker schema** (`shared/worker-schema.ts`) - For internal team management
 
 ## Key Components
 
 ### Public Platform Architecture
 - Completely public platform without user authentication
-- No user accounts, registration, or login system
+- No user accounts, registration, or login system  
 - No user dashboards or protected content
 - Direct Ko-fi integration for all donations
 - Open access to all content and features
+
+### Worker Management System
+- **Secure Authentication**: Username/password login with bcrypt encryption
+- **Role-Based Access Control**: Admin, Manager, and Worker roles
+- **Department Organization**: Events, Social Media, Sponsorships, Healthcare
+- **Activity Tracking**: Comprehensive logging of worker actions
+- **Session Management**: Secure session storage with PostgreSQL
+- **Admin Features**: Worker management and system oversight
 
 ### Donation System
 - Direct Ko-fi integration with simple redirect buttons
@@ -144,6 +162,7 @@ SolarPak is a comprehensive web application that facilitates donations for solar
 
 ## Changelog
 
+- August 2, 2025. **Worker Authentication System**: Created comprehensive internal worker portal with role-based access, department management, activity logging, and secure authentication using separate database schema
 - August 2, 2025. Complete authentication removal: Eliminated all user accounts, login/signup, dashboard functionality, and authentication routes for fully public platform
 - July 27, 2025. Updated team structure: Removed Social Media Specialist 3 placeholder from Social Media team
 - July 27, 2025. Updated team photos: Added Zaid Afal's actual photo to Event Coordinator profile
