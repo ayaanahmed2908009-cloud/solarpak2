@@ -18,7 +18,7 @@ import Team from "@/pages/Team";
 // Worker portal pages
 import WorkerLogin from "@/pages/worker/WorkerLogin";
 import WorkerRegister from "@/pages/worker/WorkerRegister";
-import WorkerDashboard from "@/pages/worker/WorkerDashboard";
+import WorkerDashboard from "@/pages/worker/Dashboard";
 import AdminPanel from "@/pages/worker/AdminPanel";
 import TaskManager from "@/pages/worker/TaskManager";
 import EventManager from "@/pages/worker/EventManager";
