@@ -47,6 +47,9 @@ export default function TaskManager() {
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const { toast } = useToast();
+  
+  // Check if current user is founder Ayaan Ahmed (admin account)
+  const isFounder = currentUser?.username === "admin";
 
   const createForm = useForm<CreateTaskInput>({
     resolver: zodResolver(createTaskSchema),
@@ -139,6 +142,15 @@ export default function TaskManager() {
   };
 
   const getPriorityColor = (priority: string) => {
+    if (isFounder) {
+      switch (priority) {
+        case 'urgent': return 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg';
+        case 'high': return 'bg-gradient-to-r from-orange-500 to-yellow-500 text-white shadow-lg';
+        case 'medium': return 'bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-lg';
+        case 'low': return 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg';
+        default: return 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg';
+      }
+    }
     switch (priority) {
       case 'urgent': return 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg';
       case 'high': return 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg';
@@ -179,9 +191,9 @@ export default function TaskManager() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+    <div className={`min-h-screen ${isFounder ? 'bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50' : 'bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50'}`}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 text-white shadow-xl">
+      <div className={`${isFounder ? 'bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600' : 'bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600'} text-white shadow-xl`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-8">
             <div className="flex items-center space-x-6">
@@ -194,18 +206,20 @@ export default function TaskManager() {
                 Back to Dashboard
               </Button>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                  ⚡ Task Manager
+                <h1 className={`text-3xl font-bold bg-gradient-to-r ${isFounder ? 'from-white to-yellow-100' : 'from-white to-blue-100'} bg-clip-text text-transparent`}>
+                  {isFounder ? '🌟 Founder Task Manager' : '⚡ Task Manager'}
                 </h1>
-                <p className="text-blue-100 font-medium">Assign and track team tasks with vibrant energy</p>
+                <p className={`${isFounder ? 'text-yellow-100' : 'text-blue-100'} font-medium`}>
+                  {isFounder ? 'Manage your golden solar mission with precision' : 'Assign and track team tasks with vibrant energy'}
+                </p>
               </div>
             </div>
             
             <Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
+                <Button className={`${isFounder ? 'bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600' : 'bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600'} text-white font-semibold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200`}>
                   <Plus className="h-5 w-5 mr-2" />
-                  ✨ Create Task
+                  {isFounder ? '⭐ Create Mission' : '✨ Create Task'}
                 </Button>
               </DialogTrigger>
               <DialogContent>

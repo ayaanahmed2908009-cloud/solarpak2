@@ -43,8 +43,8 @@ export default function AdminPanel() {
   const createEmployee = useCreateEmployee();
   const updateEmployee = useUpdateEmployee();
   
-  // Check if current user is founder Ayaan Ahmed
-  const isFounder = currentUser?.firstName === "Ayaan" && currentUser?.lastName === "Ahmed";
+  // Check if current user is founder Ayaan Ahmed (admin account)
+  const isFounder = currentUser?.username === "admin";
   const { toast } = useToast();
 
   const createForm = useForm<WorkerRegisterInput>({
