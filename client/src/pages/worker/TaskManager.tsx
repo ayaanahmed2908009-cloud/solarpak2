@@ -140,20 +140,20 @@ export default function TaskManager() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'urgent': return 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg';
+      case 'high': return 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg';
+      case 'medium': return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg';
+      case 'low': return 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg';
+      default: return 'bg-gradient-to-r from-gray-500 to-slate-500 text-white shadow-lg';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'in_progress': return <Clock className="h-4 w-4 text-blue-600" />;
-      case 'pending': return <AlertCircle className="h-4 w-4 text-yellow-600" />;
-      default: return <Clock className="h-4 w-4 text-gray-600" />;
+      case 'completed': return <CheckCircle className="h-5 w-5 text-emerald-500" />;
+      case 'in_progress': return <Clock className="h-5 w-5 text-blue-500" />;
+      case 'pending': return <AlertCircle className="h-5 w-5 text-orange-500" />;
+      default: return <Clock className="h-5 w-5 text-gray-500" />;
     }
   };
 
@@ -179,30 +179,33 @@ export default function TaskManager() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 text-white shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
+          <div className="flex justify-between items-center py-8">
+            <div className="flex items-center space-x-6">
               <Button
                 variant="ghost"
                 onClick={() => navigate("/worker/dashboard")}
+                className="text-white hover:bg-white/20 transition-all duration-200"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Task Manager</h1>
-                <p className="text-sm text-gray-500">Assign and track team tasks</p>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                  ⚡ Task Manager
+                </h1>
+                <p className="text-blue-100 font-medium">Assign and track team tasks with vibrant energy</p>
               </div>
             </div>
             
             <Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
               <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Task
+                <Button className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
+                  <Plus className="h-5 w-5 mr-2" />
+                  ✨ Create Task
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -335,105 +338,108 @@ export default function TaskManager() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search tasks..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Priority</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
+        <div className="bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-xl border border-blue-200 mb-8 p-6">
+          <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400 h-5 w-5" />
+                <Input
+                  placeholder="🔍 Search for amazing tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-4 py-3 text-lg border-2 border-purple-200 focus:border-purple-500 rounded-xl bg-white/70 backdrop-blur-sm"
+                />
               </div>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="flex gap-4">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40 bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 rounded-xl shadow-lg">
+                  <SelectValue placeholder="📊 Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="pending">⏳ Pending</SelectItem>
+                  <SelectItem value="in_progress">🚀 In Progress</SelectItem>
+                  <SelectItem value="completed">✅ Completed</SelectItem>
+                  <SelectItem value="cancelled">❌ Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <SelectTrigger className="w-40 bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 rounded-xl shadow-lg">
+                  <SelectValue placeholder="🔥 Priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Priority</SelectItem>
+                  <SelectItem value="low">🟢 Low</SelectItem>
+                  <SelectItem value="medium">🟡 Medium</SelectItem>
+                  <SelectItem value="high">🟠 High</SelectItem>
+                  <SelectItem value="urgent">🔴 Urgent</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
 
         {/* Task List */}
-        <div className="space-y-4">
+        <div className="grid gap-6">
           {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-500 mt-2">Loading tasks...</p>
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-300 border-t-purple-600 mx-auto"></div>
+              <p className="text-purple-600 font-medium mt-4 text-lg">Loading amazing tasks... ✨</p>
             </div>
           ) : filteredTasks.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-8">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No tasks found matching your criteria</p>
-              </CardContent>
-            </Card>
+            <div className="bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100 rounded-2xl shadow-xl p-12 text-center">
+              <Calendar className="h-16 w-16 text-purple-400 mx-auto mb-6" />
+              <h3 className="text-xl font-semibold text-purple-800 mb-2">No tasks found</h3>
+              <p className="text-purple-600">No tasks match your search criteria. Try adjusting your filters! 🔍</p>
+            </div>
           ) : (
             filteredTasks.map((task) => (
-              <Card key={task.id}>
-                <CardContent className="pt-6">
+              <div key={task.id} className="bg-gradient-to-br from-white via-blue-50 to-purple-50 rounded-2xl shadow-xl border border-purple-200 overflow-hidden transform hover:scale-[1.02] transition-all duration-200 hover:shadow-2xl">
+                <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        {getStatusIcon(task.status)}
-                        <h3 className="font-semibold text-lg">{task.title}</h3>
-                        <Badge className={getPriorityColor(task.priority)}>
-                          {task.priority}
-                        </Badge>
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl text-white">
+                          {getStatusIcon(task.status)}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-xl text-gray-800 mb-1">{task.title}</h3>
+                          <Badge className={`${getPriorityColor(task.priority)} px-3 py-1 rounded-xl font-medium`}>
+                            {task.priority.toUpperCase()}
+                          </Badge>
+                        </div>
                       </div>
                       
                       {task.description && (
-                        <p className="text-gray-600 mb-3">{task.description}</p>
+                        <p className="text-gray-700 mb-4 text-lg leading-relaxed bg-white/60 p-3 rounded-xl">{task.description}</p>
                       )}
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
+                      <div className="flex flex-wrap items-center gap-6 text-sm font-medium">
+                        <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-2 rounded-xl">
                           <User className="h-4 w-4" />
-                          <span>Assigned to: {getWorkerName(task.assignedTo)}</span>
+                          <span>{getWorkerName(task.assignedTo)}</span>
                         </div>
                         
                         {task.dueDate && (
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-2 rounded-xl">
                             <Calendar className="h-4 w-4" />
                             <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
                           </div>
                         )}
                         
-                        <span>Created: {new Date(task.createdAt).toLocaleDateString()}</span>
+                        <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-3 py-2 rounded-xl">
+                          <span>Created: {new Date(task.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
                     </div>
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
+                        <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl p-3">
+                          <MoreVertical className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
@@ -449,7 +455,7 @@ export default function TaskManager() {
                             });
                           }}>
                             <Edit className="h-4 w-4 mr-2" />
-                            Edit Task
+                            ✏️ Edit Task
                           </DropdownMenuItem>
                         )}
                         {canDeleteTask(task) && (
@@ -458,14 +464,14 @@ export default function TaskManager() {
                             className="text-red-600"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Task
+                            🗑️ Delete Task
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))
           )}
         </div>
