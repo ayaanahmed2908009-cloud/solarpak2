@@ -1,28 +1,14 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Sun, User, Menu, X, Zap } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sun, Menu, X, Zap } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-  
-  const handleLogout = async () => {
-    await logout();
   };
 
   return (
@@ -83,52 +69,7 @@ export default function Navbar() {
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
             </a>
             
-            {isAuthenticated && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.profileImageUrl || ""} />
-                      <AvatarFallback className="bg-primary/10">
-                        {user.fullName?.charAt(0) || user.email.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span>{user.fullName || user.email}</span>
-                      <span className="text-xs text-muted-foreground">{user.role}</span>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link href="/dashboard">
-                    <DropdownMenuItem className="cursor-pointer">
-                      Dashboard
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/membership">
-                    <DropdownMenuItem className="cursor-pointer">
-                      Membership
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <div className="hidden md:flex items-center space-x-2">
-                <Link href="/login">
-                  <Button variant="ghost" size="sm">Log in</Button>
-                </Link>
-                <Link href="/signup">
-                  <Button variant="outline" size="sm">Sign up</Button>
-                </Link>
-              </div>
-            )}
+
             
             <button 
               className="md:hidden relative p-2 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group" 
@@ -197,63 +138,7 @@ export default function Navbar() {
               Team
             </Link>
             
-            {isAuthenticated && user ? (
-              <>
-                <div className="border-t border-gray-200 pt-4 mt-2"></div>
-                <Link 
-                  href="/dashboard" 
-                  className="font-heading font-medium hover:text-primary transition py-2 flex items-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  My Dashboard
-                  {user.role === 'admin' && (
-                    <span className="ml-2 text-xs bg-primary text-white px-2 py-1 rounded-full">
-                      Admin
-                    </span>
-                  )}
-                </Link>
-                <Link 
-                  href="/membership" 
-                  className="font-heading font-medium hover:text-primary transition py-2 flex items-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
-                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
-                    <path d="M18 12a2 2 0 0 0 0 4h2v-4Z" />
-                  </svg>
-                  Membership
-                </Link>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="font-heading font-medium text-gray-600 hover:text-primary transition py-2 text-left"
-                >
-                  Log out
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="border-t border-gray-200 pt-4 mt-2"></div>
-                <Link 
-                  href="/login" 
-                  className="font-heading font-medium hover:text-primary transition py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Log in
-                </Link>
-                <Link 
-                  href="/signup" 
-                  className="font-heading font-medium hover:text-primary transition py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Sign up
-                </Link>
-              </>
-            )}
+
             
             <a 
               href="#donate" 

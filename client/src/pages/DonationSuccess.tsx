@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
+
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ interface UserTierInfo {
 
 export default function DonationSuccess() {
   const [, navigate] = useLocation();
-  const { user, refreshUser } = useAuth();
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   // Get donation ID from session storage  
@@ -35,10 +34,8 @@ export default function DonationSuccess() {
       setSessionId(storedDonationId);
       // Clear the pending donation ID
       sessionStorage.removeItem('pendingDonationId');
-      // Refresh user data to show updated tier
-      refreshUser();
     }
-  }, [refreshUser]);
+  }, []);
 
   // Fetch donation details
   const { data: sessionData, isLoading: sessionLoading } = useQuery<DonationSessionData>({
@@ -46,15 +43,7 @@ export default function DonationSuccess() {
     enabled: !!sessionId,
   });
 
-  // Refetch user data to get updated tier information
-  useEffect(() => {
-    if (sessionId && user) {
-      // Refetch user data after a small delay to ensure webhook has processed
-      setTimeout(() => {
-        refreshUser();
-      }, 2000);
-    }
-  }, [sessionId, user, refreshUser]);
+
 
   const getTierInfo = (totalDonated: number): UserTierInfo => {
     let currentTier = 'none';
@@ -116,7 +105,7 @@ export default function DonationSuccess() {
     }
   };
 
-  if (sessionLoading || !user) {
+  if (sessionLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
@@ -127,7 +116,7 @@ export default function DonationSuccess() {
     );
   }
 
-  const tierInfo = getTierInfo(user.totalDonated || 0);
+  const tierInfo = getTierInfo(sessionData?.amount || 50);
   const donationAmount = sessionData?.amount || 50; // Fallback amount
 
   return (

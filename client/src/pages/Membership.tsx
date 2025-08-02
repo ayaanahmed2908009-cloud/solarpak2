@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { useAuth } from "@/hooks/useAuth";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,7 +15,6 @@ import {
 import { CheckCircle } from "lucide-react";
 
 export default function Membership() {
-  const { user, isAuthenticated } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -96,14 +95,7 @@ export default function Membership() {
     },
   ];
 
-  const getUserTierIndex = () => {
-    if (!isAuthenticated || !user) return -1;
-    
-    const userTier = user.membershipTier;
-    return membershipTiers.findIndex(tier => tier.id === userTier);
-  };
-
-  const userTierIndex = getUserTierIndex();
+  // Public page - no user-specific tier highlighting
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
@@ -122,25 +114,14 @@ export default function Membership() {
               benefits at each level.
             </p>
             
-            {isAuthenticated && user && (
-              <div className="mt-8 inline-block py-3 px-6 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/10">
-                <p className="text-gray-700">
-                  Your current membership: <span className="font-semibold">{user.membershipTier?.charAt(0).toUpperCase() + user.membershipTier?.slice(1) || "None"}</span>
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Total donated: ${user.totalDonated.toFixed(2)}
-                </p>
-              </div>
-            )}
+
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {membershipTiers.map((tier, index) => (
               <Card 
                 key={tier.id}
-                className={`overflow-hidden transition-all duration-300 hover:shadow-xl ${
-                  userTierIndex === index ? 'ring-2 ring-primary' : ''
-                }`}
+                className="overflow-hidden transition-all duration-300 hover:shadow-xl"
               >
                 <div className={`bg-gradient-to-r ${tier.color} h-3 w-full`}></div>
                 <CardHeader>
@@ -166,9 +147,7 @@ export default function Membership() {
                 <CardFooter className="pt-6 pb-6">
                   <Link href={`/#donate?suggested=${tier.threshold}`}>
                     <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80">
-                      {userTierIndex >= index && isAuthenticated
-                        ? "Already Unlocked"
-                        : "Donate Now"}
+                      Donate Now
                     </Button>
                   </Link>
                 </CardFooter>

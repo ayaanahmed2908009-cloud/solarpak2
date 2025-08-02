@@ -9,16 +9,13 @@ import Success from "@/pages/Success";
 import DonationSuccess from "@/pages/DonationSuccess";
 
 import Impact from "@/pages/Impact";
-import Login from "@/pages/Login";
-import SignUp from "@/pages/SignUp";
-import Dashboard from "@/pages/Dashboard";
-import AdminDashboard from "@/pages/AdminDashboard";
+
 import Membership from "@/pages/Membership";
 import VillageExperience from "@/pages/VillageExperience";
 import CaseStudy from "@/pages/CaseStudy";
 import Team from "@/pages/Team";
 import { useEffect } from "react";
-import { AuthProvider } from "@/hooks/useAuth";
+
 
 // Smooth scroll behavior utility
 function setSmoothScroll() {
@@ -102,10 +99,7 @@ function Router() {
       <Route path="/success" component={Success} />
       <Route path="/donation-success" component={DonationSuccess} />
 
-      <Route path="/login" component={Login} />
-      <Route path="/signup" component={SignUp} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/admin" component={AdminDashboard} />
+
       <Route path="/membership" component={Membership} />
       <Route path="/team" component={Team} />
       <Route component={NotFound} />
@@ -116,12 +110,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="app-container min-h-screen bg-gradient-to-b from-gray-50 to-white">
-          <Router />
-          <Toaster />
-        </div>
-      </AuthProvider>
+      <div className="app-container min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <Router />
+        <Toaster />
+      </div>
     </QueryClientProvider>
   );
 }

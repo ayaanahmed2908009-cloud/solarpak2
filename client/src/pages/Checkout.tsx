@@ -3,7 +3,7 @@ import { useLocation, useSearch, Link, useRouter } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+
 import { Donation } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +29,7 @@ function CheckoutForm({ donation, onSuccess, onError }: {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
-  const { refreshUser } = useAuth();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,8 +83,7 @@ function CheckoutForm({ donation, onSuccess, onError }: {
           status: "succeeded",
         });
         
-        // Refresh user data to update donation totals immediately
-        await refreshUser();
+        // Payment webhook processed successfully
       } catch (err) {
         console.error("Error updating payment status:", err);
       }

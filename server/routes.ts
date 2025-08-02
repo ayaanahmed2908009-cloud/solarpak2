@@ -2,7 +2,7 @@ import type { Express, Request, Response } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, login, logout, register, isAuthenticated, getCurrentUser } from "./auth";
+
 import { wsManager } from "./websocket";
 
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
@@ -48,17 +48,7 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up authentication middleware
-  setupAuth(app);
-  
-  // Authentication routes
-  app.post("/api/login", login);
-  app.post("/api/register", register);
-  app.post("/api/auth/login", login);
-  app.post("/api/auth/register", register);
-  app.get("/api/logout", logout);
-  app.get("/api/auth/logout", logout);
-  app.get("/api/auth/user", getCurrentUser);
+  // Public platform - no authentication needed
   
   // Get stats
   app.get("/api/stats", async (req, res) => {
@@ -129,16 +119,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a donation (initial record before payment) - requires authentication
-  app.post("/api/donations", isAuthenticated, async (req, res) => {
+  // Create a donation (public endpoint)
+  app.post("/api/donations", async (req, res) => {
     try {
       const validatedData = insertDonationSchema.parse(req.body);
-      
-      // Use the authenticated user's email if available
-      if (req.user && (req.user as any).email) {
-        validatedData.email = (req.user as any).email;
-      }
-      
       const donation = await storage.createDonation(validatedData);
       res.status(201).json(donation);
     } catch (error) {
@@ -154,11 +138,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-  // Create donation without payment processing
-  app.post("/api/create-donation", isAuthenticated, async (req, res) => {
+  // Create donation without payment processing (public endpoint)
+  app.post("/api/create-donation", async (req, res) => {
     try {
       const { amount, isMonthly, projectId, name, email, message } = req.body;
-      const user = req.user as any;
       
       if (!amount || amount <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
@@ -166,29 +149,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create donation record as completed (no payment processing)
       const donationData = {
-        name: name || user.fullName || 'Anonymous',
-        email: email || user.email,
+        name: name || 'Anonymous',
+        email: email,
         amount: amount,
         projectId: projectId || null,
         isRecurring: isMonthly || false
       };
 
       const donation = await storage.createDonation(donationData);
-      
-      // Update user's total donated amount and membership tier
-      if (user) {
-        await storage.updateUserDonationStats(user.id, amount);
-        
-        // Notify admins of the donation
-        wsManager.broadcastToAdmins({
-          type: 'new_donation',
-          data: {
-            donorName: donation.name,
-            amount: donation.amount,
-            timestamp: new Date().toISOString()
-          }
-        });
-      }
       
       res.json({ 
         success: true,
@@ -207,8 +175,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-  // Get donation session details for success page
-  app.get("/api/donation-session/:donationId", isAuthenticated, async (req, res) => {
+  // Get donation session details for success page (public endpoint)
+  app.get("/api/donation-session/:donationId", async (req, res) => {
     try {
       const { donationId } = req.params;
       
@@ -270,116 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin routes (require authentication)
-  const isAdmin = async (req: Request, res: Response, next: Function) => {
-    const user = req.user as any;
-    if (!user || user.role !== 'admin') {
-      return res.status(403).json({ message: "Admin access required" });
-    }
-    next();
-  };
-
-  // Get all users (admin only)
-  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const users = await storage.getAllUsers();
-      res.json(users);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching users" });
-    }
-  });
-
-  // Update user role (admin only)
-  app.put("/api/admin/users/:id/role", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const userId = parseInt(req.params.id);
-      const { role } = req.body;
-
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
-      }
-
-      const user = await storage.updateUserRole(userId, role);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: "Error updating user role" });
-    }
-  });
-
-  // Create project (admin only)
-  app.post("/api/admin/projects", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const { name, description, location, imageUrl, totalFundingGoal } = req.body;
-      
-      if (!name || !description || !location || !totalFundingGoal) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      const project = await storage.createProject({
-        name,
-        description,
-        location,
-        imageUrl: imageUrl || "",
-        totalFundingGoal,
-        isActive: true
-      });
-
-      res.status(201).json(project);
-    } catch (error) {
-      res.status(500).json({ message: "Error creating project" });
-    }
-  });
-
-  // Create impact story (admin only)
-  app.post("/api/admin/impact-stories", isAuthenticated, isAdmin, upload.single('media'), async (req, res) => {
-    try {
-      const { title, description, location } = req.body;
-      
-      if (!title || !description || !location) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
-
-      const story = await storage.createImpactStory({
-        title,
-        description,
-        location,
-        imageUrl
-      });
-
-      res.status(201).json(story);
-    } catch (error) {
-      res.status(500).json({ message: "Error creating impact story" });
-    }
-  });
-
-  // Create testimonial (admin only)
-  app.post("/api/admin/testimonials", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const { name, location, message, imageUrl, rating } = req.body;
-      
-      if (!name || !location || !message || !rating) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      const testimonial = await storage.createTestimonial({
-        name,
-        location,
-        message,
-        imageUrl: imageUrl || "",
-        rating
-      });
-
-      res.status(201).json(testimonial);
-    } catch (error) {
-      res.status(500).json({ message: "Error creating testimonial" });
-    }
-  });
+  // Admin routes removed - public platform only
 
   // Subscribe to newsletter
   app.post("/api/subscribe", async (req, res) => {
