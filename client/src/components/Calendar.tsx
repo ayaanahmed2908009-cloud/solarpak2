@@ -21,7 +21,7 @@ interface CalendarProps {
   isFounder?: boolean;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events, isFounder = false }) => {
+const Calendar: React.FC<CalendarProps> = ({ events = [], isFounder = false }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
@@ -52,7 +52,8 @@ const Calendar: React.FC<CalendarProps> = ({ events, isFounder = false }) => {
   };
 
   const getEventsForDate = (date: Date) => {
-    return events.filter(event => isSameDay(event.date, date));
+    if (!events || !Array.isArray(events)) return [];
+    return events.filter(event => event?.date && isSameDay(new Date(event.date), date));
   };
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));

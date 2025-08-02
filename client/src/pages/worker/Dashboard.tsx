@@ -220,15 +220,15 @@ export default function WorkerDashboard() {
         {/* Calendar */}
         <div className="mb-8">
           <Calendar 
-            events={events.map(event => ({
+            events={events && Array.isArray(events) ? events.map(event => ({
               id: event.id,
               title: event.title,
               description: event.description || "",
               date: new Date(event.startDate),
-              department: event.department,
+              department: event.department || 'management',
               location: event.location,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
-            }))} 
+            })) : []} 
             isFounder={isFounder}
           />
         </div>
@@ -407,15 +407,15 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
         {/* Calendar */}
         <div className="mb-8">
           <Calendar 
-            events={events.map(event => ({
+            events={events && Array.isArray(events) ? events.map(event => ({
               id: event.id,
               title: event.title,
               description: event.description || "",
               date: new Date(event.startDate),
-              department: event.department,
+              department: event.department || 'management',
               location: event.location,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
-            }))} 
+            })) : []} 
             isFounder={isFounder}
           />
         </div>
@@ -669,15 +669,15 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
         {/* Calendar */}
         <div className="mb-8">
           <Calendar 
-            events={events.map(event => ({
+            events={events && Array.isArray(events) ? events.map(event => ({
               id: event.id,
               title: event.title,
               description: event.description || "",
               date: new Date(event.startDate),
-              department: event.department,
+              department: event.department || 'management',
               location: event.location,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
-            }))} 
+            })) : []} 
             isFounder={isFounder}
           />
         </div>
