@@ -546,39 +546,7 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
             </CardContent>
           </Card>
 
-          {/* Calendar and Events */}
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  <CardTitle>Schedule & Events</CardTitle>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate("/worker/events")}
-                  className="text-white hover:bg-white/20"
-                >
-                  View Calendar
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="text-center py-12">
-                <Calendar className="h-16 w-16 text-green-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">August 2025</h3>
-                <p className="text-gray-600">Check the events page for upcoming meetings and deadlines</p>
-                <Button 
-                  onClick={() => navigate("/worker/events")}
-                  className="mt-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  View Full Calendar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
       </div>
     </div>

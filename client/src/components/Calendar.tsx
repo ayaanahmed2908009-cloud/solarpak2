@@ -153,13 +153,13 @@ const Calendar: React.FC<CalendarProps> = ({ events = [], isFounder = false }) =
                   </div>
                   <div className="space-y-1 mt-1">
                     {dayEvents.slice(0, 2).map(event => (
-                      <button
+                      <div
                         key={event.id}
                         onClick={() => setSelectedEvent(event)}
-                        className={`w-full text-left text-xs p-1 rounded text-white truncate ${getDepartmentColor(event.department)} hover:opacity-80 transition-opacity`}
+                        className={`w-full text-left text-xs p-1 rounded text-white truncate cursor-pointer ${getDepartmentColor(event.department)} hover:opacity-80 transition-opacity`}
                       >
                         {event.title}
-                      </button>
+                      </div>
                     ))}
                     {dayEvents.length > 2 && (
                       <div className="text-xs text-gray-500 font-medium">
