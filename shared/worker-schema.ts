@@ -72,6 +72,8 @@ export const events = pgTable("events", {
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date"),
   status: varchar("status").default("planned").notNull(), // planned, ongoing, completed, cancelled
+  department: varchar("department").notNull(), // events, social-media, sponsorships, healthcare, management
+  attendees: varchar("attendees"), // expected number of attendees
   organizer: varchar("organizer").references(() => workers.id).notNull(),
   participants: text("participants").array(), // Array of worker IDs
   createdAt: timestamp("created_at").defaultNow(),

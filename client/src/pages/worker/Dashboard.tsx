@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { 
   Users, 
   UserPlus, 
-  Calendar, 
+  Calendar as CalendarIcon, 
   CheckSquare, 
   BarChart3, 
   Settings,
@@ -17,11 +17,12 @@ import {
   Zap
 } from "lucide-react";
 
-import { useWorkerAuth, useWorkerList, useTasks } from "@/hooks/useWorkerAuth";
+import { useWorkerAuth, useWorkerList, useTasks, useEvents } from "@/hooks/useWorkerAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import Calendar from "@/components/Calendar";
 
 
 
@@ -30,6 +31,7 @@ export default function WorkerDashboard() {
   const { worker: currentUser } = useWorkerAuth();
   const { data: workers = [] } = useWorkerList();
   const { data: tasks = [] } = useTasks();
+  const { data: events = [] } = useEvents();
 
   // Check if current user is founder Ayaan Ahmed (admin account)
   const isFounder = currentUser?.username === "admin";
@@ -66,7 +68,7 @@ export default function WorkerDashboard() {
     },
     {
       title: "Create Event",
-      icon: Calendar,
+      icon: CalendarIcon,
       color: isFounder ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-blue-500 to-cyan-500",
       action: () => navigate("/worker/events"),
       visible: isAdmin
@@ -215,6 +217,22 @@ export default function WorkerDashboard() {
           ))}
         </div>
 
+        {/* Calendar */}
+        <div className="mb-8">
+          <Calendar 
+            events={events.map(event => ({
+              id: event.id,
+              title: event.title,
+              description: event.description || "",
+              date: new Date(event.startDate),
+              department: event.department,
+              location: event.location,
+              attendees: event.attendees ? parseInt(event.attendees) : undefined
+            }))} 
+            isFounder={isFounder}
+          />
+        </div>
+
         {/* Management Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Task Management */}
@@ -319,6 +337,7 @@ export default function WorkerDashboard() {
 function EmployeeDashboard({ currentUser, isFounder }: any) {
   const [, navigate] = useLocation();
   const { data: tasks = [] } = useTasks();
+  const { data: events = [] } = useEvents();
   
   const myTasks = tasks.filter(task => task.assignedTo === currentUser.id);
   const pendingTasks = myTasks.filter(task => task.status === "pending");
@@ -385,6 +404,22 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Calendar */}
+        <div className="mb-8">
+          <Calendar 
+            events={events.map(event => ({
+              id: event.id,
+              title: event.title,
+              description: event.description || "",
+              date: new Date(event.startDate),
+              department: event.department,
+              location: event.location,
+              attendees: event.attendees ? parseInt(event.attendees) : undefined
+            }))} 
+            isFounder={isFounder}
+          />
+        </div>
+
         {/* Work Progress */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
@@ -555,6 +590,7 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
   const [, navigate] = useLocation();
   const { data: workers = [] } = useWorkerList();
   const { data: tasks = [] } = useTasks();
+  const { data: events = [] } = useEvents();
   
   // Filter data for director's department
   const departmentWorkers = workers.filter(worker => 
@@ -630,6 +666,22 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Calendar */}
+        <div className="mb-8">
+          <Calendar 
+            events={events.map(event => ({
+              id: event.id,
+              title: event.title,
+              description: event.description || "",
+              date: new Date(event.startDate),
+              department: event.department,
+              location: event.location,
+              attendees: event.attendees ? parseInt(event.attendees) : undefined
+            }))} 
+            isFounder={isFounder}
+          />
+        </div>
+
         {/* Quick Actions for Directors */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
