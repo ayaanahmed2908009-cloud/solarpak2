@@ -59,6 +59,16 @@ export default function Navbar() {
           </nav>
           
           <div className="flex items-center space-x-4">
+            <Link 
+              href="/worker/login" 
+              className="hidden md:block relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl group"
+            >
+              <span className="relative z-10 flex items-center">
+                🔐 Team Login
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            </Link>
+            
             <a 
               href="/#donate" 
               className="hidden md:block relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl group"
@@ -138,7 +148,13 @@ export default function Navbar() {
               Team
             </Link>
             
-
+            <Link 
+              href="/worker/login" 
+              className="bg-blue-600 hover:bg-blue-700 text-white font-heading font-semibold px-6 py-2 rounded-md transition text-center mt-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              🔐 Team Login
+            </Link>
             
             <a 
               href="#donate" 
