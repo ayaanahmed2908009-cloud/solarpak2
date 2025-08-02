@@ -34,6 +34,7 @@ export default function AdminPanel() {
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [selectedRole, setSelectedRole] = useState("all");
   const [createEmployeeOpen, setCreateEmployeeOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Worker | null>(null);
   
@@ -98,8 +99,9 @@ export default function AdminPanel() {
       worker.email.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesDepartment = selectedDepartment === "all" || worker.department === selectedDepartment;
+    const matchesRole = selectedRole === "all" || worker.role === selectedRole;
     
-    return matchesSearch && matchesDepartment;
+    return matchesSearch && matchesDepartment && matchesRole;
   });
 
   const handleCreateEmployee = async (data: WorkerRegisterInput) => {
@@ -151,13 +153,15 @@ export default function AdminPanel() {
     }
   };
 
-  const formatDepartmentName = (department: string) => {
+  const formatDepartmentName = (department: string | undefined) => {
+    if (!department) return 'Unassigned';
     switch (department) {
-      case 'events': return 'Events & Community';
+      case 'events': return 'Events & Community Outreach';
       case 'social-media': return 'Social Media';
-      case 'sponsorships': return 'Sponsorships';
-      case 'healthcare': return 'Healthcare';
-      default: return department || 'Unassigned';
+      case 'sponsorships': return 'Sponsorships & Fundraising';
+      case 'healthcare': return 'Predictive Systems & Healthcare';
+      case 'management': return 'Management';
+      default: return department;
     }
   };
 
@@ -272,8 +276,8 @@ export default function AdminPanel() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="worker">Worker</SelectItem>
-                                <SelectItem value="manager">Manager</SelectItem>
+                                <SelectItem value="worker">Employee</SelectItem>
+                                <SelectItem value="manager">Director</SelectItem>
                                 {currentUser?.role === "admin" && (
                                   <SelectItem value="admin">Admin</SelectItem>
                                 )}
@@ -301,6 +305,7 @@ export default function AdminPanel() {
                                 <SelectItem value="social-media">Social Media</SelectItem>
                                 <SelectItem value="sponsorships">Sponsorships & Fundraising</SelectItem>
                                 <SelectItem value="healthcare">Predictive Systems & Healthcare</SelectItem>
+                                <SelectItem value="management">Management</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -381,10 +386,26 @@ export default function AdminPanel() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Departments</SelectItem>
-                    <SelectItem value="events">Events & Community</SelectItem>
+                    <SelectItem value="events">Events & Community Outreach</SelectItem>
                     <SelectItem value="social-media">Social Media</SelectItem>
-                    <SelectItem value="sponsorships">Sponsorships</SelectItem>
-                    <SelectItem value="healthcare">Healthcare</SelectItem>
+                    <SelectItem value="sponsorships">Sponsorships & Fundraising</SelectItem>
+                    <SelectItem value="healthcare">Predictive Systems & Healthcare</SelectItem>
+                    <SelectItem value="management">Management</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="w-full sm:w-48">
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger>
+                    <Shield className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="worker">Employee</SelectItem>
+                    <SelectItem value="manager">Director</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -433,7 +454,7 @@ export default function AdminPanel() {
                           )}
                         </div>
                         <p className="text-sm text-gray-500">@{worker.username} • {worker.email}</p>
-                        <p className="text-xs text-gray-400">{formatDepartmentName(worker.department || undefined)}</p>
+                        <p className="text-xs text-gray-400">{formatDepartmentName(worker.department)}</p>
                       </div>
                     </div>
                     
@@ -451,7 +472,7 @@ export default function AdminPanel() {
                             lastName: worker.lastName || '',
                             email: worker.email,
                             role: worker.role,
-                            department: worker.department || undefined,
+                            department: worker.department || "",
                             isActive: worker.isActive,
                           });
                         }}>
@@ -542,8 +563,8 @@ export default function AdminPanel() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="worker">Worker</SelectItem>
-                          <SelectItem value="manager">Manager</SelectItem>
+                          <SelectItem value="worker">Employee</SelectItem>
+                          <SelectItem value="manager">Director</SelectItem>
                           {currentUser?.role === "admin" && (
                             <SelectItem value="admin">Admin</SelectItem>
                           )}
@@ -571,6 +592,7 @@ export default function AdminPanel() {
                           <SelectItem value="social-media">Social Media</SelectItem>
                           <SelectItem value="sponsorships">Sponsorships & Fundraising</SelectItem>
                           <SelectItem value="healthcare">Predictive Systems & Healthcare</SelectItem>
+                          <SelectItem value="management">Management</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
