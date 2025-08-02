@@ -178,6 +178,18 @@ export default function AdminPanel() {
     }
   };
 
+  const getDepartmentColor = (department: string | undefined) => {
+    if (!department) return 'bg-gradient-to-r from-gray-500 to-slate-500';
+    switch (department) {
+      case 'social-media': return 'bg-gradient-to-r from-pink-500 to-rose-500';
+      case 'events': return 'bg-gradient-to-r from-blue-500 to-cyan-500';
+      case 'sponsorships': return 'bg-gradient-to-r from-green-500 to-emerald-500';
+      case 'healthcare': return 'bg-gradient-to-r from-purple-500 to-indigo-500';
+      case 'management': return 'bg-gradient-to-r from-orange-500 to-yellow-500';
+      default: return 'bg-gradient-to-r from-gray-500 to-slate-500';
+    }
+  };
+
   return (
     <div className={`min-h-screen ${isFounder ? 'bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50' : 'bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50'}`}>
       {/* Header */}
@@ -480,7 +492,7 @@ export default function AdminPanel() {
                             <div className="space-y-1">
                               <p className="text-gray-700 font-medium">@{worker.username} • {worker.email}</p>
                               <div className="flex items-center gap-2">
-                                <span className={`${isFounder ? 'bg-gradient-to-r from-orange-500 to-yellow-500' : 'bg-gradient-to-r from-emerald-500 to-green-500'} text-white px-3 py-1 rounded-xl text-sm font-medium`}>
+                                <span className={`${getDepartmentColor(worker.department)} text-white px-3 py-1 rounded-xl text-sm font-medium`}>
                                   {formatDepartmentName(worker.department)}
                                 </span>
                               </div>
