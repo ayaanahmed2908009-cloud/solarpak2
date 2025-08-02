@@ -90,7 +90,7 @@ export default function WorkerDashboard() {
   const stats = [
     {
       title: "Total Employees",
-      value: workers.length,
+      value: workers.filter(w => w.username !== "admin").length,
       icon: Users,
       change: "+2 this week",
       color: isFounder ? "bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200" : "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200",
@@ -280,7 +280,7 @@ export default function WorkerDashboard() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {workers.slice(0, 3).map((worker) => (
+                  {workers.filter(w => w.username !== "admin").slice(0, 3).map((worker) => (
                     <div key={worker.id} className="flex items-center justify-between p-3 bg-white rounded-lg shadow">
                       <div className="flex items-center space-x-3">
                         <div className="h-8 w-8 rounded-full flex items-center justify-center">
@@ -302,7 +302,7 @@ export default function WorkerDashboard() {
                       </Badge>
                     </div>
                   ))}
-                  {workers.length === 0 && (
+                  {workers.filter(w => w.username !== "admin").length === 0 && (
                     <p className="text-center text-gray-500 py-8">No team members yet</p>
                   )}
                 </div>

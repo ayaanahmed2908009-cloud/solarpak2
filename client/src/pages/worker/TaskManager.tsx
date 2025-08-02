@@ -256,6 +256,7 @@ export default function TaskManager() {
                             <Textarea 
                               placeholder="Describe the task details" 
                               {...field} 
+                              value={field.value || ""}
                               rows={3}
                             />
                           </FormControl>
@@ -295,7 +296,7 @@ export default function TaskManager() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Assign To</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value || ""}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select worker" />
@@ -303,7 +304,7 @@ export default function TaskManager() {
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value="">Unassigned</SelectItem>
-                                {workers.map(worker => (
+                                {workers.filter(worker => worker.username !== "admin").map(worker => (
                                   <SelectItem key={worker.id} value={worker.id}>
                                     {worker.firstName} {worker.lastName}
                                   </SelectItem>
@@ -326,6 +327,7 @@ export default function TaskManager() {
                             <Input 
                               type="datetime-local" 
                               {...field}
+                              value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
                             />
                           </FormControl>
                           <FormMessage />

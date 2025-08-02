@@ -95,6 +95,9 @@ export default function AdminPanel() {
   }
 
   const filteredWorkers = workers.filter(worker => {
+    // Exclude admin account from employee list
+    if (worker.username === "admin") return false;
+    
     const matchesSearch = 
       worker.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       worker.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
