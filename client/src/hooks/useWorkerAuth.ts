@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import type { Worker, WorkerLoginInput, WorkerRegisterInput } from "@shared/worker-schema";
+import type { 
+  Worker, 
+  WorkerLoginInput, 
+  WorkerRegisterInput, 
+  CreateTaskInput, 
+  CreateEventInput,
+  Task,
+  Event
+} from "@shared/worker-schema";
 
 export function useWorkerAuth() {
   const queryClient = useQueryClient();
@@ -65,5 +73,126 @@ export function useWorkerActivity(workerId: string) {
     queryKey: ["/worker/api/activity", workerId],
     enabled: !!workerId,
     retry: false,
+  });
+}
+
+// Admin hooks
+export function useCreateEmployee() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: WorkerRegisterInput) => {
+      return await apiRequest("POST", "/worker/api/admin/create-employee", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/workers"] });
+    },
+  });
+}
+
+export function useUpdateEmployee() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ employeeId, data }: { employeeId: string; data: Partial<Worker> }) => {
+      return await apiRequest("PUT", `/worker/api/admin/employees/${employeeId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/workers"] });
+    },
+  });
+}
+
+// Task hooks
+export function useTasks() {
+  return useQuery<Task[]>({
+    queryKey: ["/worker/api/tasks"],
+    retry: false,
+  });
+}
+
+export function useCreateTask() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: CreateTaskInput) => {
+      return await apiRequest("POST", "/worker/api/tasks", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/tasks"] });
+    },
+  });
+}
+
+export function useUpdateTask() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ taskId, data }: { taskId: string; data: Partial<Task> }) => {
+      return await apiRequest("PUT", `/worker/api/tasks/${taskId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/tasks"] });
+    },
+  });
+}
+
+export function useDeleteTask() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (taskId: string) => {
+      return await apiRequest("DELETE", `/worker/api/tasks/${taskId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/tasks"] });
+    },
+  });
+}
+
+// Event hooks
+export function useEvents() {
+  return useQuery<Event[]>({
+    queryKey: ["/worker/api/events"],
+    retry: false,
+  });
+}
+
+export function useCreateEvent() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: CreateEventInput) => {
+      return await apiRequest("POST", "/worker/api/events", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/events"] });
+    },
+  });
+}
+
+export function useUpdateEvent() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ eventId, data }: { eventId: string; data: Partial<Event> }) => {
+      return await apiRequest("PUT", `/worker/api/events/${eventId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/events"] });
+    },
+  });
+}
+
+export function useDeleteEvent() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (eventId: string) => {
+      return await apiRequest("DELETE", `/worker/api/events/${eventId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/events"] });
+    },
   });
 }

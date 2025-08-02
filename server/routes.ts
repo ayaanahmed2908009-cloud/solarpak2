@@ -4,6 +4,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupWorkerAuth, workerLogin, workerRegister, workerLogout, getCurrentWorker, isWorkerAuthenticated, isWorkerAdmin } from "./worker-auth";
 import { workerStorage } from "./worker-storage";
+import { createTaskSchema, createEventSchema, workerRegisterSchema } from "@shared/worker-schema";
 import { wsManager } from "./websocket";
 
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
@@ -83,6 +84,257 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(logs);
     } catch (error) {
       res.status(500).json({ message: "Error fetching activity logs" });
+    }
+  });
+
+  // Admin: Create new employee account
+  app.post("/worker/api/admin/create-employee", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
+    try {
+      const validatedData = workerRegisterSchema.parse(req.body);
+      const { confirmPassword, ...workerData } = validatedData;
+
+      // Check if username or email already exists
+      const existingWorkerByUsername = await workerStorage.getWorkerByUsername(workerData.username);
+      if (existingWorkerByUsername) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      const existingWorkerByEmail = await workerStorage.getWorkerByEmail(workerData.email);
+      if (existingWorkerByEmail) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+
+      const worker = await workerStorage.createWorker(workerData);
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "create_employee",
+        details: `Created employee account: ${worker.username}`,
+        ipAddress: req.ip,
+      });
+
+      const { password: _, ...workerInfo } = worker;
+      res.status(201).json({ 
+        message: "Employee account created successfully", 
+        worker: workerInfo 
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Create employee error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: Update employee account
+  app.put("/worker/api/admin/employees/:employeeId", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
+    try {
+      const { employeeId } = req.params;
+      const updates = req.body;
+
+      const updatedWorker = await workerStorage.updateWorker(employeeId, updates);
+      if (!updatedWorker) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "update_employee",
+        details: `Updated employee: ${updatedWorker.username}`,
+        ipAddress: req.ip,
+      });
+
+      const { password: _, ...workerInfo } = updatedWorker;
+      res.json({ message: "Employee updated successfully", worker: workerInfo });
+    } catch (error) {
+      console.error("Update employee error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Task management routes
+  app.get("/worker/api/tasks", isWorkerAuthenticated, async (req, res) => {
+    try {
+      // Admin can see all tasks, workers see their own
+      const workerId = req.worker.role === "admin" || req.worker.role === "manager" ? undefined : req.worker.id;
+      const tasks = await workerStorage.getTasks(workerId);
+      res.json(tasks);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching tasks" });
+    }
+  });
+
+  app.post("/worker/api/tasks", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const validatedData = createTaskSchema.parse(req.body);
+      const task = await workerStorage.createTask({
+        ...validatedData,
+        assignedBy: req.worker.id,
+      });
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "create_task",
+        details: `Created task: ${task.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.status(201).json(task);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      res.status(500).json({ message: "Error creating task" });
+    }
+  });
+
+  app.put("/worker/api/tasks/:taskId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { taskId } = req.params;
+      const updates = req.body;
+
+      const task = await workerStorage.updateTask(taskId, updates);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "update_task",
+        details: `Updated task: ${task.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.json(task);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating task" });
+    }
+  });
+
+  app.delete("/worker/api/tasks/:taskId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { taskId } = req.params;
+      
+      const task = await workerStorage.getTaskById(taskId);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+
+      // Only admins or task creator can delete
+      if (req.worker.role !== "admin" && req.worker.role !== "manager" && task.assignedBy !== req.worker.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await workerStorage.deleteTask(taskId);
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "delete_task",
+        details: `Deleted task: ${task.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.json({ message: "Task deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting task" });
+    }
+  });
+
+  // Event management routes
+  app.get("/worker/api/events", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const events = await workerStorage.getEvents();
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching events" });
+    }
+  });
+
+  app.post("/worker/api/events", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const validatedData = createEventSchema.parse(req.body);
+      const event = await workerStorage.createEvent({
+        ...validatedData,
+        organizer: req.worker.id,
+      });
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "create_event",
+        details: `Created event: ${event.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.status(201).json(event);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      res.status(500).json({ message: "Error creating event" });
+    }
+  });
+
+  app.put("/worker/api/events/:eventId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      const updates = req.body;
+
+      const event = await workerStorage.updateEvent(eventId, updates);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "update_event",
+        details: `Updated event: ${event.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.json(event);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating event" });
+    }
+  });
+
+  app.delete("/worker/api/events/:eventId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      
+      const event = await workerStorage.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      // Only admins or event organizer can delete
+      if (req.worker.role !== "admin" && req.worker.role !== "manager" && event.organizer !== req.worker.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await workerStorage.deleteEvent(eventId);
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "delete_event",
+        details: `Deleted event: ${event.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.json({ message: "Event deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting event" });
     }
   });
   

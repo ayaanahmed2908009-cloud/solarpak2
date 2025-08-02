@@ -238,39 +238,50 @@ export default function WorkerDashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions for Admins */}
-        {(worker.role === 'admin' || worker.role === 'manager') && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Administrative Actions
-              </CardTitle>
-              <CardDescription>
-                Manage team members and view system information
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-4">
+        {/* Quick Actions for All Workers */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Quick Actions
+            </CardTitle>
+            <CardDescription>
+              Access management tools and features
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Button 
+                variant="outline"
+                onClick={() => navigate("/worker/tasks")}
+                className="h-20 flex flex-col items-center justify-center"
+              >
+                <BarChart3 className="h-6 w-6 mb-2" />
+                <span>Task Manager</span>
+              </Button>
+              
+              <Button 
+                variant="outline"
+                onClick={() => navigate("/worker/events")}
+                className="h-20 flex flex-col items-center justify-center"
+              >
+                <Calendar className="h-6 w-6 mb-2" />
+                <span>Event Manager</span>
+              </Button>
+
+              {(worker.role === 'admin' || worker.role === 'manager') && (
                 <Button 
                   variant="outline"
-                  onClick={() => navigate("/worker/admin/users")}
+                  onClick={() => navigate("/worker/admin")}
+                  className="h-20 flex flex-col items-center justify-center"
                 >
-                  <Users className="h-4 w-4 mr-2" />
-                  Manage Workers
+                  <Shield className="h-6 w-6 mb-2" />
+                  <span>Admin Panel</span>
                 </Button>
-                
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate("/worker/admin/activity")}
-                >
-                  <Activity className="h-4 w-4 mr-2" />
-                  System Activity
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

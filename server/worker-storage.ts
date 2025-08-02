@@ -1,6 +1,19 @@
-import { workers, workerLogs, type Worker, type InsertWorker, type WorkerLog, type InsertWorkerLog } from "@shared/worker-schema";
+import { 
+  workers, 
+  workerLogs, 
+  tasks, 
+  events,
+  type Worker, 
+  type InsertWorker, 
+  type WorkerLog, 
+  type InsertWorkerLog,
+  type Task,
+  type InsertTask,
+  type Event,
+  type InsertEvent
+} from "@shared/worker-schema";
 import { workerDb } from "./worker-db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, or } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 export interface IWorkerStorage {
@@ -19,6 +32,20 @@ export interface IWorkerStorage {
   // Activity logs
   logWorkerActivity(log: InsertWorkerLog): Promise<WorkerLog>;
   getWorkerLogs(workerId: string, limit?: number): Promise<WorkerLog[]>;
+  
+  // Task management
+  createTask(task: InsertTask): Promise<Task>;
+  getTasks(workerId?: string): Promise<Task[]>;
+  getTaskById(id: string): Promise<Task | undefined>;
+  updateTask(id: string, updates: Partial<InsertTask>): Promise<Task | undefined>;
+  deleteTask(id: string): Promise<void>;
+  
+  // Event management
+  createEvent(event: InsertEvent): Promise<Event>;
+  getEvents(): Promise<Event[]>;
+  getEventById(id: string): Promise<Event | undefined>;
+  updateEvent(id: string, updates: Partial<InsertEvent>): Promise<Event | undefined>;
+  deleteEvent(id: string): Promise<void>;
 }
 
 export class WorkerStorage implements IWorkerStorage {
@@ -109,6 +136,93 @@ export class WorkerStorage implements IWorkerStorage {
       .where(eq(workerLogs.workerId, workerId))
       .orderBy(desc(workerLogs.createdAt))
       .limit(limit);
+  }
+
+  // Task management methods
+  async createTask(taskData: InsertTask): Promise<Task> {
+    const [task] = await workerDb
+      .insert(tasks)
+      .values({
+        ...taskData,
+        updatedAt: new Date(),
+      })
+      .returning();
+    return task;
+  }
+
+  async getTasks(workerId?: string): Promise<Task[]> {
+    if (workerId) {
+      return await workerDb
+        .select()
+        .from(tasks)
+        .where(or(eq(tasks.assignedTo, workerId), eq(tasks.assignedBy, workerId)))
+        .orderBy(desc(tasks.createdAt));
+    }
+    return await workerDb
+      .select()
+      .from(tasks)
+      .orderBy(desc(tasks.createdAt));
+  }
+
+  async getTaskById(id: string): Promise<Task | undefined> {
+    const [task] = await workerDb.select().from(tasks).where(eq(tasks.id, id));
+    return task;
+  }
+
+  async updateTask(id: string, updates: Partial<InsertTask>): Promise<Task | undefined> {
+    const [task] = await workerDb
+      .update(tasks)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(tasks.id, id))
+      .returning();
+    return task;
+  }
+
+  async deleteTask(id: string): Promise<void> {
+    await workerDb.delete(tasks).where(eq(tasks.id, id));
+  }
+
+  // Event management methods
+  async createEvent(eventData: InsertEvent): Promise<Event> {
+    const [event] = await workerDb
+      .insert(events)
+      .values({
+        ...eventData,
+        updatedAt: new Date(),
+      })
+      .returning();
+    return event;
+  }
+
+  async getEvents(): Promise<Event[]> {
+    return await workerDb
+      .select()
+      .from(events)
+      .orderBy(desc(events.startDate));
+  }
+
+  async getEventById(id: string): Promise<Event | undefined> {
+    const [event] = await workerDb.select().from(events).where(eq(events.id, id));
+    return event;
+  }
+
+  async updateEvent(id: string, updates: Partial<InsertEvent>): Promise<Event | undefined> {
+    const [event] = await workerDb
+      .update(events)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(events.id, id))
+      .returning();
+    return event;
+  }
+
+  async deleteEvent(id: string): Promise<void> {
+    await workerDb.delete(events).where(eq(events.id, id));
   }
 }
 

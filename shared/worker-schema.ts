@@ -48,6 +48,36 @@ export const workerLogs = pgTable("worker_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Tasks table
+export const tasks = pgTable("tasks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  status: varchar("status").default("pending").notNull(), // pending, in_progress, completed, cancelled
+  priority: varchar("priority").default("medium").notNull(), // low, medium, high, urgent
+  assignedTo: varchar("assigned_to").references(() => workers.id),
+  assignedBy: varchar("assigned_by").references(() => workers.id).notNull(),
+  dueDate: timestamp("due_date"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Events table
+export const events = pgTable("events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  location: varchar("location"),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  status: varchar("status").default("planned").notNull(), // planned, ongoing, completed, cancelled
+  organizer: varchar("organizer").references(() => workers.id).notNull(),
+  participants: text("participants").array(), // Array of worker IDs
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertWorkerSchema = createInsertSchema(workers).omit({
   id: true,
@@ -58,6 +88,18 @@ export const insertWorkerSchema = createInsertSchema(workers).omit({
 export const insertWorkerLogSchema = createInsertSchema(workerLogs).omit({
   id: true,
   createdAt: true,
+});
+
+export const insertTaskSchema = createInsertSchema(tasks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEventSchema = createInsertSchema(events).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 // Login schema
@@ -75,10 +117,28 @@ export const workerRegisterSchema = insertWorkerSchema.extend({
   path: ["confirmPassword"],
 });
 
+// Task creation schema
+export const createTaskSchema = insertTaskSchema.extend({
+  dueDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+});
+
+// Event creation schema
+export const createEventSchema = insertEventSchema.extend({
+  startDate: z.string().transform((val) => new Date(val)),
+  endDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+  participants: z.array(z.string()).optional(),
+});
+
 // Types
 export type Worker = typeof workers.$inferSelect;
 export type InsertWorker = typeof workers.$inferInsert;
 export type WorkerLog = typeof workerLogs.$inferSelect;
 export type InsertWorkerLog = typeof workerLogs.$inferInsert;
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = typeof tasks.$inferInsert;
+export type Event = typeof events.$inferSelect;
+export type InsertEvent = typeof events.$inferInsert;
 export type WorkerLoginInput = z.infer<typeof workerLoginSchema>;
 export type WorkerRegisterInput = z.infer<typeof workerRegisterSchema>;
+export type CreateTaskInput = z.infer<typeof createTaskSchema>;
+export type CreateEventInput = z.infer<typeof createEventSchema>;

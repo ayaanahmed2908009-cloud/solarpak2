@@ -19,6 +19,9 @@ import Team from "@/pages/Team";
 import WorkerLogin from "@/pages/worker/WorkerLogin";
 import WorkerRegister from "@/pages/worker/WorkerRegister";
 import WorkerDashboard from "@/pages/worker/WorkerDashboard";
+import AdminPanel from "@/pages/worker/AdminPanel";
+import TaskManager from "@/pages/worker/TaskManager";
+import EventManager from "@/pages/worker/EventManager";
 import { useEffect } from "react";
 
 
@@ -112,6 +115,9 @@ function Router() {
       <Route path="/worker/login" component={WorkerLogin} />
       <Route path="/worker/register" component={WorkerRegister} />
       <Route path="/worker/dashboard" component={WorkerDashboard} />
+      <Route path="/worker/admin" component={AdminPanel} />
+      <Route path="/worker/tasks" component={TaskManager} />
+      <Route path="/worker/events" component={EventManager} />
       
       <Route component={NotFound} />
     </Switch>
