@@ -162,6 +162,7 @@ The application now operates as a **dual platform system**:
 
 ## Changelog
 
+- August 4, 2025. **Enhanced Task Permission System**: Updated task deletion permissions to prevent managers from deleting tasks assigned to them by admins, maintaining proper hierarchical authority structure
 - August 2, 2025. **Worker Authentication System**: Created comprehensive internal worker portal with role-based access, department management, activity logging, and secure authentication using separate database schema
 - August 2, 2025. Complete authentication removal: Eliminated all user accounts, login/signup, dashboard functionality, and authentication routes for fully public platform
 - July 27, 2025. Updated team structure: Removed Social Media Specialist 3 placeholder from Social Media team

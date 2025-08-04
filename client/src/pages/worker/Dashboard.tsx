@@ -227,17 +227,17 @@ export default function WorkerDashboard() {
               description: event.description || "",
               date: new Date(event.startDate),
               department: event.department || 'management',
-              location: event.location,
+              location: event.location || undefined,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
             })) : []} 
             tasks={tasks && Array.isArray(tasks) ? tasks.filter(task => task.dueDate).map(task => ({
               id: task.id,
               title: task.title,
               description: task.description || "",
-              dueDate: new Date(task.dueDate),
+              dueDate: new Date(task.dueDate!),
               priority: task.priority,
               status: task.status,
-              assignedTo: task.assignedTo
+              assignedTo: task.assignedTo || undefined
             })) : []}
             isFounder={isFounder}
           />
@@ -430,17 +430,17 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
               description: event.description || "",
               date: new Date(event.startDate),
               department: event.department || 'management',
-              location: event.location,
+              location: event.location || undefined,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
             })) : []} 
             tasks={tasks && Array.isArray(tasks) ? tasks.filter(task => task.dueDate && task.assignedTo === currentUser.id).map(task => ({
               id: task.id,
               title: task.title,
               description: task.description || "",
-              dueDate: new Date(task.dueDate),
+              dueDate: new Date(task.dueDate!),
               priority: task.priority,
               status: task.status,
-              assignedTo: task.assignedTo
+              assignedTo: task.assignedTo || undefined
             })) : []}
             isFounder={isFounder}
           />
@@ -697,17 +697,17 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
               description: event.description || "",
               date: new Date(event.startDate),
               department: event.department || 'management',
-              location: event.location,
+              location: event.location || undefined,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
             })) : []} 
             tasks={departmentTasks && Array.isArray(departmentTasks) ? departmentTasks.filter(task => task.dueDate).map(task => ({
               id: task.id,
               title: task.title,
               description: task.description || "",
-              dueDate: new Date(task.dueDate),
+              dueDate: new Date(task.dueDate!),
               priority: task.priority,
               status: task.status,
-              assignedTo: task.assignedTo
+              assignedTo: task.assignedTo || undefined
             })) : []}
             isFounder={isFounder}
           />

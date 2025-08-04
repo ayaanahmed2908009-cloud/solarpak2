@@ -254,9 +254,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Task not found" });
       }
 
-      // Only admins or task creator can delete
-      if (req.worker.role !== "admin" && req.worker.role !== "manager" && task.assignedBy !== req.worker.id) {
-        return res.status(403).json({ message: "Access denied" });
+      // Permission check for task deletion
+      const isAdmin = req.worker.role === "admin";
+      const isTaskCreator = task.assignedBy === req.worker.id;
+      const isAssignedToTask = task.assignedTo === req.worker.id;
+
+      // If the user is assigned to the task (even if they're a manager), they cannot delete it
+      if (isAssignedToTask && !isAdmin) {
+        return res.status(403).json({ 
+          message: "Permission denied. You cannot delete tasks assigned to you." 
+        });
+      }
+
+      // Only admins and task creators can delete tasks
+      if (!isAdmin && !isTaskCreator) {
+        return res.status(403).json({ 
+          message: "Permission denied. Only task creators and admins can delete tasks." 
+        });
       }
 
       await workerStorage.deleteTask(taskId);

@@ -204,9 +204,14 @@ export default function TaskManager() {
 
   const canDeleteTask = (task: Task) => {
     if (!currentUser) return false;
-    return currentUser.role === "admin" || 
-           currentUser.role === "manager" || 
-           task.assignedBy === currentUser.id;
+    
+    // If user is assigned to the task (even if they're a manager), they cannot delete it
+    if (task.assignedTo === currentUser.id && currentUser.role !== "admin") {
+      return false;
+    }
+    
+    // Only admins and task creators can delete tasks
+    return currentUser.role === "admin" || task.assignedBy === currentUser.id;
   };
 
   return (
