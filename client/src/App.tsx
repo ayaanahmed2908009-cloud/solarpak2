@@ -112,6 +112,7 @@ function Router() {
       <Route path="/team" component={Team} />
       
       {/* Worker portal routes */}
+      <Route path="/worker" component={WorkerDashboard} />
       <Route path="/worker/login" component={WorkerLogin} />
       <Route path="/worker/register" component={WorkerRegister} />
       <Route path="/worker/dashboard" component={WorkerDashboard} />

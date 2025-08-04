@@ -3,6 +3,7 @@ import {
   workerLogs, 
   tasks, 
   events,
+  workSubmissions,
   type Worker, 
   type InsertWorker, 
   type WorkerLog, 
@@ -10,7 +11,9 @@ import {
   type Task,
   type InsertTask,
   type Event,
-  type InsertEvent
+  type InsertEvent,
+  type WorkSubmission,
+  type InsertWorkSubmission
 } from "@shared/worker-schema";
 import { workerDb } from "./worker-db";
 import { eq, desc, and, or } from "drizzle-orm";
@@ -47,6 +50,12 @@ export interface IWorkerStorage {
   getEventById(id: string): Promise<Event | undefined>;
   updateEvent(id: string, updates: Partial<InsertEvent>): Promise<Event | undefined>;
   deleteEvent(id: string): Promise<void>;
+  
+  // Work submission management
+  createWorkSubmission(submission: InsertWorkSubmission): Promise<WorkSubmission>;
+  getWorkSubmissions(taskId?: string): Promise<WorkSubmission[]>;
+  getWorkSubmission(id: string): Promise<WorkSubmission | undefined>;
+  updateWorkSubmission(id: string, updates: Partial<InsertWorkSubmission>): Promise<WorkSubmission | undefined>;
 }
 
 export class WorkerStorage implements IWorkerStorage {
@@ -229,6 +238,49 @@ export class WorkerStorage implements IWorkerStorage {
 
   async deleteEvent(id: string): Promise<void> {
     await workerDb.delete(events).where(eq(events.id, id));
+  }
+
+  // Work submission management methods
+  async createWorkSubmission(submissionData: InsertWorkSubmission): Promise<WorkSubmission> {
+    const [submission] = await workerDb
+      .insert(workSubmissions)
+      .values({
+        ...submissionData,
+        updatedAt: new Date(),
+      })
+      .returning();
+    return submission;
+  }
+
+  async getWorkSubmissions(taskId?: string): Promise<WorkSubmission[]> {
+    if (taskId) {
+      return await workerDb
+        .select()
+        .from(workSubmissions)
+        .where(eq(workSubmissions.taskId, taskId))
+        .orderBy(desc(workSubmissions.createdAt));
+    }
+    return await workerDb
+      .select()
+      .from(workSubmissions)
+      .orderBy(desc(workSubmissions.createdAt));
+  }
+
+  async getWorkSubmission(id: string): Promise<WorkSubmission | undefined> {
+    const [submission] = await workerDb.select().from(workSubmissions).where(eq(workSubmissions.id, id));
+    return submission;
+  }
+
+  async updateWorkSubmission(id: string, updates: Partial<InsertWorkSubmission>): Promise<WorkSubmission | undefined> {
+    const [submission] = await workerDb
+      .update(workSubmissions)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(workSubmissions.id, id))
+      .returning();
+    return submission;
   }
 }
 

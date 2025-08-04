@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Calendar from "@/components/Calendar";
+import { WorkSubmissionModal } from "@/components/WorkSubmissionModal";
 
 
 
@@ -345,6 +346,8 @@ export default function WorkerDashboard() {
 // Employee Dashboard Component
 function EmployeeDashboard({ currentUser, isFounder }: any) {
   const [, navigate] = useLocation();
+  const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const { data: tasks = [] } = useTasks();
   const { data: events = [] } = useEvents();
   
@@ -352,6 +355,11 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
   const pendingTasks = myTasks.filter(task => task.status === "pending");
   const inProgressTasks = myTasks.filter(task => task.status === "in-progress");
   const completedTasks = myTasks.filter(task => task.status === "completed");
+  
+  const handleSubmitWork = (task: any) => {
+    setSelectedTask(task);
+    setSubmissionModalOpen(true);
+  };
   
   const formatDepartmentName = (dept: string) => {
     switch (dept) {
@@ -551,6 +559,15 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
                         </Badge>
                       </div>
                     </div>
+                    <div className="ml-4">
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleSubmitWork(task)}
+                        className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                      >
+                        Submit Work
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 {myTasks.length === 0 && (
@@ -567,6 +584,18 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
 
         </div>
       </div>
+
+      {/* Work Submission Modal */}
+      {selectedTask && (
+        <WorkSubmissionModal
+          isOpen={submissionModalOpen}
+          onClose={() => {
+            setSubmissionModalOpen(false);
+            setSelectedTask(null);
+          }}
+          task={selectedTask}
+        />
+      )}
     </div>
   );
 }
@@ -574,6 +603,8 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
 // Director Dashboard Component  
 function DirectorDashboard({ currentUser, isFounder }: any) {
   const [, navigate] = useLocation();
+  const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const { data: workers = [] } = useWorkerList();
   const { data: tasks = [] } = useTasks();
   const { data: events = [] } = useEvents();
@@ -591,6 +622,11 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
   const pendingTasks = departmentTasks.filter(task => task.status === "pending");
   const inProgressTasks = departmentTasks.filter(task => task.status === "in-progress");
   const completedTasks = departmentTasks.filter(task => task.status === "completed");
+  
+  const handleSubmitWork = (task: any) => {
+    setSelectedTask(task);
+    setSubmissionModalOpen(true);
+  };
   
   const formatDepartmentName = (dept: string) => {
     switch (dept) {
@@ -837,6 +873,7 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
                       <div className="ml-4">
                         <Button 
                           size="sm" 
+                          onClick={() => handleSubmitWork(task)}
                           className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
                         >
                           Submit Work
@@ -911,6 +948,18 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
           </Card>
         </div>
       </div>
+
+      {/* Work Submission Modal */}
+      {selectedTask && (
+        <WorkSubmissionModal
+          isOpen={submissionModalOpen}
+          onClose={() => {
+            setSubmissionModalOpen(false);
+            setSelectedTask(null);
+          }}
+          task={selectedTask}
+        />
+      )}
     </div>
   );
 }

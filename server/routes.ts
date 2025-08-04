@@ -4,7 +4,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupWorkerAuth, workerLogin, workerRegister, workerLogout, getCurrentWorker, isWorkerAuthenticated, isWorkerAdmin } from "./worker-auth";
 import { workerStorage } from "./worker-storage";
-import { createTaskSchema, createEventSchema, workerRegisterSchema } from "@shared/worker-schema";
+import { createTaskSchema, createEventSchema, createWorkSubmissionSchema, workerRegisterSchema } from "@shared/worker-schema";
+import { ObjectStorageService } from "./objectStorage";
 import { wsManager } from "./websocket";
 
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
@@ -361,6 +362,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Event deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Error deleting event" });
+    }
+  });
+
+  // Work submission routes
+  app.get("/worker/api/work-submissions", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { taskId } = req.query;
+      const submissions = await workerStorage.getWorkSubmissions(taskId as string);
+      res.json(submissions);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching work submissions" });
+    }
+  });
+
+  app.post("/worker/api/work-submissions", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const validatedData = createWorkSubmissionSchema.parse(req.body);
+      const submission = await workerStorage.createWorkSubmission({
+        ...validatedData,
+        workerId: req.worker.id,
+      });
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "submit_work",
+        details: `Submitted work for task: ${validatedData.taskId}`,
+        ipAddress: req.ip,
+      });
+
+      res.status(201).json(submission);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      res.status(500).json({ message: "Error creating work submission" });
+    }
+  });
+
+  app.put("/worker/api/work-submissions/:submissionId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { submissionId } = req.params;
+      const updates = req.body;
+
+      // Only admins can review work submissions
+      if (req.worker.role !== "admin") {
+        return res.status(403).json({ message: "Only admins can review work submissions" });
+      }
+
+      const submission = await workerStorage.updateWorkSubmission(submissionId, {
+        ...updates,
+        reviewedBy: req.worker.id,
+        reviewedAt: new Date(),
+      });
+
+      if (!submission) {
+        return res.status(404).json({ message: "Work submission not found" });
+      }
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "review_work",
+        details: `Reviewed work submission: ${submissionId}`,
+        ipAddress: req.ip,
+      });
+
+      res.json(submission);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating work submission" });
+    }
+  });
+
+  // Object storage routes for screenshots
+  app.post("/worker/api/objects/upload", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error generating upload URL:", error);
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      res.status(404).json({ error: "Object not found" });
     }
   });
   

@@ -80,6 +80,21 @@ export const events = pgTable("events", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Work submissions table
+export const workSubmissions = pgTable("work_submissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  taskId: varchar("task_id").references(() => tasks.id).notNull(),
+  workerId: varchar("worker_id").references(() => workers.id).notNull(),
+  description: text("description").notNull(),
+  screenshotUrl: varchar("screenshot_url"), // URL to uploaded screenshot
+  status: varchar("status").default("pending").notNull(), // pending, approved, rejected
+  adminResponse: text("admin_response"), // Admin feedback/message
+  reviewedBy: varchar("reviewed_by").references(() => workers.id), // Admin who reviewed
+  reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertWorkerSchema = createInsertSchema(workers).omit({
   id: true,
@@ -99,6 +114,12 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
 });
 
 export const insertEventSchema = createInsertSchema(events).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWorkSubmissionSchema = createInsertSchema(workSubmissions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -133,6 +154,14 @@ export const createEventSchema = insertEventSchema.extend({
   participants: z.array(z.string()).optional(),
 });
 
+// Work submission schema
+export const createWorkSubmissionSchema = insertWorkSubmissionSchema.omit({
+  workerId: true,
+  reviewedBy: true,
+  reviewedAt: true,
+  adminResponse: true,
+});
+
 // Types
 export type Worker = typeof workers.$inferSelect;
 export type InsertWorker = typeof workers.$inferInsert;
@@ -142,7 +171,10 @@ export type Task = typeof tasks.$inferSelect;
 export type InsertTask = typeof tasks.$inferInsert;
 export type Event = typeof events.$inferSelect;
 export type InsertEvent = typeof events.$inferInsert;
+export type WorkSubmission = typeof workSubmissions.$inferSelect;
+export type InsertWorkSubmission = typeof workSubmissions.$inferInsert;
 export type WorkerLoginInput = z.infer<typeof workerLoginSchema>;
 export type WorkerRegisterInput = z.infer<typeof workerRegisterSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type CreateEventInput = z.infer<typeof createEventSchema>;
+export type CreateWorkSubmissionInput = z.infer<typeof createWorkSubmissionSchema>;
