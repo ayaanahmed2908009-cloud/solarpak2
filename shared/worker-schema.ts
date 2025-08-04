@@ -120,7 +120,9 @@ export const workerRegisterSchema = insertWorkerSchema.extend({
 });
 
 // Task creation schema
-export const createTaskSchema = insertTaskSchema.extend({
+export const createTaskSchema = insertTaskSchema.omit({
+  assignedBy: true,
+}).extend({
   dueDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
