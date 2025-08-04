@@ -85,12 +85,15 @@ export default function TaskManager() {
   });
 
   const handleCreateTask = async (data: CreateTaskInput) => {
+    console.log("handleCreateTask called with data:", data);
+    console.log("Form errors:", createForm.formState.errors);
     try {
       // Handle "unassigned" value
       const taskData = {
         ...data,
         assignedTo: data.assignedTo === "unassigned" ? undefined : data.assignedTo,
       };
+      console.log("Processed task data:", taskData);
       await createTask.mutateAsync(taskData);
       toast({
         title: "Task created",
@@ -99,6 +102,7 @@ export default function TaskManager() {
       setCreateTaskOpen(false);
       createForm.reset();
     } catch (error: any) {
+      console.error("Task creation error:", error);
       toast({
         title: "Creation failed",
         description: error.message || "Failed to create task",
@@ -241,7 +245,13 @@ export default function TaskManager() {
                 </DialogHeader>
                 
                 <Form {...createForm}>
-                  <form onSubmit={createForm.handleSubmit(handleCreateTask)} className="space-y-4">
+                  <form 
+                    onSubmit={(e) => {
+                      console.log("Form submitted!");
+                      createForm.handleSubmit(handleCreateTask)(e);
+                    }} 
+                    className="space-y-4"
+                  >
                     <FormField
                       control={createForm.control}
                       name="title"
@@ -357,7 +367,16 @@ export default function TaskManager() {
                       <Button type="button" variant="outline" onClick={() => setCreateTaskOpen(false)}>
                         Cancel
                       </Button>
-                      <Button type="submit" disabled={createTask.isPending}>
+                      <Button 
+                        type="submit" 
+                        disabled={createTask.isPending}
+                        onClick={() => {
+                          console.log("Create Task button clicked!");
+                          console.log("Form is valid:", createForm.formState.isValid);
+                          console.log("Form values:", createForm.getValues());
+                          console.log("Form errors:", createForm.formState.errors);
+                        }}
+                      >
                         {createTask.isPending ? "Creating..." : "Create Task"}
                       </Button>
                     </DialogFooter>
