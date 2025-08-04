@@ -86,7 +86,12 @@ export default function TaskManager() {
 
   const handleCreateTask = async (data: CreateTaskInput) => {
     try {
-      await createTask.mutateAsync(data);
+      // Handle "unassigned" value
+      const taskData = {
+        ...data,
+        assignedTo: data.assignedTo === "unassigned" ? undefined : data.assignedTo,
+      };
+      await createTask.mutateAsync(taskData);
       toast({
         title: "Task created",
         description: "New task has been created successfully.",
@@ -106,9 +111,14 @@ export default function TaskManager() {
     if (!editingTask) return;
     
     try {
+      // Handle "unassigned" value
+      const taskData = {
+        ...data,
+        assignedTo: data.assignedTo === "unassigned" ? null : data.assignedTo,
+      };
       await updateTask.mutateAsync({
         taskId: editingTask.id,
-        data,
+        data: taskData,
       });
       toast({
         title: "Task updated",
@@ -296,14 +306,14 @@ export default function TaskManager() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Assign To</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value || ""}>
+                            <Select onValueChange={field.onChange} value={field.value || undefined}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select worker" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="">Unassigned</SelectItem>
+                                <SelectItem value="unassigned">Unassigned</SelectItem>
                                 {/* Group by departments */}
                                 {["manager", "worker"].map(roleType => (
                                   <div key={roleType}>
@@ -475,7 +485,7 @@ export default function TaskManager() {
                               description: task.description || '',
                               priority: task.priority,
                               status: task.status,
-                              assignedTo: task.assignedTo || undefined,
+                              assignedTo: task.assignedTo || 'unassigned',
                             });
                           }}>
                             <Edit className="h-4 w-4 mr-2" />
@@ -603,7 +613,7 @@ export default function TaskManager() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Unassigned</SelectItem>
+                          <SelectItem value="unassigned">Unassigned</SelectItem>
                           {workers.map(worker => (
                             <SelectItem key={worker.id} value={worker.id}>
                               {worker.firstName} {worker.lastName}
