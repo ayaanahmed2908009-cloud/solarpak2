@@ -133,7 +133,7 @@ export default function TaskManager() {
       toast({
         title: isPermissionError ? "Permission Denied" : "Update failed",
         description: isPermissionError 
-          ? "You don't have permission to edit this task. Only task creators, managers, and admins can edit tasks."
+          ? "You don't have permission to edit this task. You cannot edit tasks assigned to you, and only task creators and admins can edit tasks."
           : errorMessage,
         variant: "destructive",
       });
@@ -192,11 +192,14 @@ export default function TaskManager() {
 
   const canEditTask = (task: Task) => {
     if (!currentUser) return false;
-    // Only admins, managers, and task creators can edit tasks
-    // Assigned workers cannot edit tasks - they can only update status through separate endpoint
-    return currentUser.role === "admin" || 
-           currentUser.role === "manager" || 
-           task.assignedBy === currentUser.id;
+    
+    // If user is assigned to the task (even if they're a manager), they cannot edit it
+    if (task.assignedTo === currentUser.id && currentUser.role !== "admin") {
+      return false;
+    }
+    
+    // Only admins and task creators can edit tasks
+    return currentUser.role === "admin" || task.assignedBy === currentUser.id;
   };
 
   const canDeleteTask = (task: Task) => {
