@@ -127,9 +127,14 @@ export default function TaskManager() {
       setEditingTask(null);
       editForm.reset();
     } catch (error: any) {
+      const errorMessage = error.message || "Failed to update task";
+      const isPermissionError = errorMessage.includes("Permission denied");
+      
       toast({
-        title: "Update failed",
-        description: error.message || "Failed to update task",
+        title: isPermissionError ? "Permission Denied" : "Update failed",
+        description: isPermissionError 
+          ? "You don't have permission to edit this task. Only task creators, managers, and admins can edit tasks."
+          : errorMessage,
         variant: "destructive",
       });
     }
@@ -187,10 +192,11 @@ export default function TaskManager() {
 
   const canEditTask = (task: Task) => {
     if (!currentUser) return false;
+    // Only admins, managers, and task creators can edit tasks
+    // Assigned workers cannot edit tasks - they can only update status through separate endpoint
     return currentUser.role === "admin" || 
            currentUser.role === "manager" || 
-           task.assignedBy === currentUser.id ||
-           task.assignedTo === currentUser.id;
+           task.assignedBy === currentUser.id;
   };
 
   const canDeleteTask = (task: Task) => {

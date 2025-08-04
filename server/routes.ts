@@ -199,6 +199,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { taskId } = req.params;
       const updates = req.body;
 
+      // First get the existing task to check permissions
+      const existingTask = await workerStorage.getTask(taskId);
+      if (!existingTask) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+
+      // Permission check: Only allow admins, managers, or the task creator to edit tasks
+      // Assigned workers (assignedTo) cannot edit tasks - they can only update status via a different endpoint
+      const isAdmin = req.worker.role === "admin";
+      const isManager = req.worker.role === "manager";
+      const isTaskCreator = existingTask.assignedBy === req.worker.id;
+
+      if (!isAdmin && !isManager && !isTaskCreator) {
+        return res.status(403).json({ 
+          message: "Permission denied. Only task creators, managers, and admins can edit tasks." 
+        });
+      }
+
       const task = await workerStorage.updateTask(taskId, updates);
       if (!task) {
         return res.status(404).json({ message: "Task not found" });

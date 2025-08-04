@@ -36,6 +36,7 @@ export interface IWorkerStorage {
   // Task management
   createTask(task: InsertTask): Promise<Task>;
   getTasks(workerId?: string): Promise<Task[]>;
+  getTask(id: string): Promise<Task | undefined>;
   getTaskById(id: string): Promise<Task | undefined>;
   updateTask(id: string, updates: Partial<InsertTask>): Promise<Task | undefined>;
   deleteTask(id: string): Promise<void>;
@@ -162,6 +163,11 @@ export class WorkerStorage implements IWorkerStorage {
       .select()
       .from(tasks)
       .orderBy(desc(tasks.createdAt));
+  }
+
+  async getTask(id: string): Promise<Task | undefined> {
+    const [task] = await workerDb.select().from(tasks).where(eq(tasks.id, id));
+    return task;
   }
 
   async getTaskById(id: string): Promise<Task | undefined> {
