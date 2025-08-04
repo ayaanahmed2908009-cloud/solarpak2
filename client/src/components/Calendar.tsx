@@ -60,7 +60,7 @@ const Calendar: React.FC<CalendarProps> = ({ events = [], isFounder = false }) =
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
   // Generate calendar grid (6 weeks)
-  const calendarGrid = [];
+  const calendarGrid: (Date | null)[] = [];
   const firstDayOfWeek = monthStart.getDay();
   
   // Add empty cells for days before the month starts
@@ -133,7 +133,7 @@ const Calendar: React.FC<CalendarProps> = ({ events = [], isFounder = false }) =
 
               return (
                 <div
-                  key={day.toISOString()}
+                  key={day?.toISOString() || index}
                   className={`h-20 p-1 border rounded-lg ${
                     isCurrentMonth 
                       ? isToday 

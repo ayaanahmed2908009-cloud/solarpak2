@@ -669,7 +669,7 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
               onClick={() => navigate("/worker/events")}
               className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
             >
-              <Calendar className="h-5 w-5 mr-2" />
+              <CalendarIcon className="h-5 w-5 mr-2" />
               Create Event
             </Button>
             <Button
