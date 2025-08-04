@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +37,7 @@ export default function EventManager() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
   
   const { worker: currentUser } = useWorkerAuth();
   const { data: events = [], isLoading } = useEvents();
@@ -126,6 +128,7 @@ export default function EventManager() {
         title: "Event deleted",
         description: "Event has been deleted successfully.",
       });
+      setDeletingEvent(null);
     } catch (error: any) {
       toast({
         title: "Deletion failed",
@@ -425,7 +428,7 @@ export default function EventManager() {
                         )}
                         {canDeleteEvent(event) && (
                           <DropdownMenuItem 
-                            onClick={() => handleDeleteEvent(event.id)}
+                            onClick={() => setDeletingEvent(event)}
                             className="text-red-600"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -532,6 +535,27 @@ export default function EventManager() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deletingEvent} onOpenChange={() => setDeletingEvent(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Event</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deletingEvent?.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deletingEvent && handleDeleteEvent(deletingEvent.id)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete Event
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
