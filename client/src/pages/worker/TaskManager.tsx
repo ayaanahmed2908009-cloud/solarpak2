@@ -304,10 +304,18 @@ export default function TaskManager() {
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value="">Unassigned</SelectItem>
-                                {workers.filter(worker => worker.username !== "admin").map(worker => (
-                                  <SelectItem key={worker.id} value={worker.id}>
-                                    {worker.firstName} {worker.lastName}
-                                  </SelectItem>
+                                {/* Group by departments */}
+                                {["manager", "worker"].map(roleType => (
+                                  <div key={roleType}>
+                                    {workers
+                                      .filter(worker => worker.username !== "admin" && worker.role === roleType)
+                                      .sort((a, b) => `${a.department}-${a.firstName}`.localeCompare(`${b.department}-${b.firstName}`))
+                                      .map(worker => (
+                                        <SelectItem key={worker.id} value={worker.id}>
+                                          {worker.firstName} {worker.lastName} ({worker.role === "manager" ? "📋 Manager" : "👤 Worker"} - {worker.department?.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase()) || "General"})
+                                        </SelectItem>
+                                      ))}
+                                  </div>
                                 ))}
                               </SelectContent>
                             </Select>
