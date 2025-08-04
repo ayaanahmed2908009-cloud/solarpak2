@@ -834,6 +834,14 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
                           </Badge>
                         </div>
                       </div>
+                      <div className="ml-4">
+                        <Button 
+                          size="sm" 
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                        >
+                          Submit Work
+                        </Button>
+                      </div>
                     </div>
                   );
                 })}
