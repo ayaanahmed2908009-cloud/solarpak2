@@ -229,6 +229,15 @@ export default function WorkerDashboard() {
               location: event.location,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
             })) : []} 
+            tasks={tasks && Array.isArray(tasks) ? tasks.filter(task => task.dueDate).map(task => ({
+              id: task.id,
+              title: task.title,
+              description: task.description || "",
+              dueDate: new Date(task.dueDate),
+              priority: task.priority,
+              status: task.status,
+              assignedTo: task.assignedTo
+            })) : []}
             isFounder={isFounder}
           />
         </div>
@@ -416,6 +425,15 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
               location: event.location,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
             })) : []} 
+            tasks={tasks && Array.isArray(tasks) ? tasks.filter(task => task.dueDate && task.assignedTo === currentUser.id).map(task => ({
+              id: task.id,
+              title: task.title,
+              description: task.description || "",
+              dueDate: new Date(task.dueDate),
+              priority: task.priority,
+              status: task.status,
+              assignedTo: task.assignedTo
+            })) : []}
             isFounder={isFounder}
           />
         </div>
@@ -646,6 +664,15 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
               location: event.location,
               attendees: event.attendees ? parseInt(event.attendees) : undefined
             })) : []} 
+            tasks={departmentTasks && Array.isArray(departmentTasks) ? departmentTasks.filter(task => task.dueDate).map(task => ({
+              id: task.id,
+              title: task.title,
+              description: task.description || "",
+              dueDate: new Date(task.dueDate),
+              priority: task.priority,
+              status: task.status,
+              assignedTo: task.assignedTo
+            })) : []}
             isFounder={isFounder}
           />
         </div>
