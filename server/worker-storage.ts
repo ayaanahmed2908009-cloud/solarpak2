@@ -28,6 +28,7 @@ export interface IWorkerStorage {
   updateWorker(id: string, updates: Partial<InsertWorker>): Promise<Worker | undefined>;
   updateWorkerLastLogin(id: string): Promise<void>;
   getAllWorkers(): Promise<Worker[]>;
+  getWorkersByDepartment(department: string): Promise<Worker[]>;
   
   // Authentication
   verifyWorkerPassword(username: string, password: string): Promise<Worker | null>;
@@ -119,6 +120,10 @@ export class WorkerStorage implements IWorkerStorage {
 
   async getAllWorkers(): Promise<Worker[]> {
     return await workerDb.select().from(workers);
+  }
+
+  async getWorkersByDepartment(department: string): Promise<Worker[]> {
+    return await workerDb.select().from(workers).where(eq(workers.department, department));
   }
 
   async verifyWorkerPassword(username: string, password: string): Promise<Worker | null> {

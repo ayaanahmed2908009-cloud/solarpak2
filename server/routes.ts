@@ -71,6 +71,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error fetching workers" });
     }
   });
+
+  // Get workers by department (for department-specific task assignment)
+  app.get("/worker/api/workers/department/:department", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { department } = req.params;
+      const workers = await workerStorage.getWorkersByDepartment(department);
+      // Remove passwords from response
+      const safeWorkers = workers.map(({ password, ...worker }) => worker);
+      res.json(safeWorkers);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching workers by department" });
+    }
+  });
   
   app.get("/worker/api/activity/:workerId", isWorkerAuthenticated, async (req, res) => {
     try {
@@ -172,6 +185,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/worker/api/tasks", isWorkerAuthenticated, async (req, res) => {
     try {
       const validatedData = createTaskSchema.parse(req.body);
+      
+      // Department restriction check for managers
+      if (req.worker.role === "manager" && validatedData.assignedTo) {
+        const assigneeWorker = await workerStorage.getWorker(validatedData.assignedTo);
+        if (!assigneeWorker) {
+          return res.status(400).json({ message: "Assigned worker not found" });
+        }
+        
+        // Managers can only assign tasks to workers in their own department
+        if (assigneeWorker.department !== req.worker.department) {
+          return res.status(403).json({ 
+            message: "Permission denied. You can only assign tasks to workers in your department." 
+          });
+        }
+      }
+
       const task = await workerStorage.createTask({
         ...validatedData,
         assignedBy: req.worker.id,
@@ -224,6 +253,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ 
           message: "Permission denied. Only task creators and admins can edit tasks." 
         });
+      }
+
+      // Department restriction check for managers when reassigning tasks
+      if (req.worker.role === "manager" && updates.assignedTo && updates.assignedTo !== existingTask.assignedTo) {
+        const assigneeWorker = await workerStorage.getWorker(updates.assignedTo);
+        if (!assigneeWorker) {
+          return res.status(400).json({ message: "Assigned worker not found" });
+        }
+        
+        // Managers can only assign tasks to workers in their own department
+        if (assigneeWorker.department !== req.worker.department) {
+          return res.status(403).json({ 
+            message: "Permission denied. You can only assign tasks to workers in your department." 
+          });
+        }
       }
 
       const task = await workerStorage.updateTask(taskId, updates);

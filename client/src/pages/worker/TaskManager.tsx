@@ -15,7 +15,7 @@ import {
   Trash2
 } from "lucide-react";
 
-import { useWorkerAuth, useTasks, useCreateTask, useUpdateTask, useDeleteTask, useWorkerList } from "@/hooks/useWorkerAuth";
+import { useWorkerAuth, useTasks, useCreateTask, useUpdateTask, useDeleteTask, useWorkerList, useWorkersByDepartment } from "@/hooks/useWorkerAuth";
 import { useToast } from "@/hooks/use-toast";
 import type { CreateTaskInput, Task } from "@shared/worker-schema";
 
@@ -42,7 +42,11 @@ export default function TaskManager() {
   
   const { worker: currentUser } = useWorkerAuth();
   const { data: tasks = [], isLoading } = useTasks();
-  const { data: workers = [] } = useWorkerList();
+  const { data: allWorkers = [] } = useWorkerList();
+  const { data: departmentWorkers = [] } = useWorkersByDepartment(currentUser?.department);
+  
+  // Managers can only assign to workers in their department, admins can assign to anyone
+  const assignableWorkers = currentUser?.role === "admin" ? allWorkers : departmentWorkers;
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
@@ -186,7 +190,7 @@ export default function TaskManager() {
 
   const getWorkerName = (workerId: string | null) => {
     if (!workerId) return "Unassigned";
-    const worker = workers.find(w => w.id === workerId);
+    const worker = allWorkers.find(w => w.id === workerId);
     return worker ? `${worker.firstName} ${worker.lastName}` : "Unknown Worker";
   };
 
@@ -331,12 +335,12 @@ export default function TaskManager() {
                                 {/* Group by departments */}
                                 {["manager", "worker"].map(roleType => (
                                   <div key={roleType}>
-                                    {workers
+                                    {assignableWorkers
                                       .filter(worker => worker.username !== "admin" && worker.role === roleType)
                                       .sort((a, b) => `${a.department}-${a.firstName}`.localeCompare(`${b.department}-${b.firstName}`))
                                       .map(worker => (
                                         <SelectItem key={worker.id} value={worker.id}>
-                                          {worker.firstName} {worker.lastName} ({worker.role === "manager" ? "📋 Manager" : "👤 Worker"} - {worker.department?.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase()) || "General"})
+                                          {worker.firstName} {worker.lastName} ({worker.role === "manager" ? "📋 Manager" : "👤 Worker"} - {worker.department?.replace("-", " ").replace(/\b\w/g, (l: string) => l.toUpperCase()) || "General"})
                                         </SelectItem>
                                       ))}
                                   </div>
@@ -558,7 +562,7 @@ export default function TaskManager() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={3} />
+                      <Textarea {...field} value={field.value || ""} rows={3} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -572,7 +576,7 @@ export default function TaskManager() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
@@ -596,7 +600,7 @@ export default function TaskManager() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Priority</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
@@ -620,7 +624,7 @@ export default function TaskManager() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Assign To</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
@@ -628,7 +632,7 @@ export default function TaskManager() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="unassigned">Unassigned</SelectItem>
-                          {workers.map(worker => (
+                          {assignableWorkers.map(worker => (
                             <SelectItem key={worker.id} value={worker.id}>
                               {worker.firstName} {worker.lastName}
                             </SelectItem>

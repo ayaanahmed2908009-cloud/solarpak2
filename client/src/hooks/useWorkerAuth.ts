@@ -68,6 +68,14 @@ export function useWorkerList() {
   });
 }
 
+export function useWorkersByDepartment(department: string | null | undefined) {
+  return useQuery<Worker[]>({
+    queryKey: ["/worker/api/workers/department", department],
+    enabled: !!department,
+    retry: false,
+  });
+}
+
 export function useWorkerActivity(workerId: string) {
   return useQuery({
     queryKey: ["/worker/api/activity", workerId],
