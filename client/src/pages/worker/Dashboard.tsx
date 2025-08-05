@@ -18,6 +18,7 @@ import {
   ClipboardCheck
 } from "lucide-react";
 
+import { useQuery } from "@tanstack/react-query";
 import { useWorkerAuth, useWorkerList, useTasks, useEvents } from "@/hooks/useWorkerAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
