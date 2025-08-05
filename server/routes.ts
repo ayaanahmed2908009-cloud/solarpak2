@@ -454,6 +454,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         workerId: req.worker.id,
       });
 
+      // Update task status to completed
+      await workerStorage.updateTask(validatedData.taskId, {
+        status: "completed",
+        completedAt: new Date(),
+      });
+
       // Log the action
       await workerStorage.logWorkerActivity({
         workerId: req.worker.id,

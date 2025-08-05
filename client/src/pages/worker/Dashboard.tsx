@@ -560,13 +560,19 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
                       </div>
                     </div>
                     <div className="ml-4">
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleSubmitWork(task)}
-                        className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                      >
-                        Submit Work
-                      </Button>
+                      {task.status === 'completed' ? (
+                        <Badge className="bg-green-500 text-white">
+                          Work Submitted
+                        </Badge>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleSubmitWork(task)}
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                        >
+                          Submit Work
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -871,13 +877,23 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleSubmitWork(task)}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                        >
-                          Submit Work
-                        </Button>
+                        {task.status === 'completed' ? (
+                          <Badge className="bg-green-500 text-white">
+                            Work Submitted
+                          </Badge>
+                        ) : task.assignedTo === currentUser.id ? (
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleSubmitWork(task)}
+                            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                          >
+                            Submit Work
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="text-gray-500">
+                            Not Assigned to You
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   );
