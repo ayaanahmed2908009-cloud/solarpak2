@@ -426,10 +426,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Work submission routes
   app.get("/worker/api/work-submissions", isWorkerAuthenticated, async (req, res) => {
     try {
-      const { taskId, department } = req.query;
+      const { taskId, department, workerId } = req.query;
       
-      // If department is specified, get submissions for that department (managers only)
-      if (department && (req.worker.role === "admin" || req.worker.role === "manager")) {
+      if (workerId) {
+        // Get submissions for a specific worker (for employee dashboard)
+        const submissions = await workerStorage.getWorkSubmissionsByWorker(workerId as string);
+        res.json(submissions);
+      } else if (department && (req.worker.role === "admin" || req.worker.role === "manager")) {
+        // If department is specified, get submissions for that department (managers only)
         const submissions = await workerStorage.getWorkSubmissionsByDepartment(department as string);
         res.json(submissions);
       } else if (taskId) {

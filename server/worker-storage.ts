@@ -322,6 +322,30 @@ export class WorkerStorage implements IWorkerStorage {
       .where(eq(workers.department, department))
       .orderBy(desc(workSubmissions.createdAt));
   }
+
+  async getWorkSubmissionsByWorker(workerId: string): Promise<any[]> {
+    return await workerDb
+      .select({
+        id: workSubmissions.id,
+        taskId: workSubmissions.taskId,
+        workerId: workSubmissions.workerId,
+        description: workSubmissions.description,
+        screenshotUrl: workSubmissions.screenshotUrl,
+        status: workSubmissions.status,
+        adminResponse: workSubmissions.adminResponse,
+        reviewedBy: workSubmissions.reviewedBy,
+        reviewedAt: workSubmissions.reviewedAt,
+        createdAt: workSubmissions.createdAt,
+        updatedAt: workSubmissions.updatedAt,
+        // Join with tasks to get task info
+        taskTitle: tasks.title,
+        taskDescription: tasks.description,
+      })
+      .from(workSubmissions)
+      .innerJoin(tasks, eq(workSubmissions.taskId, tasks.id))
+      .where(eq(workSubmissions.workerId, workerId))
+      .orderBy(desc(workSubmissions.createdAt));
+  }
 }
 
 export const workerStorage = new WorkerStorage();

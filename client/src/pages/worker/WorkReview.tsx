@@ -81,7 +81,14 @@ export default function WorkReview() {
         title: "Review Submitted",
         description: "Work submission has been reviewed successfully.",
       });
+      // Invalidate all work submission queries to refresh both manager and employee views
       queryClient.invalidateQueries({ queryKey: ["/worker/api/work-submissions"] });
+      // Also invalidate specific employee queries
+      if (selectedSubmission) {
+        queryClient.invalidateQueries({ 
+          queryKey: ["/worker/api/work-submissions", "employee", selectedSubmission.workerId] 
+        });
+      }
       setReviewModalOpen(false);
       setSelectedSubmission(null);
       setAdminResponse("");

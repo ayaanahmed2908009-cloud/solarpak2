@@ -359,6 +359,19 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
   const { data: tasks = [] } = useTasks();
   const { data: events = [] } = useEvents();
   
+  // Fetch work submissions for this employee
+  const { data: workSubmissions = [] } = useQuery({
+    queryKey: ["/worker/api/work-submissions", "employee", currentUser?.id],
+    queryFn: async () => {
+      const response = await fetch(`/worker/api/work-submissions?workerId=${currentUser?.id}`, {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch work submissions");
+      return response.json();
+    },
+    enabled: !!currentUser?.id,
+  });
+  
   const myTasks = tasks.filter(task => task.assignedTo === currentUser.id);
   const pendingTasks = myTasks.filter(task => task.status === "pending");
   const inProgressTasks = myTasks.filter(task => task.status === "in-progress");
@@ -568,19 +581,46 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
                       </div>
                     </div>
                     <div className="ml-4">
-                      {task.status === 'completed' ? (
-                        <Badge className="bg-green-500 text-white">
-                          Work Submitted
-                        </Badge>
-                      ) : (
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleSubmitWork(task)}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                        >
-                          Submit Work
-                        </Button>
-                      )}
+                      {(() => {
+                        const submission = workSubmissions.find((sub: any) => sub.taskId === task.id);
+                        if (task.status === 'completed' && submission) {
+                          if (submission.status === 'approved') {
+                            return (
+                              <Badge className="bg-green-500 text-white">
+                                ✓ Approved
+                              </Badge>
+                            );
+                          } else if (submission.status === 'rejected') {
+                            return (
+                              <Badge className="bg-red-500 text-white">
+                                ✗ Rejected
+                              </Badge>
+                            );
+                          } else {
+                            return (
+                              <Badge className="bg-yellow-500 text-white">
+                                ⏳ Under Review
+                              </Badge>
+                            );
+                          }
+                        } else if (task.status === 'completed') {
+                          return (
+                            <Badge className="bg-blue-500 text-white">
+                              Work Submitted
+                            </Badge>
+                          );
+                        } else {
+                          return (
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleSubmitWork(task)}
+                              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                            >
+                              Submit Work
+                            </Button>
+                          );
+                        }
+                      })()}
                     </div>
                   </div>
                 ))}
@@ -595,6 +635,63 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
             </CardContent>
           </Card>
 
+          {/* Work Submissions & Manager Feedback */}
+          {workSubmissions.length > 0 && (
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+                <div className="flex items-center">
+                  <ClipboardCheck className="h-5 w-5 mr-2" />
+                  <CardTitle>Work Review Status</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {workSubmissions.map((submission: any) => (
+                    <div key={submission.id} className="p-4 bg-white rounded-lg border shadow-sm">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-800">{submission.taskTitle}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{submission.description}</p>
+                          <div className="flex items-center mt-3 space-x-2">
+                            <Badge className={`${
+                              submission.status === 'approved' ? 'bg-green-500' :
+                              submission.status === 'rejected' ? 'bg-red-500' : 'bg-yellow-500'
+                            } text-white text-xs`}>
+                              {submission.status === 'approved' ? '✓ Approved' :
+                               submission.status === 'rejected' ? '✗ Rejected' : '⏳ Under Review'}
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              Submitted {new Date(submission.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {submission.adminResponse && (
+                            <div className="mt-3 p-3 bg-gray-50 rounded border-l-4 border-purple-500">
+                              <p className="text-sm font-medium text-gray-700">Manager Feedback:</p>
+                              <p className="text-sm text-gray-600 mt-1">{submission.adminResponse}</p>
+                              {submission.reviewedAt && (
+                                <p className="text-xs text-gray-500 mt-2">
+                                  Reviewed on {new Date(submission.reviewedAt).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        {submission.screenshotUrl && (
+                          <div className="ml-4">
+                            <img 
+                              src={submission.screenshotUrl} 
+                              alt="Work submission" 
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         </div>
       </div>
