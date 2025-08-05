@@ -743,11 +743,18 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
               Create Task
             </Button>
             <Button
-              onClick={() => navigate("/worker/events")}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
+              onClick={() => navigate("/worker/work-review")}
+              className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
             >
-              <CalendarIcon className="h-5 w-5 mr-2" />
-              Create Event
+              <ClipboardCheck className="h-5 w-5 mr-2" />
+              Work Review
+            </Button>
+            <Button
+              onClick={() => navigate("/worker/work-review")}
+              className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              <ClipboardCheck className="h-5 w-5 mr-2" />
+              Work Review
             </Button>
             <Button
               onClick={() => navigate("/worker/tasks")}
@@ -755,13 +762,6 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
             >
               <Eye className="h-5 w-5 mr-2" />
               View All Tasks
-            </Button>
-            <Button
-              onClick={() => navigate("/worker/admin")}
-              className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
-            >
-              <Users className="h-5 w-5 mr-2" />
-              Manage Team
             </Button>
           </div>
         </div>
