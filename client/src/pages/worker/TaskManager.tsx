@@ -47,6 +47,25 @@ export default function TaskManager() {
   
   // Managers can only assign to workers in their department, admins can assign to anyone
   const assignableWorkers = currentUser?.role === "admin" ? allWorkers : departmentWorkers;
+  
+  // Debug logging for troubleshooting
+  console.log("TaskManager Debug:", {
+    currentUser: currentUser ? { 
+      id: currentUser.id, 
+      username: currentUser.username, 
+      role: currentUser.role, 
+      department: currentUser.department 
+    } : null,
+    allWorkersCount: allWorkers.length,
+    departmentWorkersCount: departmentWorkers.length,
+    assignableWorkersCount: assignableWorkers.length,
+    assignableWorkers: assignableWorkers.map(w => ({ 
+      id: w.id, 
+      name: `${w.firstName} ${w.lastName}`, 
+      role: w.role, 
+      department: w.department 
+    }))
+  });
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
@@ -483,7 +502,7 @@ export default function TaskManager() {
                         )}
                         
                         <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-3 py-2 rounded-xl">
-                          <span>Created: {new Date(task.createdAt).toLocaleDateString()}</span>
+                          <span>Created: {task.createdAt ? new Date(task.createdAt).toLocaleDateString() : "Unknown"}</span>
                         </div>
                       </div>
                     </div>
