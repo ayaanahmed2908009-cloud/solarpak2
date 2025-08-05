@@ -14,7 +14,8 @@ import {
   Eye,
   TrendingUp,
   Target,
-  Zap
+  Zap,
+  ClipboardCheck
 } from "lucide-react";
 
 import { useWorkerAuth, useWorkerList, useTasks, useEvents } from "@/hooks/useWorkerAuth";
@@ -80,6 +81,13 @@ export default function WorkerDashboard() {
       color: isFounder ? "bg-gradient-to-r from-orange-500 to-yellow-500" : "bg-gradient-to-r from-purple-500 to-pink-500",
       action: () => navigate("/worker/admin"),
       visible: isAdmin
+    },
+    {
+      title: "Work Review",
+      icon: ClipboardCheck,
+      color: isFounder ? "bg-gradient-to-r from-orange-600 to-red-500" : "bg-gradient-to-r from-orange-500 to-yellow-500",
+      action: () => navigate("/worker/work-review"),
+      visible: (currentUser?.role === "manager" || currentUser?.role === "admin")
     },
     {
       title: "View Tasks",

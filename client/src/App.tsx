@@ -22,6 +22,7 @@ import WorkerDashboard from "@/pages/worker/Dashboard";
 import AdminPanel from "@/pages/worker/AdminPanel";
 import TaskManager from "@/pages/worker/TaskManager";
 import EventManager from "@/pages/worker/EventManager";
+import WorkReview from "@/pages/worker/WorkReview";
 import { useEffect } from "react";
 
 
@@ -119,6 +120,7 @@ function Router() {
       <Route path="/worker/admin" component={AdminPanel} />
       <Route path="/worker/tasks" component={TaskManager} />
       <Route path="/worker/events" component={EventManager} />
+      <Route path="/worker/work-review" component={WorkReview} />
       
       <Route component={NotFound} />
     </Switch>

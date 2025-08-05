@@ -426,9 +426,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Work submission routes
   app.get("/worker/api/work-submissions", isWorkerAuthenticated, async (req, res) => {
     try {
-      const { taskId } = req.query;
-      const submissions = await workerStorage.getWorkSubmissions(taskId as string);
-      res.json(submissions);
+      const { taskId, department } = req.query;
+      
+      // If department is specified, get submissions for that department (managers only)
+      if (department && (req.worker.role === "admin" || req.worker.role === "manager")) {
+        const submissions = await workerStorage.getWorkSubmissionsByDepartment(department as string);
+        res.json(submissions);
+      } else if (taskId) {
+        const submissions = await workerStorage.getWorkSubmissions(taskId as string);
+        res.json(submissions);
+      } else {
+        // Get all submissions for admins, or department submissions for managers
+        const submissions = req.worker.role === "admin" 
+          ? await workerStorage.getAllWorkSubmissions()
+          : await workerStorage.getWorkSubmissionsByDepartment(req.worker.department || "");
+        res.json(submissions);
+      }
     } catch (error) {
       res.status(500).json({ message: "Error fetching work submissions" });
     }
@@ -485,9 +498,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { submissionId } = req.params;
       const updates = req.body;
 
-      // Only admins can review work submissions
-      if (req.worker.role !== "admin") {
-        return res.status(403).json({ message: "Only admins can review work submissions" });
+      // Only admins and managers can review work submissions
+      if (req.worker.role !== "admin" && req.worker.role !== "manager") {
+        return res.status(403).json({ message: "Only admins and managers can review work submissions" });
       }
 
       const submission = await workerStorage.updateWorkSubmission(submissionId, {
