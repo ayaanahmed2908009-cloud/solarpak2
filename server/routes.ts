@@ -76,16 +76,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/worker/api/workers/department/:department", isWorkerAuthenticated, async (req, res) => {
     try {
       const { department } = req.params;
-      console.log(`Fetching workers for department: ${department}, requested by: ${req.worker?.username} (${req.worker?.role})`);
-      
       const workers = await workerStorage.getWorkersByDepartment(department);
-      console.log(`Found ${workers.length} workers in ${department} department:`, workers.map(w => ({ username: w.username, role: w.role })));
-      
       // Remove passwords from response
       const safeWorkers = workers.map(({ password, ...worker }) => worker);
       res.json(safeWorkers);
     } catch (error) {
-      console.error("Error fetching workers by department:", error);
       res.status(500).json({ message: "Error fetching workers by department" });
     }
   });
@@ -442,6 +437,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/worker/api/work-submissions", isWorkerAuthenticated, async (req, res) => {
     try {
       const validatedData = createWorkSubmissionSchema.parse(req.body);
+      
+      // Get the task to verify assignment
+      const task = await workerStorage.getTaskById(validatedData.taskId);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      // Only the worker assigned to the task can submit work for it
+      if (task.assignedTo !== req.worker.id) {
+        return res.status(403).json({ message: "You can only submit work for tasks assigned to you" });
+      }
+      
       const submission = await workerStorage.createWorkSubmission({
         ...validatedData,
         workerId: req.worker.id,
