@@ -76,11 +76,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/worker/api/workers/department/:department", isWorkerAuthenticated, async (req, res) => {
     try {
       const { department } = req.params;
+      console.log(`Fetching workers for department: ${department}, requested by: ${req.worker?.username} (${req.worker?.role})`);
+      
       const workers = await workerStorage.getWorkersByDepartment(department);
+      console.log(`Found ${workers.length} workers in ${department} department:`, workers.map(w => ({ username: w.username, role: w.role })));
+      
       // Remove passwords from response
       const safeWorkers = workers.map(({ password, ...worker }) => worker);
       res.json(safeWorkers);
     } catch (error) {
+      console.error("Error fetching workers by department:", error);
       res.status(500).json({ message: "Error fetching workers by department" });
     }
   });

@@ -71,6 +71,25 @@ export function useWorkerList() {
 export function useWorkersByDepartment(department: string | null | undefined) {
   return useQuery<Worker[]>({
     queryKey: ["/worker/api/workers/department", department],
+    queryFn: async () => {
+      if (!department) return [];
+      console.log(`Frontend: Fetching workers for department: ${department}`);
+      const response = await fetch(`/worker/api/workers/department/${department}`, {
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        console.error(`Error fetching department workers: ${response.status} ${response.statusText}`);
+        if (response.status === 401) {
+          throw new Error("Authentication required");
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log(`Frontend: Received ${data.length} workers for department ${department}:`, data.map((w: Worker) => ({ username: w.username, role: w.role })));
+      return data;
+    },
     enabled: !!department,
     retry: false,
   });
