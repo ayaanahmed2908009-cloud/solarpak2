@@ -436,27 +436,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/worker/api/work-submissions", isWorkerAuthenticated, async (req, res) => {
     try {
-      console.log("Work submission request:", {
-        body: req.body,
-        workerId: req.worker.id,
-        workerUsername: req.worker.username
-      });
-      
       const validatedData = createWorkSubmissionSchema.parse(req.body);
       
       // Get the task to verify assignment
       const task = await workerStorage.getTaskById(validatedData.taskId);
       if (!task) {
-        console.log("Task not found:", validatedData.taskId);
         return res.status(404).json({ message: "Task not found" });
       }
-      
-      console.log("Task assignment check:", {
-        taskId: task.id,
-        assignedTo: task.assignedTo,
-        requestingWorker: req.worker.id,
-        canSubmit: task.assignedTo === req.worker.id
-      });
       
       // Only the worker assigned to the task can submit work for it
       if (task.assignedTo !== req.worker.id) {
@@ -468,8 +454,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         workerId: req.worker.id,
       });
 
-      console.log("Work submission created successfully:", submission.id);
-
       // Log the action
       await workerStorage.logWorkerActivity({
         workerId: req.worker.id,
@@ -480,10 +464,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.status(201).json(submission);
     } catch (error) {
-      console.error("Work submission error:", error);
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
-        console.log("Validation error details:", validationError);
         return res.status(400).json({ message: validationError.message });
       }
       res.status(500).json({ message: "Error creating work submission" });
