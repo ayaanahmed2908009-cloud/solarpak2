@@ -317,7 +317,13 @@ export default function WorkerDashboard() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {workers.filter(w => w.username !== "admin").slice(0, 3).map((worker) => (
+                  {workers.filter(w => {
+                    // Exclude admin account
+                    if (w.username === "admin") return false;
+                    // If current user is a manager, only show workers from same department
+                    if (currentUser?.role === "manager" && w.department !== currentUser.department) return false;
+                    return true;
+                  }).slice(0, 3).map((worker) => (
                     <div key={worker.id} className="flex items-center justify-between p-3 bg-white rounded-lg shadow">
                       <div className="flex items-center space-x-3">
                         <div className="h-8 w-8 rounded-full flex items-center justify-center">
@@ -339,7 +345,11 @@ export default function WorkerDashboard() {
                       </Badge>
                     </div>
                   ))}
-                  {workers.filter(w => w.username !== "admin").length === 0 && (
+                  {workers.filter(w => {
+                    if (w.username === "admin") return false;
+                    if (currentUser?.role === "manager" && w.department !== currentUser.department) return false;
+                    return true;
+                  }).length === 0 && (
                     <p className="text-center text-gray-500 py-8">No team members yet</p>
                   )}
                 </div>

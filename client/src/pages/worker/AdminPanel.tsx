@@ -98,6 +98,11 @@ export default function AdminPanel() {
     // Exclude admin account from employee list
     if (worker.username === "admin") return false;
     
+    // If user is a manager (not admin), only show workers from the same department
+    if (currentUser?.role === "manager" && worker.department !== currentUser.department) {
+      return false;
+    }
+    
     const matchesSearch = 
       worker.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       worker.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
