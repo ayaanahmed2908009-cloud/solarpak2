@@ -460,6 +460,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         completedAt: new Date(),
       });
 
+      console.log("Task updated to completed:", validatedData.taskId);
+
       // Log the action
       await workerStorage.logWorkerActivity({
         workerId: req.worker.id,

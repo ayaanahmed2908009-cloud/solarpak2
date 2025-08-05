@@ -32,6 +32,7 @@ export function WorkSubmissionModal({ isOpen, onClose, task }: WorkSubmissionMod
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
       
       if (!response.ok) {
