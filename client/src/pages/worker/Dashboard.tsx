@@ -768,11 +768,7 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
-              <div className={`p-3 ${isFounder ? 'bg-yellow-500' : 'bg-white'} rounded-xl shadow-lg`}>
-                <div className={`text-2xl font-bold ${isFounder ? 'text-white' : 'text-purple-600'}`}>
-                  👑
-                </div>
-              </div>
+              <div></div>
               <div>
                 <h1 className="text-2xl font-bold">SolarPak Energy Initiative</h1>
                 <p className={`${isFounder ? 'text-yellow-100' : 'text-purple-100'} text-sm flex items-center`}>
