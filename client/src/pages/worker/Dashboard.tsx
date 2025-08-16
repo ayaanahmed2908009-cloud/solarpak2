@@ -560,6 +560,17 @@ function EmployeeDashboard({ currentUser, isFounder }: any) {
           />
         </div>
 
+        {/* Performance Report Button */}
+        <div className="mb-8">
+          <Button
+            onClick={() => navigate("/worker/performance-report")}
+            className="w-full bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
+          >
+            <Target className="h-6 w-6 mr-2" />
+            View My Performance Report
+          </Button>
+        </div>
+
         {/* Work Progress */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
