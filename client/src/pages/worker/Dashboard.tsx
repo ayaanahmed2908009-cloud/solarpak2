@@ -933,6 +933,17 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
           />
         </div>
 
+        {/* Performance Report Button */}
+        <div className="mb-8">
+          <Button
+            onClick={() => navigate("/worker/performance-report")}
+            className="w-full bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white py-4 text-lg font-medium rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
+          >
+            <BarChart3 className="h-6 w-6 mr-3" />
+            View My Performance Report
+          </Button>
+        </div>
+
         {/* Quick Actions for Directors */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
@@ -956,11 +967,11 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
               Work Review
             </Button>
             <Button
-              onClick={() => navigate("/worker/work-review")}
-              className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
+              onClick={() => navigate("/worker/performance-report")}
+              className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white h-16 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
             >
-              <ClipboardCheck className="h-5 w-5 mr-2" />
-              Work Review
+              <BarChart3 className="h-5 w-5 mr-2" />
+              Performance Report
             </Button>
             <Button
               onClick={() => navigate("/worker/tasks")}
