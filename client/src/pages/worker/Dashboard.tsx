@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Calendar from "@/components/Calendar";
 import { WorkSubmissionModal } from "@/components/WorkSubmissionModal";
+import NotificationBell from "@/components/NotificationBell";
 
 
 
@@ -173,6 +174,7 @@ export default function WorkerDashboard() {
             </div>
             
             <div className="flex items-center space-x-4">
+              <NotificationBell workerId={currentUser.id} isFounder={isFounder} />
               <div className="text-right">
                 <p className="font-medium">Welcome back,</p>
                 <p className="text-xl font-bold">{currentUser.firstName} {currentUser.lastName}</p>

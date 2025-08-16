@@ -4,6 +4,7 @@ import {
   tasks, 
   events,
   workSubmissions,
+  notifications,
   type Worker, 
   type InsertWorker, 
   type WorkerLog, 
@@ -13,7 +14,9 @@ import {
   type Event,
   type InsertEvent,
   type WorkSubmission,
-  type InsertWorkSubmission
+  type InsertWorkSubmission,
+  type Notification,
+  type InsertNotification
 } from "@shared/worker-schema";
 import { workerDb } from "./worker-db";
 import { eq, desc, and, or } from "drizzle-orm";
@@ -57,6 +60,12 @@ export interface IWorkerStorage {
   getWorkSubmissions(taskId?: string): Promise<WorkSubmission[]>;
   getWorkSubmission(id: string): Promise<WorkSubmission | undefined>;
   updateWorkSubmission(id: string, updates: Partial<InsertWorkSubmission>): Promise<WorkSubmission | undefined>;
+  
+  // Notification management
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  getNotifications(workerId: string, unreadOnly?: boolean): Promise<Notification[]>;
+  markNotificationAsRead(id: string): Promise<void>;
+  markAllNotificationsAsRead(workerId: string): Promise<void>;
 }
 
 export class WorkerStorage implements IWorkerStorage {
@@ -365,6 +374,55 @@ export class WorkerStorage implements IWorkerStorage {
       .innerJoin(tasks, eq(workSubmissions.taskId, tasks.id))
       .where(eq(workSubmissions.workerId, workerId))
       .orderBy(desc(workSubmissions.createdAt));
+  }
+
+  // Notification management methods
+  async createNotification(notificationData: InsertNotification): Promise<Notification> {
+    const [notification] = await workerDb
+      .insert(notifications)
+      .values(notificationData)
+      .returning();
+    return notification;
+  }
+
+  async getNotifications(workerId: string, unreadOnly?: boolean): Promise<Notification[]> {
+    let whereCondition = eq(notifications.workerId, workerId);
+    
+    if (unreadOnly) {
+      whereCondition = and(
+        eq(notifications.workerId, workerId),
+        eq(notifications.isRead, false)
+      );
+    }
+
+    return await workerDb
+      .select()
+      .from(notifications)
+      .where(whereCondition)
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async markNotificationAsRead(id: string): Promise<void> {
+    await workerDb
+      .update(notifications)
+      .set({
+        isRead: true,
+        readAt: new Date(),
+      })
+      .where(eq(notifications.id, id));
+  }
+
+  async markAllNotificationsAsRead(workerId: string): Promise<void> {
+    await workerDb
+      .update(notifications)
+      .set({
+        isRead: true,
+        readAt: new Date(),
+      })
+      .where(and(
+        eq(notifications.workerId, workerId),
+        eq(notifications.isRead, false)
+      ));
   }
 }
 

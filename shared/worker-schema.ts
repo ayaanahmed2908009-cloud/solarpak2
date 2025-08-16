@@ -95,6 +95,20 @@ export const workSubmissions = pgTable("work_submissions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Notifications table
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  workerId: varchar("worker_id").references(() => workers.id).notNull(),
+  type: varchar("type").notNull(), // task_assigned, event_created, task_completed, etc.
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  relatedId: varchar("related_id"), // ID of related task/event/etc
+  relatedType: varchar("related_type"), // task, event, submission, etc.
+  isRead: boolean("is_read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  readAt: timestamp("read_at"),
+});
+
 // Insert schemas
 export const insertWorkerSchema = createInsertSchema(workers).omit({
   id: true,
@@ -123,6 +137,11 @@ export const insertWorkSubmissionSchema = createInsertSchema(workSubmissions).om
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
 });
 
 // Login schema
@@ -175,6 +194,9 @@ export type Event = typeof events.$inferSelect;
 export type InsertEvent = typeof events.$inferInsert;
 export type WorkSubmission = typeof workSubmissions.$inferSelect;
 export type InsertWorkSubmission = typeof workSubmissions.$inferInsert;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
 export type WorkerLoginInput = z.infer<typeof workerLoginSchema>;
 export type WorkerRegisterInput = z.infer<typeof workerRegisterSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;

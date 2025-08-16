@@ -248,6 +248,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         assignedBy: req.worker.id,
       });
 
+      // Create notification for assigned worker if task is assigned to someone
+      if (task.assignedTo) {
+        await workerStorage.createNotification({
+          workerId: task.assignedTo,
+          type: "task_assigned",
+          title: "New Task Assigned",
+          message: `You have been assigned a new task: "${task.title}"`,
+          relatedId: task.id,
+          relatedType: "task",
+        });
+      }
+
       // Log the action
       await workerStorage.logWorkerActivity({
         workerId: req.worker.id,
@@ -407,6 +419,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         participants,
         organizer: req.worker.id,
       });
+
+      // Create notifications for all participants
+      if (participants.length > 0) {
+        for (const participantId of participants) {
+          await workerStorage.createNotification({
+            workerId: participantId,
+            type: "event_created",
+            title: "New Event Created",
+            message: `You're invited to "${event.title}" on ${new Date(event.startDate).toLocaleDateString()}`,
+            relatedId: event.id,
+            relatedType: "event",
+          });
+        }
+      }
 
       // Log the action
       await workerStorage.logWorkerActivity({
@@ -689,6 +715,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error serving object:", error);
       res.status(404).json({ error: "Object not found" });
+    }
+  });
+
+  // Notification routes
+  app.get("/worker/api/notifications", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { unreadOnly } = req.query;
+      const notifications = await workerStorage.getNotifications(
+        req.worker.id,
+        unreadOnly === 'true'
+      );
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Error fetching notifications" });
+    }
+  });
+
+  app.put("/worker/api/notifications/:notificationId/read", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { notificationId } = req.params;
+      await workerStorage.markNotificationAsRead(notificationId);
+      res.json({ message: "Notification marked as read" });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Error marking notification as read" });
+    }
+  });
+
+  app.put("/worker/api/notifications/mark-all-read", isWorkerAuthenticated, async (req, res) => {
+    try {
+      await workerStorage.markAllNotificationsAsRead(req.worker.id);
+      res.json({ message: "All notifications marked as read" });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "Error marking all notifications as read" });
     }
   });
   
