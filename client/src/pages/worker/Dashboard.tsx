@@ -43,6 +43,16 @@ export default function WorkerDashboard() {
   const isDirector = currentUser?.role === "manager";
   const isEmployee = currentUser?.role === "worker";
 
+  console.log("Dashboard User Info:", {
+    username: currentUser?.username,
+    role: currentUser?.role,
+    id: currentUser?.id,
+    isAdmin,
+    isEmployee,
+    firstName: currentUser?.firstName,
+    lastName: currentUser?.lastName
+  });
+
   // Show loading spinner while checking authentication
   if (isLoadingAuth) {
     return (
@@ -114,7 +124,10 @@ export default function WorkerDashboard() {
       title: "My Performance",
       icon: Target,
       color: isFounder ? "bg-gradient-to-r from-teal-500 to-cyan-500" : "bg-gradient-to-r from-teal-500 to-blue-500",
-      action: () => navigate("/worker/performance-report"),
+      action: () => {
+        console.log("Navigating to performance report for user:", currentUser);
+        navigate("/worker/performance-report");
+      },
       visible: currentUser?.role !== "admin"
     },
     {

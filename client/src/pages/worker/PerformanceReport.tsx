@@ -43,9 +43,12 @@ export default function PerformanceReport() {
 
   console.log("Performance Report Data:", {
     currentUser: currentUser?.id,
+    currentUserRole: currentUser?.role,
     activePeriod: activePeriod?.id,
+    activePeriodMonth: activePeriod?.month,
     myScores: myScores,
-    currentScore: myScores.find(s => s.periodId === activePeriod?.id)
+    currentScore: myScores.find(s => s.periodId === activePeriod?.id),
+    scoresLength: myScores.length
   });
 
   const acknowledgeMutation = useMutation({
