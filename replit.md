@@ -162,6 +162,8 @@ The application now operates as a **dual platform system**:
 
 ## Changelog
 
+- August 16, 2025. **Department Head Task Toggle Feature**: Added toggle functionality for department heads to switch between "Tasks Assigned to Me" (tasks from admin) and "Tasks Assigned by Me" (tasks assigned to team members), with proper visual indicators and task submission capabilities maintained
+- August 16, 2025. **Admin Work Submission Visibility Fix**: Fixed admin interface to display all work submissions from all departments with complete worker and task details by updating getAllWorkSubmissions function
 - August 6, 2025. **Work Submission System Enhancement**: Implemented complete work submission workflow with automatic task completion, prevention of duplicate submissions, and visual status indicators showing "Work Submitted" badge for completed tasks
 - August 6, 2025. **Database Migration Fix**: Resolved work submission failures by creating missing work_submissions table, enabling proper work submission functionality with screenshot upload support
 - August 4, 2025. **Enhanced Task Permission System**: Updated task deletion permissions to prevent managers from deleting tasks assigned to them by admins, maintaining proper hierarchical authority structure

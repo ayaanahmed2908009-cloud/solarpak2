@@ -739,6 +739,7 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
   const [, navigate] = useLocation();
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [taskViewMode, setTaskViewMode] = useState<"assigned-to-me" | "assigned-by-me">("assigned-by-me");
   const { data: workers = [] } = useWorkerList();
   const { data: tasks = [] } = useTasks();
   const { data: events = [] } = useEvents();
@@ -747,10 +748,19 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
   const departmentWorkers = workers.filter(worker => 
     worker.department === currentUser.department && worker.id !== currentUser.id
   );
-  const departmentTasks = tasks.filter(task => {
+  
+  // Tasks assigned to the director (by admin)
+  const tasksAssignedToMe = tasks.filter(task => task.assignedTo === currentUser.id);
+  
+  // Tasks assigned by the director to team members
+  const tasksAssignedByMe = tasks.filter(task => {
     const assignedWorker = workers.find(w => w.id === task.assignedTo);
-    return assignedWorker?.department === currentUser.department;
+    return assignedWorker?.department === currentUser.department && task.assignedTo !== currentUser.id;
   });
+  
+  // Select which tasks to display based on view mode
+  const displayTasks = taskViewMode === "assigned-to-me" ? tasksAssignedToMe : tasksAssignedByMe;
+  const departmentTasks = displayTasks;
   
   const myTasks = tasks.filter(task => task.assignedTo === currentUser.id);
   const pendingTasks = departmentTasks.filter(task => task.status === "pending");
@@ -956,32 +966,62 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
           {/* Department Tasks */}
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-xl">
             <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <CheckSquare className="h-5 w-5 mr-2" />
-                  <CardTitle>Department Tasks</CardTitle>
+              <div className="flex flex-col space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <CheckSquare className="h-5 w-5 mr-2" />
+                    <CardTitle>Task Management</CardTitle>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate("/worker/tasks")}
+                    className="text-white hover:bg-white/20"
+                  >
+                    Manage Tasks
+                  </Button>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate("/worker/tasks")}
-                  className="text-white hover:bg-white/20"
-                >
-                  Manage Tasks
-                </Button>
+                {/* Toggle between task views */}
+                <div className="flex bg-white/10 rounded-lg p-1">
+                  <button
+                    onClick={() => setTaskViewMode("assigned-by-me")}
+                    className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      taskViewMode === "assigned-by-me"
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Tasks Assigned by Me
+                  </button>
+                  <button
+                    onClick={() => setTaskViewMode("assigned-to-me")}
+                    className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      taskViewMode === "assigned-to-me"
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Tasks Assigned to Me
+                  </button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {departmentTasks.slice(0, 5).map((task) => {
                   const assignedWorker = workers.find(w => w.id === task.assignedTo);
+                  const isMyTask = task.assignedTo === currentUser.id;
+                  
                   return (
                     <div key={task.id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border">
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-800">{task.title}</h4>
                         <p className="text-sm text-gray-600 mt-1">{task.description}</p>
                         <p className="text-xs text-gray-500 mt-1">
-                          Assigned to: {assignedWorker?.firstName} {assignedWorker?.lastName}
+                          {taskViewMode === "assigned-to-me" 
+                            ? "Assigned by: Admin"
+                            : `Assigned to: ${assignedWorker?.firstName} ${assignedWorker?.lastName}`
+                          }
                         </p>
                         <div className="flex items-center mt-2 space-x-2">
                           <Badge className={`${
@@ -1004,7 +1044,7 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
                           <Badge className="bg-green-500 text-white">
                             Work Submitted
                           </Badge>
-                        ) : task.assignedTo === currentUser.id ? (
+                        ) : isMyTask ? (
                           <Button 
                             size="sm" 
                             onClick={() => handleSubmitWork(task)}
@@ -1012,9 +1052,13 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
                           >
                             Submit Work
                           </Button>
+                        ) : taskViewMode === "assigned-by-me" ? (
+                          <Badge variant="outline" className="text-gray-500">
+                            Awaiting Submission
+                          </Badge>
                         ) : (
                           <Badge variant="outline" className="text-gray-500">
-                            Not Assigned to You
+                            Not Your Task
                           </Badge>
                         )}
                       </div>
@@ -1024,8 +1068,18 @@ function DirectorDashboard({ currentUser, isFounder }: any) {
                 {departmentTasks.length === 0 && (
                   <div className="text-center py-8">
                     <CheckSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">No department tasks yet</p>
-                    <p className="text-sm text-gray-400">Create tasks for your team members</p>
+                    <p className="text-gray-500">
+                      {taskViewMode === "assigned-to-me" 
+                        ? "No tasks assigned to you yet"
+                        : "No tasks assigned to your team yet"
+                      }
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      {taskViewMode === "assigned-to-me"
+                        ? "Check back later for new assignments"
+                        : "Create tasks for your team members"
+                      }
+                    </p>
                   </div>
                 )}
               </div>
