@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, MapPin, Clock, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, MapPin, Clock, Users, Check } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
 
 interface Event {
@@ -212,13 +212,26 @@ const Calendar: React.FC<CalendarProps> = ({ events = [], tasks = [], isFounder 
                       <div
                         key={item.id}
                         onClick={() => setSelectedItem(item)}
-                        className={`w-full text-left text-xs p-1 rounded text-white truncate cursor-pointer ${
+                        className={`w-full text-left text-xs p-1 rounded truncate cursor-pointer hover:opacity-80 transition-opacity ${
                           item.type === 'event' 
-                            ? getDepartmentColor(item.department || '') 
-                            : getTaskPriorityColor(item.priority || '')
-                        } hover:opacity-80 transition-opacity`}
+                            ? `${getDepartmentColor(item.department || '')} text-white`
+                            : item.status === 'completed'
+                              ? 'bg-gray-400 text-white'
+                              : `${getTaskPriorityColor(item.priority || '')} text-white`
+                        }`}
                       >
-                        {item.type === 'task' ? '📋 ' : '📅 '}{item.title}
+                        <div className="flex items-center gap-1">
+                          {item.type === 'task' ? (
+                            item.status === 'completed' ? (
+                              <Check className="h-3 w-3 flex-shrink-0" />
+                            ) : (
+                              <span>📋</span>
+                            )
+                          ) : (
+                            <span>📅</span>
+                          )}
+                          <span className="truncate">{item.title}</span>
+                        </div>
                       </div>
                     ))}
                     {dayItems.length > 2 && (
