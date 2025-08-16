@@ -347,18 +347,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { taskId } = req.params;
       
+      console.log(`Task deletion attempt - User: ${req.worker.username}, Role: ${req.worker.role}, TaskID: ${taskId}`);
+      
       const task = await workerStorage.getTaskById(taskId);
       if (!task) {
+        console.log(`Task not found: ${taskId}`);
         return res.status(404).json({ message: "Task not found" });
       }
+
+      console.log(`Task found - Title: ${task.title}, AssignedBy: ${task.assignedBy}, AssignedTo: ${task.assignedTo}`);
 
       // Permission check for task deletion
       const isAdmin = req.worker.role === "admin";
       const isTaskCreator = task.assignedBy === req.worker.id;
       const isAssignedToTask = task.assignedTo === req.worker.id;
 
+      console.log(`Permission check - IsAdmin: ${isAdmin}, IsTaskCreator: ${isTaskCreator}, IsAssignedToTask: ${isAssignedToTask}`);
+
       // If the user is assigned to the task (even if they're a manager), they cannot delete it
       if (isAssignedToTask && !isAdmin) {
+        console.log("Permission denied: User is assigned to task");
         return res.status(403).json({ 
           message: "Permission denied. You cannot delete tasks assigned to you." 
         });
@@ -366,11 +374,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Only admins and task creators can delete tasks
       if (!isAdmin && !isTaskCreator) {
+        console.log("Permission denied: Not admin or task creator");
         return res.status(403).json({ 
           message: "Permission denied. Only task creators and admins can delete tasks." 
         });
       }
 
+      console.log("Deleting task...");
       await workerStorage.deleteTask(taskId);
 
       // Log the action
@@ -381,9 +391,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ipAddress: req.ip,
       });
 
+      console.log("Task deleted successfully");
       res.json({ message: "Task deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting task" });
+      console.error("Task deletion error:", error);
+      res.status(500).json({ message: "Error deleting task", error: error.message });
     }
   });
 
@@ -503,86 +515,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ message: "Event deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Error deleting event" });
-    }
-  });
-
-
-  app.put("/worker/api/events/:eventId", isWorkerAuthenticated, async (req, res) => {
-    try {
-      const { eventId } = req.params;
-      const updates = req.body;
-
-      // Check if user has permission to edit the event
-      const existingEvent = await workerStorage.getEventById(eventId);
-      if (!existingEvent) {
-        return res.status(404).json({ message: "Event not found" });
-      }
-
-      // Only admin, managers, or the event organizer can edit events
-      const canEdit = req.worker.role === "admin" || 
-                     req.worker.role === "manager" || 
-                     existingEvent.organizer === req.worker.id;
-
-      if (!canEdit) {
-        return res.status(403).json({ 
-          message: "Permission denied. Only administrators, managers, or event organizers can edit events." 
-        });
-      }
-
-      const event = await workerStorage.updateEvent(eventId, updates);
-      if (!event) {
-        return res.status(404).json({ message: "Event not found" });
-      }
-
-      // Log the action
-      await workerStorage.logWorkerActivity({
-        workerId: req.worker.id,
-        action: "update_event",
-        details: `Updated event: ${event.title}`,
-        ipAddress: req.ip,
-      });
-
-      res.json(event);
-    } catch (error) {
-      console.error("Update event error:", error);
-      res.status(500).json({ message: "Error updating event" });
-    }
-  });
-
-  app.delete("/worker/api/events/:eventId", isWorkerAuthenticated, async (req, res) => {
-    try {
-      const { eventId } = req.params;
-      
-      const event = await workerStorage.getEventById(eventId);
-      if (!event) {
-        return res.status(404).json({ message: "Event not found" });
-      }
-
-      // Only admin, managers, or the event organizer can delete events
-      const canDelete = req.worker.role === "admin" || 
-                       req.worker.role === "manager" || 
-                       event.organizer === req.worker.id;
-
-      if (!canDelete) {
-        return res.status(403).json({ 
-          message: "Permission denied. Only administrators, managers, or event organizers can delete events." 
-        });
-      }
-
-      await workerStorage.deleteEvent(eventId);
-
-      // Log the action
-      await workerStorage.logWorkerActivity({
-        workerId: req.worker.id,
-        action: "delete_event",
-        details: `Deleted event: ${event.title}`,
-        ipAddress: req.ip,
-      });
-
-      res.json({ message: "Event deleted successfully" });
-    } catch (error) {
-      console.error("Delete event error:", error);
       res.status(500).json({ message: "Error deleting event" });
     }
   });
