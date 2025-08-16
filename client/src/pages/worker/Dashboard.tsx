@@ -268,6 +268,26 @@ export default function WorkerDashboard() {
             )}
           </div>
 
+          {/* Debug Actions Display */}
+          <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded-lg">
+            <h3 className="font-bold text-red-800 mb-2">DEBUG: Quick Actions</h3>
+            <p><strong>Total Available Actions:</strong> {quickActions.length}</p>
+            <p><strong>Current User Role:</strong> {currentUser?.role}</p>
+            <p><strong>Action Titles:</strong> {quickActions.map(a => a.title).join(", ")}</p>
+            <div className="mt-2">
+              <h4 className="font-medium">All Actions (before filtering):</h4>
+              <ul className="text-sm">
+                <li>Create Task: {String(isAdmin)}</li>
+                <li>Manage Events: {String(isAdmin)}</li>
+                <li>Add Employee: {String(isAdmin)}</li>
+                <li>Work Review: {String((currentUser?.role === "manager" || currentUser?.role === "admin"))}</li>
+                <li>Performance Manager: {String(currentUser?.role === "admin")}</li>
+                <li>My Performance: TRUE (forced)</li>
+                <li>View Tasks: TRUE</li>
+              </ul>
+            </div>
+          </div>
+
 
         </div>
 
