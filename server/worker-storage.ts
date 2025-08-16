@@ -214,6 +214,10 @@ export class WorkerStorage implements IWorkerStorage {
     await workerDb.delete(tasks).where(eq(tasks.id, id));
   }
 
+  async deleteWorkSubmissionsByTaskId(taskId: string): Promise<void> {
+    await workerDb.delete(workSubmissions).where(eq(workSubmissions.taskId, taskId));
+  }
+
   // Event management methods
   async createEvent(eventData: InsertEvent): Promise<Event> {
     const [event] = await workerDb

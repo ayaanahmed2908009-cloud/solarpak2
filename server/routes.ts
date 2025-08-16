@@ -380,7 +380,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      console.log("Deleting task...");
+      console.log("Deleting task and related work submissions...");
+      // First delete any work submissions for this task
+      await workerStorage.deleteWorkSubmissionsByTaskId(taskId);
+      // Then delete the task itself
       await workerStorage.deleteTask(taskId);
 
       // Log the action
