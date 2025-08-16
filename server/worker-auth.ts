@@ -54,10 +54,15 @@ export const workerLogin = async (req: Request, res: Response) => {
     const validatedData = workerLoginSchema.parse(req.body);
     const { username, password } = validatedData;
 
+    console.log("Worker login attempt:", { username, hasPassword: !!password });
+
     const worker = await workerStorage.verifyWorkerPassword(username, password);
     if (!worker) {
+      console.log("Worker login failed: Invalid credentials for", username);
       return res.status(401).json({ message: "Invalid username or password" });
     }
+
+    console.log("Worker login successful:", { id: worker.id, username: worker.username, role: worker.role });
 
     // Update last login
     await workerStorage.updateWorkerLastLogin(worker.id);
@@ -73,6 +78,8 @@ export const workerLogin = async (req: Request, res: Response) => {
     // Create session
     req.session.workerId = worker.id;
     req.session.workerRole = worker.role;
+
+    console.log("Session created:", { workerId: req.session.workerId, workerRole: req.session.workerRole });
 
     // Return worker info (without password)
     const { password: _, ...workerInfo } = worker;
@@ -160,14 +167,24 @@ export const workerLogout = async (req: Request, res: Response) => {
 
 export const getCurrentWorker = async (req: Request, res: Response) => {
   try {
+    console.log("getCurrentWorker called, session data:", { 
+      workerId: req.session.workerId, 
+      workerRole: req.session.workerRole,
+      sessionID: req.sessionID 
+    });
+
     if (!req.session.workerId) {
+      console.log("No workerId in session");
       return res.status(401).json({ message: "Not authenticated" });
     }
 
     const worker = await workerStorage.getWorker(req.session.workerId);
     if (!worker || !worker.isActive) {
+      console.log("Worker not found or inactive:", { workerId: req.session.workerId, found: !!worker, active: worker?.isActive });
       return res.status(401).json({ message: "Worker not found or inactive" });
     }
+
+    console.log("Returning worker info:", { id: worker.id, username: worker.username, role: worker.role });
 
     // Return worker info (without password)
     const { password: _, ...workerInfo } = worker;
