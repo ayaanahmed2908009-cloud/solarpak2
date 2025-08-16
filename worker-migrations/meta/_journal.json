@@ -8,6 +8,13 @@
       "when": 1754136443760,
       "tag": "0000_long_quentin_quire",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1755368397310,
+      "tag": "0001_bizarre_magus",
+      "breakpoints": true
     }
   ]
 }

@@ -100,25 +100,35 @@ export default function PerformanceManager() {
 
   const createPeriodMutation = useMutation({
     mutationFn: async (data: { month: string; year: string }) => {
-      return await fetch("/worker/api/performance-periods", {
+      const response = await fetch("/worker/api/performance-periods", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      }).then(res => res.json());
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create performance period");
+      }
+      
+      return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Performance period created:", data);
       toast({
         title: "Performance period created",
         description: "New monthly performance evaluation period has been created.",
       });
       queryClient.invalidateQueries({ queryKey: ["/worker/api/performance-periods"] });
+      queryClient.invalidateQueries({ queryKey: ["/worker/api/performance-periods/active"] });
       setCreatePeriodOpen(false);
       createPeriodForm.reset();
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error("Performance period creation error:", error);
       toast({
         title: "Error",
-        description: "Failed to create performance period",
+        description: error.message || "Failed to create performance period",
         variant: "destructive",
       });
     },
@@ -126,13 +136,21 @@ export default function PerformanceManager() {
 
   const createScoreMutation = useMutation({
     mutationFn: async (data: CreatePerformanceScoreInput) => {
-      return await fetch("/worker/api/performance-scores", {
+      const response = await fetch("/worker/api/performance-scores", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      }).then(res => res.json());
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit performance score");
+      }
+      
+      return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Performance score created:", data);
       toast({
         title: "Performance score submitted",
         description: "Employee performance score has been recorded and they will be notified.",
@@ -141,10 +159,11 @@ export default function PerformanceManager() {
       setScoringEmployeeId(null);
       scoringForm.reset();
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error("Performance score creation error:", error);
       toast({
         title: "Error",
-        description: "Failed to submit performance score",
+        description: error.message || "Failed to submit performance score",
         variant: "destructive",
       });
     },

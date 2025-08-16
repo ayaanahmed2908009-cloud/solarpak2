@@ -704,15 +704,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { month, year } = req.body;
       
+      console.log("Creating performance period:", { month, year, createdBy: req.worker.id });
+      
       const period = await workerStorage.createPerformancePeriod({
         month,
         year,
         createdBy: req.worker.id
       });
 
+      console.log("Performance period created successfully:", period);
       res.json(period);
     } catch (error) {
-      res.status(500).json({ message: "Error creating performance period" });
+      console.error("Error creating performance period:", error);
+      res.status(500).json({ message: `Error creating performance period: ${error.message}` });
     }
   });
 
