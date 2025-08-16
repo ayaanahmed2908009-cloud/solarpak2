@@ -501,9 +501,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Event not found" });
       }
 
-      // Only admins or event organizer can delete
-      if (req.worker.role !== "admin" && req.worker.role !== "manager" && event.organizer !== req.worker.id) {
-        return res.status(403).json({ message: "Access denied" });
+      // Admins can delete any event, managers and organizers can delete their own events
+      const isAdmin = req.worker.role === "admin";
+      const isEventOrganizer = event.organizer === req.worker.id;
+      const isManager = req.worker.role === "manager";
+      
+      if (!isAdmin && !isEventOrganizer && !isManager) {
+        return res.status(403).json({ message: "Access denied. Only administrators, managers, or event organizers can delete events." });
       }
 
       await workerStorage.deleteEvent(eventId);
