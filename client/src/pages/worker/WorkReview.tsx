@@ -54,15 +54,20 @@ export default function WorkReview() {
 
   // Fetch work submissions for current user's department
   const { data: submissions = [], isLoading, refetch } = useQuery<WorkSubmissionWithDetails[]>({
-    queryKey: ["/worker/api/work-submissions", currentUser?.department],
+    queryKey: ["/worker/api/work-submissions", currentUser?.role === "admin" ? "all" : currentUser?.department],
     queryFn: async () => {
-      const response = await fetch(`/worker/api/work-submissions?department=${currentUser?.department}`, {
+      // Admin gets all submissions, managers get department-specific submissions
+      const url = currentUser?.role === "admin" 
+        ? "/worker/api/work-submissions"
+        : `/worker/api/work-submissions?department=${currentUser?.department}`;
+      
+      const response = await fetch(url, {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch work submissions");
       return response.json();
     },
-    enabled: !!currentUser?.department && (currentUser?.role === "admin" || currentUser?.role === "manager"),
+    enabled: !!(currentUser?.role === "admin" || (currentUser?.department && currentUser?.role === "manager")),
     refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
     refetchOnWindowFocus: true,
   });
