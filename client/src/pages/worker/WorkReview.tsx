@@ -53,7 +53,7 @@ export default function WorkReview() {
   const queryClient = useQueryClient();
 
   // Fetch work submissions for current user's department
-  const { data: submissions = [], isLoading } = useQuery<WorkSubmissionWithDetails[]>({
+  const { data: submissions = [], isLoading, refetch } = useQuery<WorkSubmissionWithDetails[]>({
     queryKey: ["/worker/api/work-submissions", currentUser?.department],
     queryFn: async () => {
       const response = await fetch(`/worker/api/work-submissions?department=${currentUser?.department}`, {
@@ -63,6 +63,8 @@ export default function WorkReview() {
       return response.json();
     },
     enabled: !!currentUser?.department && (currentUser?.role === "admin" || currentUser?.role === "manager"),
+    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
+    refetchOnWindowFocus: true,
   });
 
   const reviewSubmissionMutation = useMutation({
@@ -147,6 +149,15 @@ export default function WorkReview() {
                 <p className="text-blue-100 mt-1">Review work submissions from your team</p>
               </div>
             </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => refetch()}
+              className="text-white hover:bg-white/20"
+              disabled={isLoading}
+            >
+              {isLoading ? "Refreshing..." : "Refresh"}
+            </Button>
           </div>
         </div>
       </div>
