@@ -83,10 +83,10 @@ export default function WorkerDashboard() {
       visible: isAdmin
     },
     {
-      title: "Create Event",
+      title: "Manage Events",
       icon: CalendarIcon,
       color: isFounder ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-blue-500 to-cyan-500",
-      action: () => navigate("/worker/create-event"),
+      action: () => navigate("/worker/events"),
       visible: isAdmin
     },
     {
