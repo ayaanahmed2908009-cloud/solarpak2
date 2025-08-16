@@ -31,7 +31,7 @@ import { WorkSubmissionModal } from "@/components/WorkSubmissionModal";
 
 export default function WorkerDashboard() {
   const [, navigate] = useLocation();
-  const { worker: currentUser } = useWorkerAuth();
+  const { worker: currentUser, isLoading: isLoadingAuth } = useWorkerAuth();
   const { data: workers = [] } = useWorkerList();
   const { data: tasks = [] } = useTasks();
   const { data: events = [] } = useEvents();
@@ -41,6 +41,18 @@ export default function WorkerDashboard() {
   const isAdmin = currentUser?.role === "admin" || currentUser?.role === "manager";
   const isDirector = currentUser?.role === "manager";
   const isEmployee = currentUser?.role === "worker";
+
+  // Show loading spinner while checking authentication
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentUser) {
     navigate("/worker/login");

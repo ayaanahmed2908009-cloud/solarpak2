@@ -34,7 +34,10 @@ export default function WorkerLogin() {
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-      navigate("/worker/dashboard");
+      // Add a small delay to ensure the auth state is updated
+      setTimeout(() => {
+        navigate("/worker/dashboard");
+      }, 100);
     } catch (error: any) {
       toast({
         title: "Login failed",

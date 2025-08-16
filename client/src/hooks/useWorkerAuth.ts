@@ -20,9 +20,14 @@ export function useWorkerAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: WorkerLoginInput) => {
-      return await apiRequest("POST", "/worker/api/login", credentials);
+      const response = await apiRequest("POST", "/worker/api/login", credentials);
+      const data = await response.json();
+      // Set the user data immediately after successful login
+      queryClient.setQueryData(["/worker/api/user"], data.worker);
+      return data;
     },
     onSuccess: () => {
+      // Also invalidate to refresh from server
       queryClient.invalidateQueries({ queryKey: ["/worker/api/user"] });
     },
   });
