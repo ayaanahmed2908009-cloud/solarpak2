@@ -53,6 +53,20 @@ export default function WorkerDashboard() {
     lastName: currentUser?.lastName
   });
 
+  console.log("Quick Actions Debug:", {
+    totalActions: [
+      { title: "Task Manager", visible: isAdmin },
+      { title: "Event Management", visible: isAdmin },
+      { title: "Add Employee", visible: isAdmin },
+      { title: "Work Review", visible: (currentUser?.role === "manager" || currentUser?.role === "admin") },
+      { title: "Performance Manager", visible: currentUser?.role === "admin" },
+      { title: "My Performance", visible: true },
+      { title: "View Tasks", visible: true }
+    ].filter(a => a.visible).length,
+    performanceButtonVisible: true,
+    userRole: currentUser?.role
+  });
+
   // Show loading spinner while checking authentication
   if (isLoadingAuth) {
     return (
@@ -128,7 +142,7 @@ export default function WorkerDashboard() {
         console.log("Navigating to performance report for user:", currentUser);
         navigate("/worker/performance-report");
       },
-      visible: currentUser?.role !== "admin"
+      visible: true // Always show for debugging - change back to role check later
     },
     {
       title: "View Tasks",
