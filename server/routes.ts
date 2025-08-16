@@ -692,6 +692,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error marking all notifications as read" });
     }
   });
+
+  // Performance scoring endpoints
+  
+  // Create a new performance period (admin only)
+  app.post("/worker/api/performance-periods", isWorkerAuthenticated, async (req, res) => {
+    try {
+      if (req.worker.role !== "admin") {
+        return res.status(403).json({ message: "Only administrators can create performance periods" });
+      }
+
+      const { month, year } = req.body;
+      
+      const period = await workerStorage.createPerformancePeriod({
+        month,
+        year,
+        createdBy: req.worker.id
+      });
+
+      res.json(period);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating performance period" });
+    }
+  });
+
+  // Get all performance periods
+  app.get("/worker/api/performance-periods", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const periods = await workerStorage.getPerformancePeriods();
+      res.json(periods);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching performance periods" });
+    }
+  });
+
+  // Get active performance period
+  app.get("/worker/api/performance-periods/active", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const period = await workerStorage.getActivePerformancePeriod();
+      res.json(period);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching active performance period" });
+    }
+  });
+
+  // Create or update performance score (admin only)
+  app.post("/worker/api/performance-scores", isWorkerAuthenticated, async (req, res) => {
+    try {
+      if (req.worker.role !== "admin") {
+        return res.status(403).json({ message: "Only administrators can create performance scores" });
+      }
+
+      const score = await workerStorage.createPerformanceScore({
+        ...req.body,
+        scoredBy: req.worker.id
+      });
+
+      // Create notification for the employee
+      await workerStorage.createNotification({
+        workerId: req.body.workerId,
+        type: "performance_score",
+        title: "New Performance Score Available",
+        message: "Your monthly performance score has been submitted. Please review your feedback.",
+        relatedId: score.id,
+        relatedType: "performance_score"
+      });
+
+      res.json(score);
+    } catch (error) {
+      res.status(500).json({ message: "Error creating performance score" });
+    }
+  });
+
+  // Get performance scores
+  app.get("/worker/api/performance-scores", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { periodId, workerId } = req.query;
+      
+      // Non-admin users can only see their own scores
+      let targetWorkerId = workerId as string;
+      if (req.worker.role !== "admin") {
+        targetWorkerId = req.worker.id;
+      }
+
+      const scores = await workerStorage.getPerformanceScores(
+        periodId as string, 
+        targetWorkerId
+      );
+      res.json(scores);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching performance scores" });
+    }
+  });
+
+  // Acknowledge performance score (employee)
+  app.patch("/worker/api/performance-scores/:id/acknowledge", isWorkerAuthenticated, async (req, res) => {
+    try {
+      await workerStorage.acknowledgePerformanceScore(req.params.id);
+      res.json({ message: "Performance score acknowledged" });
+    } catch (error) {
+      res.status(500).json({ message: "Error acknowledging performance score" });
+    }
+  });
   
   // Public platform routes below
   

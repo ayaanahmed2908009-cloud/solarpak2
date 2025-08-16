@@ -24,6 +24,8 @@ import TaskManager from "@/pages/worker/TaskManager";
 import EventManager from "@/pages/worker/EventManager";
 import WorkReview from "@/pages/worker/WorkReview";
 import CreateEvent from "@/pages/worker/CreateEvent";
+import PerformanceManager from "@/pages/worker/PerformanceManager";
+import PerformanceReport from "@/pages/worker/PerformanceReport";
 import { useEffect } from "react";
 
 
@@ -123,6 +125,8 @@ function Router() {
       <Route path="/worker/events" component={EventManager} />
       <Route path="/worker/create-event" component={CreateEvent} />
       <Route path="/worker/work-review" component={WorkReview} />
+      <Route path="/worker/performance" component={PerformanceManager} />
+      <Route path="/worker/performance-report" component={PerformanceReport} />
       
       <Route component={NotFound} />
     </Switch>

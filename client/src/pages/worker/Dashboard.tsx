@@ -104,6 +104,20 @@ export default function WorkerDashboard() {
       visible: (currentUser?.role === "manager" || currentUser?.role === "admin")
     },
     {
+      title: "Performance Manager",
+      icon: BarChart3,
+      color: isFounder ? "bg-gradient-to-r from-purple-600 to-pink-500" : "bg-gradient-to-r from-purple-500 to-indigo-500",
+      action: () => navigate("/worker/performance"),
+      visible: currentUser?.role === "admin"
+    },
+    {
+      title: "My Performance",
+      icon: Target,
+      color: isFounder ? "bg-gradient-to-r from-teal-500 to-cyan-500" : "bg-gradient-to-r from-teal-500 to-blue-500",
+      action: () => navigate("/worker/performance-report"),
+      visible: currentUser?.role !== "admin"
+    },
+    {
       title: "View Tasks",
       icon: Eye,
       color: isFounder ? "bg-gradient-to-r from-yellow-600 to-amber-600" : "bg-gradient-to-r from-indigo-500 to-purple-500",

@@ -83,7 +83,7 @@ export const events = pgTable("events", {
 // Work submissions table
 export const workSubmissions = pgTable("work_submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  taskId: varchar("task_id").references(() => tasks.id).notNull(),
+  taskId: varchar("task_id").references(() => tasks.id, { onDelete: 'cascade' }).notNull(),
   workerId: varchar("worker_id").references(() => workers.id).notNull(),
   description: text("description").notNull(),
   screenshotUrl: varchar("screenshot_url"), // URL to uploaded screenshot
@@ -91,6 +91,49 @@ export const workSubmissions = pgTable("work_submissions", {
   adminResponse: text("admin_response"), // Admin feedback/message
   reviewedBy: varchar("reviewed_by").references(() => workers.id), // Admin who reviewed
   reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Performance scoring periods (monthly evaluations)
+export const performancePeriods = pgTable("performance_periods", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  month: varchar("month").notNull(), // Format: "2025-01", "2025-02", etc.
+  year: varchar("year").notNull(),
+  isActive: boolean("is_active").default(false).notNull(), // Only one active period at a time
+  status: varchar("status").default("open").notNull(), // open, scoring, completed
+  createdBy: varchar("created_by").references(() => workers.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+// Performance scores for employees
+export const performanceScores = pgTable("performance_scores", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  periodId: varchar("period_id").references(() => performancePeriods.id, { onDelete: 'cascade' }).notNull(),
+  workerId: varchar("worker_id").references(() => workers.id).notNull(),
+  scoredBy: varchar("scored_by").references(() => workers.id).notNull(), // Admin who scored
+  
+  // Performance categories (1-10 scale)
+  taskCompletion: varchar("task_completion").notNull(), // 1-10: Quality and timeliness of task completion
+  teamwork: varchar("teamwork").notNull(), // 1-10: Collaboration and communication
+  initiative: varchar("initiative").notNull(), // 1-10: Taking initiative and problem-solving
+  reliability: varchar("reliability").notNull(), // 1-10: Dependability and consistency
+  qualityOfWork: varchar("quality_of_work").notNull(), // 1-10: Overall work quality
+  
+  // Overall score (average of categories)
+  overallScore: varchar("overall_score").notNull(),
+  
+  // Feedback and improvements
+  strengths: text("strengths"), // What the employee does well
+  areasForImprovement: text("areas_for_improvement"), // Areas that need work
+  goals: text("goals"), // Goals for next month
+  adminNotes: text("admin_notes"), // Private admin notes
+  
+  // Status
+  status: varchar("status").default("draft").notNull(), // draft, submitted, acknowledged
+  employeeAcknowledgedAt: timestamp("employee_acknowledged_at"),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -142,6 +185,17 @@ export const insertWorkSubmissionSchema = createInsertSchema(workSubmissions).om
 export const insertNotificationSchema = createInsertSchema(notifications).omit({
   id: true,
   createdAt: true,
+});
+
+export const insertPerformancePeriodSchema = createInsertSchema(performancePeriods).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPerformanceScoreSchema = createInsertSchema(performanceScores).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 // Login schema
@@ -202,3 +256,40 @@ export type WorkerRegisterInput = z.infer<typeof workerRegisterSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 export type CreateWorkSubmissionInput = z.infer<typeof createWorkSubmissionSchema>;
+
+export type PerformancePeriod = typeof performancePeriods.$inferSelect;
+export type InsertPerformancePeriod = typeof performancePeriods.$inferInsert;
+export type PerformanceScore = typeof performanceScores.$inferSelect;
+export type InsertPerformanceScore = typeof performanceScores.$inferInsert;
+
+// Performance scoring input schema
+export const createPerformanceScoreSchema = insertPerformanceScoreSchema.omit({
+  scoredBy: true,
+}).extend({
+  taskCompletion: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 1 && num <= 10;
+  }, "Task completion score must be between 1 and 10"),
+  teamwork: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 1 && num <= 10;
+  }, "Teamwork score must be between 1 and 10"),
+  initiative: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 1 && num <= 10;
+  }, "Initiative score must be between 1 and 10"),
+  reliability: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 1 && num <= 10;
+  }, "Reliability score must be between 1 and 10"),
+  qualityOfWork: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 1 && num <= 10;
+  }, "Quality of work score must be between 1 and 10"),
+  strengths: z.string().min(10, "Please provide detailed strengths (minimum 10 characters)"),
+  areasForImprovement: z.string().min(10, "Please provide areas for improvement (minimum 10 characters)"),
+  goals: z.string().min(10, "Please provide goals for next month (minimum 10 characters)"),
+  adminNotes: z.string().optional(),
+});
+
+export type CreatePerformanceScoreInput = z.infer<typeof createPerformanceScoreSchema>;

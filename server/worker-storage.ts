@@ -5,6 +5,8 @@ import {
   events,
   workSubmissions,
   notifications,
+  performancePeriods,
+  performanceScores,
   type Worker, 
   type InsertWorker, 
   type WorkerLog, 
@@ -16,7 +18,11 @@ import {
   type WorkSubmission,
   type InsertWorkSubmission,
   type Notification,
-  type InsertNotification
+  type InsertNotification,
+  type PerformancePeriod,
+  type InsertPerformancePeriod,
+  type PerformanceScore,
+  type InsertPerformanceScore
 } from "@shared/worker-schema";
 import { workerDb } from "./worker-db";
 import { eq, desc, and, or } from "drizzle-orm";
@@ -66,6 +72,17 @@ export interface IWorkerStorage {
   getNotifications(workerId: string, unreadOnly?: boolean): Promise<Notification[]>;
   markNotificationAsRead(id: string): Promise<void>;
   markAllNotificationsAsRead(workerId: string): Promise<void>;
+  
+  // Performance scoring management
+  createPerformancePeriod(period: InsertPerformancePeriod): Promise<PerformancePeriod>;
+  getPerformancePeriods(): Promise<PerformancePeriod[]>;
+  getActivePerformancePeriod(): Promise<PerformancePeriod | undefined>;
+  setActivePerformancePeriod(periodId: string): Promise<void>;
+  createPerformanceScore(score: InsertPerformanceScore): Promise<PerformanceScore>;
+  getPerformanceScores(periodId?: string, workerId?: string): Promise<PerformanceScore[]>;
+  getPerformanceScore(periodId: string, workerId: string): Promise<PerformanceScore | undefined>;
+  updatePerformanceScore(id: string, updates: Partial<InsertPerformanceScore>): Promise<PerformanceScore | undefined>;
+  acknowledgePerformanceScore(scoreId: string): Promise<void>;
 }
 
 export class WorkerStorage implements IWorkerStorage {
@@ -390,19 +407,21 @@ export class WorkerStorage implements IWorkerStorage {
   }
 
   async getNotifications(workerId: string, unreadOnly?: boolean): Promise<Notification[]> {
-    let whereCondition = eq(notifications.workerId, workerId);
-    
     if (unreadOnly) {
-      whereCondition = and(
-        eq(notifications.workerId, workerId),
-        eq(notifications.isRead, false)
-      );
+      return await workerDb
+        .select()
+        .from(notifications)
+        .where(and(
+          eq(notifications.workerId, workerId),
+          eq(notifications.isRead, false)
+        ))
+        .orderBy(desc(notifications.createdAt));
     }
 
     return await workerDb
       .select()
       .from(notifications)
-      .where(whereCondition)
+      .where(eq(notifications.workerId, workerId))
       .orderBy(desc(notifications.createdAt));
   }
 
@@ -427,6 +446,156 @@ export class WorkerStorage implements IWorkerStorage {
         eq(notifications.workerId, workerId),
         eq(notifications.isRead, false)
       ));
+  }
+
+  // Performance scoring methods
+  async createPerformancePeriod(period: InsertPerformancePeriod): Promise<PerformancePeriod> {
+    // First set all existing periods to inactive
+    await workerDb
+      .update(performancePeriods)
+      .set({ isActive: false });
+    
+    const [newPeriod] = await workerDb
+      .insert(performancePeriods)
+      .values({
+        ...period,
+        isActive: true
+      })
+      .returning();
+    return newPeriod;
+  }
+
+  async getPerformancePeriods(): Promise<PerformancePeriod[]> {
+    return await workerDb
+      .select()
+      .from(performancePeriods)
+      .orderBy(desc(performancePeriods.createdAt));
+  }
+
+  async getActivePerformancePeriod(): Promise<PerformancePeriod | undefined> {
+    const [period] = await workerDb
+      .select()
+      .from(performancePeriods)
+      .where(eq(performancePeriods.isActive, true));
+    return period;
+  }
+
+  async setActivePerformancePeriod(periodId: string): Promise<void> {
+    // Set all periods to inactive
+    await workerDb
+      .update(performancePeriods)
+      .set({ isActive: false });
+    
+    // Set the specified period to active
+    await workerDb
+      .update(performancePeriods)
+      .set({ isActive: true })
+      .where(eq(performancePeriods.id, periodId));
+  }
+
+  async createPerformanceScore(score: InsertPerformanceScore): Promise<PerformanceScore> {
+    // Calculate overall score
+    const scores = [
+      parseInt(score.taskCompletion),
+      parseInt(score.teamwork),
+      parseInt(score.initiative),
+      parseInt(score.reliability),
+      parseInt(score.qualityOfWork)
+    ];
+    const overallScore = Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length);
+
+    const [newScore] = await workerDb
+      .insert(performanceScores)
+      .values({
+        ...score,
+        overallScore: overallScore.toString()
+      })
+      .returning();
+    return newScore;
+  }
+
+  async getPerformanceScores(periodId?: string, workerId?: string): Promise<PerformanceScore[]> {
+    if (periodId && workerId) {
+      return await workerDb
+        .select()
+        .from(performanceScores)
+        .where(and(
+          eq(performanceScores.periodId, periodId),
+          eq(performanceScores.workerId, workerId)
+        ))
+        .orderBy(desc(performanceScores.createdAt));
+    } else if (periodId) {
+      return await workerDb
+        .select()
+        .from(performanceScores)
+        .where(eq(performanceScores.periodId, periodId))
+        .orderBy(desc(performanceScores.createdAt));
+    } else if (workerId) {
+      return await workerDb
+        .select()
+        .from(performanceScores)
+        .where(eq(performanceScores.workerId, workerId))
+        .orderBy(desc(performanceScores.createdAt));
+    }
+
+    return await workerDb
+      .select()
+      .from(performanceScores)
+      .orderBy(desc(performanceScores.createdAt));
+  }
+
+  async getPerformanceScore(periodId: string, workerId: string): Promise<PerformanceScore | undefined> {
+    const [score] = await workerDb
+      .select()
+      .from(performanceScores)
+      .where(and(
+        eq(performanceScores.periodId, periodId),
+        eq(performanceScores.workerId, workerId)
+      ));
+    return score;
+  }
+
+  async updatePerformanceScore(id: string, updates: Partial<InsertPerformanceScore>): Promise<PerformanceScore | undefined> {
+    // Recalculate overall score if any category scores are updated
+    if (updates.taskCompletion || updates.teamwork || updates.initiative || 
+        updates.reliability || updates.qualityOfWork) {
+      const [currentScore] = await workerDb
+        .select()
+        .from(performanceScores)
+        .where(eq(performanceScores.id, id));
+      
+      if (currentScore) {
+        const scores = [
+          parseInt(updates.taskCompletion || currentScore.taskCompletion),
+          parseInt(updates.teamwork || currentScore.teamwork),
+          parseInt(updates.initiative || currentScore.initiative),
+          parseInt(updates.reliability || currentScore.reliability),
+          parseInt(updates.qualityOfWork || currentScore.qualityOfWork)
+        ];
+        const overallScore = Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length);
+        updates.overallScore = overallScore.toString();
+      }
+    }
+
+    const [updated] = await workerDb
+      .update(performanceScores)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(performanceScores.id, id))
+      .returning();
+    return updated;
+  }
+
+  async acknowledgePerformanceScore(scoreId: string): Promise<void> {
+    await workerDb
+      .update(performanceScores)
+      .set({ 
+        employeeAcknowledgedAt: new Date(),
+        status: "acknowledged"
+      })
+      .where(eq(performanceScores.id, scoreId));
   }
 }
 
