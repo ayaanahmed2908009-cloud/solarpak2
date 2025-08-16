@@ -747,10 +747,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only administrators can create performance scores" });
       }
 
+      console.log("Creating performance score:", req.body);
+
       const score = await workerStorage.createPerformanceScore({
         ...req.body,
         scoredBy: req.worker.id
       });
+
+      console.log("Performance score created successfully:", score);
 
       // Create notification for the employee
       await workerStorage.createNotification({
@@ -764,7 +768,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(score);
     } catch (error) {
-      res.status(500).json({ message: "Error creating performance score" });
+      console.error("Error creating performance score:", error);
+      res.status(500).json({ message: `Error creating performance score: ${error.message}` });
     }
   });
 

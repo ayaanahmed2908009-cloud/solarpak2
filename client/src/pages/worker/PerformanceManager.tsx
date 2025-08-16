@@ -46,22 +46,22 @@ export default function PerformanceManager() {
   // Check if current user is admin
   const isAdmin = currentUser?.role === "admin";
 
-  const { data: periods = [] } = useQuery({
+  const { data: periods = [] } = useQuery<PerformancePeriod[]>({
     queryKey: ["/worker/api/performance-periods"],
     enabled: isAdmin,
   });
 
-  const { data: activePeriod } = useQuery({
+  const { data: activePeriod } = useQuery<PerformancePeriod>({
     queryKey: ["/worker/api/performance-periods/active"],
     enabled: isAdmin,
   });
 
-  const { data: workers = [] } = useQuery({
+  const { data: workers = [] } = useQuery<Worker[]>({
     queryKey: ["/worker/api/workers"],
     enabled: isAdmin,
   });
 
-  const { data: performanceScores = [] } = useQuery({
+  const { data: performanceScores = [] } = useQuery<PerformanceScore[]>({
     queryKey: ["/worker/api/performance-scores"],
     enabled: isAdmin && !!activePeriod,
   });
@@ -174,6 +174,18 @@ export default function PerformanceManager() {
   };
 
   const handleCreateScore = (data: CreatePerformanceScoreInput) => {
+    console.log("Submitting performance score:", data);
+    
+    // Validate required fields
+    if (!data.periodId || !data.workerId) {
+      toast({
+        title: "Error",
+        description: "Missing required fields: period or employee",
+        variant: "destructive",
+      });
+      return;
+    }
+
     createScoreMutation.mutate(data);
   };
 
@@ -471,7 +483,40 @@ export default function PerformanceManager() {
                             variant="outline"
                             size="sm"
                             className="w-full"
-                            onClick={() => setScoringEmployeeId(employee.id)}
+                            onClick={() => {
+                              console.log("Updating score for employee:", employee);
+                              setScoringEmployeeId(employee.id);
+                              // Pre-populate form with existing score data
+                              if (employee.score) {
+                                scoringForm.reset({
+                                  periodId: activePeriod?.id || "",
+                                  workerId: employee.id,
+                                  taskCompletion: employee.score.taskCompletion,
+                                  teamwork: employee.score.teamwork,
+                                  initiative: employee.score.initiative,
+                                  reliability: employee.score.reliability,
+                                  qualityOfWork: employee.score.qualityOfWork,
+                                  strengths: employee.score.strengths || "",
+                                  areasForImprovement: employee.score.areasForImprovement || "",
+                                  goals: employee.score.goals || "",
+                                  adminNotes: employee.score.adminNotes || "",
+                                });
+                              } else {
+                                scoringForm.reset({
+                                  periodId: activePeriod?.id || "",
+                                  workerId: employee.id,
+                                  taskCompletion: "5",
+                                  teamwork: "5",
+                                  initiative: "5",
+                                  reliability: "5",
+                                  qualityOfWork: "5",
+                                  strengths: "",
+                                  areasForImprovement: "",
+                                  goals: "",
+                                  adminNotes: "",
+                                });
+                              }
+                            }}
                           >
                             Update Score
                           </Button>
@@ -479,7 +524,24 @@ export default function PerformanceManager() {
                       ) : (
                         <Button
                           className="w-full"
-                          onClick={() => setScoringEmployeeId(employee.id)}
+                          onClick={() => {
+                            console.log("Setting scoring employee:", employee);
+                            setScoringEmployeeId(employee.id);
+                            // Reset form with proper values
+                            scoringForm.reset({
+                              periodId: activePeriod?.id || "",
+                              workerId: employee.id,
+                              taskCompletion: "5",
+                              teamwork: "5",
+                              initiative: "5",
+                              reliability: "5",
+                              qualityOfWork: "5",
+                              strengths: "",
+                              areasForImprovement: "",
+                              goals: "",
+                              adminNotes: "",
+                            });
+                          }}
                         >
                           <Target className="h-4 w-4 mr-2" />
                           Score Employee

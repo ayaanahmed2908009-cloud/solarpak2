@@ -265,6 +265,7 @@ export type InsertPerformanceScore = typeof performanceScores.$inferInsert;
 // Performance scoring input schema
 export const createPerformanceScoreSchema = insertPerformanceScoreSchema.omit({
   scoredBy: true,
+  overallScore: true,
 }).extend({
   taskCompletion: z.string().refine((val) => {
     const num = parseInt(val);
