@@ -254,17 +254,7 @@ export default function WorkerDashboard() {
             )}
           </div>
 
-          {/* Debug Info for Quick Actions */}
-          <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-            <h3 className="font-medium mb-2">Debug Info:</h3>
-            <p><strong>Current User:</strong> {currentUser?.username} ({currentUser?.role})</p>
-            <p><strong>User ID:</strong> {currentUser?.id}</p>
-            <p><strong>Is Admin:</strong> {String(isAdmin)}</p>
-            <p><strong>Is Employee:</strong> {String(isEmployee)}</p>
-            <p><strong>Available Actions:</strong> {quickActions.length}</p>
-            <p><strong>Action Titles:</strong> {quickActions.map(a => a.title).join(", ")}</p>
-            <p><strong>Performance Button Logic:</strong> Role is not admin: {String(currentUser?.role !== "admin")}</p>
-          </div>
+
         </div>
 
         {/* Stats Grid */}
