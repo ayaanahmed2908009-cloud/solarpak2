@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import logoPath from "@assets/solarpak_1755365112937.jpeg";
+// Logo will be handled with fallback to sun icon
 
 export default function WorkerLogin() {
   const [, navigate] = useLocation();
@@ -62,21 +62,41 @@ export default function WorkerLogin() {
         <div className="text-center mb-8">
           <div className="mx-auto mb-6 relative">
             <div className="w-24 h-24 mx-auto bg-white rounded-full shadow-2xl border-4 border-yellow-400 flex items-center justify-center overflow-hidden">
-              <img 
-                src={logoPath} 
-                alt="SolarPak Logo" 
-                className="w-20 h-20 object-cover rounded-full"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (fallback) {
-                    fallback.style.display = 'flex';
-                  }
-                }}
-              />
-              <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full hidden items-center justify-center">
-                <Sun className="h-12 w-12 text-white" />
-              </div>
+              {/* Custom SolarPak Logo SVG */}
+              <svg 
+                width="64" 
+                height="64" 
+                viewBox="0 0 64 64" 
+                className="w-16 h-16"
+              >
+                {/* Sun rays */}
+                <g stroke="#f59e0b" strokeWidth="2" fill="none">
+                  <line x1="32" y1="8" x2="32" y2="12" />
+                  <line x1="32" y1="52" x2="32" y2="56" />
+                  <line x1="8" y1="32" x2="12" y2="32" />
+                  <line x1="52" y1="32" x2="56" y2="32" />
+                  <line x1="44.97" y1="19.03" x2="47.8" y2="16.2" />
+                  <line x1="16.2" y1="47.8" x2="19.03" y2="44.97" />
+                  <line x1="19.03" y1="19.03" x2="16.2" y2="16.2" />
+                  <line x1="47.8" y1="47.8" x2="44.97" y2="44.97" />
+                </g>
+                {/* Solar panel segments */}
+                <circle cx="32" cy="32" r="16" fill="#f59e0b" />
+                <circle cx="32" cy="32" r="12" fill="#fbbf24" />
+                {/* Solar panel grid */}
+                <g stroke="#f97316" strokeWidth="1" opacity="0.7">
+                  <line x1="24" y1="32" x2="40" y2="32" />
+                  <line x1="32" y1="24" x2="32" y2="40" />
+                  <line x1="27" y1="27" x2="37" y2="37" />
+                  <line x1="37" y1="27" x2="27" y2="37" />
+                </g>
+                {/* Center highlight */}
+                <circle cx="32" cy="32" r="4" fill="#fff" opacity="0.8" />
+                {/* Company name text */}
+                <text x="32" y="50" textAnchor="middle" fontSize="8" fill="#f59e0b" fontWeight="bold">
+                  SP
+                </text>
+              </svg>
             </div>
             {/* Animated glow effect */}
             <div className="absolute inset-0 w-24 h-24 mx-auto bg-yellow-400 rounded-full animate-pulse opacity-20"></div>
