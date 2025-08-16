@@ -17,6 +17,7 @@ import {
 import { useWorkerAuth } from "@/hooks/useWorkerAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { PerformancePeriod, PerformanceScore } from "@shared/worker-schema";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,13 +32,20 @@ export default function PerformanceReport() {
   const { worker: currentUser } = useWorkerAuth();
   const { toast } = useToast();
 
-  const { data: activePeriod } = useQuery({
+  const { data: activePeriod } = useQuery<PerformancePeriod>({
     queryKey: ["/worker/api/performance-periods/active"],
   });
 
-  const { data: myScores = [] } = useQuery({
+  const { data: myScores = [] } = useQuery<PerformanceScore[]>({
     queryKey: ["/worker/api/performance-scores"],
     enabled: !!currentUser,
+  });
+
+  console.log("Performance Report Data:", {
+    currentUser: currentUser?.id,
+    activePeriod: activePeriod?.id,
+    myScores: myScores,
+    currentScore: myScores.find(s => s.periodId === activePeriod?.id)
   });
 
   const acknowledgeMutation = useMutation({
@@ -97,7 +105,7 @@ export default function PerformanceReport() {
     </Card>
   );
 
-  const PerformanceInfographic = ({ score }: { score: any }) => {
+  const PerformanceInfographic = ({ score }: { score: PerformanceScore }) => {
     const overallScore = parseInt(score.overallScore);
     const categories = [
       { name: "Task Completion", score: parseInt(score.taskCompletion), description: "Quality and timeliness" },

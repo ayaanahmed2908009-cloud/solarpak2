@@ -784,12 +784,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         targetWorkerId = req.worker.id;
       }
 
+      console.log("Fetching performance scores for:", {
+        requestingUser: req.worker.id,
+        requestingRole: req.worker.role,
+        targetWorkerId: targetWorkerId,
+        periodId: periodId
+      });
+
       const scores = await workerStorage.getPerformanceScores(
         periodId as string, 
         targetWorkerId
       );
+      
+      console.log("Found performance scores:", scores);
       res.json(scores);
     } catch (error) {
+      console.error("Error fetching performance scores:", error);
       res.status(500).json({ message: "Error fetching performance scores" });
     }
   });
