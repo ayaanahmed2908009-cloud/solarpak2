@@ -11,11 +11,14 @@ import {
   Edit,
   Trash2,
   Shield,
-  Eye
+  Eye,
+  Clock,
+  Activity
 } from "lucide-react";
 
 import { useWorkerAuth, useWorkerList, useCreateEmployee, useUpdateEmployee } from "@/hooks/useWorkerAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import type { Worker, WorkerRegisterInput } from "@shared/worker-schema";
 
 import { Button } from "@/components/ui/button";
@@ -26,9 +29,21 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workerRegisterSchema } from "@shared/worker-schema";
+
+type LoginStatusWorker = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  role: string;
+  lastLogin: string | null;
+  isActive: boolean;
+};
 
 export default function AdminPanel() {
   const [, navigate] = useLocation();
@@ -37,11 +52,19 @@ export default function AdminPanel() {
   const [selectedRole, setSelectedRole] = useState("all");
   const [createEmployeeOpen, setCreateEmployeeOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Worker | null>(null);
+  const [activeTab, setActiveTab] = useState("workers");
   
   const { worker: currentUser } = useWorkerAuth();
   const { data: workers = [], isLoading } = useWorkerList();
   const createEmployee = useCreateEmployee();
   const updateEmployee = useUpdateEmployee();
+  
+  // Fetch login status data (admin only)
+  const { data: loginStatusData = [], isLoading: loginStatusLoading } = useQuery<LoginStatusWorker[]>({
+    queryKey: ["/worker/api/workers/login-status"],
+    enabled: currentUser?.role === "admin",
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
   
   // Check if current user is founder Ayaan Ahmed (admin account)
   const isFounder = currentUser?.username === "admin";
@@ -73,41 +96,17 @@ export default function AdminPanel() {
   });
 
   if (currentUser?.role !== "admin" && currentUser?.role !== "manager") {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Shield className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>
-              You don't have permission to access the admin panel.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate("/worker/dashboard")} className="w-full">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    navigate("/worker/dashboard");
+    return null;
   }
 
-  const filteredWorkers = workers.filter(worker => {
-    // Exclude admin account from employee list
-    if (worker.username === "admin") return false;
-    
-    // If user is a manager (not admin), only show workers from the same department
-    if (currentUser?.role === "manager" && worker.department !== currentUser.department) {
-      return false;
-    }
-    
+  // Filter workers based on search and selections
+  const filteredWorkers = workers.filter((worker) => {
     const matchesSearch = 
       worker.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       worker.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       worker.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      worker.email.toLowerCase().includes(searchQuery.toLowerCase());
+      worker.email?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesDepartment = selectedDepartment === "all" || worker.department === selectedDepartment;
     const matchesRole = selectedRole === "all" || worker.role === selectedRole;
@@ -127,7 +126,7 @@ export default function AdminPanel() {
     } catch (error: any) {
       toast({
         title: "Creation failed",
-        description: error.message || "Failed to create employee account",
+        description: error.message || "Failed to create employee",
         variant: "destructive",
       });
     }
@@ -138,8 +137,8 @@ export default function AdminPanel() {
     
     try {
       await updateEmployee.mutateAsync({
-        employeeId: editingEmployee.id,
-        data,
+        id: editingEmployee.id,
+        updates: data,
       });
       toast({
         title: "Employee updated",
@@ -193,6 +192,36 @@ export default function AdminPanel() {
       case 'management': return 'bg-gradient-to-r from-orange-500 to-yellow-500';
       default: return 'bg-gradient-to-r from-gray-500 to-slate-500';
     }
+  };
+
+  const formatLastLogin = (lastLogin: string | null) => {
+    if (!lastLogin) return "Never logged in";
+    const loginDate = new Date(lastLogin);
+    const now = new Date();
+    const diffInMs = now.getTime() - loginDate.getTime();
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    if (diffInHours < 1) {
+      return "Just now";
+    } else if (diffInHours < 24) {
+      return `${Math.floor(diffInHours)} hours ago`;
+    } else if (diffInDays < 7) {
+      return `${Math.floor(diffInDays)} days ago`;
+    } else {
+      return loginDate.toLocaleDateString();
+    }
+  };
+
+  const getLoginStatusColor = (lastLogin: string | null) => {
+    if (!lastLogin) return "bg-gray-500";
+    const loginDate = new Date(lastLogin);
+    const now = new Date();
+    const diffInHours = (now.getTime() - loginDate.getTime()) / (1000 * 60 * 60);
+
+    if (diffInHours < 24) return "bg-green-500";
+    if (diffInHours < 72) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
@@ -397,271 +426,358 @@ export default function AdminPanel() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className={`${isFounder ? 'bg-gradient-to-r from-white to-yellow-50 border border-yellow-200' : 'bg-gradient-to-r from-white to-blue-50 border border-blue-200'} rounded-2xl shadow-xl mb-8 p-6`}>
-          <div className="flex flex-col sm:flex-row gap-6">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${isFounder ? 'text-yellow-400' : 'text-purple-400'} h-5 w-5`} />
-                <Input
-                  placeholder={isFounder ? "🌟 Search for golden team members..." : "🔍 Search for amazing team members..."}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`pl-12 pr-4 py-3 text-lg border-2 ${isFounder ? 'border-yellow-200 focus:border-yellow-500' : 'border-purple-200 focus:border-purple-500'} rounded-xl bg-white/70 backdrop-blur-sm`}
-                />
-              </div>
-            </div>
-            
-            <div className="flex gap-4">
-              <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                <SelectTrigger className={`w-48 ${isFounder ? 'bg-gradient-to-r from-yellow-500 to-amber-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'} text-white border-0 rounded-xl shadow-lg`}>
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder={isFounder ? "🏛️ Department" : "🏢 Department"} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  <SelectItem value="events">🤝 Events & Community Outreach</SelectItem>
-                  <SelectItem value="social-media">📱 Social Media</SelectItem>
-                  <SelectItem value="sponsorships">💰 Sponsorships & Fundraising</SelectItem>
-                  <SelectItem value="healthcare">🔬 Predictive Systems & Healthcare</SelectItem>
-                  <SelectItem value="management">👑 Management</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className={`w-40 ${isFounder ? 'bg-gradient-to-r from-orange-500 to-yellow-500' : 'bg-gradient-to-r from-pink-500 to-rose-500'} text-white border-0 rounded-xl shadow-lg`}>
-                  <Shield className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder={isFounder ? "👑 Role" : "🛡️ Role"} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="worker">👨‍💼 Employee</SelectItem>
-                  <SelectItem value="manager">👑 Director</SelectItem>
-                  <SelectItem value="admin">🔥 Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/50 backdrop-blur-sm">
+            <TabsTrigger value="workers" className="flex items-center gap-2 data-[state=active]:bg-white">
+              <Users className="h-4 w-4" />
+              Team Management
+            </TabsTrigger>
+            <TabsTrigger value="login-activity" className="flex items-center gap-2 data-[state=active]:bg-white">
+              <Activity className="h-4 w-4" />
+              Login Activity
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Employee List */}
-        <div className={`${isFounder ? 'bg-gradient-to-br from-white via-yellow-50 to-amber-50 border border-yellow-200' : 'bg-gradient-to-br from-white via-purple-50 to-blue-50 border border-purple-200'} rounded-2xl shadow-xl overflow-hidden`}>
-          <div className={`${isFounder ? 'bg-gradient-to-r from-yellow-600 to-amber-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'} text-white p-6`}>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-xl">
-                <Users className="h-6 w-6" />
+          <TabsContent value="workers">
+            {/* Search and Filter Bar */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200">
+              <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-4 items-center w-full lg:w-auto">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search employees..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                      <SelectTrigger className="w-48 border-gray-300">
+                        <SelectValue placeholder="Filter by department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Departments</SelectItem>
+                        <SelectItem value="events">Events & Community</SelectItem>
+                        <SelectItem value="social-media">Social Media</SelectItem>
+                        <SelectItem value="sponsorships">Sponsorships</SelectItem>
+                        <SelectItem value="healthcare">Healthcare</SelectItem>
+                        <SelectItem value="management">Management</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={selectedRole} onValueChange={setSelectedRole}>
+                      <SelectTrigger className="w-32 border-gray-300">
+                        <SelectValue placeholder="Filter by role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="worker">Worker</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-gray-600">
+                    {filteredWorkers.length} employees
+                  </Badge>
+                </div>
               </div>
-              <h2 className="text-2xl font-bold">Team Members ({filteredWorkers.length})</h2>
             </div>
-          </div>
-          
-          <div className="p-6">
-            {isLoading ? (
-              <div className="text-center py-12">
-                <div className={`animate-spin rounded-full h-12 w-12 border-4 ${isFounder ? 'border-yellow-300 border-t-yellow-600' : 'border-purple-300 border-t-purple-600'} mx-auto`}></div>
-                <p className={`${isFounder ? 'text-yellow-600' : 'text-purple-600'} font-medium mt-4 text-lg`}>
-                  {isFounder ? 'Loading golden team members... ⭐' : 'Loading amazing team members... ✨'}
-                </p>
-              </div>
-            ) : filteredWorkers.length === 0 ? (
-              <div className={`${isFounder ? 'bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100' : 'bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100'} rounded-2xl p-12 text-center`}>
-                <Users className={`h-16 w-16 ${isFounder ? 'text-yellow-400' : 'text-purple-400'} mx-auto mb-6`} />
-                <h3 className={`text-xl font-semibold ${isFounder ? 'text-yellow-800' : 'text-purple-800'} mb-2`}>No team members found</h3>
-                <p className={`${isFounder ? 'text-yellow-600' : 'text-purple-600'}`}>
-                  {isFounder ? 'No golden team members match your search criteria. Try adjusting your filters! 🌟' : 'No employees match your search criteria. Try adjusting your filters! 🔍'}
-                </p>
-              </div>
-            ) : (
-              <div className="grid gap-6">
-                {filteredWorkers.map((worker) => (
-                  <div key={worker.id} className={`${isFounder ? 'bg-gradient-to-br from-white via-yellow-50 to-amber-50 border border-yellow-200' : 'bg-gradient-to-br from-white via-blue-50 to-purple-50 border border-purple-200'} rounded-2xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-200 hover:shadow-2xl`}>
-                    <div className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-6">
-                          <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${isFounder ? 'bg-gradient-to-r from-yellow-500 to-amber-500' : 'bg-gradient-to-r from-purple-500 to-blue-500'} shadow-lg`}>
-                            <span className="text-xl font-bold text-white">
-                              {worker.firstName?.[0]}{worker.lastName?.[0]}
-                            </span>
+
+            {/* Employees Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredWorkers.map((worker) => (
+                <Card key={worker.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-12 w-12 rounded-full flex items-center justify-center">
+                          <div className={`${getDepartmentColor(worker.department)} text-white text-lg h-full w-full rounded-full flex items-center justify-center font-bold`}>
+                            {worker.firstName?.[0]}{worker.lastName?.[0]}
                           </div>
-                          
-                          <div>
-                            <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="text-xl font-bold text-gray-800">{worker.firstName} {worker.lastName}</h3>
-                              <Badge className={`${getRoleBadgeColor(worker.role)} px-3 py-1 rounded-xl font-medium`}>
-                                {worker.role.toUpperCase()}
-                              </Badge>
-                              {!worker.isActive && (
-                                <Badge className="bg-gradient-to-r from-gray-500 to-slate-500 text-white px-3 py-1 rounded-xl">Inactive</Badge>
-                              )}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-800">{worker.firstName} {worker.lastName}</h3>
+                          <p className="text-sm text-gray-500">@{worker.username}</p>
+                        </div>
+                      </div>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => {
+                            setEditingEmployee(worker);
+                            editForm.reset({
+                              firstName: worker.firstName || '',
+                              lastName: worker.lastName || '',
+                              email: worker.email || '',
+                              role: worker.role,
+                              department: worker.department || '',
+                              isActive: worker.isActive,
+                            });
+                          }}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Details
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Role:</span>
+                        <Badge className={getRoleBadgeColor(worker.role)}>
+                          {worker.role}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Department:</span>
+                        <span className="text-sm">{formatDepartmentName(worker.department)}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Status:</span>
+                        <Badge variant={worker.isActive ? "default" : "secondary"}>
+                          {worker.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Email:</span>
+                        <span className="text-sm text-gray-800 truncate max-w-32">{worker.email || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filteredWorkers.length === 0 && (
+              <Card className="bg-white shadow-lg">
+                <CardContent className="p-12 text-center">
+                  <Users className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">No Team Members Found</h3>
+                  <p className="text-gray-500 mb-6">
+                    {searchQuery || selectedDepartment !== "all" || selectedRole !== "all" 
+                      ? "Try adjusting your search filters" 
+                      : "Start building your team by creating employee accounts"
+                    }
+                  </p>
+                  {(!searchQuery && selectedDepartment === "all" && selectedRole === "all") && (
+                    <Button onClick={() => setCreateEmployeeOpen(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Create First Employee
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="login-activity">
+            <Card className="bg-white shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Clock className="h-5 w-5 mr-2" />
+                    <CardTitle>Team Login Activity</CardTitle>
+                  </div>
+                  <Badge className="bg-white/20 text-white">
+                    {loginStatusData.length} members
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {loginStatusLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-500 mt-2">Loading login activity...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {loginStatusData.map((worker) => (
+                      <div key={worker.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                        <div className="flex items-center space-x-4">
+                          <div className="h-10 w-10 rounded-full flex items-center justify-center">
+                            <div className={`${getDepartmentColor(worker.department)} text-white text-sm h-full w-full rounded-full flex items-center justify-center`}>
+                              {worker.firstName?.[0]}{worker.lastName?.[0]}
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-gray-700 font-medium">@{worker.username} • {worker.email}</p>
-                              <div className="flex items-center gap-2">
-                                <span className={`${getDepartmentColor(worker.department)} text-white px-3 py-1 rounded-xl text-sm font-medium`}>
-                                  {formatDepartmentName(worker.department)}
-                                </span>
-                              </div>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800">{worker.firstName} {worker.lastName}</p>
+                            <p className="text-sm text-gray-500">@{worker.username}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge className={getRoleBadgeColor(worker.role)}>
+                                {worker.role}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {formatDepartmentName(worker.department)}
+                              </Badge>
                             </div>
                           </div>
                         </div>
-                        
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button className={`${isFounder ? 'bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600' : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'} text-white rounded-xl p-3`}>
-                              <MoreVertical className="h-5 w-5" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => {
-                              setEditingEmployee(worker);
-                              editForm.reset({
-                                firstName: worker.firstName || '',
-                                lastName: worker.lastName || '',
-                                email: worker.email,
-                                role: worker.role,
-                                department: worker.department || "",
-                                isActive: worker.isActive,
-                              });
-                            }}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              {isFounder ? '⚡ Edit' : '✏️ Edit'}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate(`/worker/admin/activity/${worker.id}`)}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {isFounder ? '🌟 View Activity' : '👁️ View Activity'}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-3 h-3 rounded-full ${getLoginStatusColor(worker.lastLogin)}`}></div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium text-gray-700">
+                              {formatLastLogin(worker.lastLogin)}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {worker.isActive ? "Active" : "Inactive"}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
+                    {loginStatusData.length === 0 && (
+                      <div className="text-center py-8">
+                        <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500">No team members found</p>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Edit Employee Dialog */}
-      <Dialog open={!!editingEmployee} onOpenChange={() => setEditingEmployee(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Employee</DialogTitle>
-            <DialogDescription>
-              Update employee information and permissions.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(handleUpdateEmployee)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={editForm.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={editForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
                 )}
-              />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
-              <div className="grid grid-cols-2 gap-4">
+        {/* Edit Employee Dialog */}
+        <Dialog open={!!editingEmployee} onOpenChange={(open) => !open && setEditingEmployee(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Employee Information</DialogTitle>
+              <DialogDescription>
+                Update employee details and permissions.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Form {...editForm}>
+              <form onSubmit={editForm.handleSubmit(handleUpdateEmployee)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="First name" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Last name" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={editForm.control}
-                  name="role"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="worker">Employee</SelectItem>
-                          <SelectItem value="manager">Director</SelectItem>
-                          {currentUser?.role === "admin" && (
-                            <SelectItem value="admin">Admin</SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="Email" {...field} value={field.value || ''} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
-                <FormField
-                  control={editForm.control}
-                  name="department"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Department</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="events">Events & Community Outreach</SelectItem>
-                          <SelectItem value="social-media">Social Media</SelectItem>
-                          <SelectItem value="sponsorships">Sponsorships & Fundraising</SelectItem>
-                          <SelectItem value="healthcare">Predictive Systems & Healthcare</SelectItem>
-                          <SelectItem value="management">Management</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setEditingEmployee(null)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={updateEmployee.isPending}>
-                  {updateEmployee.isPending ? "Updating..." : "Update Employee"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="worker">Employee</SelectItem>
+                            <SelectItem value="manager">Director</SelectItem>
+                            {currentUser?.role === "admin" && (
+                              <SelectItem value="admin">Admin</SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="department"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Department</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="events">Events & Community Outreach</SelectItem>
+                            <SelectItem value="social-media">Social Media</SelectItem>
+                            <SelectItem value="sponsorships">Sponsorships & Fundraising</SelectItem>
+                            <SelectItem value="healthcare">Predictive Systems & Healthcare</SelectItem>
+                            <SelectItem value="management">Management</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setEditingEmployee(null)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={updateEmployee.isPending}>
+                    {updateEmployee.isPending ? "Updating..." : "Update Employee"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }

@@ -84,6 +84,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error fetching workers by department" });
     }
   });
+
+  // Get last login information for all workers (admin only)
+  app.get("/worker/api/workers/login-status", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
+    try {
+      const workers = await workerStorage.getAllWorkers();
+      const loginStatus = workers.map(worker => ({
+        id: worker.id,
+        username: worker.username,
+        firstName: worker.firstName,
+        lastName: worker.lastName,
+        department: worker.department,
+        role: worker.role,
+        lastLogin: worker.lastLogin,
+        isActive: worker.isActive
+      }));
+      
+      res.json(loginStatus);
+    } catch (error) {
+      console.error("Error fetching login status:", error);
+      res.status(500).json({ message: "Error fetching login status" });
+    }
+  });
   
   app.get("/worker/api/activity/:workerId", isWorkerAuthenticated, async (req, res) => {
     try {
