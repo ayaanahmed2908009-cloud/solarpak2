@@ -26,6 +26,7 @@ import WorkReview from "@/pages/worker/WorkReview";
 import CreateEvent from "@/pages/worker/CreateEvent";
 import PerformanceManager from "@/pages/worker/PerformanceManager";
 import PerformanceReport from "@/pages/worker/PerformanceReport";
+import TestPerformance from "@/pages/worker/TestPerformance";
 import { useEffect } from "react";
 
 
@@ -127,6 +128,7 @@ function Router() {
       <Route path="/worker/work-review" component={WorkReview} />
       <Route path="/worker/performance" component={PerformanceManager} />
       <Route path="/worker/performance-report" component={PerformanceReport} />
+      <Route path="/worker/test" component={TestPerformance} />
       
       <Route component={NotFound} />
     </Switch>
