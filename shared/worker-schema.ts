@@ -148,10 +148,12 @@ export const createTaskSchema = insertTaskSchema.omit({
 });
 
 // Event creation schema
-export const createEventSchema = insertEventSchema.extend({
-  startDate: z.string().transform((val) => new Date(val)),
-  endDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
-  participants: z.array(z.string()).optional(),
+export const createEventSchema = insertEventSchema.omit({
+  organizer: true,
+  participants: true,
+}).extend({
+  startDate: z.string(),
+  endDate: z.string().optional(),
 });
 
 // Work submission schema

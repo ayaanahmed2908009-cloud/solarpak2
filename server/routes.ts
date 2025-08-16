@@ -72,6 +72,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get workers login status (admin only)
+  app.get("/worker/api/workers/login-status", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
+    try {
+      const workers = await workerStorage.getAllWorkers();
+      const loginStatus = workers.map(worker => ({
+        id: worker.id,
+        username: worker.username,
+        firstName: worker.firstName,
+        lastName: worker.lastName,
+        department: worker.department,
+        role: worker.role,
+        lastLogin: worker.lastLogin,
+        isActive: worker.isActive,
+      }));
+      res.json(loginStatus);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching login status" });
+    }
+  });
+
   // Get workers by department (for department-specific task assignment)
   app.get("/worker/api/workers/department/:department", isWorkerAuthenticated, async (req, res) => {
     try {
@@ -441,6 +461,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ message: "Event deleted successfully" });
     } catch (error) {
+      res.status(500).json({ message: "Error deleting event" });
+    }
+  });
+
+  // Event management routes
+  app.get("/worker/api/events", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const events = await workerStorage.getEvents();
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching events" });
+    }
+  });
+
+  app.post("/worker/api/events", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const validatedData = createEventSchema.parse(req.body);
+      
+      // Get workers in selected departments to add as participants
+      let participants: string[] = [];
+      
+      if (validatedData.department && validatedData.department !== 'all') {
+        const departmentWorkers = await workerStorage.getWorkersByDepartment(validatedData.department);
+        participants = departmentWorkers.map(worker => worker.id);
+      } else if (validatedData.department === 'all') {
+        const allWorkers = await workerStorage.getAllWorkers();
+        participants = allWorkers.map(worker => worker.id);
+      }
+
+      const event = await workerStorage.createEvent({
+        ...validatedData,
+        participants,
+        organizer: req.worker.id,
+      });
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "create_event",
+        details: `Created event: ${event.title} for ${validatedData.department} department`,
+        ipAddress: req.ip,
+      });
+
+      res.status(201).json(event);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Create event error:", error);
+      res.status(500).json({ message: "Error creating event" });
+    }
+  });
+
+  app.put("/worker/api/events/:eventId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      const updates = req.body;
+
+      // Check if user has permission to edit the event
+      const existingEvent = await workerStorage.getEventById(eventId);
+      if (!existingEvent) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      // Only admin, managers, or the event organizer can edit events
+      const canEdit = req.worker.role === "admin" || 
+                     req.worker.role === "manager" || 
+                     existingEvent.organizer === req.worker.id;
+
+      if (!canEdit) {
+        return res.status(403).json({ 
+          message: "Permission denied. Only administrators, managers, or event organizers can edit events." 
+        });
+      }
+
+      const event = await workerStorage.updateEvent(eventId, updates);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "update_event",
+        details: `Updated event: ${event.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.json(event);
+    } catch (error) {
+      console.error("Update event error:", error);
+      res.status(500).json({ message: "Error updating event" });
+    }
+  });
+
+  app.delete("/worker/api/events/:eventId", isWorkerAuthenticated, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      
+      const event = await workerStorage.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      // Only admin, managers, or the event organizer can delete events
+      const canDelete = req.worker.role === "admin" || 
+                       req.worker.role === "manager" || 
+                       event.organizer === req.worker.id;
+
+      if (!canDelete) {
+        return res.status(403).json({ 
+          message: "Permission denied. Only administrators, managers, or event organizers can delete events." 
+        });
+      }
+
+      await workerStorage.deleteEvent(eventId);
+
+      // Log the action
+      await workerStorage.logWorkerActivity({
+        workerId: req.worker.id,
+        action: "delete_event",
+        details: `Deleted event: ${event.title}`,
+        ipAddress: req.ip,
+      });
+
+      res.json({ message: "Event deleted successfully" });
+    } catch (error) {
+      console.error("Delete event error:", error);
       res.status(500).json({ message: "Error deleting event" });
     }
   });
