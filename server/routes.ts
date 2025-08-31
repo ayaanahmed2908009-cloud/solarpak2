@@ -398,7 +398,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Task deleted successfully" });
     } catch (error) {
       console.error("Task deletion error:", error);
-      res.status(500).json({ message: "Error deleting task", error: error.message });
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({ message: "Error deleting task", error: errorMessage });
     }
   });
 
@@ -716,7 +717,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(period);
     } catch (error) {
       console.error("Error creating performance period:", error);
-      res.status(500).json({ message: `Error creating performance period: ${error.message}` });
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({ message: `Error creating performance period: ${errorMessage}` });
     }
   });
 
@@ -769,7 +771,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(score);
     } catch (error) {
       console.error("Error creating performance score:", error);
-      res.status(500).json({ message: `Error creating performance score: ${error.message}` });
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({ message: `Error creating performance score: ${errorMessage}` });
     }
   });
 
