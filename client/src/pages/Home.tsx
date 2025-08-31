@@ -69,9 +69,54 @@ export default function Home() {
           <HeroBanner />
         </section>
 
-        {/* Clean White Hero Section */}
-        <section className="hidden md:block relative h-screen w-full bg-white">
-          {/* Blank white space */}
+        {/* Video Background Hero Section */}
+        <section className="hidden md:block relative h-screen w-full overflow-hidden">
+          {/* Video Background */}
+          <div className="absolute inset-0 z-0">
+            <video 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src="/attached_assets/Solarpak preview website_-VEED_1756655158911.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            {/* Dark overlay for better text contrast */}
+            <div className="absolute inset-0 bg-black/50"></div>
+          </div>
+
+          {/* Text Overlay */}
+          <div className="relative z-10 flex items-center justify-center h-full">
+            <div className="text-center text-white max-w-4xl px-8">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+                <span className="block mb-2">Powering Communities.</span>
+                <span className="block text-yellow-400">Lighting Futures.</span>
+              </h1>
+              
+              <div className="text-xl md:text-2xl leading-relaxed mb-12 max-w-3xl mx-auto space-y-4">
+                <p>At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
+                <p>Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
+                <p className="text-yellow-300 font-semibold text-2xl md:text-3xl mt-8">Join us in turning sunlight into hope.</p>
+              </div>
+              
+              <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+                <button 
+                  onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  Donate Now
+                </button>
+                <button 
+                  onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  Learn More
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
         
         {/* Crisis Section - Immediate impact after hero */}
