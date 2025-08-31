@@ -538,6 +538,41 @@ html {
   animation: expand-width 1.5s ease-out forwards;
 }
 
+/* Mobile video optimizations */
+@media (max-width: 768px) {
+  video {
+    transform: scale(1.05);
+    object-position: center center;
+    /* Performance optimizations for mobile */
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+  
+  /* Reduce animation complexity on mobile */
+  .animate-fade-in {
+    animation-duration: 0.8s !important;
+  }
+  
+  .animate-expand-width {
+    animation-duration: 1s !important;
+  }
+  
+  /* Touch optimizations */
+  button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* iPad optimizations */
+@media (min-width: 640px) and (max-width: 1024px) {
+  video {
+    object-position: center center;
+    will-change: transform;
+  }
+}
+
 /* Gradient border */
 .gradient-border {
   position: relative;

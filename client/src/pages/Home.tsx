@@ -65,13 +65,13 @@ export default function Home() {
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
         <Navbar />
         <main ref={mainRef} className="relative w-full">
-        {/* Mobile Hero - Original Design */}
-        <section className="md:hidden snap-section">
+        {/* Mobile Hero - Original Design (Small Mobile Only) */}
+        <section className="sm:hidden snap-section">
           <HeroBanner />
         </section>
 
-        {/* Video Background Hero Section */}
-        <section className="hidden md:block relative w-full overflow-hidden" style={{ height: 'calc(100vh + 120px)', marginTop: '-120px' }}>
+        {/* Video Background Hero Section - iPad and Desktop */}
+        <section className="hidden sm:block relative w-full overflow-hidden" style={{ height: 'calc(100vh + 120px)', marginTop: '-120px' }}>
           {/* Video Background */}
           <div className="absolute inset-0 z-0" style={{ height: 'calc(100% + 120px)' }}>
             <video 
@@ -79,10 +79,14 @@ export default function Home() {
               muted 
               loop 
               playsInline
-              preload="auto"
-              className="w-full object-cover"
+              preload="metadata"
+              className="w-full object-cover transition-opacity duration-500 opacity-0"
               style={{ height: 'calc(100vh + 120px)' }}
               src={videoBackground}
+              poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23grad)' /%3E%3C/svg%3E"
+              disablePictureInPicture
+              disableRemotePlayback
+              controlsList="nodownload nofullscreen noremoteplayback"
               onError={(e) => {
                 console.error('Video failed to load:', e);
                 // Fallback to a dark gradient background if video fails
@@ -92,8 +96,19 @@ export default function Home() {
                   target.parentElement.style.background = 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)';
                 }
               }}
-              onLoadStart={() => console.log('Video started loading')}
-              onCanPlay={() => console.log('Video can play')}
+              onLoadStart={(e) => {
+                console.log('Video started loading');
+                // Optimize for mobile performance
+                const video = e.target as HTMLVideoElement;
+                if (window.innerWidth < 768) {
+                  video.style.transform = 'scale(1.1)'; // Slight zoom for mobile crop
+                }
+              }}
+              onCanPlay={(e) => {
+                console.log('Video can play');
+                const video = e.target as HTMLVideoElement;
+                video.style.opacity = '1';
+              }}
               onPlay={() => console.log('Video is playing')}
             >
               Your browser does not support the video tag.
@@ -104,21 +119,21 @@ export default function Home() {
 
           {/* Text Overlay */}
           <div className="relative z-10 flex items-center justify-center" style={{ height: '100vh', marginTop: '120px' }}>
-            <div className="text-center text-white max-w-4xl px-8">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+            <div className="text-center text-white max-w-4xl px-4 sm:px-8">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
                 <span className="block mb-2 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both' }}>Powering Communities.</span>
                 <span className="block text-yellow-400 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both' }}>
                   <span className="relative inline-block">
                     Lighting Futures.
-                    <span className="absolute left-0 bottom-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 animate-expand-width" style={{ animationDuration: '1.5s', animationDelay: '1.5s', animationFillMode: 'forwards' }}></span>
+                    <span className="absolute left-0 bottom-0 h-0.5 sm:h-1 bg-gradient-to-r from-yellow-400 to-orange-500 animate-expand-width" style={{ animationDuration: '1.5s', animationDelay: '1.5s', animationFillMode: 'forwards' }}></span>
                   </span>
                 </span>
               </h1>
               
-              <div className="text-xl md:text-2xl leading-relaxed mb-12 max-w-3xl mx-auto space-y-4">
-                <p>At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
-                <p>Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
-                <p className="text-yellow-300 font-semibold text-2xl md:text-3xl mt-8 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.2s', animationFillMode: 'both' }}>Join us in turning sunlight into hope.</p>
+              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed mb-8 sm:mb-12 max-w-3xl mx-auto space-y-3 sm:space-y-4">
+                <p className="px-2 sm:px-0">At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
+                <p className="px-2 sm:px-0">Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
+                <p className="text-yellow-300 font-semibold text-xl sm:text-2xl md:text-3xl mt-6 sm:mt-8 animate-fade-in px-2 sm:px-0" style={{ animationDuration: '1.2s', animationDelay: '1.2s', animationFillMode: 'both' }}>Join us in turning sunlight into hope.</p>
                 
                 {/* Social Proof */}
                 <div className="flex items-center justify-center mt-4 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.8s', animationFillMode: 'both' }}>
@@ -135,16 +150,16 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="flex flex-col md:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '2.2s', animationFillMode: 'both' }}>
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '2.2s', animationFillMode: 'both' }}>
                 <button 
                   onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto max-w-xs sm:max-w-none"
                 >
                   Donate Now
                 </button>
                 <button 
                   onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto max-w-xs sm:max-w-none"
                 >
                   Learn More
                 </button>
