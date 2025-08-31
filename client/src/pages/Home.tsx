@@ -71,16 +71,17 @@ export default function Home() {
         </section>
 
         {/* Video Background Hero Section */}
-        <section className="hidden md:block relative h-screen w-full overflow-hidden">
+        <section className="hidden md:block relative w-full overflow-hidden" style={{ height: 'calc(100vh + 120px)', marginTop: '-120px' }}>
           {/* Video Background */}
-          <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-0" style={{ height: 'calc(100% + 120px)' }}>
             <video 
               autoPlay 
               muted 
               loop 
               playsInline
               preload="auto"
-              className="w-full h-full object-cover"
+              className="w-full object-cover"
+              style={{ height: 'calc(100vh + 120px)' }}
               src={videoBackground}
               onError={(e) => {
                 console.error('Video failed to load:', e);
@@ -102,7 +103,7 @@ export default function Home() {
           </div>
 
           {/* Text Overlay */}
-          <div className="relative z-10 flex items-center justify-center h-full">
+          <div className="relative z-10 flex items-center justify-center" style={{ height: '100vh', marginTop: '120px' }}>
             <div className="text-center text-white max-w-4xl px-8">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
                 <span className="block mb-2">Powering Communities.</span>
