@@ -125,7 +125,7 @@ export default function Home() {
               <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8 animate-fade-in" style={{ animationDuration: '1s', animationDelay: '0.1s', animationFillMode: 'both' }}></div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light mb-8 sm:mb-10 leading-[1.1] tracking-tight">
                 <span className="block mb-3 animate-fade-in font-extralight text-white/95" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both', letterSpacing: '0.02em' }}>Powering Communities.</span>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 animate-fade-in font-medium" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both', letterSpacing: '0.01em' }}>
+                <span className="block text-yellow-400 animate-fade-in font-medium" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both', letterSpacing: '0.01em' }}>
                   <span className="relative inline-block">
                     Lighting Futures.
                     <span className="absolute left-0 bottom-0 h-0.5 sm:h-1 bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 animate-expand-width shadow-lg shadow-yellow-400/20" style={{ animationDuration: '1.8s', animationDelay: '1.6s', animationFillMode: 'forwards' }}></span>
