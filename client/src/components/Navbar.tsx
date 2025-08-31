@@ -12,7 +12,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-white/20 backdrop-blur-xl shadow-xl border-b border-white/30 sticky top-0 z-50 transition-all duration-300">
+    <header className="bg-black/10 backdrop-blur-md shadow-lg border-b border-gray-400/40 sticky top-0 z-50 transition-all duration-300">
       <div className="container mx-auto px-6 py-5">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-4 group">
@@ -97,7 +97,7 @@ export default function Navbar() {
         
         {/* Mobile Menu */}
         <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="flex flex-col space-y-2 mt-4 pb-4 bg-white/20 backdrop-blur-xl border border-white/30 rounded-lg p-4 mx-2">
+          <div className="flex flex-col space-y-2 mt-4 pb-4 bg-black/10 backdrop-blur-md border border-gray-400/40 rounded-lg p-4 mx-2">
             <a 
               href="/#problem" 
               className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
