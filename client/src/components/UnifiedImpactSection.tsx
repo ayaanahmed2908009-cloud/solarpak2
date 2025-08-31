@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { Zap, Heart, Globe, Clock, Users, Home, MapPin, Thermometer } from "lucide-react";
+import { Zap, Heart, Globe, Clock, Users, Home, MapPin, Thermometer, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+
+// Import videos
+import video1 from "@assets/mid_1756658713398.mp4";
+import video2 from "@assets/vidddd_1756658722814.mp4";
+import video3 from "@assets/Solarpak preview website _1756658752398.mp4";
+import video4 from "@assets/solarpaskk_1756658773087.mp4";
+import video5 from "@assets/solarpak3_1756658787729.mp4";
+import video6 from "@assets/solarpak2_1756658812429.mp4";
 
 export default function UnifiedImpactSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,6 +20,21 @@ export default function UnifiedImpactSection() {
     panelsInstalled: 0,
     homesEmpowered: 0
   });
+  
+  // Video carousel state
+  const [currentVideo, setCurrentVideo] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  const videos = [
+    { src: video1, title: "Solar Installation Process" },
+    { src: video2, title: "Community Impact" },
+    { src: video3, title: "Website Preview" },
+    { src: video4, title: "Family Testimonial" },
+    { src: video5, title: "Energy Independence" },
+    { src: video6, title: "Project Completion" }
+  ];
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -104,6 +127,17 @@ export default function UnifiedImpactSection() {
       }
     }, stepDuration);
   };
+
+  // Auto-play video carousel
+  useEffect(() => {
+    if (!isAutoPlay) return;
+    
+    const autoPlayTimer = setInterval(() => {
+      setCurrentVideo(prev => prev === videos.length - 1 ? 0 : prev + 1);
+    }, 8000); // Change video every 8 seconds
+
+    return () => clearInterval(autoPlayTimer);
+  }, [isAutoPlay, currentVideo]);
 
   return (
     <div ref={sectionRef} className="py-12 md:py-20 bg-gradient-to-b from-blue-50 via-white to-purple-50 relative overflow-hidden">
@@ -282,37 +316,148 @@ export default function UnifiedImpactSection() {
           </div>
         </div>
 
-        {/* Real Impact Stories */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 mb-16">
-          <h3 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-            Real Stories from the Field
-          </h3>
+        {/* Floating Video Carousel */}
+        <div className="relative mb-20">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-green-100 px-6 py-3 rounded-full mb-8 shadow-lg border border-blue-200/50">
+              <Play className="w-5 h-5 text-blue-600 mr-3 animate-pulse" />
+              <span className="font-bold text-gray-700">🎥 Impact Videos</span>
+            </div>
+            <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-6 drop-shadow-sm">
+              See Our Impact in Action
+            </h3>
+            <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
+              Watch real stories from families we've helped across Pakistan
+            </p>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {impactStories?.slice(0, 3).map((story: any, index: number) => (
-              <div key={story.id} className="group">
-                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
-                  <div className="flex items-center mb-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-green-500 rounded-full text-white mr-4">
-                      <MapPin className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-800">{story.title}</h4>
-                      <p className="text-sm text-gray-500">{story.location}</p>
-                    </div>
+          <div className="relative max-w-5xl mx-auto">
+            {/* Floating video container with enhanced shadows */}
+            <div className="relative bg-gradient-to-br from-white via-blue-50/30 to-green-50/30 rounded-3xl p-8 md:p-10 shadow-2xl hover:shadow-3xl border-2 border-white/50 overflow-hidden backdrop-blur-sm transform hover:-translate-y-2 transition-all duration-500">
+              {/* Enhanced background glow effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/8 to-green-500/8 rounded-3xl"></div>
+              <div className="absolute top-4 left-4 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-4 right-4 w-24 h-24 bg-green-400/10 rounded-full blur-xl animate-pulse"></div>
+              
+              <div className="relative z-10">
+                {/* Video display */}
+                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-xl">
+                  <video
+                    ref={videoRef}
+                    key={currentVideo}
+                    className="w-full h-full object-cover transition-opacity duration-500"
+                    autoPlay={isPlaying}
+                    muted
+                    loop={false}
+                    playsInline
+                    onLoadedData={() => {
+                      if (videoRef.current && isPlaying) {
+                        videoRef.current.play();
+                      }
+                    }}
+                    onEnded={() => {
+                      if (isAutoPlay) {
+                        setCurrentVideo(prev => prev === videos.length - 1 ? 0 : prev + 1);
+                      }
+                    }}
+                  >
+                    <source src={videos[currentVideo].src} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  
+                  {/* Video overlay controls */}
+                  <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+                    <button
+                      onClick={() => {
+                        setIsPlaying(!isPlaying);
+                        if (videoRef.current) {
+                          isPlaying ? videoRef.current.pause() : videoRef.current.play();
+                        }
+                      }}
+                      className="bg-white/90 hover:bg-white text-gray-800 p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-110"
+                    >
+                      {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
+                    </button>
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                    {story.description.slice(0, 120)}...
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                      ✅ Completed
-                    </span>
-                    <span className="text-xs text-gray-500">{story.beneficiaries} people helped</span>
+                  
+                  {/* Video title overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                    <h4 className="text-white text-xl font-bold">{videos[currentVideo].title}</h4>
                   </div>
                 </div>
+                
+                {/* Enhanced navigation controls */}
+                <div className="flex items-center justify-between mt-8">
+                  <button
+                    onClick={() => {
+                      setCurrentVideo(prev => prev === 0 ? videos.length - 1 : prev - 1);
+                      setIsAutoPlay(false);
+                    }}
+                    className="group flex items-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-blue-400/30"
+                  >
+                    <ChevronLeft className="w-6 h-6 mr-3 group-hover:animate-pulse" />
+                    <span className="font-bold text-lg">Previous</span>
+                  </button>
+                  
+                  {/* Enhanced video indicators */}
+                  <div className="flex items-center space-x-4 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 shadow-lg">
+                    {videos.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentVideo(index);
+                          setIsAutoPlay(false);
+                        }}
+                        className={`relative transition-all duration-300 ${
+                          index === currentVideo 
+                            ? 'w-8 h-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-full shadow-md' 
+                            : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full hover:scale-125'
+                        }`}
+                      >
+                        {index === currentVideo && (
+                          <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      setCurrentVideo(prev => prev === videos.length - 1 ? 0 : prev + 1);
+                      setIsAutoPlay(false);
+                    }}
+                    className="group flex items-center bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-green-400/30"
+                  >
+                    <span className="font-bold text-lg">Next</span>
+                    <ChevronRight className="w-6 h-6 ml-3 group-hover:animate-pulse" />
+                  </button>
+                </div>
+                
+                {/* Enhanced auto-play toggle */}
+                <div className="flex items-center justify-center mt-6">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-lg border border-gray-200">
+                    <button
+                      onClick={() => setIsAutoPlay(!isAutoPlay)}
+                      className={`flex items-center px-6 py-3 rounded-full font-bold transition-all duration-300 ${
+                        isAutoPlay 
+                          ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl' 
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      <span className="text-lg mr-3">{isAutoPlay ? '⏸️' : '▶️'}</span>
+                      <span className="text-sm">{isAutoPlay ? 'Auto-play ON' : 'Auto-play OFF'}</span>
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Video counter */}
+                <div className="text-center mt-4">
+                  <span className="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-full font-medium">
+                    Video {currentVideo + 1} of {videos.length}
+                  </span>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
