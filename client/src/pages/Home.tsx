@@ -123,9 +123,9 @@ export default function Home() {
             <div className="text-center text-white max-w-5xl px-4 sm:px-8">
               {/* Decorative element */}
               <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8 animate-fade-in" style={{ animationDuration: '1s', animationDelay: '0.1s', animationFillMode: 'both' }}></div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light mb-8 sm:mb-10 leading-[1.1] tracking-tight">
-                <span className="block mb-3 animate-fade-in font-extralight text-white/95" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both', letterSpacing: '0.02em' }}>Powering Communities.</span>
-                <span className="block text-yellow-400 animate-fade-in font-medium" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both', letterSpacing: '0.01em' }}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 sm:mb-10 leading-[1.1] tracking-tight drop-shadow-2xl">
+                <span className="block mb-3 animate-fade-in font-bold text-white drop-shadow-lg" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both', letterSpacing: '0.02em', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>Powering Communities.</span>
+                <span className="block text-yellow-400 animate-fade-in font-bold drop-shadow-lg" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both', letterSpacing: '0.01em', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
                   <span className="relative inline-block">
                     Lighting Futures.
                     <span className="absolute left-0 bottom-0 h-0.5 sm:h-1 bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 animate-expand-width shadow-lg shadow-yellow-400/20" style={{ animationDuration: '1.8s', animationDelay: '1.6s', animationFillMode: 'forwards' }}></span>
@@ -135,8 +135,8 @@ export default function Home() {
               
               <div className="text-lg sm:text-xl md:text-2xl leading-relaxed mb-10 sm:mb-14 max-w-4xl mx-auto space-y-6 sm:space-y-8">
                 <div className="space-y-4 sm:space-y-6 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.1s', animationFillMode: 'both' }}>
-                  <p className="px-2 sm:px-0 text-white/90 font-light leading-relaxed">At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
-                  <p className="px-2 sm:px-0 text-white/85 font-light leading-relaxed">Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
+                  <p className="px-2 sm:px-0 text-white font-semibold leading-relaxed drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
+                  <p className="px-2 sm:px-0 text-white/95 font-semibold leading-relaxed drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
                 </div>
                 
                 <div className="relative animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.4s', animationFillMode: 'both' }}>
