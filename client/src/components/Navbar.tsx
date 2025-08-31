@@ -49,6 +49,10 @@ export default function Navbar() {
               Team
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
+            <Link href="/gallery" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+              Gallery
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+            </Link>
           </nav>
           
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
@@ -140,6 +144,14 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Team
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+            </Link>
+            <Link
+              href="/gallery" 
+              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Gallery
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             
