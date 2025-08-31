@@ -162,6 +162,7 @@ The application now operates as a **dual platform system**:
 
 ## Changelog
 
+- August 31, 2025. **Crisis Section Visual Enhancement**: Enhanced Crisis Section with dynamic animated backgrounds, sophisticated gradient cards with hover effects, improved typography with text shadows, and redesigned "But There Is Hope" section with enhanced visual appeal
 - August 16, 2025. **Admin Login Activity Dashboard**: Added comprehensive login tracking system for admins with real-time monitoring of team member login timestamps, color-coded status indicators, and tabbed interface for easy navigation between team management and login activity
 - August 16, 2025. **Department Head Task Toggle Feature**: Added toggle functionality for department heads to switch between "Tasks Assigned to Me" (tasks from admin) and "Tasks Assigned by Me" (tasks assigned to team members), with proper visual indicators and task submission capabilities maintained
 - August 16, 2025. **Admin Work Submission Visibility Fix**: Fixed admin interface to display all work submissions from all departments with complete worker and task details by updating getAllWorkSubmissions function
