@@ -12,7 +12,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100 sticky top-0 z-50">
+    <header className="bg-white/20 backdrop-blur-xl shadow-xl border-b border-white/30 sticky top-0 z-50 transition-all duration-300">
       <div className="container mx-auto px-6 py-5">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-4 group">
@@ -23,37 +23,37 @@ export default function Navbar() {
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full animate-pulse"></div>
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-2xl bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              <span className="font-bold text-2xl text-white drop-shadow-lg">
                 SolarPak
               </span>
-              <span className="text-sm text-slate-500 font-medium">Powering Communities</span>
+              <span className="text-sm text-white/80 font-medium drop-shadow-md">Powering Communities</span>
             </div>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-2">
-            <a href="/#problem" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#problem" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Crisis
             </a>
-            <a href="/#solution" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#solution" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Solution
             </a>
-            <Link href="/village" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <Link href="/village" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Stories
             </Link>
-            <a href="/#impact" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#impact" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Impact
             </a>
-            <Link href="/impact" className="flex items-center px-4 py-2.5 rounded-xl font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all duration-200">
+            <Link href="/impact" className="flex items-center px-4 py-2.5 rounded-xl font-medium text-yellow-300 bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               <Zap className="w-4 h-4 mr-2" />
               Map
             </Link>
-            <a href="/#projects" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <a href="/#projects" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Projects
             </a>
-            <Link href="/membership" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <Link href="/membership" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Membership
             </Link>
-            <Link href="/team" className="px-4 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200">
+            <Link href="/team" className="px-4 py-2.5 rounded-xl font-medium text-white/90 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 drop-shadow-sm">
               Team
             </Link>
           </nav>
@@ -82,14 +82,14 @@ export default function Navbar() {
 
             
             <button 
-              className="md:hidden relative p-2 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group" 
+              className="md:hidden relative p-2 rounded-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 group border border-white/30" 
               onClick={toggleMobileMenu}
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-6 w-6 text-blue-600 group-hover:rotate-90 transition-transform duration-300" />
+                <X className="h-6 w-6 text-white group-hover:rotate-90 transition-transform duration-300 drop-shadow-sm" />
               ) : (
-                <Menu className="h-6 w-6 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
+                <Menu className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300 drop-shadow-sm" />
               )}
             </button>
           </div>
@@ -97,52 +97,52 @@ export default function Navbar() {
         
         {/* Mobile Menu */}
         <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="flex flex-col space-y-2 mt-4 pb-4 bg-gradient-to-b from-blue-50/50 to-white rounded-lg p-4 mx-2">
+          <div className="flex flex-col space-y-2 mt-4 pb-4 bg-white/20 backdrop-blur-xl border border-white/30 rounded-lg p-4 mx-2">
             <a 
               href="/#problem" 
-              className="font-heading font-medium hover:text-primary transition py-2"
+              className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              The Problem
+              Crisis
             </a>
             <a 
               href="/#solution" 
-              className="font-heading font-medium hover:text-primary transition py-2"
+              className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Our Solution
+              Solution
             </a>
             <a 
               href="/#impact" 
-              className="font-heading font-medium hover:text-primary transition py-2"
+              className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Impact
             </a>
             <Link 
               href="/impact" 
-              className="font-heading font-medium text-primary hover:text-primary/80 transition py-2"
+              className="font-medium text-yellow-300 hover:text-yellow-200 transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Impact Map
             </Link>
             <a 
               href="/#projects" 
-              className="font-heading font-medium hover:text-primary transition py-2"
+              className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Projects
             </a>
             <Link
               href="/village" 
-              className="font-heading font-medium hover:text-primary transition py-2"
+              className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Stories
             </Link>
             <Link
               href="/team" 
-              className="font-heading font-medium hover:text-primary transition py-2"
+              className="font-medium text-white/90 hover:text-white transition py-2 drop-shadow-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Team
