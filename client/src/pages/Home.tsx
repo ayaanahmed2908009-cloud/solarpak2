@@ -120,10 +120,10 @@ export default function Home() {
 
           {/* Sophisticated Text Overlay */}
           <div className="relative z-10 flex items-center justify-center" style={{ height: '100vh', marginTop: '120px' }}>
-            <div className="text-center text-white max-w-5xl px-4 sm:px-8">
+            <div className="text-center text-white max-w-5xl px-4 sm:px-8 -mt-8">
               {/* Decorative element */}
-              <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8 animate-fade-in" style={{ animationDuration: '1s', animationDelay: '0.1s', animationFillMode: 'both' }}></div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 sm:mb-10 leading-[1.1] tracking-tight drop-shadow-2xl">
+              <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-4 animate-fade-in" style={{ animationDuration: '1s', animationDelay: '0.1s', animationFillMode: 'both' }}></div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-[1.1] tracking-tight drop-shadow-2xl">
                 <span className="block mb-3 animate-fade-in font-bold text-white drop-shadow-lg" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both', letterSpacing: '0.02em', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>Powering Communities.</span>
                 <span className="block text-yellow-400 animate-fade-in font-bold drop-shadow-lg" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both', letterSpacing: '0.01em', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
                   <span className="relative inline-block">
@@ -133,19 +133,19 @@ export default function Home() {
                 </span>
               </h1>
               
-              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed mb-10 sm:mb-14 max-w-4xl mx-auto space-y-6 sm:space-y-8">
-                <div className="space-y-4 sm:space-y-6 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.1s', animationFillMode: 'both' }}>
+              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed mb-6 sm:mb-8 max-w-4xl mx-auto space-y-4 sm:space-y-6">
+                <div className="space-y-3 sm:space-y-4 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.1s', animationFillMode: 'both' }}>
                   <p className="px-2 sm:px-0 text-white font-semibold leading-relaxed drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
                   <p className="px-2 sm:px-0 text-white/95 font-semibold leading-relaxed drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
                 </div>
                 
-                <div className="relative animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.4s', animationFillMode: 'both' }}>
-                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-300 to-amber-400 font-medium text-xl sm:text-2xl md:text-3xl mt-8 sm:mt-10 px-2 sm:px-0 leading-tight tracking-wide">Join us in turning sunlight into hope.</p>
+                <div className="relative animate-fade-in mt-4 sm:mt-6" style={{ animationDuration: '1.2s', animationDelay: '1.4s', animationFillMode: 'both' }}>
+                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-300 to-amber-400 font-medium text-xl sm:text-2xl md:text-3xl px-2 sm:px-0 leading-tight tracking-wide">Join us in turning sunlight into hope.</p>
                   <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-amber-500/20 blur-lg opacity-50 -z-10 rounded-lg"></div>
                 </div>
                 
                 {/* Sophisticated Social Proof */}
-                <div className="flex items-center justify-center mt-6 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.8s', animationFillMode: 'both' }}>
+                <div className="flex items-center justify-center mt-4 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.8s', animationFillMode: 'both' }}>
                   <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 shadow-lg shadow-black/20">
                     <div className="flex items-center space-x-3">
                       <div className="flex -space-x-1.5">
@@ -176,14 +176,13 @@ export default function Home() {
                 </button>
               </div>
               
-              {/* Sophisticated Scroll Indicator */}
-              <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '2.8s', animationFillMode: 'both' }}
-                   onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}>
-                <div className="group flex flex-col items-center text-white/70 hover:text-white transition-all duration-500">
+              {/* Sophisticated Scroll Indicator - Positioned relative to content */}
+              <div className="mt-8 flex justify-center animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '2.8s', animationFillMode: 'both' }}>
+                <div className="group flex flex-col items-center text-white/70 hover:text-white transition-all duration-500 cursor-pointer" onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}>
                   <div className="bg-white/5 backdrop-blur-md rounded-full px-4 py-2 border border-white/10 group-hover:border-white/20 transition-all duration-300 shadow-lg">
                     <span className="text-sm font-light tracking-wider">Discover More</span>
                   </div>
-                  <ChevronDown className="h-5 w-5 mt-2 group-hover:translate-y-1 transition-transform duration-300" />
+                  <ChevronDown className="h-5 w-5 mt-2 group-hover:translate-y-1 transition-transform duration-300 animate-bounce" />
                 </div>
               </div>
             </div>
