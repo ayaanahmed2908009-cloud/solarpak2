@@ -107,9 +107,11 @@ export default function Home() {
             <div className="text-center text-white max-w-4xl px-8">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
                 <span className="block mb-2 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both' }}>Powering Communities.</span>
-                <span className="block text-yellow-400 relative animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both' }}>
-                  Lighting Futures.
-                  <span className="absolute left-0 bottom-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 animate-expand-width" style={{ animationDuration: '1.5s', animationDelay: '1.5s', animationFillMode: 'forwards' }}></span>
+                <span className="block text-yellow-400 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both' }}>
+                  <span className="relative inline-block">
+                    Lighting Futures.
+                    <span className="absolute left-0 bottom-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 animate-expand-width" style={{ animationDuration: '1.5s', animationDelay: '1.5s', animationFillMode: 'forwards' }}></span>
+                  </span>
                 </span>
               </h1>
               
@@ -119,21 +121,15 @@ export default function Home() {
                 <p className="text-yellow-300 font-semibold text-2xl md:text-3xl mt-8 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.2s', animationFillMode: 'both' }}>Join us in turning sunlight into hope.</p>
                 
                 {/* Social Proof */}
-                <div className="flex items-center justify-center mt-6 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.8s', animationFillMode: 'both' }}>
-                  <div className="bg-black/30 backdrop-blur-sm border border-yellow-400/30 rounded-full px-6 py-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex -space-x-2">
-                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full border-2 border-white"></div>
-                        <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full border-2 border-white"></div>
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full border-2 border-white"></div>
-                        <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-yellow-500 rounded-full border-2 border-white flex items-center justify-center">
-                          <span className="text-xs font-bold text-white">+</span>
-                        </div>
+                <div className="flex items-center justify-center mt-4 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.8s', animationFillMode: 'both' }}>
+                  <div className="bg-black/10 backdrop-blur-sm border border-white/10 rounded-full px-3 py-1">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex -space-x-1">
+                        <div className="w-4 h-4 bg-yellow-400/70 rounded-full"></div>
+                        <div className="w-4 h-4 bg-green-400/70 rounded-full"></div>
+                        <div className="w-4 h-4 bg-blue-400/70 rounded-full"></div>
                       </div>
-                      <div className="text-left">
-                        <p className="text-white font-semibold text-sm">Join 500+ donors</p>
-                        <p className="text-yellow-300 text-xs">making a difference</p>
-                      </div>
+                      <p className="text-white/60 text-xs font-medium">500+ donors</p>
                     </div>
                   </div>
                 </div>
