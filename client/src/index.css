@@ -524,6 +524,20 @@ html {
   }
 }
 
+/* Expand width animation for underlines */
+@keyframes expand-width {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-expand-width {
+  animation: expand-width 1.5s ease-out forwards;
+}
+
 /* Gradient border */
 .gradient-border {
   position: relative;

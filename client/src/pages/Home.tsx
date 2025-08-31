@@ -106,17 +106,40 @@ export default function Home() {
           <div className="relative z-10 flex items-center justify-center" style={{ height: '100vh', marginTop: '120px' }}>
             <div className="text-center text-white max-w-4xl px-8">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-                <span className="block mb-2">Powering Communities.</span>
-                <span className="block text-yellow-400">Lighting Futures.</span>
+                <span className="block mb-2 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.3s', animationFillMode: 'both' }}>Powering Communities.</span>
+                <span className="block text-yellow-400 relative animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '0.8s', animationFillMode: 'both' }}>
+                  Lighting Futures.
+                  <span className="absolute left-0 bottom-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 animate-expand-width" style={{ animationDuration: '1.5s', animationDelay: '1.5s', animationFillMode: 'forwards' }}></span>
+                </span>
               </h1>
               
               <div className="text-xl md:text-2xl leading-relaxed mb-12 max-w-3xl mx-auto space-y-4">
                 <p>At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
                 <p>Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
-                <p className="text-yellow-300 font-semibold text-2xl md:text-3xl mt-8">Join us in turning sunlight into hope.</p>
+                <p className="text-yellow-300 font-semibold text-2xl md:text-3xl mt-8 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.2s', animationFillMode: 'both' }}>Join us in turning sunlight into hope.</p>
+                
+                {/* Social Proof */}
+                <div className="flex items-center justify-center mt-6 animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '1.8s', animationFillMode: 'both' }}>
+                  <div className="bg-black/30 backdrop-blur-sm border border-yellow-400/30 rounded-full px-6 py-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex -space-x-2">
+                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full border-2 border-white"></div>
+                        <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full border-2 border-white"></div>
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full border-2 border-white"></div>
+                        <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-yellow-500 rounded-full border-2 border-white flex items-center justify-center">
+                          <span className="text-xs font-bold text-white">+</span>
+                        </div>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-white font-semibold text-sm">Join 500+ donors</p>
+                        <p className="text-yellow-300 text-xs">making a difference</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               
-              <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+              <div className="flex flex-col md:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '2.2s', animationFillMode: 'both' }}>
                 <button 
                   onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -129,6 +152,15 @@ export default function Home() {
                 >
                   Learn More
                 </button>
+              </div>
+              
+              {/* Scroll Indicator */}
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer animate-fade-in" style={{ animationDuration: '1.2s', animationDelay: '2.8s', animationFillMode: 'both' }}
+                   onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}>
+                <div className="flex flex-col items-center text-white/80 hover:text-white transition-colors duration-300">
+                  <span className="text-sm font-medium mb-2">Discover More</span>
+                  <ChevronDown className="h-6 w-6 animate-pulse" />
+                </div>
               </div>
             </div>
           </div>
