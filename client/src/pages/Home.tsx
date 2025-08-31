@@ -129,7 +129,7 @@ export default function Home() {
                         <div className="w-4 h-4 bg-green-400/70 rounded-full"></div>
                         <div className="w-4 h-4 bg-blue-400/70 rounded-full"></div>
                       </div>
-                      <p className="text-white/60 text-xs font-medium">500+ donors</p>
+                      <p className="text-white/60 text-xs font-medium">5+ donors</p>
                     </div>
                   </div>
                 </div>
