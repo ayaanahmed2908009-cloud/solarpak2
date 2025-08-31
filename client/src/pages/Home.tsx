@@ -21,6 +21,7 @@ import { SEOBlogContent, SEOLocationContent } from "@/components/SEOBlogContent"
 import { useState, useEffect, useRef } from "react";
 import { ChevronUp, Sun, Zap, Users, ThermometerSun, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import videoBackground from "@assets/Solarpak preview website_-VEED_1756655158911.mp4";
 
 export default function Home() {
   // State to control the visibility of the back-to-top button
@@ -78,13 +79,26 @@ export default function Home() {
               muted 
               loop 
               playsInline
+              preload="auto"
               className="w-full h-full object-cover"
+              src={videoBackground}
+              onError={(e) => {
+                console.error('Video failed to load:', e);
+                // Fallback to a dark gradient background if video fails
+                const target = e.target as HTMLVideoElement;
+                target.style.display = 'none';
+                if (target.parentElement) {
+                  target.parentElement.style.background = 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)';
+                }
+              }}
+              onLoadStart={() => console.log('Video started loading')}
+              onCanPlay={() => console.log('Video can play')}
+              onPlay={() => console.log('Video is playing')}
             >
-              <source src="/attached_assets/Solarpak preview website_-VEED_1756655158911.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             {/* Dark overlay for better text contrast */}
-            <div className="absolute inset-0 bg-black/50"></div>
+            <div className="absolute inset-0 bg-black/40"></div>
           </div>
 
           {/* Text Overlay */}
