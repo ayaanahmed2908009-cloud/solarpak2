@@ -114,7 +114,7 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
             {/* Light blue tint for text readability */}
-            <div className="absolute inset-0 bg-blue-900/15"></div>
+            <div className="absolute inset-0 bg-blue-900/30"></div>
           </div>
 
           {/* Clean Text Overlay */}
