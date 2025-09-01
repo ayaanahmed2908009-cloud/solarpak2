@@ -12,8 +12,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 transition-all duration-300 px-6 py-4 md:py-6">
-      <div className="bg-black/20 backdrop-blur-md shadow-lg border border-gray-400/50 rounded-full mx-auto max-w-7xl px-6 py-3 md:px-12 md:py-5">
+    <header className="sticky top-0 z-50 bg-black shadow-lg border-b border-gray-800">
+      <div className="mx-auto max-w-7xl px-6 py-4 md:px-12 md:py-6">
         <div className="flex items-center justify-center">
           <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
             <a href="/#problem" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
@@ -74,7 +74,7 @@ export default function Navbar() {
           </div>
           
           <button 
-            className="md:hidden absolute right-6 top-1/2 transform -translate-y-1/2 p-2 rounded-lg bg-black/20 backdrop-blur-sm hover:bg-black/30 transition-all duration-300 group border border-gray-400/50" 
+            className="md:hidden p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300 group" 
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           >
@@ -89,7 +89,7 @@ export default function Navbar() {
       
       {/* Mobile Menu */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="flex flex-col space-y-2 mt-4 pb-4 bg-black/20 backdrop-blur-md border border-gray-400/50 rounded-full p-6 mx-6">
+        <div className="flex flex-col space-y-2 mt-0 pb-4 bg-black border-t border-gray-800 p-6">
             <a 
               href="/#problem" 
               className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
