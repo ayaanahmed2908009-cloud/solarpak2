@@ -9,45 +9,39 @@ export default function CrisisSection() {
 
   return (
     <div className="py-24 bg-gradient-to-br from-blue-900 via-slate-800 to-blue-900 text-white relative overflow-hidden">
-      {/* Dynamic background elements */}
+      {/* Clean background elements */}
       <div className="absolute inset-0">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-amber-500/15 to-yellow-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-500/5 to-red-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        
-        {/* Animated grid pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-        </div>
+        {/* Subtle gradient orbs */}
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-red-500/8 to-orange-500/8 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-amber-500/8 to-yellow-500/8 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center bg-gradient-to-r from-red-500/25 to-orange-500/25 backdrop-blur-md px-8 py-4 rounded-full mb-10 border border-red-400/40 shadow-2xl shadow-red-500/20 animate-pulse">
-            <div className="w-4 h-4 bg-gradient-to-r from-red-400 to-red-500 rounded-full animate-pulse mr-4 shadow-lg"></div>
+          <div className="inline-flex items-center bg-gradient-to-r from-red-500/20 to-orange-500/20 backdrop-blur-md px-8 py-4 rounded-full mb-10 border border-red-400/30">
+            <div className="w-4 h-4 bg-gradient-to-r from-red-400 to-red-500 rounded-full mr-4"></div>
             <span className="font-bold text-base tracking-wider text-red-100">⚡ URGENT CRISIS</span>
           </div>
           
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-10 leading-tight">
-            <span className="block text-white mb-2 animate-fade-in drop-shadow-lg" style={{ animationDelay: '0.2s', textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>The Reality in</span>
-            <span className="bg-gradient-to-r from-red-400 via-orange-400 to-amber-400 bg-clip-text text-transparent animate-fade-in drop-shadow-2xl" style={{ animationDelay: '0.4s' }}>
+            <span className="block text-white mb-2" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>The Reality in</span>
+            <span className="bg-gradient-to-r from-red-400 via-orange-400 to-amber-400 bg-clip-text text-transparent">
               Pakistan Today
             </span>
           </h2>
           
           <div className="max-w-5xl mx-auto">
-            <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-6 animate-fade-in font-medium" style={{ animationDelay: '0.6s', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+            <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-6 font-medium" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
               Right now, millions of Pakistani families are enduring extreme heat without reliable electricity.
             </p>
-            <p className="text-lg md:text-xl text-red-300 font-semibold animate-fade-in" style={{ animationDelay: '0.8s', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+            <p className="text-lg md:text-xl text-red-300 font-semibold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
               This is not just a statistic—it's a daily struggle for survival.
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border border-red-400/20 hover:border-red-400/40 hover:bg-white/15 transition-all duration-500 group shadow-2xl shadow-red-500/10 hover:shadow-red-500/20 hover:-translate-y-2 animate-fade-in" style={{ animationDelay: '1s' }}>
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border border-red-400/20 hover:border-red-400/40 hover:bg-white/15 transition-all duration-500 group shadow-2xl shadow-red-500/10 hover:shadow-red-500/20 hover:-translate-y-2 ">
             <div className="flex items-start mb-8">
               <div className="relative p-5 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl mr-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-2xl shadow-red-500/30">
                 <Thermometer className="w-10 h-10 text-white" />
@@ -64,7 +58,7 @@ export default function CrisisSection() {
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border border-orange-400/20 hover:border-orange-400/40 hover:bg-white/15 transition-all duration-500 group shadow-2xl shadow-orange-500/10 hover:shadow-orange-500/20 hover:-translate-y-2 animate-fade-in" style={{ animationDelay: '1.2s' }}>
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border border-orange-400/20 hover:border-orange-400/40 hover:bg-white/15 transition-all duration-500 group shadow-2xl shadow-orange-500/10 hover:shadow-orange-500/20 hover:-translate-y-2 ">
             <div className="flex items-start mb-8">
               <div className="relative p-5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mr-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-2xl shadow-orange-500/30">
                 <Clock className="w-10 h-10 text-white" />
@@ -81,7 +75,7 @@ export default function CrisisSection() {
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border border-amber-400/20 hover:border-amber-400/40 hover:bg-white/15 transition-all duration-500 group shadow-2xl shadow-amber-500/10 hover:shadow-amber-500/20 hover:-translate-y-2 animate-fade-in" style={{ animationDelay: '1.4s' }}>
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border border-amber-400/20 hover:border-amber-400/40 hover:bg-white/15 transition-all duration-500 group shadow-2xl shadow-amber-500/10 hover:shadow-amber-500/20 hover:-translate-y-2 ">
             <div className="flex items-start mb-8">
               <div className="relative p-5 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl mr-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-2xl shadow-amber-500/30">
                 <Users className="w-10 h-10 text-white" />
