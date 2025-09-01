@@ -61,7 +61,7 @@ export default function HeroBanner() {
           Your browser does not support the video tag.
         </video>
         {/* Light blue tint for text readability */}
-        <div className="absolute inset-0 bg-blue-900/30"></div>
+        <div className="absolute inset-0 bg-blue-900/30 md:bg-blue-900/30 sm:bg-blue-900/45"></div>
       </div>
       
       {/* Clean content */}
