@@ -92,8 +92,18 @@ export default function Navbar() {
       </div>
       
       {/* Mobile Menu */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="flex flex-col space-y-1 mt-0 pb-4 bg-gradient-to-r from-blue-900 to-blue-800 border-t border-blue-700 p-6">
+      <div className={`md:hidden fixed top-0 right-0 h-full w-80 bg-gradient-to-b from-blue-900 to-blue-800 shadow-2xl transform transition-transform duration-300 ease-in-out z-40 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        {/* Close button */}
+        <div className="flex justify-end p-4 border-b border-blue-700">
+          <button 
+            onClick={toggleMobileMenu}
+            className="p-2 rounded-lg bg-blue-800 hover:bg-blue-700 transition-all duration-300 group"
+          >
+            <X className="h-6 w-6 text-amber-300 group-hover:rotate-90 transition-transform duration-300" />
+          </button>
+        </div>
+        
+        <div className="flex flex-col space-y-3 p-6 h-full overflow-y-auto">
             <a 
               href="/#problem" 
               className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
@@ -172,6 +182,14 @@ export default function Navbar() {
             </div>
         </div>
       </div>
+      
+      {/* Mobile Menu Backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 z-30 transition-opacity duration-300"
+          onClick={toggleMobileMenu}
+        ></div>
+      )}
     </header>
   );
 }
