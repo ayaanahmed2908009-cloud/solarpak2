@@ -331,7 +331,7 @@ export default function UnifiedImpactSection() {
             </p>
           </div>
           
-          <div className="relative max-w-5xl mx-auto">
+          <div className="relative max-w-6xl mx-auto">
             {/* Floating video container with enhanced shadows */}
             <div className="relative bg-gradient-to-br from-white via-blue-50/30 to-green-50/30 rounded-3xl p-8 md:p-10 shadow-2xl hover:shadow-3xl border-2 border-white/50 overflow-hidden backdrop-blur-sm transform hover:-translate-y-2 transition-all duration-500">
               {/* Enhanced background glow effects */}
@@ -341,7 +341,7 @@ export default function UnifiedImpactSection() {
               
               <div className="relative z-10">
                 {/* Video display */}
-                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-xl">
+                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-xl mb-6">
                   <video
                     ref={videoRef}
                     key={currentVideo}
@@ -433,22 +433,6 @@ export default function UnifiedImpactSection() {
                   </button>
                 </div>
                 
-                {/* Enhanced auto-play toggle */}
-                <div className="flex items-center justify-center mt-6">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-lg border border-gray-200">
-                    <button
-                      onClick={() => setIsAutoPlay(!isAutoPlay)}
-                      className={`flex items-center px-6 py-3 rounded-full font-bold transition-all duration-300 ${
-                        isAutoPlay 
-                          ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl' 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      <span className="text-lg mr-3">{isAutoPlay ? '⏸️' : '▶️'}</span>
-                      <span className="text-sm">{isAutoPlay ? 'Auto-play ON' : 'Auto-play OFF'}</span>
-                    </button>
-                  </div>
-                </div>
                 
                 {/* Video counter */}
                 <div className="text-center mt-4">
