@@ -15,7 +15,12 @@ export default function HeroBanner() {
           loop 
           playsInline
           preload="metadata"
-          className="w-full h-full object-cover transition-opacity duration-500 opacity-0"
+          className="w-full h-full transition-opacity duration-500 opacity-0"
+          style={{ 
+            objectFit: 'cover',
+            objectPosition: window.innerWidth < 768 ? 'center center' : 'center center',
+            transform: window.innerWidth < 768 ? 'scale(1.05)' : 'none'
+          }}
           src={videoBackground}
           poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23grad)' /%3E%3C/svg%3E"
           disablePictureInPicture
@@ -32,14 +37,25 @@ export default function HeroBanner() {
           onLoadStart={(e) => {
             console.log('Video started loading');
             const video = e.target as HTMLVideoElement;
+            // Mobile-specific optimizations
             if (window.innerWidth < 768) {
-              video.style.transform = 'scale(1.1)';
+              video.style.objectPosition = 'center center';
+              video.style.transform = 'scale(1.05)';
+              // Reduce quality for mobile performance
+              video.playbackRate = 1;
+              video.setAttribute('webkit-playsinline', 'true');
             }
           }}
           onCanPlay={(e) => {
             console.log('Video can play');
             const video = e.target as HTMLVideoElement;
             video.style.opacity = '1';
+            
+            // Additional mobile optimizations
+            if (window.innerWidth < 768) {
+              video.style.willChange = 'transform';
+              video.style.backfaceVisibility = 'hidden';
+            }
           }}
           onPlay={() => console.log('Video is playing')}
         >
