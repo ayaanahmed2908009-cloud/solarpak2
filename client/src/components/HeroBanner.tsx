@@ -4,23 +4,23 @@ export default function HeroBanner() {
 
   return (
     <section 
-      className="relative bg-gradient-to-r from-gray-900 via-black to-gray-800 overflow-hidden h-screen"
+      className="relative bg-gradient-to-br from-blue-900 via-slate-800 to-gray-900 overflow-hidden h-screen"
     >
       
       {/* Clean overlay */}
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/60 to-slate-900/80"></div>
       
       {/* Clean content */}
       <div className="container mx-auto px-4 py-24 md:py-32 lg:py-40 relative z-10 text-white h-full flex flex-col justify-center">
         <div className="max-w-3xl mx-auto md:mx-0">
           <div className="flex items-center mb-4">
             <Sun className="h-8 w-8 mr-2 text-yellow-400" />
-            <span className="text-lg font-semibold uppercase tracking-wider">SolarPak Initiative</span>
+            <span className="text-lg font-semibold uppercase tracking-wider text-amber-300">SolarPak Initiative</span>
           </div>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
             <span className="block text-shadow-lg">Bringing Light to</span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-yellow-400 font-extrabold">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-yellow-500 font-extrabold">
               Pakistan
             </span>
             <span className="block text-shadow-lg">Through Solar Power</span>
@@ -33,7 +33,7 @@ export default function HeroBanner() {
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
             <a 
               href="#donate" 
-              className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-8 py-4 rounded-lg text-center transition-colors duration-300 text-lg"
+              className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-bold px-8 py-4 rounded-lg text-center transition-all duration-300 text-lg shadow-lg"
             >
               Make a Donation
             </a>
@@ -46,24 +46,24 @@ export default function HeroBanner() {
           </div>
           
           {/* Key stats indicators */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-black/30 rounded-lg p-5 border border-white/20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-900/40 rounded-lg p-5 border border-amber-300/30">
             <div className="text-center ">
-              <ThermometerSun className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
+              <ThermometerSun className="h-6 w-6 mx-auto mb-2 text-amber-400" />
               <p className="text-sm font-medium text-gray-200">Average Temp</p>
               <p className="text-xl font-bold text-white">35°C</p>
             </div>
             <div className="text-center ">
-              <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
+              <Zap className="h-6 w-6 mx-auto mb-2 text-amber-400" />
               <p className="text-sm font-medium text-gray-200">Daily Outages</p>
               <p className="text-xl font-bold text-white">12 hrs</p>
             </div>
             <div className="text-center ">
-              <Users className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
+              <Users className="h-6 w-6 mx-auto mb-2 text-amber-400" />
               <p className="text-sm font-medium text-gray-200">People Affected</p>
               <p className="text-xl font-bold text-white">210M+</p>
             </div>
             <div className="text-center ">
-              <Sun className="h-6 w-6 mx-auto mb-2 text-yellow-400" />
+              <Sun className="h-6 w-6 mx-auto mb-2 text-amber-400" />
               <p className="text-sm font-medium text-gray-200">Solar Potential</p>
               <p className="text-xl font-bold text-white">High</p>
             </div>

@@ -114,7 +114,7 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
             {/* Clean overlay */}
-            <div className="absolute inset-0 bg-black/60"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 to-slate-800/90"></div>
           </div>
 
           {/* Clean Text Overlay */}
@@ -122,7 +122,7 @@ export default function Home() {
             <div className="text-center text-white max-w-5xl px-4 sm:px-8 -mt-8">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-[1.1] tracking-tight">
                 <span className="block mb-3 font-bold text-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>Powering Communities.</span>
-                <span className="block text-yellow-400 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                <span className="block text-amber-400 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
                   Lighting Futures.
                 </span>
               </h1>
@@ -134,14 +134,14 @@ export default function Home() {
                 </div>
                 
                 <div className="mt-4 sm:mt-6">
-                  <p className="text-yellow-300 font-medium text-xl sm:text-2xl md:text-3xl px-2 sm:px-0 leading-tight">Join us in turning sunlight into hope.</p>
+                  <p className="text-amber-300 font-medium text-xl sm:text-2xl md:text-3xl px-2 sm:px-0 leading-tight">Join us in turning sunlight into hope.</p>
                 </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
                 <button 
                   onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
-                  className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-lg text-base sm:text-lg transition-colors duration-300 w-full sm:w-auto max-w-xs sm:max-w-none"
+                  className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-lg text-base sm:text-lg transition-all duration-300 w-full sm:w-auto max-w-xs sm:max-w-none shadow-lg"
                 >
                   Donate Now
                 </button>

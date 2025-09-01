@@ -12,69 +12,69 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-black shadow-lg border-b border-gray-800">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-900 to-blue-800 shadow-lg border-b border-blue-700">
       <div className="mx-auto max-w-7xl px-6 py-4 md:px-12 md:py-6">
         <div className="flex items-center justify-center">
           <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
-            <a href="/#problem" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <a href="/#problem" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Crisis
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <a href="/#solution" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <a href="/#solution" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Solution
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <Link href="/village" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/village" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Stories
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <a href="/#impact" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <a href="/#impact" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Impact
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <Link href="/impact" className="flex items-center font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/impact" className="flex items-center font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               <Zap className="w-4 h-4 mr-2" />
               Map
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <a href="/#projects" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <a href="/#projects" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Projects
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <Link href="/membership" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/membership" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Membership
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <Link href="/team" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/team" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Team
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <Link href="/gallery" className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/gallery" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Gallery
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
           </nav>
           
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             <Link 
               href="/worker/login" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg"
             >
               🔐 Team Login
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             
             <a 
               href="/#donate" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 relative group text-base lg:text-lg"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg"
             >
               ❤️ Donate Now
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
           </div>
           
           <button 
-            className="md:hidden p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300 group" 
+            className="md:hidden p-2 rounded-lg bg-blue-800 hover:bg-blue-700 transition-all duration-300 group" 
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           >
@@ -89,88 +89,88 @@ export default function Navbar() {
       
       {/* Mobile Menu */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="flex flex-col space-y-2 mt-0 pb-4 bg-black border-t border-gray-800 p-6">
+        <div className="flex flex-col space-y-2 mt-0 pb-4 bg-gradient-to-r from-blue-900 to-blue-800 border-t border-blue-700 p-6">
             <a 
               href="/#problem" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Crisis
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
             <a 
               href="/#solution" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Solution
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
             <a 
               href="/#impact" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Impact
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
             <Link 
               href="/impact" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Impact Map
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             <a 
               href="/#projects" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Projects
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
             <Link
               href="/village" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Stories
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             <Link
               href="/team" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Team
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             <Link
               href="/gallery" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Gallery
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             
             <Link 
               href="/worker/login" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group text-center"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               🔐 Team Login
-              <span className="absolute left-1/2 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full transform -translate-x-1/2"></span>
+              <span className="absolute left-1/2 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full transform -translate-x-1/2"></span>
             </Link>
             
             <a 
               href="#donate" 
-              className="font-medium text-yellow-300 hover:text-yellow-200 transition-all duration-200 py-2 relative group text-center"
+              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               ❤️ Donate Now
-              <span className="absolute left-1/2 bottom-0 w-0 h-0.5 bg-yellow-300 transition-all duration-200 group-hover:w-full transform -translate-x-1/2"></span>
+              <span className="absolute left-1/2 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full transform -translate-x-1/2"></span>
             </a>
         </div>
       </div>
