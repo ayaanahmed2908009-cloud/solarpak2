@@ -14,8 +14,17 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-900 to-blue-800 shadow-lg border-b border-blue-700">
       <div className="mx-auto max-w-7xl px-6 py-4 md:px-12 md:py-6">
-        <div className="flex items-center justify-center">
-          <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
+        <div className="flex items-center justify-between">
+          {/* Logo/Brand */}
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="p-2 bg-amber-400 rounded-lg">
+              <Sun className="h-6 w-6 text-blue-900" />
+            </div>
+            <span className="text-xl lg:text-2xl font-bold text-amber-300">SolarPak</span>
+          </Link>
+          
+          {/* Main Navigation */}
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             <a href="/#problem" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Crisis
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
@@ -37,10 +46,6 @@ export default function Navbar() {
               Map
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <a href="/#projects" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
-              Projects
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
-            </a>
             <Link href="/membership" className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg">
               Membership
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
@@ -55,21 +60,20 @@ export default function Navbar() {
             </Link>
           </nav>
           
-          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          {/* Action Buttons */}
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
             <Link 
               href="/worker/login" 
-              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg"
+              className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 transition-all duration-200 rounded-lg border border-amber-400/20 hover:border-amber-400/40 text-sm lg:text-base"
             >
               🔐 Team Login
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             
             <a 
               href="/#donate" 
-              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 relative group text-base lg:text-lg"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-blue-900 font-semibold transition-all duration-200 rounded-lg shadow-md hover:shadow-lg text-sm lg:text-base"
             >
               ❤️ Donate Now
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </a>
           </div>
           
@@ -89,7 +93,7 @@ export default function Navbar() {
       
       {/* Mobile Menu */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="flex flex-col space-y-2 mt-0 pb-4 bg-gradient-to-r from-blue-900 to-blue-800 border-t border-blue-700 p-6">
+        <div className="flex flex-col space-y-1 mt-0 pb-4 bg-gradient-to-r from-blue-900 to-blue-800 border-t border-blue-700 p-6">
             <a 
               href="/#problem" 
               className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
@@ -122,14 +126,6 @@ export default function Navbar() {
               Impact Map
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <a 
-              href="/#projects" 
-              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Projects
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
-            </a>
             <Link
               href="/village" 
               className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group"
@@ -155,23 +151,25 @@ export default function Navbar() {
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full"></span>
             </Link>
             
-            <Link 
-              href="/worker/login" 
-              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group text-center"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              🔐 Team Login
-              <span className="absolute left-1/2 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full transform -translate-x-1/2"></span>
-            </Link>
             
-            <a 
-              href="#donate" 
-              className="font-medium text-amber-300 hover:text-amber-200 transition-all duration-200 py-2 relative group text-center"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              ❤️ Donate Now
-              <span className="absolute left-1/2 bottom-0 w-0 h-0.5 bg-amber-300 transition-all duration-200 group-hover:w-full transform -translate-x-1/2"></span>
-            </a>
+            {/* Action buttons for mobile */}
+            <div className="border-t border-blue-700 pt-4 mt-4 space-y-3">
+              <Link 
+                href="/worker/login" 
+                className="block text-center py-2 px-4 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 transition-all duration-200 rounded-lg border border-amber-400/20"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🔐 Team Login
+              </Link>
+              
+              <a 
+                href="/#donate" 
+                className="block text-center py-2 px-4 bg-amber-500 hover:bg-amber-400 text-blue-900 font-semibold transition-all duration-200 rounded-lg"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ❤️ Donate Now
+              </a>
+            </div>
         </div>
       </div>
     </header>
