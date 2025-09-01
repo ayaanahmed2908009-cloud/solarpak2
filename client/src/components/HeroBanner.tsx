@@ -1,14 +1,53 @@
 import { Sun, Zap, Users, ThermometerSun, ChevronDown } from "lucide-react";
+import videoBackground from "@assets/Solarpak preview website_-VEED_1756655158911.mp4";
 
 export default function HeroBanner() {
 
   return (
     <section 
-      className="relative bg-gradient-to-br from-blue-900 via-slate-800 to-gray-900 overflow-hidden h-screen"
+      className="relative overflow-hidden h-screen"
     >
-      
-      {/* Clean overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/60 to-slate-900/80"></div>
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          preload="metadata"
+          className="w-full h-full object-cover transition-opacity duration-500 opacity-0"
+          src={videoBackground}
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23grad)' /%3E%3C/svg%3E"
+          disablePictureInPicture
+          disableRemotePlayback
+          controlsList="nodownload nofullscreen noremoteplayback"
+          onError={(e) => {
+            console.error('Video failed to load:', e);
+            const target = e.target as HTMLVideoElement;
+            target.style.display = 'none';
+            if (target.parentElement) {
+              target.parentElement.style.background = 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)';
+            }
+          }}
+          onLoadStart={(e) => {
+            console.log('Video started loading');
+            const video = e.target as HTMLVideoElement;
+            if (window.innerWidth < 768) {
+              video.style.transform = 'scale(1.1)';
+            }
+          }}
+          onCanPlay={(e) => {
+            console.log('Video can play');
+            const video = e.target as HTMLVideoElement;
+            video.style.opacity = '1';
+          }}
+          onPlay={() => console.log('Video is playing')}
+        >
+          Your browser does not support the video tag.
+        </video>
+        {/* Light blue tint for text readability */}
+        <div className="absolute inset-0 bg-blue-900/30"></div>
+      </div>
       
       {/* Clean content */}
       <div className="container mx-auto px-4 py-24 md:py-32 lg:py-40 relative z-10 text-white h-full flex flex-col justify-center">
@@ -19,87 +58,50 @@ export default function HeroBanner() {
           </div>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
-            <span className="block text-shadow-lg">Bringing Light to</span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-yellow-500 font-extrabold">
-              Pakistan
+            <span className="block font-bold text-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>Powering Communities.</span>
+            <span className="block text-amber-400 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+              Lighting Futures.
             </span>
-            <span className="block text-shadow-lg">Through Solar Power</span>
           </h1>
           
-          <p className="text-lg md:text-xl mb-8 opacity-90">
-            Help us combat electricity shortages and improve lives by funding solar panel installations for families across Pakistan.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <a 
-              href="#donate" 
-              className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-bold px-8 py-4 rounded-lg text-center transition-all duration-300 text-lg shadow-lg"
-            >
-              Make a Donation
-            </a>
-            <a 
-              href="#problem" 
-              className="bg-transparent hover:bg-white/10 text-white font-medium px-8 py-4 rounded-lg text-center transition-colors duration-300 text-lg border border-white/40 hover:border-white/60"
-            >
-              Learn More
-            </a>
+          <div className="text-lg md:text-xl leading-relaxed mb-8 max-w-4xl mx-auto space-y-4">
+            <div className="space-y-3">
+              <p className="text-white font-medium leading-relaxed" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.</p>
+              <p className="text-white/95 font-medium leading-relaxed" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>Every panel installed means more light for homes, more opportunity for children, and a brighter, sustainable tomorrow.</p>
+            </div>
+            
+            <div className="mt-4">
+              <p className="text-amber-300 font-medium text-xl leading-tight">Join us in turning sunlight into hope.</p>
+            </div>
           </div>
           
-          {/* Key stats indicators */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-900/40 rounded-lg p-5 border border-amber-300/30">
-            <div className="text-center ">
-              <ThermometerSun className="h-6 w-6 mx-auto mb-2 text-amber-400" />
-              <p className="text-sm font-medium text-gray-200">Average Temp</p>
-              <p className="text-xl font-bold text-white">35°C</p>
-            </div>
-            <div className="text-center ">
-              <Zap className="h-6 w-6 mx-auto mb-2 text-amber-400" />
-              <p className="text-sm font-medium text-gray-200">Daily Outages</p>
-              <p className="text-xl font-bold text-white">12 hrs</p>
-            </div>
-            <div className="text-center ">
-              <Users className="h-6 w-6 mx-auto mb-2 text-amber-400" />
-              <p className="text-sm font-medium text-gray-200">People Affected</p>
-              <p className="text-xl font-bold text-white">210M+</p>
-            </div>
-            <div className="text-center ">
-              <Sun className="h-6 w-6 mx-auto mb-2 text-amber-400" />
-              <p className="text-sm font-medium text-gray-200">Solar Potential</p>
-              <p className="text-xl font-bold text-white">High</p>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+            <button 
+              onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+              className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 w-full sm:w-auto max-w-xs shadow-lg"
+            >
+              Donate Now
+            </button>
+            <button 
+              onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-transparent hover:bg-white/10 text-white font-medium py-4 px-8 rounded-lg text-lg transition-colors duration-300 w-full sm:w-auto max-w-xs border border-white/40 hover:border-white/60"
+            >
+              Learn More
+            </button>
+          </div>
+          
+          {/* Simple Scroll Indicator */}
+          <div className="flex justify-center">
+            <button 
+              onClick={() => document.getElementById('problem')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-white/70 hover:text-white transition-colors duration-300 cursor-pointer"
+            >
+              <ChevronDown className="h-6 w-6" />
+            </button>
           </div>
         </div>
       </div>
       
-      {/* Image of Pakistan with enhanced styling */}
-      <div className="absolute right-0 top-0 bottom-0 hidden lg:block lg:w-2/5 h-full z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-transparent z-10"></div>
-        <img 
-          src="https://images.unsplash.com/photo-1593939535589-8356e421b3cc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-          alt="Rural landscape in Sindh, Pakistan" 
-          className="object-cover h-full w-full blur-sm"
-        />
-        <img 
-          src="https://images.unsplash.com/photo-1592555059503-0a774cb8d477?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-          alt="Interior Sindh, Pakistan rural village" 
-          className="absolute inset-0 object-cover h-full w-full opacity-90"
-        />
-      </div>
-      
-      {/* Simple scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white z-20">
-        <ChevronDown className="h-6 w-6" />
-      </div>
-      
-      {/* Bottom wave decoration for seamless flow */}
-      <div className="absolute bottom-0 left-0 right-0 z-10">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 70C840 80 960 100 1080 110C1200 120 1320 120 1380 120H1440V0H1380C1320 0 1200 0 1080 0C960 0 840 0 720 0C600 0 480 0 360 0C240 0 120 0 60 0H0V120Z" 
-            fill="white"
-          />
-        </svg>
-      </div>
     </section>
   );
 }
