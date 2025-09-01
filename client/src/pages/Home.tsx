@@ -8,7 +8,6 @@ import FloatingTestimonials from "@/components/FloatingTestimonials";
 import PakistanWeatherWidget from "@/components/PakistanWeatherWidget";
 
 import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
-import ProjectsSection from "@/components/ProjectsSection";
 import CulturalDonationExperience from "@/components/CulturalDonationExperience";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import TrustRoadmapSection from "@/components/TrustRoadmapSection";
@@ -183,9 +182,6 @@ export default function Home() {
           <UnifiedImpactSection />
         </section>
         
-        <section id="projects" className="snap-section">
-          <ProjectsSection />
-        </section>
         
         {/* Cultural Donation Experience - Pakistani-focused giving */}
         <section className="snap-section">
