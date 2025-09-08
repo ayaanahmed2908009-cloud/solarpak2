@@ -17,7 +17,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center">
-            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-14 lg:h-12 lg:w-16" />
+            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-14 lg:h-12 lg:w-20 xl:w-24" />
           </Link>
           
           {/* Main Navigation */}
