@@ -13,7 +13,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-lg border-b border-green-200">
-      <div className="mx-auto max-w-7xl px-6 py-4 md:px-12 md:py-6">
+      <div className="mx-auto max-w-7xl px-4 py-3 md:px-8 lg:px-12 md:py-4 lg:py-5">
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-2">
@@ -22,54 +22,54 @@ export default function Navbar() {
           </Link>
           
           {/* Main Navigation */}
-          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-            <a href="/#problem" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8 xl:space-x-10">
+            <a href="/#problem" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Crisis
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <a href="/#solution" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+            <a href="/#solution" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Solution
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <Link href="/village" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/village" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Stories
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <a href="/#impact" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+            <a href="/#impact" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Impact
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </a>
-            <Link href="/impact" className="flex items-center font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
-              <Zap className="w-4 h-4 mr-2 text-green-600" />
+            <Link href="/impact" className="flex items-center font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
+              <Zap className="w-3 h-3 lg:w-4 lg:h-4 mr-1.5 text-green-600" />
               Map
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <Link href="/membership" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/membership" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Membership
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <Link href="/team" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/team" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Team
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </Link>
-            <Link href="/gallery" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-base lg:text-lg">
+            <Link href="/gallery" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Gallery
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
             </Link>
           </nav>
           
           {/* Action Buttons */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
+          <div className="hidden md:flex items-center space-x-3 lg:space-x-4 xl:space-x-6">
             <Link 
               href="/worker/login" 
-              className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 transition-all duration-200 rounded-lg border border-green-200 hover:border-green-300 text-sm lg:text-base"
+              className="px-3 py-2 lg:px-4 lg:py-2.5 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 transition-all duration-200 rounded-lg border border-green-200 hover:border-green-300 text-xs lg:text-sm xl:text-base font-medium"
             >
               🔐 Team Login
             </Link>
             
             <a 
               href="/#donate" 
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 rounded-lg shadow-md hover:shadow-lg text-sm lg:text-base"
+              className="px-4 py-2 lg:px-5 lg:py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 rounded-lg shadow-md hover:shadow-lg text-xs lg:text-sm xl:text-base"
             >
               ❤️ Donate Now
             </a>
