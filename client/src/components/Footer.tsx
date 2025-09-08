@@ -61,15 +61,15 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-400">
               <li className="flex items-start">
                 <Mail className="w-5 h-5 mr-3 mt-1" />
-                <span>info@solarpak.org</span>
+                <span>solarpakinitiative@gmail.com</span>
               </li>
               <li className="flex items-start">
                 <Phone className="w-5 h-5 mr-3 mt-1" />
-                <span>+1 (123) 456-7890</span>
+                <span>+966 50 633 6180</span>
               </li>
               <li className="flex items-start">
                 <MapPin className="w-5 h-5 mr-3 mt-1" />
-                <span>123 Solar Street, Islamabad, Pakistan</span>
+                <span>Khairpur Mirs, Pakistan</span>
               </li>
             </ul>
           </div>
