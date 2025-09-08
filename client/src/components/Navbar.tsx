@@ -17,7 +17,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-2">
-            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-10 lg:h-12 lg:w-12" />
+            <img src="/favicon.png" alt="SolarPak Logo" className="h-12 w-12 lg:h-14 lg:w-14" />
             <span className="text-xl lg:text-2xl font-bold text-green-700">SolarPak</span>
           </Link>
           
@@ -94,7 +94,7 @@ export default function Navbar() {
         {/* Header with logo and close button */}
         <div className="flex items-center justify-between p-6 border-b border-green-200">
           <div className="flex items-center space-x-2">
-            <img src="/favicon.png" alt="SolarPak Logo" className="h-8 w-8" />
+            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-10" />
             <span className="text-lg font-bold text-green-700">SolarPak</span>
           </div>
           <button 
