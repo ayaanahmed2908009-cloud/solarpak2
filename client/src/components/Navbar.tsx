@@ -16,13 +16,13 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 py-3 md:px-8 lg:px-12 md:py-4 lg:py-5">
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-3 mr-8 lg:mr-12">
             <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-14 lg:h-12 lg:w-16" />
-            <span className="text-xl lg:text-2xl font-bold text-green-700">SolarPak</span>
+            <span className="text-xl lg:text-2xl xl:text-3xl font-bold text-green-700">SolarPak</span>
           </Link>
           
           {/* Main Navigation */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8 xl:space-x-10">
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 xl:space-x-10 flex-1 justify-center">
             <a href="/#problem" className="font-medium text-green-700 hover:text-green-600 transition-all duration-200 relative group text-sm lg:text-base xl:text-lg px-2 py-1">
               Crisis
               <span className="absolute left-2 bottom-0 w-0 h-0.5 bg-green-600 transition-all duration-200 group-hover:w-full"></span>
@@ -59,7 +59,7 @@ export default function Navbar() {
           </nav>
           
           {/* Action Buttons */}
-          <div className="hidden md:flex items-center space-x-3 lg:space-x-4 xl:space-x-6">
+          <div className="hidden md:flex items-center space-x-3 lg:space-x-4 xl:space-x-6 ml-8 lg:ml-12">
             <Link 
               href="/worker/login" 
               className="px-3 py-2 lg:px-4 lg:py-2.5 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 transition-all duration-200 rounded-lg border border-green-200 hover:border-green-300 text-xs lg:text-sm xl:text-base font-medium"
