@@ -25,7 +25,12 @@ import videoBackground from "@assets/Solarpak preview website_-VEED_175665515891
 export default function Home() {
   // State to control the visibility of the back-to-top button
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [connectionSpeed, setConnectionSpeed] = useState<string>('4g');
   const mainRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     // Handle scroll event to show/hide back-to-top button
@@ -39,11 +44,56 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll);
     
+    // Detect connection speed
+    if ('connection' in navigator) {
+      const connection = (navigator as any).connection;
+      if (connection && connection.effectiveType) {
+        setConnectionSpeed(connection.effectiveType);
+      }
+    }
+
+    // Intersection observer for lazy loading video
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Start loading video after a small delay and if connection is decent
+          const delay = connectionSpeed === 'slow-2g' || connectionSpeed === '2g' ? 2000 : 1000;
+          setTimeout(() => {
+            setShouldLoadVideo(true);
+          }, delay);
+        }
+      },
+      {
+        threshold: 0.25,
+        rootMargin: '100px'
+      }
+    );
+
+    // Observe hero section when it's mounted
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+
+    // User interaction triggers immediate video load (progressive enhancement)
+    const handleUserInteraction = () => {
+      setShouldLoadVideo(true);
+      // Remove listeners after first interaction
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('scroll', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+    };
+
+    // Add interaction listeners
+    window.addEventListener('click', handleUserInteraction, { once: true });
+    window.addEventListener('scroll', handleUserInteraction, { once: true });
+    window.addEventListener('touchstart', handleUserInteraction, { once: true });
+    
     // Clean up
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
     };
-  }, []);
+  }, [connectionSpeed]);
 
 
 
@@ -64,49 +114,59 @@ export default function Home() {
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
         <Navbar />
         <main ref={mainRef} className="relative w-full">
-        {/* Full Screen Video Hero Section - All Devices */}
-        <section className="relative w-full overflow-hidden h-screen">
-          {/* Video Background */}
-          <div className="absolute inset-0 z-0">
-            <video 
-              autoPlay 
-              muted 
-              loop 
-              playsInline
-              preload="metadata"
-              className="w-full h-full object-cover transition-opacity duration-500 opacity-0"
-              src={videoBackground}
-              poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23grad)' /%3E%3C/svg%3E"
-              disablePictureInPicture
-              disableRemotePlayback
-              controlsList="nodownload nofullscreen noremoteplayback"
-              onError={(e) => {
-                console.error('Video failed to load:', e);
-                // Fallback to a dark gradient background if video fails
-                const target = e.target as HTMLVideoElement;
-                target.style.display = 'none';
-                if (target.parentElement) {
-                  target.parentElement.style.background = 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)';
-                }
-              }}
-              onLoadStart={(e) => {
-                console.log('Video started loading');
-                // Optimize for mobile performance - ensure proper aspect ratio
-                const video = e.target as HTMLVideoElement;
-                video.style.objectFit = 'cover';
-              }}
-              onCanPlay={(e) => {
-                console.log('Video can play');
-                const video = e.target as HTMLVideoElement;
-                video.style.opacity = '1';
-              }}
-              onPlay={() => console.log('Video is playing')}
-            >
-              Your browser does not support the video tag.
-            </video>
-            {/* Light blue tint for text readability */}
-            <div className="absolute inset-0 bg-blue-900/30"></div>
+        {/* Hybrid Hero Section - Static Image → Video Progressive Enhancement */}
+        <section ref={heroRef} className="relative w-full overflow-hidden h-screen">
+          
+          {/* Static Background (Instant Load) */}
+          <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900">
+            {/* Animated background pattern for immediate visual appeal */}
+            <div className="absolute inset-0 opacity-30">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-600/20 to-blue-600/20 animate-pulse"></div>
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-400/10 rounded-full blur-3xl animate-bounce" style={{ animationDuration: '6s' }}></div>
+              <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-blue-400/10 rounded-full blur-2xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
+            </div>
           </div>
+
+          {/* Progressive Video Enhancement */}
+          {shouldLoadVideo && (
+            <div className="absolute inset-0 z-0">
+              <video 
+                ref={videoRef}
+                autoPlay 
+                muted 
+                loop 
+                playsInline
+                preload="none"
+                className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+                src={videoBackground}
+                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23grad)' /%3E%3C/svg%3E"
+                disablePictureInPicture
+                disableRemotePlayback
+                controlsList="nodownload nofullscreen noremoteplayback"
+                onError={(e) => {
+                  console.error('Video failed to load:', e);
+                  // Keep static background if video fails
+                }}
+                onLoadStart={() => {
+                  console.log('Video loading initiated');
+                }}
+                onCanPlay={(e) => {
+                  console.log('Video ready to play');
+                  setVideoLoaded(true);
+                  const video = e.target as HTMLVideoElement;
+                  video.play().catch(err => console.log('Autoplay prevented:', err));
+                }}
+                onLoadedData={() => {
+                  console.log('Video data loaded');
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+          
+          {/* Light tint for text readability - always visible */}
+          <div className="absolute inset-0 bg-blue-900/30 z-10"></div>
 
           {/* Clean Text Overlay */}
           <div className="relative z-10 flex items-center justify-center h-full">
