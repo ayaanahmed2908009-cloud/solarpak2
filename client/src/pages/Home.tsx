@@ -64,23 +64,17 @@ export default function Home() {
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
         <Navbar />
         <main ref={mainRef} className="relative w-full">
-        {/* Mobile Hero - Original Design (Small Mobile Only) */}
-        <section className="sm:hidden snap-section">
-          <HeroBanner />
-        </section>
-
-        {/* Video Background Hero Section - iPad and Desktop */}
-        <section className="hidden sm:block relative w-full overflow-hidden" style={{ height: 'calc(100vh + 120px)', marginTop: '-120px' }}>
+        {/* Full Screen Video Hero Section - All Devices */}
+        <section className="relative w-full overflow-hidden h-screen">
           {/* Video Background */}
-          <div className="absolute inset-0 z-0" style={{ height: 'calc(100% + 120px)' }}>
+          <div className="absolute inset-0 z-0">
             <video 
               autoPlay 
               muted 
               loop 
               playsInline
               preload="metadata"
-              className="w-full object-cover transition-opacity duration-500 opacity-0"
-              style={{ height: 'calc(100vh + 120px)' }}
+              className="w-full h-full object-cover transition-opacity duration-500 opacity-0"
               src={videoBackground}
               poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23374151;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23grad)' /%3E%3C/svg%3E"
               disablePictureInPicture
@@ -97,11 +91,9 @@ export default function Home() {
               }}
               onLoadStart={(e) => {
                 console.log('Video started loading');
-                // Optimize for mobile performance
+                // Optimize for mobile performance - ensure proper aspect ratio
                 const video = e.target as HTMLVideoElement;
-                if (window.innerWidth < 768) {
-                  video.style.transform = 'scale(1.1)'; // Slight zoom for mobile crop
-                }
+                video.style.objectFit = 'cover';
               }}
               onCanPlay={(e) => {
                 console.log('Video can play');
@@ -117,8 +109,8 @@ export default function Home() {
           </div>
 
           {/* Clean Text Overlay */}
-          <div className="relative z-10 flex items-center justify-center" style={{ height: '100vh', marginTop: '120px' }}>
-            <div className="text-center text-white max-w-5xl px-4 sm:px-8 -mt-8">
+          <div className="relative z-10 flex items-center justify-center h-full">
+            <div className="text-center text-white max-w-5xl px-4 sm:px-8">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-[1.1] tracking-tight">
                 <span className="block mb-3 font-bold text-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>Powering Communities.</span>
                 <span className="block text-amber-400 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
