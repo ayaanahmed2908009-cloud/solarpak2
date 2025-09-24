@@ -17,6 +17,19 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Hamburger Menu Button - Fixed position top-left */}
+      <button 
+        className="fixed top-6 left-6 z-[60] p-3 rounded-lg bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all duration-300 group shadow-lg border border-white/20" 
+        onClick={toggleSidebar}
+        aria-label="Toggle sidebar menu"
+        data-testid="button-menu-toggle"
+      >
+        <div className="flex flex-col space-y-1.5 w-6 h-6 items-center justify-center">
+          <span className={`block w-6 h-0.5 bg-white transition-transform duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-white transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`block w-6 h-0.5 bg-white transition-transform duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+        </div>
+      </button>
       
       {/* Animated Sidebar */}
       <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
