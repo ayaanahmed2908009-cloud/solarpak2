@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* Header with logo and close button */}
         <div className="flex items-center justify-between p-6 border-b border-green-200 bg-gradient-to-r from-green-50 to-green-100">
           <div className="flex items-center space-x-3">
-            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-16" />
+            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-12 object-contain" />
             <div>
               <span className="text-xl font-bold text-green-800">SolarPak</span>
               <p className="text-xs text-green-600">Lighting Futures</p>
