@@ -21,7 +21,7 @@ export default function Navbar() {
       {/* Animated Sidebar */}
       <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Header with logo and close button */}
-        <div className="flex items-center justify-between p-6 border-b border-green-200 bg-gradient-to-r from-green-50 to-green-100">
+        <div className="flex items-center justify-between p-6 border-b border-green-200 bg-white">
           <div className="flex items-center space-x-3">
             <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-12 object-contain" />
             <div>
