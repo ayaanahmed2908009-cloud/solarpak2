@@ -17,17 +17,17 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Hamburger Menu Button - Fixed position top-left */}
+      {/* Hamburger Menu Button - Fixed position top-left - Hidden when sidebar is open */}
       <button 
-        className="fixed top-6 left-6 z-[60] p-3 rounded-lg bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all duration-300 group shadow-lg border border-white/20" 
+        className={`fixed top-6 left-6 z-[60] p-3 rounded-lg bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all duration-300 group shadow-lg border border-white/20 ${isSidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         onClick={toggleSidebar}
         aria-label="Toggle sidebar menu"
         data-testid="button-menu-toggle"
       >
         <div className="flex flex-col space-y-1.5 w-6 h-6 items-center justify-center">
-          <span className={`block w-6 h-0.5 bg-white transition-transform duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`block w-6 h-0.5 bg-white transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`block w-6 h-0.5 bg-white transition-transform duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className="block w-6 h-0.5 bg-white transition-all duration-300"></span>
+          <span className="block w-6 h-0.5 bg-white transition-all duration-300"></span>
+          <span className="block w-6 h-0.5 bg-white transition-all duration-300"></span>
         </div>
       </button>
       
