@@ -29,4 +29,28 @@
   <priority>0.8</priority>
 </url>
 
+<!-- Gallery - Project Photos -->
+<url>
+  <loc>https://solarpak.org/gallery</loc>
+  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>
+
+<!-- Village Experience - Community Stories -->
+<url>
+  <loc>https://solarpak.org/village</loc>
+  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>
+
+<!-- Case Study - Impact Stories -->
+<url>
+  <loc>https://solarpak.org/case-study</loc>
+  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.6</priority>
+</url>
+
 </urlset>
