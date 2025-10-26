@@ -245,13 +245,24 @@ export default function Team() {
                 <Users className="h-4 w-4 mr-1" />
                 Meet Our Team
               </Badge>
+              {/* Youth Leadership Badge */}
+              <div className="inline-flex items-center bg-amber-100 border border-amber-300 px-6 py-3 rounded-full mb-6">
+                <span className="text-amber-700 font-bold text-sm uppercase tracking-wide">
+                  🌟 World's Largest Youth-Led Solar Nonprofit
+                </span>
+              </div>
+              
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                The People Behind <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">SolarPak</span>
+                The Young Leaders Behind <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">SolarPak</span>
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                Meet the passionate individuals working tirelessly to bring clean, sustainable energy 
-                to Pakistani families. Our diverse team combines technical expertise with deep community 
-                connections to create lasting impact.
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
+                SolarPak is the world's largest youth-led solar nonprofit, founded and run entirely by 
+                passionate students and young leaders committed to solving Pakistan's energy crisis through 
+                renewable solar solutions.
+              </p>
+              <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-8">
+                Our student-run organization combines youthful innovation, boundless energy, and technical 
+                expertise to create lasting impact across Pakistani communities.
               </p>
               
               {/* Quick Stats */}
