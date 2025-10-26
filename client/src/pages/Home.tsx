@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import YouthLeadershipSection from "@/components/YouthLeadershipSection";
 import CrisisSection from "@/components/CrisisSection";
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
@@ -81,9 +82,9 @@ export default function Home() {
 
   return (
     <SEOOptimizedContent 
-      title="SolarPak - Solar Energy Donations for Pakistan | Bringing Light to Families"
-      description="Help Pakistani families access clean solar energy. Donate to install solar panels, provide 24/7 electricity, and transform lives in Pakistan. 8 families already empowered with sustainable energy solutions."
-      keywords={["solar energy Pakistan", "solar panels donation", "Pakistan electricity crisis", "renewable energy charity", "sustainable energy Pakistan", "solar installation Pakistan", "clean energy donation"]}
+      title="The World's Largest Youth Led Solar Non Profit | SolarPak Pakistan"
+      description="SolarPak is the world's largest youth-led solar nonprofit, bringing clean energy to Pakistani families. Student-run organization installing solar panels and transforming lives across Pakistan through renewable energy."
+      keywords={["world's largest youth led solar nonprofit", "youth led solar organization", "student run solar charity", "young leaders renewable energy", "solar energy Pakistan", "solar panels donation", "Pakistan electricity crisis", "youth-led nonprofit", "student solar initiative"]}
     >
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
         <Navbar />
@@ -140,14 +141,25 @@ export default function Home() {
             {/* Hero Content - No Tint Overlay */}
             <div className="relative z-10 h-full flex items-center">
               <div className="container mx-auto px-6">
-                <div className="max-w-2xl">
+                <div className="max-w-3xl">
+                  {/* Youth Leadership Badge */}
+                  <div className="inline-flex items-center bg-amber-400/20 backdrop-blur-sm border border-amber-400/40 px-6 py-3 rounded-full mb-6">
+                    <span className="text-amber-300 font-bold text-sm uppercase tracking-wide" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                      🌟 World's Largest Youth-Led Solar Nonprofit
+                    </span>
+                  </div>
+                  
                   <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
                     <span className="block mb-3">Powering Communities.</span>
                     <span className="block text-amber-400">Lighting Futures.</span>
                   </h1>
                   
-                  <p className="text-xl md:text-2xl text-white mb-8 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
-                    At SolarPak, we bring clean, affordable solar energy to families and communities across Pakistan.
+                  <p className="text-xl md:text-2xl text-white mb-4 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+                    SolarPak is the world's largest youth-led solar nonprofit, bringing clean, affordable solar energy to families and communities across Pakistan.
+                  </p>
+                  
+                  <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+                    Led by passionate young leaders, we're transforming lives through renewable energy, one solar panel at a time.
                   </p>
                   
                   <button 
@@ -171,6 +183,11 @@ export default function Home() {
               </button>
             </div>
           </section>
+        
+        {/* Youth Leadership Section - Why We're Different */}
+        <section id="youth-leadership" className="snap-section">
+          <YouthLeadershipSection />
+        </section>
         
         {/* Crisis Section - Immediate impact after hero */}
         <section id="problem" className="snap-section">

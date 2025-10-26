@@ -10,6 +10,34 @@ interface SEOContentProps {
 export function SEOOptimizedContent({ title, description, keywords, children }: SEOContentProps) {
   return (
     <main role="main">
+      {/* Organization Schema Markup */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "SolarPak",
+          "alternateName": "World's Largest Youth-Led Solar Nonprofit",
+          "description": "The world's largest youth-led solar nonprofit bringing clean energy to Pakistani families. Student-run organization transforming lives through renewable energy.",
+          "foundingDate": "2025-03",
+          "foundingLocation": "Riyadh, Saudi Arabia",
+          "areaServed": "Pakistan",
+          "url": "https://solarpak.replit.app",
+          "logo": "https://solarpak.replit.app/favicon.png",
+          "sameAs": [
+            "https://www.linkedin.com/company/solarpak",
+            "https://ko-fi.com/solarpak"
+          ],
+          "founder": {
+            "@type": "Person",
+            "name": "Ayaan Ahmed",
+            "jobTitle": "Founder & Director"
+          },
+          "keywords": "youth-led solar nonprofit, student-run renewable energy, world's largest youth solar organization, solar panels Pakistan, clean energy charity",
+          "nonprofitStatus": "Youth-Led Nonprofit Organization",
+          "mission": "To bring clean, affordable solar energy to Pakistani families through youth leadership and community support"
+        })}
+      </script>
+      
       {/* Hidden SEO content for search engines */}
       <div className="sr-only">
         <h1>{title}</h1>
@@ -34,9 +62,19 @@ export function SEOOptimizedContent({ title, description, keywords, children }: 
         <section>
           <h3>Our Mission</h3>
           <p>
-            SolarPak is dedicated to providing sustainable solar energy solutions to Pakistani families 
-            facing electricity shortages. Through community donations, we install solar panels that 
-            provide 24/7 clean electricity to homes in need.
+            SolarPak is the world's largest youth-led solar nonprofit dedicated to providing sustainable 
+            solar energy solutions to Pakistani families facing electricity shortages. Led by passionate 
+            young leaders and students, we install solar panels through community donations that provide 
+            24/7 clean electricity to homes in need.
+          </p>
+        </section>
+        
+        <section>
+          <h3>Youth Leadership</h3>
+          <p>
+            As the world's largest youth-led solar nonprofit, SolarPak is powered by young leaders committed 
+            to making a difference. Our student-run organization brings fresh perspectives, innovative approaches, 
+            and boundless energy to solving Pakistan's energy crisis through renewable solar solutions.
           </p>
         </section>
         
@@ -138,6 +176,40 @@ export function SEOFAQSection() {
             We have successfully installed 8 solar panel systems, empowering 8 families and transforming 
             35 lives. Our installations generate 90 kWh of clean energy and prevent 120 kg of CO₂ emissions, 
             contributing to both social and environmental impact.
+          </div>
+        </div>
+      </div>
+      
+      <div itemScope itemType="https://schema.org/Question">
+        <h3 itemProp="name">What is the world's largest youth-led solar nonprofit?</h3>
+        <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
+          <div itemProp="text">
+            SolarPak is the world's largest youth-led solar nonprofit, founded and run by passionate young 
+            leaders dedicated to bringing clean energy to Pakistani families. Our student-run organization 
+            combines youth innovation with practical solar solutions to address Pakistan's electricity crisis.
+          </div>
+        </div>
+      </div>
+      
+      <div itemScope itemType="https://schema.org/Question">
+        <h3 itemProp="name">Who runs SolarPak?</h3>
+        <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
+          <div itemProp="text">
+            SolarPak is led by young leaders and students committed to renewable energy and social impact. 
+            Founded by Ayaan Ahmed in March 2025, our youth-led team includes directors, coordinators, and 
+            specialists across events, social media, sponsorships, and healthcare departments.
+          </div>
+        </div>
+      </div>
+      
+      <div itemScope itemType="https://schema.org/Question">
+        <h3 itemProp="name">How is SolarPak different from other solar charities?</h3>
+        <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
+          <div itemProp="text">
+            As the world's largest youth-led solar nonprofit, SolarPak brings fresh, innovative approaches 
+            to renewable energy charity. Our student-run model ensures passionate, dedicated leadership while 
+            our focus on Pakistan addresses critical energy needs in underserved communities. We combine 
+            youth energy with proven solar technology to create lasting impact.
           </div>
         </div>
       </div>
