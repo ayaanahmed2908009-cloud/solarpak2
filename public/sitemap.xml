@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage - World's Largest Youth-Led Solar Nonprofit -->
   <url>
-    <loc>https://solarpak.replit.app/</loc>
+    <loc>https://solarpak.org/</loc>
     <lastmod>2025-10-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,7 +10,7 @@
   
   <!-- Team Page - Meet Our Young Leaders -->
   <url>
-    <loc>https://solarpak.replit.app/team</loc>
+    <loc>https://solarpak.org/team</loc>
     <lastmod>2025-10-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -18,7 +18,7 @@
   
   <!-- Impact Page -->
   <url>
-    <loc>https://solarpak.replit.app/impact</loc>
+    <loc>https://solarpak.org/impact</loc>
     <lastmod>2025-10-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
