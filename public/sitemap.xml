@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Homepage - World's Largest Youth-Led Solar Nonprofit -->
-  <url>
-    <loc>https://solarpak.org/</loc>
-    <lastmod>2025-10-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  
-  <!-- Team Page - Meet Our Young Leaders -->
-  <url>
-    <loc>https://solarpak.org/team</loc>
-    <lastmod>2025-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <!-- Impact Page -->
-  <url>
-    <loc>https://solarpak.org/impact</loc>
-    <lastmod>2025-10-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<!-- Homepage - World's Largest Youth-Led Solar Nonprofit -->
+<url>
+  <loc>https://solarpak.org/</loc>
+  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>1.0</priority>
+</url>
+
+<!-- Team Page - Meet Our Young Leaders -->
+<url>
+  <loc>https://solarpak.org/team</loc>
+  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.9</priority>
+</url>
+
+<!-- Impact Page - Our Results -->
+<url>
+  <loc>https://solarpak.org/impact</loc>
+  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.8</priority>
+</url>
+
 </urlset>
