@@ -81,8 +81,8 @@ const founder: TeamMember = {
   expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
-    "Led 7 successful solar installations across Pakistan",
-    "Transformed 70 lives through clean energy access",
+    "Led 11 successful solar installations across Pakistan",
+    "Transformed 110 lives through clean energy access",
     "Built partnerships with local communities and suppliers",
     "Certified Solar Energy Specialist and Social Entrepreneur",
     "Website developer"
@@ -197,10 +197,10 @@ const teamMembers: TeamMember[] = [
 ];
 
 const organizationStats = [
-  { label: "Solar Panels Installed", value: "7", description: "" },
-  { label: "Families Empowered", value: "7", description: "With clean energy" },
-  { label: "Lives Transformed", value: "70", description: "and more to come" },
-  { label: "CO₂ Prevented", value: "200kg", description: "Environmental impact" },
+  { label: "Solar Panels Installed", value: "11", description: "" },
+  { label: "Families Empowered", value: "11", description: "With clean energy" },
+  { label: "Lives Transformed", value: "110", description: "and more to come" },
+  { label: "CO₂ Prevented", value: "320kg", description: "Environmental impact" },
   { label: "Team Members", value: "9", description: "Dedicated professionals" },
   { label: "Specialized Teams", value: "4", description: "Expert departments" }
 ];

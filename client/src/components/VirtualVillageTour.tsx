@@ -126,7 +126,7 @@ export default function VirtualVillageTour() {
       villagerName: "Aisha Hassan",
       villagerQuote: "We saved enough money in just 6 months to buy new school supplies and even plan our first family trip! Solar power gave us our financial freedom back.",
       timeOfDay: "morning",
-      solarPanelsInstalled: 7,
+      solarPanelsInstalled: 11,
       monthlyBillBefore: 18000,
       monthlyBillAfter: 0,
       villagerAge: 29,
