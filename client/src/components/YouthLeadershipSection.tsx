@@ -42,7 +42,7 @@ export default function YouthLeadershipSection() {
             </div>
             <h3 className="text-2xl font-bold text-blue-900 mb-3 text-center">Proven Impact</h3>
             <p className="text-gray-600 text-center leading-relaxed">
-              8 solar installations completed, 35 lives transformed, 90 kWh of clean energy generated
+              7 solar installations completed, 70 lives transformed, 150 kWh of clean energy generated
             </p>
           </div>
 
