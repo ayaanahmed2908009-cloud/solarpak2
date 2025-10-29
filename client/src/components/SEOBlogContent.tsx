@@ -42,7 +42,7 @@ export function SEOBlogContent() {
           <h2>Community-Driven Impact: How Donations Transform Lives</h2>
           <p>
             Through community donations, SolarPak has successfully installed 11 solar panel systems 
-            across Pakistan, directly empowering 11 families and positively impacting 110 lives. 
+            across Pakistan, directly empowering 11 families and positively impacting 70 lives. 
             These installations generate 240 kWh of clean energy daily, preventing 320 kg of CO₂ 
             emissions - equivalent to planting 16 trees annually.
           </p>

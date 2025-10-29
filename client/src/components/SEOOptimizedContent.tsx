@@ -82,7 +82,7 @@ export function SEOOptimizedContent({ title, description, keywords, children }: 
           <h3>Our Impact</h3>
           <p>
             We have successfully installed 11 solar panel systems, empowering 11 families and transforming 
-            110 lives across Pakistan. Our installations generate 240 kWh of clean energy and prevent 
+            70 lives across Pakistan. Our installations generate 240 kWh of clean energy and prevent 
             320 kg of CO₂ emissions, equivalent to planting 16 trees.
           </p>
         </section>
@@ -174,7 +174,7 @@ export function SEOFAQSection() {
         <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
           <div itemProp="text">
             We have successfully installed 11 solar panel systems, empowering 11 families and transforming 
-            110 lives. Our installations generate 240 kWh of clean energy and prevent 320 kg of CO₂ emissions, 
+            70 lives. Our installations generate 240 kWh of clean energy and prevent 320 kg of CO₂ emissions, 
             contributing to both social and environmental impact.
           </div>
         </div>

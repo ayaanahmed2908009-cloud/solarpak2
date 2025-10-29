@@ -47,7 +47,7 @@ export default function UnifiedImpactSection() {
   });
 
   const finalNumbers = {
-    livesImpacted: 110,
+    livesImpacted: 70,
     energyGenerated: 240,
     co2Prevented: 320,
     hoursOfPower: 3,
