@@ -56,10 +56,10 @@ export default function ImpactMap() {
       village: "Khairpur Mirs",
       coordinates: [27.5293, 68.7593],
       date: "March 15, 2024",
-      households: 3,
-      kwhGenerated: 45,
-      co2Saved: 56.7,
-      moneySaved: 1200,
+      households: 1,
+      kwhGenerated: 22,
+      co2Saved: 29,
+      moneySaved: 3500,
       imageUrls: [
         "https://images.pexels.com/photos/9875441/pexels-photo-9875441.jpeg",
         "https://images.pexels.com/photos/9875442/pexels-photo-9875442.jpeg"
