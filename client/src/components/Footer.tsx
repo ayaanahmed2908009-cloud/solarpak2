@@ -39,7 +39,7 @@ export default function Footer() {
               <li><a href="#solution" className="text-gray-400 hover:text-primary transition">Our Solution</a></li>
               <li><a href="#impact" className="text-gray-400 hover:text-primary transition">Impact</a></li>
               <li><a href="#projects" className="text-gray-400 hover:text-primary transition">Projects</a></li>
-              <li><a href="#stories" className="text-gray-400 hover:text-primary transition">Stories</a></li>
+              <li><a href="/village" className="text-gray-400 hover:text-primary transition">Stories</a></li>
               <li><a href="#donate" className="text-gray-400 hover:text-primary transition">Donate</a></li>
             </ul>
           </div>
