@@ -59,10 +59,11 @@ function setSmoothScroll() {
   });
   
   // Implement scroll-triggered animations for sections
+  const isMobile = window.innerWidth < 768;
   const observerOptions = {
     root: null, // Use viewport as root
     rootMargin: '0px',
-    threshold: 0.15 // Trigger when 15% of element is visible
+    threshold: isMobile ? 0.05 : 0.15 // Lower threshold on mobile for better visibility
   };
   
   const sectionObserver = new IntersectionObserver((entries) => {
