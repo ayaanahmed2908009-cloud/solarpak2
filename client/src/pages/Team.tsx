@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Calendar, Award, Users, Heart, Linkedin, Github, Twitter } from "lucide-react";
+import { Mail, MapPin, Linkedin } from "lucide-react";
 
 interface TeamMember {
   id: number;
@@ -21,8 +18,6 @@ interface TeamMember {
   social: {
     email?: string;
     linkedin?: string;
-    github?: string;
-    twitter?: string;
   };
 }
 
@@ -31,41 +26,43 @@ interface Team {
   name: string;
   description: string;
   icon: string;
-  memberCount: number;
   color: string;
 }
 
 const teams: Team[] = [
   {
+    id: "all",
+    name: "All Team",
+    description: "View all team members",
+    icon: "👥",
+    color: "from-gray-500 to-slate-500"
+  },
+  {
     id: "social-media",
     name: "Social Media",
-    description: "Building awareness and engagement through strategic digital storytelling and community building",
+    description: "Digital storytelling and community building",
     icon: "📱",
-    memberCount: 4, // 1 director + 3 members
     color: "from-pink-500 to-rose-500"
   },
   {
     id: "events-outreach",
-    name: "Events & Community Outreach",
-    description: "Organizing community events and establishing grassroots connections across Pakistan",
+    name: "Events & Outreach",
+    description: "Community connections across Pakistan",
     icon: "🤝",
-    memberCount: 5, // 1 director + 4 members
     color: "from-blue-500 to-cyan-500"
   },
   {
     id: "sponsorships",
-    name: "Sponsorships & Fundraising",
-    description: "Securing partnerships and funding to expand our solar energy impact",
+    name: "Sponsorships",
+    description: "Partnerships and funding",
     icon: "💰",
-    memberCount: 1, // 1 director only
     color: "from-green-500 to-emerald-500"
   },
   {
     id: "predictive-healthcare",
-    name: "Predictive Systems & Healthcare",
-    description: "Leveraging data analytics and health initiatives to maximize community impact",
+    name: "Healthcare",
+    description: "Data analytics and health initiatives",
     icon: "🔬",
-    memberCount: 1, // 1 director only
     color: "from-purple-500 to-indigo-500"
   }
 ];
@@ -75,738 +72,277 @@ const founder: TeamMember = {
   id: 1,
   name: "Ayaan Ahmed",
   role: "Founder & CEO",
-  description: "Visionary leader passionate about bringing sustainable energy solutions to underserved communities across Pakistan. Founded SolarPak to address the electricity crisis through innovative solar installations and community-driven impact.",
+  description: "Visionary leader bringing sustainable energy solutions to underserved communities across Pakistan.",
   location: "Riyadh, Saudi Arabia",
   joinedDate: "2025-03-01",
-  expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
+  expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
     "Led 11 successful solar installations across Pakistan",
-    "Transformed 70 lives through clean energy access",
-    "Built partnerships with local communities and suppliers",
-    "Certified Solar Energy Specialist and Social Entrepreneur",
-    "Website developer"
+    "Transformed 70 lives through clean energy access"
   ],
   image: "/ayaan-ahmed.jpg",
-  social: {
-    email: "ayaan@solarpak.com"
-  }
+  social: { email: "ayaan@solarpak.com" }
 };
 
-// Team Directors (placeholder names - to be replaced with actual names)
 const teamDirectors: TeamMember[] = [
   {
     id: 2,
     name: "Ibrahim Murtaza",
     role: "Director of Social Media",
-    description: "Leading digital strategy and online community engagement to amplify SolarPak's impact story across social platforms.",
+    description: "Leading digital strategy and online community engagement.",
     location: "Pakistan",
     joinedDate: "2025-07-01",
-    expertise: ["Social Media Strategy", "Content Creation", "Digital Marketing", "Community Management"],
-    achievements: [
-      "Built upon established social media presence from founder",
-      "Increased online engagement by 5%",
-      "Member of board of directors",
-      "Influences major strategic decisions through board participation"
-    ],
+    expertise: ["Social Media Strategy", "Content Creation", "Digital Marketing"],
+    achievements: ["Increased online engagement by 5%", "Member of board of directors"],
     image: "/ibrahim-murtaza.jpg",
     teamId: "social-media",
     isDirector: true,
-    social: {
-      email: "social@solarpak.com"
-    }
+    social: { email: "social@solarpak.com" }
   },
   {
     id: 3,
     name: "Ayaan Omer",
-    role: "Director of Events & Community Outreach",
-    description: "Orchestrating community events and building grassroots connections to expand SolarPak's reach across Pakistani communities.",
+    role: "Director of Events & Outreach",
+    description: "Orchestrating community events and building grassroots connections.",
     location: "Pakistan",
     joinedDate: "2025-07-15",
-    expertise: ["Event Management", "Community Relations"],
-    achievements: [
-      "Organised 10 events for the next year alongside the team",
-      "Organised a clash royale competition",
-      "Member of board of directors",
-      "Influences major strategic decisions through board participation"
-    ],
+    expertise: ["Event Planning", "Community Outreach", "Partnerships"],
+    achievements: ["Organized 10 events", "Member of board of directors"],
     image: "/ayaan-omer.jpg",
     teamId: "events-outreach",
     isDirector: true,
-    social: {
-      email: "events@solarpak.com"
-    }
+    social: { email: "events@solarpak.com", linkedin: "https://www.linkedin.com/in/ayaan-omer" }
   },
   {
     id: 4,
     name: "Ramin Tihami",
-    role: "Director of Sponsorships & Fundraising",
-    description: "Securing strategic partnerships and funding opportunities to scale SolarPak's impact across Pakistan.",
+    role: "Director of Sponsorships",
+    description: "Driving strategic partnerships and fundraising initiatives.",
     location: "Pakistan",
     joinedDate: "2025-07-01",
-    expertise: ["Fundraising Strategy", "Corporate Partnerships", "AI-Powered Outreach", "Strategic Negotiations"],
-    achievements: [
-      "Using an AI platform to send cold outreach to numerous CEOs and founders",
-      "Currently in talks of a sponsorship with a test prep agency",
-      "Member of board of directors",
-      "Influences major strategic decisions through board participation"
-    ],
+    expertise: ["Strategic Negotiations", "Partnership Development", "AI-Powered Outreach"],
+    achievements: ["Member of board of directors"],
     image: "/ramin-tihami.jpg",
     teamId: "sponsorships",
     isDirector: true,
-    social: {
-      email: "partnerships@solarpak.com"
-    }
+    social: { email: "fundraising@solarpak.com" }
   },
   {
     id: 5,
     name: "Moiz Ali",
-    role: "Director of Predictive Systems & Healthcare",
-    description: "Leading data-driven initiatives and health programs to maximize community impact and predict optimal solar installation sites.",
+    role: "Director of Healthcare",
+    description: "Leveraging data analytics and health initiatives.",
     location: "Pakistan",
     joinedDate: "2025-07-15",
-    expertise: ["Data Analytics", "Predictive Modeling", "Healthcare Administration", "Strategic Leadership"],
-    achievements: [
-      "Developing a pilot model for high risk environments that has enabled us to expand towards healthcare",
-      "Established healthcare wing of operations",
-      "Member of board of directors",
-      "Influences major strategic decisions through board participation"
-    ],
+    expertise: ["Data Analytics", "Healthcare Strategy", "Predictive Systems"],
+    achievements: ["Member of board of directors"],
     image: "/moiz-ali.jpg",
     teamId: "predictive-healthcare",
     isDirector: true,
-    social: {
-      email: "research@solarpak.com"
-    }
+    social: { email: "research@solarpak.com" }
   }
 ];
 
-// Team Members (placeholder entries for the additional team members)
 const teamMembers: TeamMember[] = [
-  // Social Media Team Members (3 additional)
-  { id: 7, name: "Roham Jan", role: "Social Media Manager", description: "Managing social media presence and engagement across multiple platforms", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Editing", "CapCut", "Content Creation", "Engagement"], achievements: ["Posted over 4 times", "Grew social media account by 30% in likes", "Maintained posts over both platforms"], image: "/roham-jan.jpg", teamId: "social-media", social: {} },
-  { id: 6, name: "Jonathan Joseph", role: "Head of Event and Brand Promotion", description: "Specializing in creating brand promotion content for events and marketing initiatives", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Graphic Design", "Canva", "Cold Outreach", "Brand Image"], achievements: ["Created 2 flyers for future events", "Actively shows willingness to produce content for SolarPak"], image: "/jonathan-joseph.jpg", teamId: "social-media", social: {} },
-
-  
-  // Events & Community Outreach Team Members (2 additional)
-  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/adnan-syed.jpg", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
-  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com" } },
-
-  
-  // Note: Sponsorships & Fundraising and Predictive Systems & Healthcare teams have directors only (no additional team members)
-];
-
-const organizationStats = [
-  { label: "Solar Panels Installed", value: "11", description: "" },
-  { label: "Families Empowered", value: "11", description: "With clean energy" },
-  { label: "Lives Transformed", value: "70", description: "and more to come" },
-  { label: "CO₂ Prevented", value: "320kg", description: "Environmental impact" },
-  { label: "Team Members", value: "11", description: "Dedicated professionals" },
-  { label: "Specialized Teams", value: "4", description: "Expert departments" }
+  { id: 7, name: "Roham Jan", role: "Social Media Manager", description: "Managing social media presence and engagement", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Editing", "CapCut", "Content Creation"], achievements: ["Grew social media by 30% in likes"], image: "/roham-jan.jpg", teamId: "social-media", social: {} },
+  { id: 6, name: "Jonathan Joseph", role: "Head of Event and Brand Promotion", description: "Creating brand promotion content for events", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Graphic Design", "Canva", "Cold Outreach"], achievements: ["Created 2 flyers for future events"], image: "/jonathan-joseph.jpg", teamId: "social-media", social: {} },
+  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities", location: "Pakistan", joinedDate: "2025-07-01", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organize 10 events", "Helped recruit talent"], image: "/adnan-syed.jpg", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
+  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events", location: "Pakistan", joinedDate: "2025-07-15", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organize 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "https://www.linkedin.com/in/zaid-afal-501030303" } }
 ];
 
 export default function Team() {
+  const [activeTab, setActiveTab] = useState("all");
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
-  const [showTeamMembers, setShowTeamMembers] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-    
-    return () => clearTimeout(timer);
+    setIsVisible(true);
   }, []);
 
-  const handleTeamSelect = (teamId: string) => {
-    if (selectedTeam === teamId) {
-      setSelectedTeam(null);
-      setShowTeamMembers(false);
-    } else {
-      setSelectedTeam(teamId);
-      setShowTeamMembers(false);
-      // Auto-scroll to show team members after a delay
-      setTimeout(() => {
-        setShowTeamMembers(true);
-      }, 300);
-    }
-  };
+  const allMembers = [founder, ...teamDirectors, ...teamMembers];
+  const filteredMembers = activeTab === "all" 
+    ? allMembers 
+    : allMembers.filter(m => m.teamId === activeTab || (activeTab === "all" && !m.teamId));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50 to-purple-50">
       <Navbar />
       
       <main className="pt-20">
-        {/* Header Section */}
-        <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50">
+        {/* Hero Header */}
+        <section className="py-16 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 text-white">
           <div className="container mx-auto px-4">
             <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-200">
-                <Users className="h-4 w-4 mr-1" />
-                Meet Our Team
-              </Badge>
-              {/* Youth Leadership Badge */}
-              <div className="inline-flex items-center bg-amber-100 border border-amber-300 px-6 py-3 rounded-full mb-6">
-                <span className="text-amber-700 font-bold text-sm uppercase tracking-wide">
+              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm border border-white/30 px-6 py-3 rounded-full mb-6">
+                <span className="font-bold text-sm uppercase tracking-wide">
                   🌟 World's Largest Youth-Led Solar Nonprofit
                 </span>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                The Young Leaders Behind <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">SolarPak</span>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                Meet Our Team
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
-                SolarPak is the world's largest youth-led solar nonprofit, founded and run entirely by 
-                passionate students and young leaders committed to solving Pakistan's energy crisis through 
-                renewable solar solutions.
-              </p>
-              <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-8">
-                Our student-run organization combines youthful innovation, boundless energy, and technical 
-                expertise to create lasting impact across Pakistani communities.
+              <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-8">
+                11 passionate young leaders transforming lives through solar energy
               </p>
               
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12">
-                {organizationStats.map((stat, index) => (
-                  <div 
-                    key={index}
-                    className={`bg-white rounded-xl p-4 shadow-sm border border-gray-100 transition-all duration-700 ${
-                      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    }`}
-                    style={{ transitionDelay: `${index * 100}ms` }}
-                  >
-                    <div className="text-2xl font-bold text-green-600">{stat.value}</div>
-                    <div className="text-sm font-medium text-gray-900">{stat.label}</div>
-                    <div className="text-xs text-gray-500">{stat.description}</div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <div className="text-3xl font-bold">11</div>
+                  <div className="text-sm text-white/80">Solar Panels</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <div className="text-3xl font-bold">70</div>
+                  <div className="text-sm text-white/80">Lives Transformed</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <div className="text-3xl font-bold">11</div>
+                  <div className="text-sm text-white/80">Team Members</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <div className="text-3xl font-bold">4</div>
+                  <div className="text-sm text-white/80">Departments</div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Founder Section */}
-        <section className="py-16 bg-gradient-to-br from-amber-50 to-orange-50">
+        {/* Team Filter Tabs */}
+        <section className="py-8 bg-white sticky top-20 z-40 shadow-md">
           <div className="container mx-auto px-4">
-            <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <Badge className="mb-4 bg-amber-100 text-amber-800 hover:bg-amber-200">
-                <Award className="h-4 w-4 mr-1" />
-                Leadership
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Founder</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                The visionary behind SolarPak's mission to transform communities through sustainable energy
-              </p>
-            </div>
-
-            <div className="max-w-4xl mx-auto">
-              <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}>
-                <CardContent className="p-0">
-                  <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-8 text-white">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
-                      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-amber-600 shadow-lg">
-                        {founder.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div className="text-center md:text-left flex-1">
-                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{founder.name}</h3>
-                        <p className="text-amber-100 font-semibold text-lg mb-3">{founder.role}</p>
-                        <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-amber-100">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {founder.location}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            Founded {new Date(founder.joinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-8">
-                    <p className="text-gray-600 mb-8 text-lg leading-relaxed">{founder.description}</p>
-
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                          <Users className="h-5 w-5 text-amber-600" />
-                          Profile
-                        </h4>
-                        {founder.image && founder.image.startsWith('/') ? (
-                          <div className="border-2 border-amber-400 rounded-lg overflow-hidden shadow-md">
-                            <img 
-                              src={founder.image} 
-                              alt={founder.name}
-                              className="w-full h-80 object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="border-2 border-gray-200 rounded-lg p-8 text-center bg-gray-50">
-                            <div className="text-6xl mb-4">👤</div>
-                            <p className="text-sm text-gray-600">No photo available</p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-8">
-                        <div>
-                          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <Heart className="h-5 w-5 text-amber-600" />
-                            Key Achievements
-                          </h4>
-                          <ul className="space-y-2">
-                            {founder.achievements.map((achievement, achIndex) => (
-                              <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
-                                <span className="text-amber-500 mt-1">•</span>
-                                {achievement}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div>
-                          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <Award className="h-5 w-5 text-amber-600" />
-                            Leadership Expertise
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {founder.expertise.map((skill, skillIndex) => (
-                              <Badge key={skillIndex} variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">
-                                {skill}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3 pt-6 border-t border-gray-100 mt-6">
-                      {founder.social.email && (
-                        <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
-                          <Mail className="h-4 w-4 mr-2" />
-                          Contact Founder
-                        </Button>
-                      )}
-                      {founder.social.linkedin && (
-                        <Button size="sm" variant="outline" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                          <Linkedin className="h-4 w-4 mr-2" />
-                          LinkedIn
-                        </Button>
-                      )}
-                      {founder.social.twitter && (
-                        <Button size="sm" variant="outline" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                          <Twitter className="h-4 w-4 mr-2" />
-                          Twitter
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Teams Overview Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-200">
-                <Users className="h-4 w-4 mr-1" />
-                Our Teams
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Specialized Departments</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                Four expert teams working together to maximize SolarPak's impact across Pakistan
-              </p>
-              <p className="text-sm text-gray-500">
-                Click on any team below to view their director and team members
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 mb-16">
-              {teams.map((team, index) => (
-                <Card 
+            <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+              {teams.map((team) => (
+                <button
                   key={team.id}
-                  className={`overflow-hidden hover:shadow-xl transition-all duration-700 cursor-pointer transform hover:scale-105 ${
-                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                  } ${selectedTeam === team.id ? 'ring-2 ring-blue-500 shadow-2xl' : ''}`}
-                  style={{ transitionDelay: `${index * 200}ms` }}
-                  onClick={() => handleTeamSelect(team.id)}
+                  onClick={() => setActiveTab(team.id)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold whitespace-nowrap transition-all duration-300 ${
+                    activeTab === team.id
+                      ? `bg-gradient-to-r ${team.color} text-white shadow-lg scale-105`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
                 >
-                  <CardContent className="p-0">
-                    <div className={`bg-gradient-to-r ${team.color} p-6 text-white relative`}>
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-2xl">
-                          {team.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold mb-1">{team.name}</h3>
-                        </div>
-                        <div className="text-white/80">
-                          {selectedTeam === team.id ? '▲' : '▼'}
-                        </div>
-                      </div>
-                      {selectedTeam === team.id && (
-                        <div className="absolute inset-0 bg-white/10 rounded-t-lg"></div>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <p className="text-gray-600 mb-4">{team.description}</p>
-                      <Badge variant="secondary" className={`${selectedTeam === team.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-                        {selectedTeam === team.id ? 'Selected' : 'Click to View'}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <span className="text-xl">{team.icon}</span>
+                  <span>{team.name}</span>
+                </button>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Selected Team Details Section */}
-        {selectedTeam && (
-          <section className="py-16 bg-gray-50">
-            <div className="container mx-auto px-4">
-              {/* Director Section */}
-              <div className="mb-16">
-                <div className={`text-center mb-12 transition-all duration-1000 ${selectedTeam ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                  <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-200">
-                    <Award className="h-4 w-4 mr-1" />
-                    Director
-                  </Badge>
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Team Leadership</h2>
-                  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Meet the director leading the {teams.find(t => t.id === selectedTeam)?.name} team
-                  </p>
-                </div>
-
-                {teamDirectors
-                  .filter(director => director.teamId === selectedTeam)
-                  .map((director, index) => {
-                    const team = teams.find(t => t.id === director.teamId);
-                    return (
-                      <div key={director.id} className="max-w-4xl mx-auto">
-                        <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
-                          selectedTeam ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                        }`}>
-                          <CardContent className="p-0">
-                            <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
-                              <div className="text-center">
-                                <h3 className="text-2xl md:text-3xl font-bold mb-2">{director.name}</h3>
-                                <p className="text-white/90 font-semibold text-lg mb-3">{director.role}</p>
-                                <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-white/80">
-                                  <span className="flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-white rounded-full"></span>
-                                    {team?.name} Team
-                                  </span>
-                                  <span className="flex items-center gap-1">
-                                    <Calendar className="h-4 w-4" />
-                                    Joined {new Date(director.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="p-8">
-                              <p className="text-gray-600 mb-8 text-lg leading-relaxed">{director.description}</p>
-
-                              <div className="grid md:grid-cols-2 gap-8">
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-purple-600" />
-                                    Profile
-                                  </h4>
-                                  {director.image && director.image.startsWith('/') ? (
-                                    <div className="border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
-                                      <img 
-                                        src={director.image} 
-                                        alt={director.name}
-                                        className="w-full h-80 object-cover"
-                                      />
-                                    </div>
-                                  ) : (
-                                    <div className="border-2 border-gray-200 rounded-lg p-8 text-center bg-gray-50">
-                                      <div className="text-6xl mb-4">👤</div>
-                                      <p className="text-sm text-gray-600">No photo available</p>
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="space-y-8">
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                      <Heart className="h-5 w-5 text-purple-600" />
-                                      Key Achievements
-                                    </h4>
-                                    <ul className="space-y-2">
-                                      {director.achievements.map((achievement, achIndex) => (
-                                        <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
-                                          <span className="text-purple-500 mt-1">•</span>
-                                          {achievement}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                      <Award className="h-5 w-5 text-purple-600" />
-                                      Expertise
-                                    </h4>
-                                    <div className="flex flex-wrap gap-2">
-                                      {director.expertise.map((skill, skillIndex) => (
-                                        <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
-                                          {skill}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="flex gap-3 pt-6 border-t border-gray-100 mt-6">
-                                {director.social.email && (
-                                  <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    Contact Director
-                                  </Button>
-                                )}
-                                {director.social.linkedin && (
-                                  <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
-                                    <Linkedin className="h-4 w-4 mr-2" />
-                                    LinkedIn
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    );
-                  })}
-              </div>
-
-              {/* Team Members Section */}
-              {showTeamMembers && (
-                <div className={`transition-all duration-1000 ${showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                  {teamMembers.filter(member => member.teamId === selectedTeam).length > 0 ? (
-                    <>
-                      <div className="text-center mb-12">
-                        <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-200">
-                          <Users className="h-4 w-4 mr-1" />
-                          Team Members
-                        </Badge>
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Meet the Team</h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                          The dedicated professionals working under the {teams.find(t => t.id === selectedTeam)?.name} department
-                        </p>
-                      </div>
-
-                      <div className="space-y-12">
-                        {teamMembers
-                          .filter(member => member.teamId === selectedTeam)
-                          .map((member, index) => {
-                            const team = teams.find(t => t.id === member.teamId);
-                            return (
-                              <div key={member.id} className="max-w-4xl mx-auto">
-                                <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-700 ${
-                                  showTeamMembers ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                                }`} style={{ transitionDelay: `${index * 100}ms` }}>
-                                  <CardContent className="p-0">
-                                    <div className={`bg-gradient-to-r ${team?.color || 'from-gray-500 to-gray-600'} p-8 text-white`}>
-                                      <div className="text-center">
-                                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{member.name}</h3>
-                                        <p className="text-white/90 font-semibold text-lg mb-3">{member.role}</p>
-                                        <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-white/80">
-                                          <span className="flex items-center gap-1">
-                                            <span className="w-2 h-2 bg-white rounded-full"></span>
-                                            {team?.name} Team
-                                          </span>
-                                          <span className="flex items-center gap-1">
-                                            <Calendar className="h-4 w-4" />
-                                            Joined {new Date(member.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    <div className="p-8">
-                                      <p className="text-gray-600 mb-8 text-lg leading-relaxed">{member.description}</p>
-
-                                      <div className="grid md:grid-cols-2 gap-8">
-                                        <div>
-                                          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                            <Users className="h-5 w-5 text-purple-600" />
-                                            Profile
-                                          </h4>
-                                          {member.image && member.image.startsWith('/') ? (
-                                            <div className="border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
-                                              <img 
-                                                src={member.image} 
-                                                alt={member.name}
-                                                className="w-full h-80 object-cover"
-                                              />
-                                            </div>
-                                          ) : (
-                                            <div className="border-2 border-gray-200 rounded-lg p-8 text-center bg-gray-50">
-                                              <div className="text-6xl mb-4">👤</div>
-                                              <p className="text-sm text-gray-600">No photo available</p>
-                                            </div>
-                                          )}
-                                        </div>
-
-                                        <div className="space-y-8">
-                                          <div>
-                                            <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                              <Heart className="h-5 w-5 text-purple-600" />
-                                              Key Achievements
-                                            </h4>
-                                            <ul className="space-y-2">
-                                              {member.achievements.map((achievement, achIndex) => (
-                                                <li key={achIndex} className="text-sm text-gray-600 flex items-start gap-2">
-                                                  <span className="text-purple-500 mt-1">•</span>
-                                                  {achievement}
-                                                </li>
-                                              ))}
-                                            </ul>
-                                          </div>
-
-                                          <div>
-                                            <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                              <Award className="h-5 w-5 text-purple-600" />
-                                              Expertise
-                                            </h4>
-                                            <div className="flex flex-wrap gap-2">
-                                              {member.expertise.map((skill, skillIndex) => (
-                                                <Badge key={skillIndex} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
-                                                  {skill}
-                                                </Badge>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div className="flex gap-3 pt-6 border-t border-gray-100 mt-6">
-                                        {member.social.email && (
-                                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
-                                            <Mail className="h-4 w-4 mr-2" />
-                                            Contact Member
-                                          </Button>
-                                        )}
-                                        {member.social.linkedin && (
-                                          <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
-                                            <Linkedin className="h-4 w-4 mr-2" />
-                                            LinkedIn
-                                          </Button>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Users className="h-8 w-8 text-gray-400" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Director-Only Department</h3>
-                      <p className="text-gray-600 max-w-md mx-auto">
-                        This department is currently led by the director only. The {teams.find(t => t.id === selectedTeam)?.name} operations are managed independently by the department head.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Mission & Values Section */}
-        <section className="py-16 bg-white">
+        {/* Team Members Grid */}
+        <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Mission & Values</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Guided by Islamic principles of community support and environmental stewardship
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className={`text-center p-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl">🌱</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredMembers.map((member, index) => (
+                <div
+                  key={member.id}
+                  className={`group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${
+                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                  }`}
+                  style={{ transitionDelay: `${index * 50}ms` }}
+                >
+                  {/* Image */}
+                  <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                    <img 
+                      src={member.image} 
+                      alt={member.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const initials = member.name.split(' ').map(n => n[0]).join('');
+                          parent.innerHTML = `<div class="w-full h-full flex items-center justify-center text-5xl font-bold text-gray-400">${initials}</div>`;
+                        }
+                      }}
+                    />
+                    {member.id === 1 && (
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        👑 Founder
+                      </div>
+                    )}
+                    {member.isDirector && (
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        📌 Director
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Sustainability</h3>
-                  <p className="text-gray-600">
-                    Creating lasting environmental impact through renewable energy solutions that benefit both communities and our planet.
-                  </p>
-                </CardContent>
-              </Card>
 
-              <Card className={`text-center p-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl">🤝</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Community</h3>
-                  <p className="text-gray-600">
-                    Building strong relationships with families and communities to ensure our solar projects create meaningful, lasting change.
-                  </p>
-                </CardContent>
-              </Card>
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-green-600 transition-colors">
+                      {member.name}
+                    </h3>
+                    <p className="text-sm font-semibold text-green-600 mb-3">
+                      {member.role}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {member.description}
+                    </p>
 
-              <Card className={`text-center p-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl">💡</span>
+                    {/* Expertise Tags */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {member.expertise.slice(0, 2).map((skill, idx) => (
+                        <span 
+                          key={idx} 
+                          className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                      {member.expertise.length > 2 && (
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
+                          +{member.expertise.length - 2} more
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Contact */}
+                    <div className="flex gap-2 pt-4 border-t border-gray-100">
+                      {member.social.email && (
+                        <a
+                          href={`mailto:${member.social.email}`}
+                          className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
+                        >
+                          <Mail className="h-4 w-4" />
+                          Email
+                        </a>
+                      )}
+                      {member.social.linkedin && (
+                        <a
+                          href={member.social.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
+                        >
+                          <Linkedin className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Innovation</h3>
-                  <p className="text-gray-600">
-                    Continuously improving our approach through technology, community feedback, and data-driven impact measurement.
-                  </p>
-                </CardContent>
-              </Card>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Join Our Team CTA */}
+        {/* Join CTA */}
         <section className="py-16 bg-gradient-to-r from-green-600 to-blue-600">
           <div className="container mx-auto px-4 text-center">
-            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join Our Mission</h2>
-              <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-                Passionate about renewable energy and community impact? We're always looking for dedicated individuals to join our growing team.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
-                  onClick={() => window.open('mailto:solarpakinitiative@gmail.com', '_blank')}
-                >
-                  <Mail className="mr-2 h-5 w-5" />
-                  solarpakinitiative@gmail.com
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 text-lg font-semibold"
-                  onClick={() => window.location.href = '/'}
-                >
-                  Learn More About Our Work
-                </Button>
-              </div>
-            </div>
+            <h2 className="text-4xl font-bold text-white mb-4">Join Our Mission</h2>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              Passionate about renewable energy? We're always looking for dedicated individuals.
+            </p>
+            <a 
+              href="mailto:solarpakinitiative@gmail.com"
+              className="inline-flex items-center gap-2 bg-white text-green-600 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+            >
+              <Mail className="h-5 w-5" />
+              solarpakinitiative@gmail.com
+            </a>
           </div>
         </section>
       </main>
