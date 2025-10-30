@@ -30,7 +30,7 @@ export default function YouthLeadershipSection() {
             </div>
             <h3 className="text-2xl font-bold text-green-900 mb-3 text-center">Youth-Led Team</h3>
             <p className="text-gray-600 text-center leading-relaxed">
-              100% student-run organization with 13 dedicated young leaders across 6 departments
+              100% student-run organization with 11 dedicated young leaders across 4 departments
             </p>
           </div>
 
@@ -85,11 +85,11 @@ export default function YouthLeadershipSection() {
                 <div className="text-lg">Youth-Led</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-amber-300 mb-2">13</div>
+                <div className="text-4xl font-bold text-amber-300 mb-2">11</div>
                 <div className="text-lg">Team Members</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-amber-300 mb-2">6</div>
+                <div className="text-4xl font-bold text-amber-300 mb-2">4</div>
                 <div className="text-lg">Departments</div>
               </div>
             </div>

@@ -170,7 +170,7 @@ export default function Team() {
                 Meet Our Team
               </h1>
               <p className="text-xl md:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-12" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                13 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy
+                11 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy
               </p>
 
               {/* Stats */}
@@ -184,11 +184,11 @@ export default function Team() {
                   <div className="text-white/90">Lives Transformed</div>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">13</div>
+                  <div className="text-4xl font-bold text-amber-300 mb-2">11</div>
                   <div className="text-white/90">Team Members</div>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">6</div>
+                  <div className="text-4xl font-bold text-amber-300 mb-2">4</div>
                   <div className="text-white/90">Departments</div>
                 </div>
               </div>
