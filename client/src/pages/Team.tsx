@@ -91,6 +91,32 @@ const teamDirectors: TeamMember[] = [
     teamId: "predictive-healthcare",
     isDirector: true,
     social: { email: "research@solarpak.com" }
+  },
+  {
+    id: 11,
+    name: "Marwa",
+    role: "Director of International Expansion",
+    description: "Leading SolarPak's global growth strategy and expanding our clean energy mission to new countries and communities worldwide.",
+    location: "Pakistan",
+    expertise: ["International Strategy", "Market Expansion", "Global Partnerships", "Cross-Cultural Management"],
+    achievements: ["Leading Morocco expansion initiative", "Member of board of directors", "Influences major strategic decisions through board participation"],
+    image: "/marwa.jpg",
+    teamId: "international-expansion",
+    isDirector: true,
+    social: { email: "international@solarpak.com" }
+  },
+  {
+    id: 12,
+    name: "Hamza Memon",
+    role: "Director of General Management",
+    description: "Overseeing day-to-day operations and ensuring seamless coordination across all departments to maximize organizational efficiency.",
+    location: "Pakistan",
+    expertise: ["Operations Management", "Team Coordination", "Strategic Planning", "Process Optimization"],
+    achievements: ["Streamlined organizational operations", "Member of board of directors", "Influences major strategic decisions through board participation"],
+    image: "/hamza-memon.jpg",
+    teamId: "general-management",
+    isDirector: true,
+    social: { email: "operations@solarpak.com" }
   }
 ];
 
@@ -144,7 +170,7 @@ export default function Team() {
                 Meet Our Team
               </h1>
               <p className="text-xl md:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-12" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                11 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy
+                13 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy
               </p>
 
               {/* Stats */}
@@ -158,11 +184,11 @@ export default function Team() {
                   <div className="text-white/90">Lives Transformed</div>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">11</div>
+                  <div className="text-4xl font-bold text-amber-300 mb-2">13</div>
                   <div className="text-white/90">Team Members</div>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">4</div>
+                  <div className="text-4xl font-bold text-amber-300 mb-2">6</div>
                   <div className="text-white/90">Departments</div>
                 </div>
               </div>

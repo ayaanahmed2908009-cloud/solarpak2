@@ -1,222 +1,45 @@
 # SolarPak - Solar Energy Donation Platform
 
 ## Overview
-
-SolarPak is a comprehensive web application that facilitates donations for solar energy installations in Pakistan. The platform addresses the electricity crisis in Pakistan by connecting donors with families in need of sustainable energy solutions. Built with modern web technologies, it provides a seamless donation experience with real-time impact tracking and comprehensive user management.
-
-## System Architecture
-
-### Dual Platform Architecture
-The application now operates as a **dual platform system**:
-
-1. **Public Donation Platform** - Completely open access with no authentication
-2. **Worker Management System** - Secure internal portal for team members
-
-### Frontend Architecture
-- **React 18** with TypeScript for type-safe component development
-- **Vite** as the build tool for fast development and optimized production builds
-- **Tailwind CSS** with custom design system for responsive UI
-- **Radix UI** components for accessible, unstyled UI primitives
-- **Wouter** for lightweight client-side routing
-- **TanStack Query** for server state management and caching
-- **React Hook Form** with Zod validation for form handling
-
-### Backend Architecture
-- **Express.js** server with TypeScript for type safety
-- **RESTful API** design with structured endpoints
-- **Dual Authentication System**:
-  - **Public routes** - No authentication required
-  - **Worker authentication** - Session-based auth with bcrypt password hashing
-- **Express sessions** with connect-pg-simple for worker session storage
-- **WebSocket** server for real-time updates and notifications
-
-### Database Layer
-- **PostgreSQL** as the primary database
-- **Drizzle ORM** for type-safe database operations and migrations
-- **Neon Database** as the serverless PostgreSQL provider
-- **Schema-first approach** with shared TypeScript types
-- **Dual Schema Design**:
-  - **Public schema** (`shared/schema.ts`) - For donation platform data
-  - **Worker schema** (`shared/worker-schema.ts`) - For internal team management
-
-## Key Components
-
-### Public Platform Architecture
-- Completely public platform without user authentication
-- No user accounts, registration, or login system  
-- No user dashboards or protected content
-- Direct Ko-fi integration for all donations
-- Open access to all content and features
-
-### Worker Management System
-- **Secure Authentication**: Username/password login with bcrypt encryption
-- **Role-Based Access Control**: Admin, Manager, and Worker roles
-- **Department Organization**: Events, Social Media, Sponsorships, Healthcare
-- **Activity Tracking**: Comprehensive logging of worker actions
-- **Session Management**: Secure session storage with PostgreSQL
-- **Admin Features**: Worker management and system oversight
-
-### Donation System
-- Direct Ko-fi integration with simple redirect buttons
-- No internal donation forms - all payments processed through Ko-fi.com/solarpak
-- Automatic membership tier updates based on donation amounts
-- Donation tracking and success confirmation
-- User impact metrics and progress tracking
-- Streamlined user experience with external payment processing
-
-### User Management
-- Comprehensive user profiles with donation history
-- Membership tier system (Bronze, Silver, Gold, Platinum)
-- Admin dashboard for user management
-- Real-time user impact tracking
-- Media upload capabilities for impact stories
-
-### Content Management
-- Dynamic project management system
-- Impact story creation and display
-- Testimonial management
-- Real-time statistics tracking
-- Newsletter subscription system
-
-### SEO Optimization
-- Comprehensive meta tags for search engines and social media
-- Open Graph and Twitter Card integration
-- Structured data (JSON-LD) for organizations and websites
-- XML sitemap for search engine crawling
-- Robots.txt for crawler guidelines
-- SEO-optimized content with targeted keywords
-- Location-specific content for Pakistani regions
-- FAQ section with structured data markup
-- Blog-style content for better search visibility
-
-## Data Flow
-
-### Public Donation Flow
-1. User selects donation amount on public page
-2. Direct redirect to Ko-fi.com/solarpak for payment
-3. Donation tracking for statistics only
-4. No user accounts or authentication required
-5. Public success confirmation page
-
-### Donation Process
-1. User selects donation amount and type
-2. Stripe payment intent created on backend
-3. Payment processed through Stripe Elements
-4. Webhook confirms payment success
-5. User donation stats and membership tier updated
-6. Real-time impact metrics refreshed
-
-### Content Management
-1. Static content display for projects, stories, and testimonials
-2. No admin interface - content managed externally
-3. File serving for media content
-4. Public API endpoints for data access
-5. No real-time admin features
-
-## External Dependencies
-
-### Data Processing
-- Real-time donation tracking and statistics
-- Automated membership tier calculation
-- WebSocket notifications for admin updates
-
-### Database
-- **Neon Database** for serverless PostgreSQL hosting
-- Connection pooling for optimal performance
-- Automated backups and scaling
-
-### File Storage
-- Local file storage for uploaded media
-- Public directory serving for static assets
-- Multer middleware for multipart form handling
-
-### Real-time Communication
-- **WebSocket** server on port 8081
-- Real-time notifications for admin actions
-- Live impact tracking updates
-
-## Deployment Strategy
-
-### Development Environment
-- **Replit** as the primary development platform
-- Hot module replacement with Vite
-- PostgreSQL module for database provisioning
-- Development server on port 5000
-
-### Production Build
-- Vite build for optimized frontend bundle
-- ESBuild for server-side code compilation
-- Static file serving from dist directory
-- Environment-specific configuration
-
-### Database Migrations
-- Drizzle Kit for schema migrations
-- Automatic migration on deployment
-- Seed data for initial admin accounts
-
-### Environment Configuration
-- Environment variables for sensitive data
-- Stripe keys for payment processing
-- Database connection strings
-- Session secrets for security
-
-## Changelog
-
-- October 26, 2025. **Youth Leadership SEO Optimization**: Comprehensive SEO optimization targeting "the worlds largest youth led solar non profit" including: Organization schema markup with youth-led nonprofit details, YouthLeadershipSection component with credentials and proof points, expanded FAQ section with youth-led questions, Team page enhancement with youth leadership story, and semantic keyword optimization throughout site (youth-led, student-run, young leaders)
-- August 31, 2025. **Crisis Section Visual Enhancement**: Enhanced Crisis Section with dynamic animated backgrounds, sophisticated gradient cards with hover effects, improved typography with text shadows, and redesigned "But There Is Hope" section with enhanced visual appeal
-- August 16, 2025. **Admin Login Activity Dashboard**: Added comprehensive login tracking system for admins with real-time monitoring of team member login timestamps, color-coded status indicators, and tabbed interface for easy navigation between team management and login activity
-- August 16, 2025. **Department Head Task Toggle Feature**: Added toggle functionality for department heads to switch between "Tasks Assigned to Me" (tasks from admin) and "Tasks Assigned by Me" (tasks assigned to team members), with proper visual indicators and task submission capabilities maintained
-- August 16, 2025. **Admin Work Submission Visibility Fix**: Fixed admin interface to display all work submissions from all departments with complete worker and task details by updating getAllWorkSubmissions function
-- August 6, 2025. **Work Submission System Enhancement**: Implemented complete work submission workflow with automatic task completion, prevention of duplicate submissions, and visual status indicators showing "Work Submitted" badge for completed tasks
-- August 6, 2025. **Database Migration Fix**: Resolved work submission failures by creating missing work_submissions table, enabling proper work submission functionality with screenshot upload support
-- August 4, 2025. **Enhanced Task Permission System**: Updated task deletion permissions to prevent managers from deleting tasks assigned to them by admins, maintaining proper hierarchical authority structure
-- August 2, 2025. **Worker Authentication System**: Created comprehensive internal worker portal with role-based access, department management, activity logging, and secure authentication using separate database schema
-- August 2, 2025. Complete authentication removal: Eliminated all user accounts, login/signup, dashboard functionality, and authentication routes for fully public platform
-- July 27, 2025. Updated team structure: Removed Social Media Specialist 3 placeholder from Social Media team
-- July 27, 2025. Updated team photos: Added Zaid Afal's actual photo to Event Coordinator profile
-- July 27, 2025. Updated team display: Simplified member count to show "4 members" for all teams
-- July 27, 2025. Updated team statistics: Removed "Across Pakistan" from Solar Panels Installed description
-- July 27, 2025. Updated team statistics: Changed "Lives Transformed" description to "and more to come"
-- July 27, 2025. Updated team statistics: Changed team member count from 12 to 11 members
-- July 27, 2025. Updated team achievements: Added content production willingness achievement to Jonathan Joseph
-- July 27, 2025. Updated team expertise: Added "Cold Outreach" and "Brand Image" to Jonathan Joseph's expertise areas
-- July 27, 2025. Updated team achievements: Changed Roham Jan's achievement to "Grew social media account by 30% in likes"
-- July 27, 2025. Updated team expertise: Added "Content Creation" and "Engagement" to Roham Jan's expertise areas
-- July 27, 2025. Updated social links: Removed LinkedIn and Twitter from all team members, keeping only email contacts
-- July 27, 2025. Updated founder photo: Added Ayaan Ahmed's actual photo showing desert landscape triumph
-- July 27, 2025. Updated board directors: Added "Influences major strategic decisions through board participation" to all directors' achievements
-- July 27, 2025. Updated founder details: Changed location to Riyadh, Saudi Arabia and founding date to March 2025
-- July 27, 2025. Updated team photos: Added Adnan Syed's actual photo to Community Liaison profile
-- July 27, 2025. Updated team dates: Changed all team members' join dates to July 2025
-- July 27, 2025. Updated team roles: Changed Jonathan Joseph's title to "Head of Event and Brand Promotion"
-- July 27, 2025. Updated team photos: Added Roham Jan's actual professional photo to Social Media Manager profile
-- July 27, 2025. Updated social links: Added Ayaan Ahmed's LinkedIn profile to Events Director
-- July 27, 2025. Updated social links: Removed LinkedIn links from all directors except founder, added Zaid Afal's LinkedIn profile
-- July 27, 2025. Updated all directors: Added "Member of board of directors" to all four department directors' achievements
-- July 27, 2025. Updated Predictive Systems & Healthcare: Added Moiz Ali as Director with achievements in healthcare expansion and board leadership
-- July 27, 2025. Updated team structure: Removed placeholder outreach coordinators 3 and 4 from Events team
-- July 27, 2025. Updated Sponsorships & Fundraising: Added Ramin Tihami as Director with expertise in AI-powered outreach and strategic negotiations
-- July 27, 2025. Updated Events & Community Outreach: Added Zaid Afal as Event Coordinator with expertise in community relations and organisation
-- July 27, 2025. Updated Events & Community Outreach: Added Adnan Syed as Community Liaison with expertise in community relations, organisation, and talent acquisition
-- July 27, 2025. Updated Events & Community Outreach: Added Ayaan Omer as Director with achievements in organizing 10 events and clash royale competition
-- July 27, 2025. Updated Social Media team: Added Roham Jan as Social Media Manager with expertise in editing and CapCut, achievements in posting and engagement
-- July 27, 2025. Updated Social Media team: Added Jonathan Joseph as Content Creator specializing in brand promotion content, graphic design, and Canva
-- July 27, 2025. Enhanced team profile layouts: All team members now have same professional layout as directors with larger photos and consistent spacing
-- July 27, 2025. Added Ibrahim Murtaza's actual profile photo with blue frame border in updated layout structure
-- July 27, 2025. Created comprehensive Team page with team member profiles, mission & values, and career opportunities
-- July 27, 2025. Added Trust Roadmap Section with animated 3-step donation workflow before donation section
-- July 27, 2025. Updated Trust Roadmap icons to visible emojis with white backgrounds and green borders
-- July 18, 2025. Implemented comprehensive SEO optimization including meta tags, structured data, sitemap, and content optimization
-- October 29, 2025. Updated impact statistics: 11 solar panels, 11 homes, 70 lives transformed, 240 kWh energy, 320 kg CO₂ prevented
-- July 18, 2025. Updated impact statistics: 8 solar panels, 8 homes, 35 lives transformed, 90 kWh energy, 120 kg CO₂ prevented
-- July 18, 2025. Enhanced mobile responsiveness for counter animations and impact section
-- July 18, 2025. Replaced "Night Mercy" messaging with unified "Blessed Giving" theme
-- July 6, 2025. Completely removed donation forms - all donations now handled through Ko-fi.com/solarpak
-- July 6, 2025. Added Ko-fi integration - donations now redirect to ko-fi.com/solarpak for payment processing
-- July 6, 2025. Removed PayPal integration - system now tracks donations without payment processing
-- July 3, 2025. Replaced Stripe with PayPal integration for donation processing
-- June 26, 2025. Initial setup
+SolarPak is a web application dedicated to facilitating donations for solar energy installations in Pakistan. Its primary purpose is to address Pakistan's electricity crisis by connecting donors with families in need of sustainable energy solutions. The platform aims to provide a seamless donation experience with real-time impact tracking and efficient internal management, ultimately contributing to widespread solar adoption in the region.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
+
+## System Architecture
+SolarPak operates as a dual-platform system: a Public Donation Platform accessible without authentication, and a secure Worker Management System for internal team members.
+
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for fast builds
+- **Tailwind CSS** for responsive UI
+- **Radix UI** for accessible components
+- **Wouter** for routing
+- **TanStack Query** for server state
+- **React Hook Form** with Zod for forms
+
+### Backend
+- **Express.js** with TypeScript
+- **RESTful API**
+- **Dual Authentication**: No auth for public routes; session-based auth with bcrypt for workers.
+- **Express sessions** with `connect-pg-simple`
+- **WebSocket** server for real-time updates
+
+### Database
+- **PostgreSQL** (Neon Database)
+- **Drizzle ORM** for type-safe operations and migrations
+- **Schema-first approach** with shared TypeScript types
+- **Dual Schema Design**: `public` and `worker` schemas
+
+### Key Features
+- **Public Platform**: Open access, no authentication, direct Ko-fi integration for donations.
+- **Worker Management System**: Secure login, role-based access (Admin, Manager, Worker), department organization, activity tracking, admin features.
+- **Donation System**: Direct integration with Ko-fi.com for payment processing, automatic membership tier updates based on donations, impact tracking.
+- **Content Management**: Dynamic project management, impact stories, testimonials, real-time statistics, newsletter.
+- **SEO Optimization**: Comprehensive meta tags, Open Graph, Twitter Card, structured data, XML sitemap, `robots.txt`, keyword-optimized content.
+
+## External Dependencies
+- **Neon Database**: Serverless PostgreSQL hosting.
+- **Ko-fi**: Primary platform for processing all donations.
+- **Multer**: Middleware for handling multipart form data (e.g., file uploads).
+- **WebSocket**: For real-time communication and notifications.
