@@ -85,7 +85,7 @@ export default function YouthLeadershipSection() {
                 <div className="text-lg">Youth-Led</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-amber-300 mb-2">9</div>
+                <div className="text-4xl font-bold text-amber-300 mb-2">11</div>
                 <div className="text-lg">Team Members</div>
               </div>
               <div>
