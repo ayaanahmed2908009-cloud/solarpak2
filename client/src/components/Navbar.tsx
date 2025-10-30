@@ -42,7 +42,7 @@ export default function Navbar() {
               className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
               data-testid="link-about-us"
             >
-              ABOUT US
+              TEAM
             </Link>
             <div className="relative group">
               <button className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
@@ -150,7 +150,7 @@ export default function Navbar() {
               OUR IMPACT
             </a>
             <Link href="/team" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
-              ABOUT US
+              TEAM
             </Link>
             <Link href="/village" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
               Stories
