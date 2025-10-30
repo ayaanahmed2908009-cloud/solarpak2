@@ -201,7 +201,7 @@ const organizationStats = [
   { label: "Families Empowered", value: "11", description: "With clean energy" },
   { label: "Lives Transformed", value: "70", description: "and more to come" },
   { label: "CO₂ Prevented", value: "320kg", description: "Environmental impact" },
-  { label: "Team Members", value: "9", description: "Dedicated professionals" },
+  { label: "Team Members", value: "11", description: "Dedicated professionals" },
   { label: "Specialized Teams", value: "4", description: "Expert departments" }
 ];
 

@@ -177,7 +177,7 @@ The application now operates as a **dual platform system**:
 - July 27, 2025. Updated team display: Simplified member count to show "4 members" for all teams
 - July 27, 2025. Updated team statistics: Removed "Across Pakistan" from Solar Panels Installed description
 - July 27, 2025. Updated team statistics: Changed "Lives Transformed" description to "and more to come"
-- July 27, 2025. Updated team statistics: Changed team member count from 12 to 9 members
+- July 27, 2025. Updated team statistics: Changed team member count from 12 to 11 members
 - July 27, 2025. Updated team achievements: Added content production willingness achievement to Jonathan Joseph
 - July 27, 2025. Updated team expertise: Added "Cold Outreach" and "Brand Image" to Jonathan Joseph's expertise areas
 - July 27, 2025. Updated team achievements: Changed Roham Jan's achievement to "Grew social media account by 30% in likes"
