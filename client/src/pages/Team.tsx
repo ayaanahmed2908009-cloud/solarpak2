@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Mail, Award, Users, Heart } from "lucide-react";
+import hamzaMemonPhoto from "@assets/hamza_1761940364390.jpeg";
 
 interface TeamMember {
   id: number;
@@ -113,7 +114,7 @@ const teamDirectors: TeamMember[] = [
     location: "Pakistan",
     expertise: ["Operations Management", "Team Coordination", "Strategic Planning", "Process Optimization"],
     achievements: ["Streamlined organizational operations", "Member of board of directors", "Influences major strategic decisions through board participation"],
-    image: "/hamza-memon.jpg",
+    image: hamzaMemonPhoto,
     teamId: "general-management",
     isDirector: true,
     social: { email: "operations@solarpak.com" }
