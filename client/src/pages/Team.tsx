@@ -42,17 +42,17 @@ const founder: TeamMember = {
 
 const teamDirectors: TeamMember[] = [
   {
-    id: 2,
-    name: "Ibrahim Murtaza",
-    role: "Director of Social Media",
-    description: "Leading digital strategy and online community engagement to amplify SolarPak's impact story across social platforms.",
+    id: 12,
+    name: "Hamza Memon",
+    role: "Director of General Management",
+    description: "Overseeing day-to-day operations and ensuring seamless coordination across all departments to maximize organizational efficiency.",
     location: "Pakistan",
-    expertise: ["Social Media Strategy", "Content Creation", "Digital Marketing", "Community Management"],
-    achievements: ["Built upon established social media presence from founder", "Increased online engagement by 5%", "Member of board of directors", "Influences major strategic decisions through board participation"],
-    image: "/ibrahim-murtaza.jpg",
-    teamId: "social-media",
+    expertise: ["Operations Management", "Team Coordination", "Strategic Planning", "Process Optimization"],
+    achievements: ["Streamlined organizational operations", "Member of board of directors", "Influences major strategic decisions through board participation"],
+    image: hamzaMemonPhoto,
+    teamId: "general-management",
     isDirector: true,
-    social: { email: "social@solarpak.com" }
+    social: { email: "operations@solarpak.com" }
   },
   {
     id: 3,
@@ -105,19 +105,6 @@ const teamDirectors: TeamMember[] = [
     teamId: "international-expansion",
     isDirector: true,
     social: { email: "international@solarpak.com" }
-  },
-  {
-    id: 12,
-    name: "Hamza Memon",
-    role: "Director of General Management",
-    description: "Overseeing day-to-day operations and ensuring seamless coordination across all departments to maximize organizational efficiency.",
-    location: "Pakistan",
-    expertise: ["Operations Management", "Team Coordination", "Strategic Planning", "Process Optimization"],
-    achievements: ["Streamlined organizational operations", "Member of board of directors", "Influences major strategic decisions through board participation"],
-    image: hamzaMemonPhoto,
-    teamId: "general-management",
-    isDirector: true,
-    social: { email: "operations@solarpak.com" }
   }
 ];
 
