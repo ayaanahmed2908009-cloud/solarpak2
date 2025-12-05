@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageSEO from "@/components/PageSEO";
 import { Mail, Award, Users, Heart } from "lucide-react";
 import hamzaMemonPhoto from "@assets/hamza_1761940364390.jpeg";
 

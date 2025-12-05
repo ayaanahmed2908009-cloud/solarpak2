@@ -8,49 +8,57 @@
 <!-- Homepage - World's Largest Youth-Led Solar Nonprofit -->
 <url>
   <loc>https://solarpak.org/</loc>
-  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
   <priority>1.0</priority>
 </url>
 
-<!-- Team Page - Meet Our Young Leaders -->
+<!-- Meet Our Team - Youth Leaders Making a Difference -->
 <url>
   <loc>https://solarpak.org/team</loc>
-  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
   <priority>0.9</priority>
 </url>
 
-<!-- Impact Page - Our Results -->
+<!-- Our Impact - Solar Installations Across Pakistan -->
 <url>
   <loc>https://solarpak.org/impact</loc>
-  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
   <changefreq>weekly</changefreq>
+  <priority>0.9</priority>
+</url>
+
+<!-- Village Stories - Real Families We've Helped -->
+<url>
+  <loc>https://solarpak.org/village</loc>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
   <priority>0.8</priority>
 </url>
 
-<!-- Gallery - Project Photos -->
+<!-- Photo Gallery - See Our Work -->
 <url>
   <loc>https://solarpak.org/gallery</loc>
-  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
-  <priority>0.7</priority>
+  <priority>0.8</priority>
 </url>
 
-<!-- Village Experience - Community Stories -->
+<!-- Join Our Mission - Become a Member -->
 <url>
-  <loc>https://solarpak.org/village</loc>
-  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <loc>https://solarpak.org/membership</loc>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
-  <priority>0.7</priority>
+  <priority>0.8</priority>
 </url>
 
-<!-- Case Study - Impact Stories -->
+<!-- Case Study - Detailed Impact Stories -->
 <url>
   <loc>https://solarpak.org/case-study</loc>
-  <lastmod>2025-10-26T15:07:57+00:00</lastmod>
+  <lastmod>2025-12-05T12:00:00+00:00</lastmod>
   <changefreq>monthly</changefreq>
-  <priority>0.6</priority>
+  <priority>0.7</priority>
 </url>
 
 </urlset>
