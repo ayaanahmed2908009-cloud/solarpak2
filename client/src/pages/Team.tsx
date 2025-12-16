@@ -129,7 +129,7 @@ export default function Team() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50 to-purple-50">
       <Navbar />
       
-      <main className="pt-20">
+      <main>
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-green-600 via-blue-600 to-purple-600 relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
