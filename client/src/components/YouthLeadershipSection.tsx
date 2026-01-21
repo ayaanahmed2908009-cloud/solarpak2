@@ -23,111 +23,113 @@ export default function YouthLeadershipSection() {
   ];
 
   return (
-    <section className="min-h-screen bg-slate-900 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-[45%] h-[40%] grid grid-cols-3 gap-1">
-        <div className="col-span-1 row-span-1 overflow-hidden">
-          <img src={image6} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="col-span-1 row-span-1 overflow-hidden">
-          <img src={image7} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="col-span-1 row-span-1 overflow-hidden">
-          <img src={image8} alt="" className="w-full h-full object-cover" />
-        </div>
-      </div>
-
-      <div className="absolute top-0 left-0 w-[22%] h-full flex flex-col gap-1 pt-[18%]">
-        <div className="flex-1 overflow-hidden">
+    <section className="h-screen bg-slate-900 relative overflow-hidden">
+      <div className="absolute inset-0 grid grid-cols-12 grid-rows-6 gap-1 p-1">
+        <div className="col-span-2 row-span-3 overflow-hidden rounded-sm">
           <img src={image1} alt="" className="w-full h-full object-cover" />
         </div>
-        <div className="flex-1 overflow-hidden">
+        
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+          <img src={image6} alt="" className="w-full h-full object-cover" />
+        </div>
+        
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+          <img src={image7} alt="" className="w-full h-full object-cover" />
+        </div>
+        
+        <div className="col-span-6 row-span-2 bg-transparent"></div>
+        
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
           <img src={image2} alt="" className="w-full h-full object-cover" />
         </div>
-        <div className="flex-1 overflow-hidden">
+        
+        <div className="col-span-4 row-span-2 bg-transparent"></div>
+        
+        <div className="col-span-3 row-span-2 bg-transparent"></div>
+        <div className="col-span-3 row-span-2 bg-transparent"></div>
+        
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
           <img src={image3} alt="" className="w-full h-full object-cover" />
         </div>
-      </div>
-
-      <div className="absolute bottom-0 right-0 h-[35%] w-[55%] grid grid-cols-4 gap-1">
-        <div className="overflow-hidden">
-          <img src={image4} alt="" className="w-full h-full object-cover" />
+        
+        <div className="col-span-4 row-span-2 bg-transparent"></div>
+        
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+          <img src={image8} alt="" className="w-full h-full object-cover" />
         </div>
-        <div className="overflow-hidden">
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
           <img src={image9} alt="" className="w-full h-full object-cover" />
         </div>
-        <div className="overflow-hidden">
+        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
           <img src={image10} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="overflow-hidden">
-          <img src={image11} alt="" className="w-full h-full object-cover" />
         </div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 py-16 min-h-screen">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full min-h-screen items-center">
-          <div className="lg:col-span-6 lg:pl-[25%] space-y-6">
-            <div className="inline-flex items-center bg-green-500/30 backdrop-blur-sm border border-green-400/50 px-5 py-2 rounded-full">
-              <span className="text-green-300 font-semibold text-sm uppercase tracking-wider">
-                Our Impact
-              </span>
-            </div>
-
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              Measuring Our<br />
-              <span className="text-green-400">Community</span><br />
-              Impact
-            </h2>
-
-            <div className="space-y-5 text-gray-300 text-base leading-relaxed max-w-lg">
-              <p>
-                SolarPak stands at the forefront of renewable energy access in Pakistan. 
-                We believe that clean energy is the foundation for change when families 
-                can study, work, and thrive without electricity insecurity.
-              </p>
-              <p>
-                We know that sustainable impact requires dedication, but it is the mission 
-                of dreamers and doers. Our commitment is to bring light to every home.
-              </p>
-              <p>
-                With SolarPak, every installation is not just a panel, but a 
-                <span className="text-green-400 font-semibold"> story of transformation</span>.
-              </p>
-            </div>
+      <div className="relative z-10 h-full flex">
+        <div className="w-1/2 h-full flex flex-col justify-center pl-[18%] pr-8 py-16">
+          <div className="inline-flex items-center bg-green-500/30 backdrop-blur-sm border border-green-400/50 px-4 py-2 rounded-full w-fit mb-6">
+            <span className="text-green-300 font-semibold text-sm uppercase tracking-wider">
+              Our Impact
+            </span>
           </div>
 
-          <div className="lg:col-span-6 lg:pr-4">
-            <div className="grid grid-cols-2 gap-3">
+          <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-8">
+            Measuring Our<br />
+            <span className="text-green-400">Community</span><br />
+            Impact
+          </h2>
+
+          <div className="space-y-4 text-gray-300 text-sm leading-relaxed max-w-md">
+            <p>
+              SolarPak stands at the forefront of renewable energy access in Pakistan. 
+              We believe that clean energy is the foundation for change when families 
+              can study, work, and thrive without electricity insecurity.
+            </p>
+            <p>
+              We know that sustainable impact requires dedication, but it is the mission 
+              of dreamers and doers. Our commitment is to bring light to every home.
+            </p>
+            <p>
+              With SolarPak, every installation is not just a panel, but a 
+              <span className="text-green-400 font-semibold"> story of transformation</span>.
+            </p>
+          </div>
+        </div>
+
+        <div className="w-1/2 h-full flex items-center pr-8 py-16">
+          <div className="w-full max-w-md ml-auto">
+            <div className="grid grid-cols-2 gap-2 mb-2">
               {metrics.slice(0, 2).map((metric, index) => (
                 <div 
                   key={index}
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:bg-white/15 hover:scale-105"
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 flex flex-col items-center justify-center text-center"
                 >
-                  <metric.icon className="w-7 h-7 mb-3 text-green-400" />
-                  <span className="text-3xl md:text-4xl font-bold text-white">
+                  <metric.icon className="w-6 h-6 mb-2 text-green-400" />
+                  <span className="text-2xl font-bold text-white">
                     {metric.value}
                   </span>
-                  <span className="text-sm mt-1 text-gray-300">
+                  <span className="text-xs text-gray-300">
                     {metric.label}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <div className="overflow-hidden rounded-2xl h-40">
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div className="overflow-hidden rounded-xl h-32">
                 <img src={image5} alt="" className="w-full h-full object-cover" />
               </div>
-              <div className="grid grid-rows-2 gap-3">
+              <div className="grid grid-rows-2 gap-2">
                 {metrics.slice(2, 4).map((metric, index) => (
                   <div 
                     key={index}
-                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center transition-all duration-300 hover:bg-white/15"
+                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-2 flex flex-col items-center justify-center text-center"
                   >
-                    <metric.icon className="w-5 h-5 mb-1 text-green-400" />
-                    <span className="text-xl font-bold text-white">
+                    <metric.icon className="w-4 h-4 mb-1 text-green-400" />
+                    <span className="text-lg font-bold text-white">
                       {metric.value}
                     </span>
-                    <span className="text-xs text-gray-300">
+                    <span className="text-[10px] text-gray-300">
                       {metric.label}
                     </span>
                   </div>
@@ -135,21 +137,21 @@ export default function YouthLeadershipSection() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mt-3">
+            <div className="grid grid-cols-2 gap-2">
               {metrics.slice(4, 6).map((metric, index) => (
                 <div 
                   key={index}
-                  className={`backdrop-blur-md border rounded-2xl p-5 flex flex-col items-center justify-center text-center transition-all duration-300 hover:scale-105 ${
+                  className={`backdrop-blur-md border rounded-xl p-4 flex flex-col items-center justify-center text-center ${
                     metric.isSpecial 
                       ? 'bg-slate-800/80 border-green-500/40' 
-                      : 'bg-white/10 border-white/20 hover:bg-white/15'
+                      : 'bg-white/10 border-white/20'
                   }`}
                 >
-                  <metric.icon className="w-6 h-6 mb-2 text-green-400" />
-                  <span className="text-2xl font-bold text-white">
+                  <metric.icon className="w-5 h-5 mb-1 text-green-400" />
+                  <span className="text-xl font-bold text-white">
                     {metric.value}
                   </span>
-                  <span className="text-sm mt-1 text-gray-300">
+                  <span className="text-xs text-gray-300">
                     {metric.label}
                   </span>
                 </div>
