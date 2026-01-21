@@ -23,137 +23,128 @@ export default function YouthLeadershipSection() {
   ];
 
   return (
-    <section className="h-screen bg-slate-900 relative overflow-hidden">
-      <div className="absolute inset-0 grid grid-cols-12 grid-rows-6 gap-1 p-1">
-        <div className="col-span-2 row-span-3 overflow-hidden rounded-sm">
+    <section className="h-screen w-full relative overflow-hidden bg-[#1a1f2e]">
+      <div 
+        className="absolute inset-0"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '15% 12% 13% 1fr 22% 22%',
+          gridTemplateRows: '20% 15% 25% 20% 20%',
+          gap: '4px',
+        }}
+      >
+        <div className="overflow-hidden" style={{ gridColumn: '1', gridRow: '1 / 3' }}>
           <img src={image1} alt="" className="w-full h-full object-cover" />
         </div>
-        
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+        <div className="overflow-hidden" style={{ gridColumn: '2', gridRow: '1' }}>
           <img src={image6} alt="" className="w-full h-full object-cover" />
         </div>
-        
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+        <div className="overflow-hidden" style={{ gridColumn: '3', gridRow: '1' }}>
           <img src={image7} alt="" className="w-full h-full object-cover" />
         </div>
         
-        <div className="col-span-6 row-span-2 bg-transparent"></div>
-        
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+        <div className="overflow-hidden" style={{ gridColumn: '1', gridRow: '3 / 5' }}>
           <img src={image2} alt="" className="w-full h-full object-cover" />
         </div>
-        
-        <div className="col-span-4 row-span-2 bg-transparent"></div>
-        
-        <div className="col-span-3 row-span-2 bg-transparent"></div>
-        <div className="col-span-3 row-span-2 bg-transparent"></div>
-        
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+        <div className="overflow-hidden" style={{ gridColumn: '2', gridRow: '2 / 4' }}>
           <img src={image3} alt="" className="w-full h-full object-cover" />
         </div>
         
-        <div className="col-span-4 row-span-2 bg-transparent"></div>
+        <div className="overflow-hidden" style={{ gridColumn: '1', gridRow: '5' }}>
+          <img src={image4} alt="" className="w-full h-full object-cover" />
+        </div>
         
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+        <div className="overflow-hidden" style={{ gridColumn: '4', gridRow: '4 / 6' }}>
+          <img src={image5} alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="overflow-hidden" style={{ gridColumn: '5', gridRow: '5' }}>
           <img src={image8} alt="" className="w-full h-full object-cover" />
         </div>
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
+        <div className="overflow-hidden" style={{ gridColumn: '6', gridRow: '5' }}>
           <img src={image9} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="col-span-2 row-span-2 overflow-hidden rounded-sm">
-          <img src={image10} alt="" className="w-full h-full object-cover" />
         </div>
       </div>
 
-      <div className="relative z-10 h-full flex">
-        <div className="w-1/2 h-full flex flex-col justify-center pl-[18%] pr-8 py-16">
-          <div className="inline-flex items-center bg-green-500/30 backdrop-blur-sm border border-green-400/50 px-4 py-2 rounded-full w-fit mb-6">
-            <span className="text-green-300 font-semibold text-sm uppercase tracking-wider">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1a1f2e]/60 via-transparent to-transparent pointer-events-none"></div>
+
+      <div className="relative z-10 h-full w-full flex">
+        <div className="w-[55%] h-full flex flex-col justify-center" style={{ paddingLeft: '18%', paddingRight: '4%' }}>
+          <div className="inline-flex items-center bg-green-500/20 border border-green-400/40 px-4 py-2 rounded-full w-fit mb-8">
+            <span className="text-green-400 font-semibold text-xs uppercase tracking-widest">
               Our Impact
             </span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-8">
+          <h2 className="text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-10">
             Measuring Our<br />
             <span className="text-green-400">Community</span><br />
             Impact
           </h2>
 
-          <div className="space-y-4 text-gray-300 text-sm leading-relaxed max-w-md">
+          <div className="space-y-6 text-gray-400 text-[15px] leading-relaxed max-w-[420px]">
             <p>
               SolarPak stands at the forefront of renewable energy access in Pakistan. 
-              We believe that clean energy is the foundation for change when families 
+              Here we believe that clean energy is the foundation for change when families 
               can study, work, and thrive without electricity insecurity.
             </p>
             <p>
               We know that sustainable impact requires dedication, but it is the mission 
-              of dreamers and doers. Our commitment is to bring light to every home.
+              of dreamers and doers. Our commitment is to bring light to every home 
+              that needs it.
             </p>
             <p>
-              With SolarPak, every installation is not just a panel, but a 
-              <span className="text-green-400 font-semibold"> story of transformation</span>.
+              With SolarPak, every installation is not just a panel, but a story to be told 
+              about <span className="text-green-400">transformation and hope</span>.
             </p>
           </div>
         </div>
 
-        <div className="w-1/2 h-full flex items-center pr-8 py-16">
-          <div className="w-full max-w-md ml-auto">
-            <div className="grid grid-cols-2 gap-2 mb-2">
+        <div className="w-[45%] h-full flex items-center justify-end pr-6">
+          <div className="w-full max-w-[340px]">
+            <div className="grid grid-cols-2 gap-3 mb-3">
               {metrics.slice(0, 2).map((metric, index) => (
                 <div 
                   key={index}
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 flex flex-col items-center justify-center text-center"
+                  className="bg-white/[0.08] backdrop-blur-sm border border-white/10 rounded-2xl p-5 flex flex-col items-center justify-center text-center"
                 >
                   <metric.icon className="w-6 h-6 mb-2 text-green-400" />
-                  <span className="text-2xl font-bold text-white">
-                    {metric.value}
-                  </span>
-                  <span className="text-xs text-gray-300">
-                    {metric.label}
-                  </span>
+                  <span className="text-2xl font-bold text-white">{metric.value}</span>
+                  <span className="text-[11px] text-gray-400 mt-1">{metric.label}</span>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              <div className="overflow-hidden rounded-xl h-32">
-                <img src={image5} alt="" className="w-full h-full object-cover" />
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="overflow-hidden rounded-2xl">
+                <img src={image10} alt="" className="w-full h-full object-cover" style={{ height: '140px' }} />
               </div>
-              <div className="grid grid-rows-2 gap-2">
+              <div className="flex flex-col gap-3">
                 {metrics.slice(2, 4).map((metric, index) => (
                   <div 
                     key={index}
-                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-2 flex flex-col items-center justify-center text-center"
+                    className="bg-white/[0.08] backdrop-blur-sm border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center text-center flex-1"
                   >
-                    <metric.icon className="w-4 h-4 mb-1 text-green-400" />
-                    <span className="text-lg font-bold text-white">
-                      {metric.value}
-                    </span>
-                    <span className="text-[10px] text-gray-300">
-                      {metric.label}
-                    </span>
+                    <metric.icon className="w-5 h-5 mb-1 text-green-400" />
+                    <span className="text-lg font-bold text-white">{metric.value}</span>
+                    <span className="text-[10px] text-gray-400">{metric.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {metrics.slice(4, 6).map((metric, index) => (
                 <div 
                   key={index}
-                  className={`backdrop-blur-md border rounded-xl p-4 flex flex-col items-center justify-center text-center ${
+                  className={`backdrop-blur-sm border rounded-2xl p-4 flex flex-col items-center justify-center text-center ${
                     metric.isSpecial 
-                      ? 'bg-slate-800/80 border-green-500/40' 
-                      : 'bg-white/10 border-white/20'
+                      ? 'bg-[#1a1f2e]/90 border-green-500/30' 
+                      : 'bg-white/[0.08] border-white/10'
                   }`}
                 >
                   <metric.icon className="w-5 h-5 mb-1 text-green-400" />
-                  <span className="text-xl font-bold text-white">
-                    {metric.value}
-                  </span>
-                  <span className="text-xs text-gray-300">
-                    {metric.label}
-                  </span>
+                  <span className="text-xl font-bold text-white">{metric.value}</span>
+                  <span className="text-[11px] text-gray-400 mt-1">{metric.label}</span>
                 </div>
               ))}
             </div>
