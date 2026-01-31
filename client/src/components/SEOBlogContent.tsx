@@ -34,17 +34,17 @@ export function SEOBlogContent() {
             Solar energy presents an immediate and sustainable solution to Pakistan's electricity 
             shortage. Unlike grid-dependent power, solar panels provide consistent, renewable energy 
             that empowers families with 24/7 electricity access. Our solar installations have already 
-            transformed 11 homes, demonstrating the life-changing impact of clean energy technology.
+            transformed 17 homes, demonstrating the life-changing impact of clean energy technology.
           </p>
         </section>
 
         <section>
           <h2>Community-Driven Impact: How Donations Transform Lives</h2>
           <p>
-            Through community donations, SolarPak has successfully installed 11 solar panel systems 
-            across Pakistan, directly empowering 11 families and positively impacting 70 lives. 
-            These installations generate 240 kWh of clean energy daily, preventing 320 kg of CO₂ 
-            emissions - equivalent to planting 16 trees annually.
+            Through community donations, SolarPak has successfully installed 17 solar panel systems 
+            across Pakistan, directly empowering 17 families and positively impacting 100 lives. 
+            These installations generate 270 kWh of clean energy daily, preventing 1,900 kg of CO₂ 
+            emissions - equivalent to planting 95 trees annually.
           </p>
         </section>
 
@@ -72,8 +72,8 @@ export function SEOBlogContent() {
           <h2>Environmental Sustainability and Climate Action</h2>
           <p>
             Each solar panel installation contributes to Pakistan's environmental sustainability goals. 
-            Our 11 installations prevent 320 kg of CO₂ emissions annually, equivalent to the 
-            environmental benefit of planting 16 trees. Solar energy reduces Pakistan's dependence 
+            Our 17 installations prevent 1,900 kg of CO₂ emissions annually, equivalent to the 
+            environmental benefit of planting 95 trees. Solar energy reduces Pakistan's dependence 
             on fossil fuels while providing clean, renewable power to communities in need.
           </p>
         </section>

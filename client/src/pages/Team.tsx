@@ -30,8 +30,8 @@ const founder: TeamMember = {
   expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
-    "Led 11 successful solar installations across Pakistan",
-    "Transformed 70 lives through clean energy access",
+    "Led 17 successful solar installations across Pakistan",
+    "Transformed 100 lives through clean energy access",
     "Built partnerships with local communities and suppliers",
     "Certified Solar Energy Specialist and Social Entrepreneur",
     "Website developer"
@@ -164,11 +164,11 @@ export default function Team() {
               {/* Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">11</div>
+                  <div className="text-4xl font-bold text-amber-300 mb-2">17</div>
                   <div className="text-white/90">Solar Panels Installed</div>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">70</div>
+                  <div className="text-4xl font-bold text-amber-300 mb-2">100</div>
                   <div className="text-white/90">Lives Transformed</div>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
