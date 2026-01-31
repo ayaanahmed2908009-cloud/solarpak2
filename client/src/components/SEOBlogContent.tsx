@@ -103,7 +103,7 @@ export function SEOBlogContent() {
           <h2>The Future of Solar Energy in Pakistan</h2>
           <p>
             SolarPak aims to install 100 solar panel systems across Pakistan, creating a network 
-            of energy-independent communities. Currently at 11% of our goal with 11 installations 
+            of energy-independent communities. Currently at 8% of our goal with 8 installations 
             completed, we're building momentum toward widespread solar energy adoption in rural 
             and underserved Pakistani communities.
           </p>

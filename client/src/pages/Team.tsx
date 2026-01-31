@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import PageSEO from "@/components/PageSEO";
 import { Mail, Award, Users, Heart } from "lucide-react";
 import hamzaMemonPhoto from "@assets/hamza_1761940364390.jpeg";
 
@@ -129,7 +128,7 @@ export default function Team() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50 to-purple-50">
       <Navbar />
       
-      <main>
+      <main className="pt-20">
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-green-600 via-blue-600 to-purple-600 relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
