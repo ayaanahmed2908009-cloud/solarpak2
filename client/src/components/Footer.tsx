@@ -60,10 +60,6 @@ export default function Footer() {
                 <span>solarpakinitiative@gmail.com</span>
               </li>
               <li className="flex items-start">
-                <Phone className="w-5 h-5 mr-3 mt-1" />
-                <span>+966 50 633 6180</span>
-              </li>
-              <li className="flex items-start">
                 <MapPin className="w-5 h-5 mr-3 mt-1" />
                 <span>Khairpur Mirs, Pakistan</span>
               </li>
