@@ -13,7 +13,7 @@ import type {
 export function useWorkerAuth() {
   const queryClient = useQueryClient();
 
-  const { data: worker, isLoading } = useQuery<Worker>({
+  const { data: worker, isloading } = useQuery<Worker>({
     queryKey: ["/worker/api/user"],
     retry: false,
   });
