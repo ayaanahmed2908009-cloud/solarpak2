@@ -140,37 +140,64 @@ export default function Home() {
               </div>
             )}
 
-            {/* Hero Content - No Tint Overlay */}
+            {/* Hero Content - Glassmorphic Design */}
             <div className="relative z-10 h-full flex items-center">
               <div className="container mx-auto px-6">
-                <div className="max-w-3xl">
-                  {/* Youth Leadership Badge */}
-                  <div className="inline-flex items-center bg-amber-400/20 backdrop-blur-sm border border-amber-400/40 px-6 py-3 rounded-full mb-6">
-                    <span className="text-amber-300 font-bold text-sm uppercase tracking-wide" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
-                      🌟 World's Largest Youth-Led Solar Nonprofit
-                    </span>
+                <div className="max-w-4xl">
+                  {/* Glassmorphic Hero Card */}
+                  <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl">
+                    {/* Youth Leadership Badge */}
+                    <div className="inline-flex items-center bg-gradient-to-r from-amber-400/30 to-yellow-400/30 backdrop-blur-md border border-amber-300/50 px-6 py-3 rounded-full mb-8 shadow-lg">
+                      <span className="text-amber-200 font-bold text-sm uppercase tracking-wider">
+                        🌟 World's Largest Youth-Led Solar Nonprofit
+                      </span>
+                    </div>
+                    
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+                      <span className="block mb-2">Powering Communities.</span>
+                      <span className="block bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Lighting Futures.</span>
+                    </h1>
+                    
+                    <p className="text-lg md:text-xl text-white/95 mb-4 leading-relaxed max-w-2xl">
+                      SolarPak is the world's largest youth-led solar nonprofit, bringing clean, affordable solar energy to families across Pakistan.
+                    </p>
+                    
+                    <p className="text-base md:text-lg text-white/80 mb-8 leading-relaxed max-w-2xl">
+                      Led by passionate young leaders, we're transforming lives through renewable energy, one solar panel at a time.
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-4">
+                      <button 
+                        onClick={() => document.getElementById('solution')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold py-4 px-10 rounded-xl text-base transition-all duration-300 shadow-xl hover:shadow-amber-400/30 hover:scale-105"
+                        data-testid="button-explore-project"
+                      >
+                        Explore Our Project
+                      </button>
+                      <button 
+                        onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
+                        className="bg-white/15 backdrop-blur-md hover:bg-white/25 text-white font-bold py-4 px-10 rounded-xl text-base transition-all duration-300 border border-white/30 hover:border-white/50"
+                      >
+                        Donate Now
+                      </button>
+                    </div>
                   </div>
                   
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
-                    <span className="block mb-3">Powering Communities.</span>
-                    <span className="block text-amber-400">Lighting Futures.</span>
-                  </h1>
-                  
-                  <p className="text-xl md:text-2xl text-white mb-4 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
-                    SolarPak is the world's largest youth-led solar nonprofit, bringing clean, affordable solar energy to families and communities across Pakistan.
-                  </p>
-                  
-                  <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
-                    Led by passionate young leaders, we're transforming lives through renewable energy, one solar panel at a time.
-                  </p>
-                  
-                  <button 
-                    onClick={() => document.getElementById('solution')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold py-4 px-10 rounded-md text-base transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
-                    data-testid="button-explore-project"
-                  >
-                    Explore Our Project
-                  </button>
+                  {/* Floating Stats Cards */}
+                  <div className="hidden md:flex gap-4 mt-8">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
+                      <div className="text-3xl font-bold text-amber-300">17</div>
+                      <div className="text-white/80 text-sm">Solar Panels</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
+                      <div className="text-3xl font-bold text-green-300">100</div>
+                      <div className="text-white/80 text-sm">Lives Changed</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
+                      <div className="text-3xl font-bold text-blue-300">17</div>
+                      <div className="text-white/80 text-sm">Families Helped</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

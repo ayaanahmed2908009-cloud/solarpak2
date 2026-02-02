@@ -63,13 +63,16 @@ export default function EnhancedSolutionSection() {
   ];
 
   return (
-    <div ref={sectionRef} className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
-      {/* Background Animation */}
-      <div className="absolute inset-0 opacity-10">
-        {[...Array(20)].map((_, i) => (
+    <div ref={sectionRef} className="py-20 bg-gradient-to-br from-blue-900 via-indigo-800 to-purple-900 relative overflow-hidden">
+      {/* Glassmorphic Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/6 w-80 h-80 bg-gradient-to-r from-green-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/6 w-96 h-96 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-radial from-amber-400/10 to-transparent rounded-full blur-2xl"></div>
+        {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-blue-500 rounded-full"
+            className="absolute w-2 h-2 bg-white/20 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -81,27 +84,27 @@ export default function EnhancedSolutionSection() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Enhanced Header */}
+        {/* Glassmorphic Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-blue-100 px-8 py-4 rounded-full mb-8 shadow-lg border border-green-200/50">
-            <Sun className="w-6 h-6 text-green-600 mr-3 animate-pulse" />
-            <span className="font-bold text-gray-700 text-lg">⚡ Our Solar Solution</span>
+          <div className="inline-flex items-center bg-white/10 backdrop-blur-xl px-8 py-4 rounded-full mb-8 shadow-lg border border-white/20">
+            <Sun className="w-6 h-6 text-amber-300 mr-3 animate-pulse" />
+            <span className="font-bold text-white text-lg">⚡ Our Solar Solution</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent drop-shadow-sm">
-            From Crisis to Comfort
+          <h2 className="text-5xl md:text-6xl font-bold mb-8 text-white drop-shadow-lg">
+            From Crisis to <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Comfort</span>
           </h2>
-          <p className="text-xl md:text-2xl text-gray-700 max-w-5xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl md:text-2xl text-white/90 max-w-5xl mx-auto leading-relaxed font-medium">
             We don't just install solar panels—we transform lives. Our comprehensive solution brings immediate relief from heat, 
             reliable power, and long-term energy independence to Pakistani families.
           </p>
         </div>
 
-        {/* Problem → Solution Transformation */}
+        {/* Problem → Solution Transformation - Glassmorphic */}
         <div className="mb-16">
-          <h3 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-gray-800 to-blue-600 bg-clip-text text-transparent">
+          <h3 className="text-4xl font-bold text-center mb-4 text-white drop-shadow-lg">
             Every Problem Has Our Solution
           </h3>
-          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto text-lg">
+          <p className="text-center text-white/80 mb-12 max-w-3xl mx-auto text-lg">
             We don't just install solar panels—we solve the specific problems Pakistani families face every day. 
             Hover over each card to see the transformation.
           </p>
@@ -114,10 +117,9 @@ export default function EnhancedSolutionSection() {
                 onMouseEnter={() => setHoveredCard(index)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
-                <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200 transition-all duration-500 transform group-hover:scale-105 group-hover:shadow-2xl hover:-translate-y-2 overflow-hidden relative">
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 transition-all duration-500 transform group-hover:scale-105 group-hover:bg-white/15 hover:-translate-y-2 overflow-hidden relative shadow-xl">
                   {/* Enhanced background gradient on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-15 transition-opacity duration-500 rounded-3xl`}></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-3xl`}></div>
                   
                   <div className="relative z-10">
                     {/* Enhanced icon and emoji transition */}
@@ -126,35 +128,32 @@ export default function EnhancedSolutionSection() {
                         <div className="text-7xl transition-all duration-500 group-hover:scale-110 filter drop-shadow-lg">
                           {hoveredCard === index ? item.afterIcon : item.beforeIcon}
                         </div>
-                        <div className="absolute inset-0 text-7xl transition-all duration-500 group-hover:scale-110 animate-pulse opacity-0 group-hover:opacity-20">
-                          {hoveredCard === index ? item.afterIcon : item.beforeIcon}
-                        </div>
                       </div>
                     </div>
                     
                     {/* Problem/Solution text */}
                     <div className="text-center mb-6">
-                      <h4 className="text-xl font-bold text-red-600 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                      <h4 className="text-xl font-bold text-red-400 mb-2 group-hover:text-green-400 transition-colors duration-300">
                         {hoveredCard === index ? "SOLVED:" : "PROBLEM:"}
                       </h4>
-                      <p className="text-lg font-semibold text-gray-800 mb-2">
+                      <p className="text-lg font-semibold text-white mb-2">
                         {hoveredCard === index ? item.solution : item.problem}
                       </p>
-                      <div className="text-sm text-blue-600 font-medium">
+                      <div className="text-sm text-blue-300 font-medium">
                         {item.timeframe}
                       </div>
                     </div>
                     
                     {/* Enhanced impact description */}
-                    <div className="bg-gradient-to-r from-gray-50 to-blue-50 group-hover:from-green-50 group-hover:to-blue-50 rounded-xl p-5 transition-all duration-300 border border-gray-100 group-hover:border-green-200 shadow-sm">
-                      <p className="text-base text-gray-700 group-hover:text-green-800 transition-colors duration-300 font-medium leading-relaxed">
+                    <div className="bg-white/10 backdrop-blur-sm group-hover:bg-white/15 rounded-xl p-5 transition-all duration-300 border border-white/10 group-hover:border-green-400/30">
+                      <p className="text-base text-white/80 group-hover:text-white transition-colors duration-300 font-medium leading-relaxed">
                         {item.impact}
                       </p>
                     </div>
                     
                     {/* Transformation arrow */}
                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <ArrowRight className="w-6 h-6 text-green-600" />
+                      <ArrowRight className="w-6 h-6 text-green-400" />
                     </div>
                   </div>
                 </div>
@@ -222,57 +221,57 @@ export default function EnhancedSolutionSection() {
           </div>
         </div>
 
-        {/* Enhanced Before & After Comparison */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-          {/* Enhanced Before */}
-          <div className="bg-gradient-to-br from-red-100 via-red-50 to-orange-100 rounded-3xl p-10 border-2 border-red-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden">
-            <div className="absolute top-4 right-4 w-16 h-16 bg-red-400/20 rounded-full blur-xl"></div>
-            <h3 className="text-3xl font-bold text-red-800 mb-8 flex items-center">
-              <span className="w-4 h-4 bg-red-500 rounded-full mr-4 animate-pulse"></span>
+        {/* Glassmorphic Before & After Comparison */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
+          {/* Before - Glassmorphic */}
+          <div className="bg-red-500/10 backdrop-blur-xl rounded-3xl p-10 border border-red-400/30 shadow-xl hover:bg-red-500/15 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute top-4 right-4 w-20 h-20 bg-red-400/20 rounded-full blur-2xl"></div>
+            <h3 className="text-3xl font-bold text-white mb-8 flex items-center">
+              <span className="w-4 h-4 bg-red-400 rounded-full mr-4 animate-pulse"></span>
               Before Solar
             </h3>
-            <div className="space-y-5">
-              <div className="flex items-center text-red-800 bg-red-50 p-4 rounded-xl border border-red-200">
-                <span className="text-3xl mr-4 filter drop-shadow-sm">🔥</span>
+            <div className="space-y-4">
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/20">
+                <span className="text-3xl mr-4">🔥</span>
                 <span className="font-semibold text-lg">Unbearable heat, no cooling</span>
               </div>
-              <div className="flex items-center text-red-800 bg-red-50 p-4 rounded-xl border border-red-200">
-                <span className="text-3xl mr-4 filter drop-shadow-sm">⚡</span>
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/20">
+                <span className="text-3xl mr-4">⚡</span>
                 <span className="font-semibold text-lg">16+ hours daily without power</span>
               </div>
-              <div className="flex items-center text-red-800 bg-red-50 p-4 rounded-xl border border-red-200">
-                <span className="text-3xl mr-4 filter drop-shadow-sm">📚</span>
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/20">
+                <span className="text-3xl mr-4">📚</span>
                 <span className="font-semibold text-lg">Children can't study after dark</span>
               </div>
-              <div className="flex items-center text-red-800 bg-red-50 p-4 rounded-xl border border-red-200">
-                <span className="text-3xl mr-4 filter drop-shadow-sm">💸</span>
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/20">
+                <span className="text-3xl mr-4">💸</span>
                 <span className="font-semibold text-lg">High electricity bills, food spoilage</span>
               </div>
             </div>
           </div>
 
-          {/* Enhanced After */}
-          <div className="bg-gradient-to-br from-green-100 via-green-50 to-blue-100 rounded-3xl p-10 border-2 border-green-200 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden">
-            <div className="absolute top-4 right-4 w-16 h-16 bg-green-400/20 rounded-full blur-xl"></div>
-            <h3 className="text-3xl font-bold text-green-800 mb-8 flex items-center">
-              <span className="w-4 h-4 bg-green-500 rounded-full mr-4 animate-pulse"></span>
+          {/* After - Glassmorphic */}
+          <div className="bg-green-500/10 backdrop-blur-xl rounded-3xl p-10 border border-green-400/30 shadow-xl hover:bg-green-500/15 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute top-4 right-4 w-20 h-20 bg-green-400/20 rounded-full blur-2xl"></div>
+            <h3 className="text-3xl font-bold text-white mb-8 flex items-center">
+              <span className="w-4 h-4 bg-green-400 rounded-full mr-4 animate-pulse"></span>
               After Solar
             </h3>
-            <div className="space-y-5">
-              <div className="flex items-center text-green-800 bg-green-50 p-4 rounded-xl border border-green-200 hover:bg-green-100 transition-colors duration-300">
-                <CheckCircle className="w-7 h-7 text-green-600 mr-4 animate-pulse" />
+            <div className="space-y-4">
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-green-400/20 hover:bg-white/15 transition-colors duration-300">
+                <CheckCircle className="w-7 h-7 text-green-400 mr-4" />
                 <span className="font-semibold text-lg">Cool, comfortable homes 24/7</span>
               </div>
-              <div className="flex items-center text-green-800 bg-green-50 p-4 rounded-xl border border-green-200 hover:bg-green-100 transition-colors duration-300">
-                <CheckCircle className="w-7 h-7 text-green-600 mr-4 animate-pulse" />
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-green-400/20 hover:bg-white/15 transition-colors duration-300">
+                <CheckCircle className="w-7 h-7 text-green-400 mr-4" />
                 <span className="font-semibold text-lg">Reliable power day and night</span>
               </div>
-              <div className="flex items-center text-green-800 bg-green-50 p-4 rounded-xl border border-green-200 hover:bg-green-100 transition-colors duration-300">
-                <CheckCircle className="w-7 h-7 text-green-600 mr-4 animate-pulse" />
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-green-400/20 hover:bg-white/15 transition-colors duration-300">
+                <CheckCircle className="w-7 h-7 text-green-400 mr-4" />
                 <span className="font-semibold text-lg">Children thrive with evening study</span>
               </div>
-              <div className="flex items-center text-green-800 bg-green-50 p-4 rounded-xl border border-green-200 hover:bg-green-100 transition-colors duration-300">
-                <CheckCircle className="w-7 h-7 text-green-600 mr-4 animate-pulse" />
+              <div className="flex items-center text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-green-400/20 hover:bg-white/15 transition-colors duration-300">
+                <CheckCircle className="w-7 h-7 text-green-400 mr-4" />
                 <span className="font-semibold text-lg">Zero electricity bills, fresh food</span>
               </div>
             </div>

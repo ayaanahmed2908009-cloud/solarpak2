@@ -140,13 +140,16 @@ export default function UnifiedImpactSection() {
   }, [isAutoPlay, currentVideo]);
 
   return (
-    <div ref={sectionRef} className="py-12 md:py-20 bg-gradient-to-b from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        {[...Array(30)].map((_, i) => (
+    <div ref={sectionRef} className="py-12 md:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
+      {/* Glassmorphic Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-blue-400/15 to-purple-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-green-400/15 to-teal-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-amber-400/8 to-transparent rounded-full blur-2xl"></div>
+        {[...Array(20)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-blue-500 rounded-full opacity-30"
+            className="absolute w-1 h-1 bg-white/30 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -158,39 +161,39 @@ export default function UnifiedImpactSection() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Main Header */}
+        {/* Glassmorphic Main Header */}
         <div className="text-center mb-12 md:mb-16">
-          <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-blue-100 px-4 md:px-6 py-2 md:py-3 rounded-full mb-6">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-3"></div>
-            <span className="font-medium text-gray-700 text-sm md:text-base">Our Global Impact Dashboard</span>
+          <div className="inline-flex items-center bg-white/10 backdrop-blur-xl px-4 md:px-6 py-2 md:py-3 rounded-full mb-6 border border-white/20">
+            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse mr-3"></div>
+            <span className="font-medium text-white text-sm md:text-base">Our Global Impact Dashboard</span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            Transforming Lives Across Pakistan
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+            Transforming Lives <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Across Pakistan</span>
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white/85 max-w-3xl mx-auto">
             Every solar panel we install creates ripple effects of positive change. From individual families to entire communities, 
             witness the real-time impact of your donations.
           </p>
         </div>
 
-        {/* Real-time Global Metrics */}
+        {/* Glassmorphic Real-time Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
           <div className="group">
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border border-gray-100">
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:scale-105 shadow-xl">
               <div className="flex items-center justify-between mb-6">
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                <div className="p-4 bg-gradient-to-br from-yellow-400/80 to-orange-500/80 backdrop-blur-sm rounded-xl group-hover:rotate-12 transition-transform duration-300 border border-yellow-300/30">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-gray-800 font-mono">
+                  <div className="text-2xl md:text-4xl font-bold text-white font-mono">
                     {counters.panelsInstalled.toLocaleString()}
                   </div>
-                  <div className="text-xs md:text-sm text-gray-500">Solar Panels Installed</div>
+                  <div className="text-xs md:text-sm text-white/70">Solar Panels Installed</div>
                 </div>
               </div>
-              <div className="bg-yellow-50 rounded-lg p-3">
-                <div className="flex items-center text-yellow-800 text-sm">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-yellow-400/20">
+                <div className="flex items-center text-yellow-300 text-sm">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
                   +4 panels this month
                 </div>
               </div>
@@ -198,21 +201,21 @@ export default function UnifiedImpactSection() {
           </div>
 
           <div className="group">
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border border-gray-100">
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:scale-105 shadow-xl">
               <div className="flex items-center justify-between mb-6">
-                <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                <div className="p-4 bg-gradient-to-br from-blue-400/80 to-blue-600/80 backdrop-blur-sm rounded-xl group-hover:rotate-12 transition-transform duration-300 border border-blue-300/30">
                   <Home className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-gray-800 font-mono">
+                  <div className="text-2xl md:text-4xl font-bold text-white font-mono">
                     {counters.homesEmpowered.toLocaleString()}
                   </div>
-                  <div className="text-xs md:text-sm text-gray-500">Homes Empowered</div>
+                  <div className="text-xs md:text-sm text-white/70">Homes Empowered</div>
                 </div>
               </div>
-              <div className="bg-blue-50 rounded-lg p-3">
-                <div className="flex items-center text-blue-800 text-sm">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-blue-400/20">
+                <div className="flex items-center text-blue-300 text-sm">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
                   +4 families this month
                 </div>
               </div>
@@ -220,21 +223,21 @@ export default function UnifiedImpactSection() {
           </div>
 
           <div className="group">
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border border-gray-100">
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:scale-105 shadow-xl">
               <div className="flex items-center justify-between mb-6">
-                <div className="p-4 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                <div className="p-4 bg-gradient-to-br from-red-400/80 to-orange-500/80 backdrop-blur-sm rounded-xl group-hover:rotate-12 transition-transform duration-300 border border-red-300/30">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-gray-800 font-mono">
+                  <div className="text-2xl md:text-4xl font-bold text-white font-mono">
                     {counters.livesImpacted.toLocaleString()}
                   </div>
-                  <div className="text-xs md:text-sm text-gray-500">Lives Transformed</div>
+                  <div className="text-xs md:text-sm text-white/70">Lives Transformed</div>
                 </div>
               </div>
-              <div className="bg-red-50 rounded-lg p-3">
-                <div className="flex items-center text-red-800 text-sm">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-red-400/20">
+                <div className="flex items-center text-red-300 text-sm">
+                  <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
                   Every donation matters
                 </div>
               </div>
@@ -242,102 +245,102 @@ export default function UnifiedImpactSection() {
           </div>
         </div>
 
-        {/* Environmental Impact */}
+        {/* Glassmorphic Environmental Impact */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16">
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 md:p-8 border border-green-200">
+          <div className="bg-green-500/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-green-400/20">
             <div className="flex items-center mb-6">
-              <div className="p-4 bg-green-500 rounded-xl mr-6">
+              <div className="p-4 bg-gradient-to-br from-green-400/80 to-emerald-500/80 backdrop-blur-sm rounded-xl mr-6 border border-green-300/30">
                 <Zap className="w-10 h-10 text-white" />
               </div>
               <div>
-                <h3 className="text-xl md:text-3xl font-bold text-green-800 font-mono">
+                <h3 className="text-xl md:text-3xl font-bold text-white font-mono">
                   {counters.energyGenerated.toLocaleString()} kWh
                 </h3>
-                <p className="text-sm md:text-base text-green-600">Clean Energy Generated Total</p>
+                <p className="text-sm md:text-base text-green-300">Clean Energy Generated Total</p>
               </div>
             </div>
-            <div className="bg-green-200 rounded-full h-3 mb-3">
+            <div className="bg-white/10 backdrop-blur-sm rounded-full h-3 mb-3">
               <div 
-                className="bg-green-500 h-3 rounded-full transition-all duration-2000 ease-out"
+                className="bg-gradient-to-r from-green-400 to-emerald-400 h-3 rounded-full transition-all duration-2000 ease-out"
                 style={{ width: '78%' }}
               ></div>
             </div>
-            <p className="text-sm text-green-700">Enough to power 30 homes for a day</p>
+            <p className="text-sm text-green-300/80">Enough to power 30 homes for a day</p>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 md:p-8 border border-blue-200">
+          <div className="bg-blue-500/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-blue-400/20">
             <div className="flex items-center mb-6">
-              <div className="p-4 bg-blue-500 rounded-xl mr-6">
+              <div className="p-4 bg-gradient-to-br from-blue-400/80 to-cyan-500/80 backdrop-blur-sm rounded-xl mr-6 border border-blue-300/30">
                 <Globe className="w-10 h-10 text-white" />
               </div>
               <div>
-                <h3 className="text-xl md:text-3xl font-bold text-blue-800 font-mono">
+                <h3 className="text-xl md:text-3xl font-bold text-white font-mono">
                   {counters.co2Prevented.toFixed(1)} kg
                 </h3>
-                <p className="text-sm md:text-base text-blue-600">CO₂ Emissions Prevented</p>
+                <p className="text-sm md:text-base text-blue-300">CO₂ Emissions Prevented</p>
               </div>
             </div>
-            <div className="bg-blue-200 rounded-full h-3 mb-3">
+            <div className="bg-white/10 backdrop-blur-sm rounded-full h-3 mb-3">
               <div 
-                className="bg-blue-500 h-3 rounded-full transition-all duration-2000 ease-out"
+                className="bg-gradient-to-r from-blue-400 to-cyan-400 h-3 rounded-full transition-all duration-2000 ease-out"
                 style={{ width: '65%' }}
               ></div>
             </div>
-            <p className="text-sm text-blue-700">Equivalent to planting 6 trees this year</p>
+            <p className="text-sm text-blue-300/80">Equivalent to planting 95 trees this year</p>
           </div>
         </div>
 
-        {/* Solar Panel Progress Goal */}
-        <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-3xl p-8 border border-orange-200 mb-16">
+        {/* Glassmorphic Solar Panel Progress Goal */}
+        <div className="bg-amber-500/10 backdrop-blur-xl rounded-3xl p-8 border border-amber-400/20 mb-16">
           <div className="text-center mb-6">
-            <h3 className="text-3xl font-bold text-gray-800 mb-2">🎯 Our Solar Panel Goal</h3>
-            <p className="text-gray-600 text-lg">Working toward 100 solar panels across Pakistan</p>
+            <h3 className="text-3xl font-bold text-white mb-2">🎯 Our Solar Panel Goal</h3>
+            <p className="text-white/80 text-lg">Working toward 100 solar panels across Pakistan</p>
           </div>
           
           <div className="max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-gray-800 font-semibold">Progress: 8 / 100 panels</span>
-              <span className="text-gray-600">8%</span>
+              <span className="text-white font-semibold">Progress: 17 / 100 panels</span>
+              <span className="text-white/70">17%</span>
             </div>
             
-            <div className="bg-gray-200 rounded-full h-4 mb-4 overflow-hidden">
+            <div className="bg-white/10 backdrop-blur-sm rounded-full h-4 mb-4 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-4 rounded-full transition-all duration-2000 ease-out relative"
-                style={{ width: '8%' }}
+                className="bg-gradient-to-r from-amber-400 to-orange-500 h-4 rounded-full transition-all duration-2000 ease-out relative"
+                style={{ width: '17%' }}
               >
                 <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full"></div>
               </div>
             </div>
             
             <div className="text-center">
-              <p className="text-gray-700 text-lg font-medium">We'll get there soon! 🚀</p>
-              <p className="text-gray-500 text-sm mt-1">Every donation brings us closer to transforming 100 communities</p>
+              <p className="text-white text-lg font-medium">We'll get there soon! 🚀</p>
+              <p className="text-white/70 text-sm mt-1">Every donation brings us closer to transforming 100 communities</p>
             </div>
           </div>
         </div>
 
-        {/* Floating Video Carousel */}
+        {/* Glassmorphic Video Carousel */}
         <div className="relative mb-20">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-green-100 px-6 py-3 rounded-full mb-8 shadow-lg border border-blue-200/50">
-              <Play className="w-5 h-5 text-blue-600 mr-3 animate-pulse" />
-              <span className="font-bold text-gray-700">🎥 Impact Videos</span>
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-xl px-6 py-3 rounded-full mb-8 shadow-lg border border-white/20">
+              <Play className="w-5 h-5 text-amber-300 mr-3 animate-pulse" />
+              <span className="font-bold text-white">🎥 Impact Videos</span>
             </div>
-            <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-6 drop-shadow-sm">
-              See Our Impact in Action
+            <h3 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+              See Our Impact <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">in Action</span>
             </h3>
-            <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
+            <p className="text-xl md:text-2xl text-white/85 max-w-4xl mx-auto leading-relaxed font-medium">
               Watch real stories from families we've helped across Pakistan
             </p>
           </div>
           
           <div className="relative max-w-6xl mx-auto">
-            {/* Floating video container with enhanced shadows */}
-            <div className="relative bg-gradient-to-br from-white via-blue-50/30 to-green-50/30 rounded-3xl p-8 md:p-10 shadow-2xl hover:shadow-3xl border-2 border-white/50 overflow-hidden backdrop-blur-sm transform hover:-translate-y-2 transition-all duration-500">
+            {/* Glassmorphic video container */}
+            <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl border border-white/20 overflow-hidden transform hover:-translate-y-2 transition-all duration-500">
               {/* Enhanced background glow effects */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/8 to-green-500/8 rounded-3xl"></div>
-              <div className="absolute top-4 left-4 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
-              <div className="absolute bottom-4 right-4 w-24 h-24 bg-green-400/10 rounded-full blur-xl animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-green-500/10 rounded-3xl"></div>
+              <div className="absolute top-4 left-4 w-32 h-32 bg-blue-400/15 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-4 right-4 w-24 h-24 bg-green-400/15 rounded-full blur-xl animate-pulse"></div>
               
               <div className="relative z-10">
                 {/* Video display */}
@@ -365,7 +368,7 @@ export default function UnifiedImpactSection() {
                     Your browser does not support the video tag.
                   </video>
                   
-                  {/* Video overlay controls */}
+                  {/* Glassmorphic video overlay controls */}
                   <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
                     <button
                       onClick={() => {
@@ -374,7 +377,7 @@ export default function UnifiedImpactSection() {
                           isPlaying ? videoRef.current.pause() : videoRef.current.play();
                         }
                       }}
-                      className="bg-white/90 hover:bg-white text-gray-800 p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-110"
+                      className="bg-white/20 backdrop-blur-xl hover:bg-white/30 text-white p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-110 border border-white/30"
                     >
                       {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
                     </button>
@@ -399,8 +402,8 @@ export default function UnifiedImpactSection() {
                     <span className="font-bold text-lg">Previous</span>
                   </button>
                   
-                  {/* Enhanced video indicators */}
-                  <div className="flex items-center space-x-4 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 shadow-lg">
+                  {/* Glassmorphic video indicators */}
+                  <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-xl px-6 py-3 rounded-full border border-white/20 shadow-lg">
                     {videos.map((_, index) => (
                       <button
                         key={index}
@@ -410,8 +413,8 @@ export default function UnifiedImpactSection() {
                         }}
                         className={`relative transition-all duration-300 ${
                           index === currentVideo 
-                            ? 'w-8 h-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-full shadow-md' 
-                            : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full hover:scale-125'
+                            ? 'w-8 h-3 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-full shadow-md' 
+                            : 'w-3 h-3 bg-white/40 hover:bg-white/60 rounded-full hover:scale-125'
                         }`}
                       >
                         {index === currentVideo && (
@@ -434,9 +437,9 @@ export default function UnifiedImpactSection() {
                 </div>
                 
                 
-                {/* Video counter */}
+                {/* Glassmorphic video counter */}
                 <div className="text-center mt-4">
-                  <span className="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-full font-medium">
+                  <span className="text-sm text-white/80 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full font-medium border border-white/20">
                     Video {currentVideo + 1} of {videos.length}
                   </span>
                 </div>
@@ -447,15 +450,15 @@ export default function UnifiedImpactSection() {
 
 
 
-        {/* Live Updates Ticker */}
-        <div className="mt-8 bg-gray-900 rounded-xl p-4 overflow-hidden">
+        {/* Glassmorphic Live Updates Ticker */}
+        <div className="mt-8 bg-white/10 backdrop-blur-xl rounded-xl p-4 overflow-hidden border border-white/20">
           <div className="flex items-center text-white">
             <div className="flex items-center mr-4">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
-              <span className="text-sm font-medium">Live Updates</span>
+              <span className="text-sm font-medium text-white">Live Updates</span>
             </div>
             <div className="flex-1 overflow-hidden">
-              <div className="animate-scroll whitespace-nowrap text-sm text-gray-300">
+              <div className="animate-scroll whitespace-nowrap text-sm text-white/80">
                 ⚡ Ahmed family in Karachi now has 24/7 power • 🏠 New installation completed in Hyderabad • 🌞 Solar panels generating peak energy in Lahore • 💡 Night lighting restored for 12 families in Multan • ⚡ Ahmed family in Karachi now has 24/7 power • 🏠 New installation completed in Hyderabad
               </div>
             </div>
