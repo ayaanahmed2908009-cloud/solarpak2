@@ -100,17 +100,6 @@ export default function Navbar() {
               <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
                 <div className="py-2">
                   <DropdownNavLink 
-                    href="/village" 
-                    className="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 transition-colors duration-200"
-                    data-testid="link-stories"
-                  >
-                    <Heart className="w-4 h-4 mr-3 text-green-600" />
-                    <div>
-                      <div className="font-semibold text-sm">Stories</div>
-                      <div className="text-xs text-green-600">Real impact</div>
-                    </div>
-                  </DropdownNavLink>
-                  <DropdownNavLink 
                     href="/impact" 
                     className="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 transition-colors duration-200"
                     data-testid="link-map"
@@ -191,9 +180,6 @@ export default function Navbar() {
             </NavLink>
             <NavLink href="/#impact" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
               OUR IMPACT
-            </NavLink>
-            <NavLink href="/village" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
-              Stories
             </NavLink>
             <NavLink href="/impact" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
               Map

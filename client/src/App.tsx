@@ -11,7 +11,7 @@ import DonationSuccess from "@/pages/DonationSuccess";
 import Impact from "@/pages/Impact";
 
 import Membership from "@/pages/Membership";
-import VillageExperience from "@/pages/VillageExperience";
+
 import CaseStudy from "@/pages/CaseStudy";
 
 import Gallery from "@/pages/Gallery";
@@ -110,7 +110,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/impact" component={Impact} />
-      <Route path="/village" component={VillageExperience} />
+
       <Route path="/case-study" component={CaseStudy} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/success" component={Success} />

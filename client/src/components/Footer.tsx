@@ -46,7 +46,6 @@ export default function Footer() {
               <li><a href="#problem" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3"></span>The Problem</a></li>
               <li><a href="#solution" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3"></span>Our Solution</a></li>
               <li><a href="#impact" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3"></span>Impact</a></li>
-              <li><a href="/village" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3"></span>Stories</a></li>
               <li><a href="#donate" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3"></span>Donate</a></li>
             </ul>
           </div>
