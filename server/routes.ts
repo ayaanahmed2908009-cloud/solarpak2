@@ -8,7 +8,7 @@ import { createTaskSchema, createEventSchema, createWorkSubmissionSchema, worker
 import { ObjectStorageService } from "./objectStorage";
 import { wsManager } from "./websocket";
 
-import { insertDonationSchema, insertSubscriberSchema, insertUserSchema } from "@shared/schema";
+import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -1026,6 +1026,154 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Serve static files
   app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
+
+  // ============================================
+  // IMPACT LABS ROUTES
+  // ============================================
+  
+  const IMPACT_LABS_PASSWORD = process.env.IMPACT_LABS_PASSWORD || "solarpak2025";
+
+  const requireImpactLabsAuth = (req: Request, res: Response, next: Function) => {
+    const session = req.session as any;
+    if (session?.impactLabsAuth) {
+      return next();
+    }
+    res.status(401).json({ message: "Unauthorized" });
+  };
+
+  app.post("/api/impact-labs/auth", (req, res) => {
+    const { password } = req.body;
+    if (password === IMPACT_LABS_PASSWORD) {
+      (req.session as any).impactLabsAuth = true;
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ message: "Invalid password" });
+    }
+  });
+
+  app.get("/api/impact-labs/auth/check", (req, res) => {
+    const session = req.session as any;
+    res.json({ authenticated: !!session?.impactLabsAuth });
+  });
+
+  app.post("/api/impact-labs/auth/logout", (req, res) => {
+    (req.session as any).impactLabsAuth = false;
+    res.json({ success: true });
+  });
+
+  app.get("/api/impact-labs/articles", async (_req, res) => {
+    try {
+      const articles = await storage.getPublishedArticles();
+      res.json(articles);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching articles" });
+    }
+  });
+
+  app.get("/api/impact-labs/articles/all", requireImpactLabsAuth, async (_req, res) => {
+    try {
+      const articles = await storage.getAllArticles();
+      res.json(articles);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching articles" });
+    }
+  });
+
+  app.get("/api/impact-labs/articles/:idOrSlug", async (req, res) => {
+    try {
+      const { idOrSlug } = req.params;
+      let article;
+      const parsed = parseInt(idOrSlug);
+      if (!isNaN(parsed)) {
+        article = await storage.getArticleById(parsed);
+      } else {
+        article = await storage.getArticleBySlug(idOrSlug);
+      }
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      if (!article.isPublished) {
+        const session = req.session as any;
+        if (!session?.impactLabsAuth) {
+          return res.status(404).json({ message: "Article not found" });
+        }
+      }
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching article" });
+    }
+  });
+
+  app.post("/api/impact-labs/articles", requireImpactLabsAuth, async (req, res) => {
+    try {
+      const data = { ...req.body };
+      if (data.isPublished && !data.publishedAt) {
+        data.publishedAt = new Date();
+      }
+      if (typeof data.publishedAt === 'string') {
+        data.publishedAt = new Date(data.publishedAt);
+      }
+      const validated = insertImpactLabsArticleSchema.parse(data);
+      const article = await storage.createArticle(validated);
+      res.status(201).json(article);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Error creating article:", error);
+      res.status(500).json({ message: "Error creating article" });
+    }
+  });
+
+  app.patch("/api/impact-labs/articles/:id", requireImpactLabsAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = { ...req.body };
+      if (updates.isPublished) {
+        const existing = await storage.getArticleById(id);
+        if (existing && !existing.isPublished) {
+          updates.publishedAt = new Date();
+        }
+      }
+      if (typeof updates.publishedAt === 'string') {
+        updates.publishedAt = new Date(updates.publishedAt);
+      }
+      const article = await storage.updateArticle(id, updates);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error("Error updating article:", error);
+      res.status(500).json({ message: "Error updating article" });
+    }
+  });
+
+  app.delete("/api/impact-labs/articles/:id", requireImpactLabsAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteArticle(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting article" });
+    }
+  });
+
+  app.post("/api/impact-labs/upload", requireImpactLabsAuth, upload.single('image'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      const fileUrl = `/uploads/${req.file.filename}`;
+      res.json({ url: fileUrl });
+    } catch (error) {
+      res.status(500).json({ message: "Error uploading file" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

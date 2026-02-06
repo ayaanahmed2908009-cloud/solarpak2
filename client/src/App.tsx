@@ -28,6 +28,8 @@ import CreateEvent from "@/pages/worker/CreateEvent";
 import PerformanceManager from "@/pages/worker/PerformanceManager";
 import PerformanceReport from "@/pages/worker/PerformanceReport";
 import TestPerformance from "@/pages/worker/TestPerformance";
+import ImpactLabsDashboard from "@/pages/ImpactLabsDashboard";
+import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
 import { useEffect } from "react";
 
 
@@ -132,6 +134,9 @@ function Router() {
       <Route path="/worker/performance" component={PerformanceManager} />
       <Route path="/worker/performance-report" component={PerformanceReport} />
       <Route path="/worker/test" component={TestPerformance} />
+      
+      <Route path="/impactlabs" component={ImpactLabsDashboard} />
+      <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       
       <Route component={NotFound} />
     </Switch>

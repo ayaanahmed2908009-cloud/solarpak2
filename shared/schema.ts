@@ -159,6 +159,29 @@ export const insertSubscriberSchema = createInsertSchema(subscribers).omit({
   createdAt: true,
 });
 
+// Impact Labs articles
+export const impactLabsArticles = pgTable("impact_labs_articles", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  summary: text("summary").notNull(),
+  content: text("content").notNull(),
+  coverImageUrl: text("cover_image_url"),
+  authorName: text("author_name").notNull(),
+  category: text("category").notNull().default("report"),
+  tags: text("tags").array(),
+  isPublished: boolean("is_published").notNull().default(false),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertImpactLabsArticleSchema = createInsertSchema(impactLabsArticles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // User impact media table
 export const userImpacts = pgTable("user_impacts", {
   id: serial("id").primaryKey(),
@@ -200,3 +223,6 @@ export type InsertSubscriber = z.infer<typeof insertSubscriberSchema>;
 
 export type UserImpact = typeof userImpacts.$inferSelect;
 export type InsertUserImpact = z.infer<typeof insertUserImpactSchema>;
+
+export type ImpactLabsArticle = typeof impactLabsArticles.$inferSelect;
+export type InsertImpactLabsArticle = z.infer<typeof insertImpactLabsArticleSchema>;

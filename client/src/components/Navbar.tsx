@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Sun, Zap, Users, Heart, MapPin, Camera } from "lucide-react";
+import { Sun, Zap, Users, Heart, MapPin, Camera, FlaskConical } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -43,6 +43,12 @@ export default function Navbar() {
               data-testid="link-about-us"
             >
               TEAM
+            </Link>
+            <Link 
+              href="/impact-labs" 
+              className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
+            >
+              IMPACT LABS
             </Link>
             <div className="relative group">
               <button className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
@@ -163,6 +169,9 @@ export default function Navbar() {
             </Link>
             <Link href="/gallery" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
               Gallery
+            </Link>
+            <Link href="/impact-labs" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+              Impact Labs
             </Link>
             <button 
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}

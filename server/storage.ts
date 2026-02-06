@@ -6,10 +6,11 @@ import {
   testimonials, type Testimonial, type InsertTestimonial,
   stats, type Stats, type InsertStats,
   subscribers, type Subscriber, type InsertSubscriber,
-  userImpacts, type UserImpact, type InsertUserImpact
+  userImpacts, type UserImpact, type InsertUserImpact,
+  impactLabsArticles, type ImpactLabsArticle, type InsertImpactLabsArticle
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { hashPassword } from "./auth";
 
 // Storage interface
@@ -61,6 +62,15 @@ export interface IStorage {
   getUserImpacts(userId: number): Promise<UserImpact[]>;
   addUserImpact(impact: InsertUserImpact): Promise<UserImpact>;
   deleteUserImpact(id: number): Promise<boolean>;
+
+  // Impact Labs article operations
+  getPublishedArticles(): Promise<ImpactLabsArticle[]>;
+  getAllArticles(): Promise<ImpactLabsArticle[]>;
+  getArticleById(id: number): Promise<ImpactLabsArticle | undefined>;
+  getArticleBySlug(slug: string): Promise<ImpactLabsArticle | undefined>;
+  createArticle(article: InsertImpactLabsArticle): Promise<ImpactLabsArticle>;
+  updateArticle(id: number, updates: Partial<InsertImpactLabsArticle>): Promise<ImpactLabsArticle | undefined>;
+  deleteArticle(id: number): Promise<boolean>;
 }
 
 // In-memory storage implementation
@@ -642,6 +652,14 @@ export class MemStorage implements IStorage {
       });
     });
   }
+
+  async getPublishedArticles(): Promise<ImpactLabsArticle[]> { return []; }
+  async getAllArticles(): Promise<ImpactLabsArticle[]> { return []; }
+  async getArticleById(_id: number): Promise<ImpactLabsArticle | undefined> { return undefined; }
+  async getArticleBySlug(_slug: string): Promise<ImpactLabsArticle | undefined> { return undefined; }
+  async createArticle(_article: InsertImpactLabsArticle): Promise<ImpactLabsArticle> { throw new Error("Not implemented"); }
+  async updateArticle(_id: number, _updates: Partial<InsertImpactLabsArticle>): Promise<ImpactLabsArticle | undefined> { return undefined; }
+  async deleteArticle(_id: number): Promise<boolean> { return false; }
 }
 
 // Database storage implementation
@@ -880,6 +898,49 @@ export class DatabaseStorage implements IStorage {
 
   async deleteUserImpact(id: number): Promise<boolean> {
     const result = await db.delete(userImpacts).where(eq(userImpacts.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getPublishedArticles(): Promise<ImpactLabsArticle[]> {
+    return db.select().from(impactLabsArticles)
+      .where(eq(impactLabsArticles.isPublished, true))
+      .orderBy(desc(impactLabsArticles.publishedAt));
+  }
+
+  async getAllArticles(): Promise<ImpactLabsArticle[]> {
+    return db.select().from(impactLabsArticles)
+      .orderBy(desc(impactLabsArticles.updatedAt));
+  }
+
+  async getArticleById(id: number): Promise<ImpactLabsArticle | undefined> {
+    const [article] = await db.select().from(impactLabsArticles).where(eq(impactLabsArticles.id, id));
+    return article || undefined;
+  }
+
+  async getArticleBySlug(slug: string): Promise<ImpactLabsArticle | undefined> {
+    const [article] = await db.select().from(impactLabsArticles).where(eq(impactLabsArticles.slug, slug));
+    return article || undefined;
+  }
+
+  async createArticle(article: InsertImpactLabsArticle): Promise<ImpactLabsArticle> {
+    const [newArticle] = await db
+      .insert(impactLabsArticles)
+      .values(article)
+      .returning();
+    return newArticle;
+  }
+
+  async updateArticle(id: number, updates: Partial<InsertImpactLabsArticle>): Promise<ImpactLabsArticle | undefined> {
+    const [updated] = await db
+      .update(impactLabsArticles)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(impactLabsArticles.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteArticle(id: number): Promise<boolean> {
+    const result = await db.delete(impactLabsArticles).where(eq(impactLabsArticles.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
 }
