@@ -11,6 +11,7 @@ import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import ImpactLabsPreview from "@/components/ImpactLabsPreview";
+import FounderQuote from "@/components/FounderQuote";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { SEOOptimizedContent, SEOFAQSection } from "@/components/SEOOptimizedContent";
 import { SEOBlogContent, SEOLocationContent } from "@/components/SEOBlogContent";
@@ -211,6 +212,10 @@ export default function Home() {
         
         <section id="impact-labs" className="snap-section">
           <ImpactLabsPreview />
+        </section>
+
+        <section className="snap-section">
+          <FounderQuote />
         </section>
         
         <section id="trust" className="snap-section">
