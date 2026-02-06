@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Quote } from "lucide-react";
-import founderPhoto from "@assets/Screenshot_2026-01-31_at_4,48,55_PM-Picsart-BackgroundRemover_1770399460195.png";
+import founderPhoto from "@assets/Founder_1770399563006.png";
 
 export default function FounderQuote() {
   const [isVisible, setIsVisible] = useState(false);
@@ -16,11 +16,11 @@ export default function FounderQuote() {
         <div className={`max-w-6xl mx-auto transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
             <div className="relative flex justify-center">
-              <div className="aspect-[3/4] max-w-sm w-full rounded-2xl overflow-hidden bg-white shadow-2xl">
+              <div className="aspect-square max-w-md w-full rounded-2xl overflow-hidden bg-white shadow-2xl">
                 <img
                   src={founderPhoto}
                   alt="Ayaan Ahmed - Founder & CEO"
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-cover object-center"
                 />
               </div>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-emerald-400 to-green-500 rounded-2xl -z-10" />
