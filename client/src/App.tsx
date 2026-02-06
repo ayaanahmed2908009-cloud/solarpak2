@@ -13,7 +13,7 @@ import Impact from "@/pages/Impact";
 import Membership from "@/pages/Membership";
 import VillageExperience from "@/pages/VillageExperience";
 import CaseStudy from "@/pages/CaseStudy";
-import Team from "@/pages/Team";
+
 import Gallery from "@/pages/Gallery";
 
 // Worker portal pages
@@ -118,7 +118,7 @@ function Router() {
 
 
       <Route path="/membership" component={Membership} />
-      <Route path="/team" component={Team} />
+
       <Route path="/gallery" component={Gallery} />
       
       {/* Worker portal routes */}

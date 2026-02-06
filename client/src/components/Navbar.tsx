@@ -85,13 +85,6 @@ export default function Navbar() {
               OUR IMPACT
             </NavLink>
             <NavLink 
-              href="/team" 
-              className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
-              data-testid="link-about-us"
-            >
-              TEAM
-            </NavLink>
-            <NavLink 
               href="/impact-labs" 
               className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
             >
@@ -198,9 +191,6 @@ export default function Navbar() {
             </NavLink>
             <NavLink href="/#impact" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
               OUR IMPACT
-            </NavLink>
-            <NavLink href="/team" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
-              TEAM
             </NavLink>
             <NavLink href="/village" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
               Stories
