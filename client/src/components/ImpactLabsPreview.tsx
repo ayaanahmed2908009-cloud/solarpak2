@@ -45,6 +45,9 @@ export default function ImpactLabsPreview() {
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
               Latest Research
             </h2>
+            <p className="text-gray-400 mt-3 max-w-xl leading-relaxed text-sm">
+              Impact Labs is where our team publishes in-depth articles, field reports, and data-driven insights on how solar energy is transforming communities across Pakistan.
+            </p>
           </div>
           <Link href="/impact-labs">
             <span className="hidden sm:inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors group">
