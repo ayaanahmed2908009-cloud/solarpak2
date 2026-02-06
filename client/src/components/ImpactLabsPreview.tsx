@@ -57,11 +57,11 @@ export default function ImpactLabsPreview() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {latestArticles.map((article) => (
             <Link key={article.id} href={`/impact-labs/${article.slug}`}>
-              <div className="group h-full rounded-xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 hover:bg-white/8 transition-all duration-300 cursor-pointer">
-                <div className="relative h-44 overflow-hidden">
+              <div className="group h-full rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 hover:bg-white/8 transition-all duration-300 cursor-pointer">
+                <div className="relative h-60 overflow-hidden">
                   {article.coverImageUrl ? (
                     <img
                       src={article.coverImageUrl}
@@ -70,26 +70,26 @@ export default function ImpactLabsPreview() {
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-slate-700 to-emerald-900 flex items-center justify-center">
-                      <FlaskConical className="w-8 h-8 text-white/20" />
+                      <FlaskConical className="w-10 h-10 text-white/20" />
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                    <span className="text-[10px] font-medium text-white/90 bg-white/15 backdrop-blur-sm px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                    <span className="text-xs font-medium text-white/90 bg-white/15 backdrop-blur-sm px-3 py-1 rounded-full uppercase tracking-wider">
                       {article.category}
                     </span>
-                    <span className="text-[10px] text-white/70 flex items-center gap-1">
-                      <Clock className="w-2.5 h-2.5" />
+                    <span className="text-xs text-white/70 flex items-center gap-1.5">
+                      <Clock className="w-3 h-3" />
                       {estimateReadTime(article.content)} min
                     </span>
                   </div>
                 </div>
-                <div className="p-5">
-                  <h3 className="text-sm font-semibold text-white mb-2 line-clamp-2 group-hover:text-green-300 transition-colors leading-snug">
+                <div className="p-6">
+                  <h3 className="text-base font-semibold text-white mb-3 line-clamp-2 group-hover:text-green-300 transition-colors leading-snug">
                     {article.title}
                   </h3>
-                  <p className="text-gray-400 text-xs mb-4 line-clamp-2 leading-relaxed">{article.summary}</p>
-                  <div className="flex items-center justify-between text-[11px] text-gray-500 pt-3 border-t border-white/5">
+                  <p className="text-gray-400 text-sm mb-5 line-clamp-3 leading-relaxed">{article.summary}</p>
+                  <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-white/5">
                     <span className="text-gray-400">{article.authorName}</span>
                     <span>{formatDate(article.publishedAt)}</span>
                   </div>
