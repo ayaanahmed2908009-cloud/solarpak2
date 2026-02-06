@@ -4,7 +4,7 @@ import CrisisSection from "@/components/CrisisSection";
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
 
-import TestimonialsSection from "@/components/TestimonialsSection";
+
 import TrustRoadmapSection from "@/components/TrustRoadmapSection";
 import DonationSection from "@/components/DonationSection";
 import MonthlyImpactSection from "@/components/MonthlyImpactSection";
@@ -209,10 +209,6 @@ export default function Home() {
           <UnifiedImpactSection />
         </section>
         
-        <section id="testimonials" className="snap-section">
-          <TestimonialsSection />
-        </section>
-
         <section id="impact-labs" className="snap-section">
           <ImpactLabsPreview />
         </section>
