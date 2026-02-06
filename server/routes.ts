@@ -1031,7 +1031,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // IMPACT LABS ROUTES
   // ============================================
   
-  const IMPACT_LABS_PASSWORD = process.env.IMPACT_LABS_PASSWORD || "solarpak2025";
+  const IMPACT_LABS_PASSWORD = process.env.IMPACT_LABS_PASSWORD || "impactlabs76";
 
   const requireImpactLabsAuth = (req: Request, res: Response, next: Function) => {
     const session = req.session as any;
