@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, useLocation, Link } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
+  ArrowRight,
   Calendar,
   User,
   Tag,
@@ -18,6 +19,7 @@ import {
   Search,
   FlaskConical,
   Briefcase,
+  Clock,
 } from "lucide-react";
 import DOMPurify from "dompurify";
 import type { ImpactLabsArticle } from "@shared/schema";
@@ -39,68 +41,96 @@ function formatDate(date: string | Date | null | undefined) {
   });
 }
 
-function ArticleCard({ article }: { article: ImpactLabsArticle }) {
+function estimateReadTime(content: string): number {
+  const text = content.replace(/<[^>]*>/g, "");
+  const words = text.split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
+function ArticleCard({ article, index }: { article: ImpactLabsArticle; index: number }) {
   const [, setLocation] = useLocation();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+      },
+      { threshold: 0.1 }
+    );
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <Card
-      className="group cursor-pointer overflow-hidden border border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300"
-      onClick={() => setLocation(`/impact-labs/${article.slug}`)}
+    <div
+      ref={cardRef}
+      className="transition-all duration-700"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(24px)",
+        transitionDelay: `${index * 80}ms`,
+      }}
     >
-      <div className="relative h-48 overflow-hidden">
-        {article.coverImageUrl ? (
-          <img
-            src={article.coverImageUrl}
-            alt={article.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 flex items-center justify-center">
-            <FileText className="w-12 h-12 text-white/60" />
+      <div
+        className="group cursor-pointer h-full rounded-xl overflow-hidden bg-white border border-gray-100 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500 hover:-translate-y-1"
+        onClick={() => setLocation(`/impact-labs/${article.slug}`)}
+      >
+        <div className="relative h-52 overflow-hidden">
+          {article.coverImageUrl ? (
+            <img
+              src={article.coverImageUrl}
+              alt={article.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900 flex items-center justify-center">
+              <FlaskConical className="w-10 h-10 text-white/30" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+            <span className="text-xs font-medium text-white/90 bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full capitalize">
+              {article.category}
+            </span>
+            <span className="text-xs text-white/80 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {estimateReadTime(article.content)} min
+            </span>
           </div>
-        )}
-        <div className="absolute top-3 left-3">
-          <Badge className="bg-green-600 text-white hover:bg-green-700 capitalize">
-            {article.category}
-          </Badge>
         </div>
-      </div>
-      <CardContent className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-700 transition-colors">
-          {article.title}
-        </h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{article.summary}</p>
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <User className="w-3.5 h-3.5" />
-            <span>{article.authorName}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5" />
+        <div className="p-5">
+          <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-800 transition-colors leading-snug">
+            {article.title}
+          </h3>
+          <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">{article.summary}</p>
+          <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100">
+            <span className="font-medium text-gray-600">{article.authorName}</span>
             <span>{formatDate(article.publishedAt)}</span>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
 function ArticleListSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card key={i} className="overflow-hidden">
-          <Skeleton className="h-48 w-full rounded-none" />
+        <div key={i} className="rounded-xl overflow-hidden bg-white border border-gray-100">
+          <Skeleton className="h-52 w-full rounded-none" />
           <div className="p-5 space-y-3">
-            <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
-            <div className="flex justify-between pt-2">
-              <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-2/3" />
+            <div className="flex justify-between pt-3 border-t border-gray-100">
               <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-3 w-24" />
             </div>
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );
@@ -108,16 +138,18 @@ function ArticleListSkeleton() {
 
 function ArticleViewSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Skeleton className="h-10 w-32" />
-      <Skeleton className="h-[400px] w-full rounded-2xl" />
-      <Skeleton className="h-8 w-3/4" />
-      <div className="flex gap-4">
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="h-5 w-32" />
-        <Skeleton className="h-5 w-20" />
+    <div className="max-w-3xl mx-auto space-y-8">
+      <Skeleton className="h-8 w-32" />
+      <Skeleton className="h-[420px] w-full rounded-xl" />
+      <div className="space-y-3">
+        <Skeleton className="h-3 w-20" />
+        <Skeleton className="h-10 w-4/5" />
+        <div className="flex gap-6">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-4 w-28" />
+        </div>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 pt-6">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-5/6" />
@@ -138,7 +170,7 @@ function ArticleView({ slug }: { slug: string }) {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-12">
         <ArticleViewSkeleton />
       </div>
     );
@@ -146,18 +178,20 @@ function ArticleView({ slug }: { slug: string }) {
 
   if (error || !article) {
     return (
-      <div className="container mx-auto px-6 py-8">
-        <div className="max-w-4xl mx-auto text-center py-20">
-          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Article Not Found</h2>
-          <p className="text-gray-600 mb-6">The article you're looking for doesn't exist or has been removed.</p>
+      <div className="container mx-auto px-6 py-12">
+        <div className="max-w-xl mx-auto text-center py-24">
+          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
+            <FileText className="w-7 h-7 text-gray-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Article not found</h2>
+          <p className="text-gray-500 mb-8 text-sm">This article may have been removed or the link is incorrect.</p>
           <Button
             onClick={() => setLocation("/impact-labs")}
             variant="outline"
-            className="border-green-600 text-green-700 hover:bg-green-50"
+            className="text-sm"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Articles
+            <ArrowLeft className="w-3.5 h-3.5 mr-2" />
+            Back to all articles
           </Button>
         </div>
       </div>
@@ -165,19 +199,18 @@ function ArticleView({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8">
-      <div className="max-w-4xl mx-auto">
-        <Button
+    <div className="container mx-auto px-6 py-12">
+      <article className="max-w-3xl mx-auto">
+        <button
           onClick={() => setLocation("/impact-labs")}
-          variant="ghost"
-          className="mb-6 text-green-700 hover:text-green-900 hover:bg-green-50"
+          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition-colors mb-8 group"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Articles
-        </Button>
+          <ArrowLeft className="w-3.5 h-3.5 mr-1.5 group-hover:-translate-x-0.5 transition-transform" />
+          All articles
+        </button>
 
         {article.coverImageUrl && (
-          <div className="relative h-[400px] rounded-2xl overflow-hidden mb-8">
+          <div className="relative aspect-[2/1] rounded-xl overflow-hidden mb-10">
             <img
               src={article.coverImageUrl}
               alt={article.title}
@@ -186,48 +219,69 @@ function ArticleView({ slug }: { slug: string }) {
           </div>
         )}
 
-        <div className="mb-6">
-          <Badge className="bg-green-600 text-white hover:bg-green-700 capitalize mb-4">
+        <header className="mb-10">
+          <span className="text-xs font-semibold uppercase tracking-widest text-green-700 mb-3 block">
             {article.category}
-          </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          </span>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-5 leading-tight tracking-tight">
             {article.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <User className="w-4 h-4" />
-              <span>{article.authorName}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              <span>{formatDate(article.publishedAt)}</span>
-            </div>
-            {article.tags && article.tags.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <Tag className="w-4 h-4" />
-                {article.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
+            <span className="font-medium text-gray-700">{article.authorName}</span>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <span>{formatDate(article.publishedAt)}</span>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <span>{estimateReadTime(article.content)} min read</span>
           </div>
-        </div>
+          {article.tags && article.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-4">
+              {article.tags.map((tag) => (
+                <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </header>
 
-        <div className="border-t border-gray-200 pt-8">
+        <div className="border-t border-gray-100 pt-10">
           <div
             className="article-content"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
           />
         </div>
-      </div>
+
+        <footer className="mt-16 pt-8 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setLocation("/impact-labs")}
+              className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 mr-1.5 group-hover:-translate-x-0.5 transition-transform" />
+              All articles
+            </button>
+          </div>
+        </footer>
+      </article>
     </div>
   );
 }
 
 function ArticleList() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setHeroVisible(true);
+      },
+      { threshold: 0.2 }
+    );
+    if (heroRef.current) observer.observe(heroRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const { data: articles, isLoading } = useQuery<ImpactLabsArticle[]>({
     queryKey: ["/api/impact-labs/articles"],
@@ -240,60 +294,72 @@ function ArticleList() {
 
   return (
     <>
-      <div className="relative bg-gradient-to-br from-green-700 via-emerald-600 to-teal-700 py-20 md:py-28">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <FlaskConical className="w-8 h-8 text-green-200" />
-            <span className="text-green-200 font-semibold uppercase tracking-widest text-sm">Research Hub</span>
+      <div
+        ref={heroRef}
+        className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
+      >
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-green-400/5 to-transparent rounded-full" />
+        </div>
+
+        <div
+          className="container mx-auto px-6 relative z-10 transition-all duration-1000"
+          style={{
+            opacity: heroVisible ? 1 : 0,
+            transform: heroVisible ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          <div className="max-w-2xl">
+            <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
+              Research & Insights
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
+              Impact Labs
+            </h1>
+            <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
+              Research, reports, and stories documenting our environmental and economic impact across Pakistan.
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            SolarPak Impact Labs
-          </h1>
-          <p className="text-lg md:text-xl text-green-100 max-w-2xl mx-auto">
-            Research, Reports & Insights on Our Environmental and Economic Impact
-          </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-12">
-        <div className="flex flex-wrap gap-2 mb-8 justify-center">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <Button
-                key={cat.value}
-                variant={activeCategory === cat.value ? "default" : "outline"}
-                onClick={() => setActiveCategory(cat.value)}
-                className={
-                  activeCategory === cat.value
-                    ? "bg-green-600 hover:bg-green-700 text-white"
-                    : "border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300"
-                }
-              >
-                <Icon className="w-4 h-4 mr-2" />
-                {cat.label}
-              </Button>
-            );
-          })}
+      <div className="container mx-auto px-6 py-14">
+        <div className="flex flex-wrap gap-2 mb-10">
+          {categories.map((cat) => (
+            <button
+              key={cat.value}
+              onClick={() => setActiveCategory(cat.value)}
+              className={`text-sm px-4 py-2 rounded-full font-medium transition-all duration-200 ${
+                activeCategory === cat.value
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
 
         {isLoading ? (
           <ArticleListSkeleton />
         ) : !filteredArticles || filteredArticles.length === 0 ? (
-          <div className="text-center py-20">
-            <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">No Articles Yet</h2>
-            <p className="text-gray-600">
+          <div className="text-center py-24">
+            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-5">
+              <Search className="w-6 h-6 text-gray-400" />
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">No articles yet</h2>
+            <p className="text-gray-500 text-sm max-w-sm mx-auto">
               {activeCategory === "all"
-                ? "Check back soon for research reports and articles from our Impact Labs."
-                : `No ${categories.find((c) => c.value === activeCategory)?.label.toLowerCase()} available yet.`}
+                ? "New research and reports will appear here as they are published."
+                : `No ${categories.find((c) => c.value === activeCategory)?.label.toLowerCase()} have been published yet.`}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArticles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredArticles.map((article, i) => (
+              <ArticleCard key={article.id} article={article} index={i} />
             ))}
           </div>
         )}
@@ -306,7 +372,7 @@ export default function ImpactLabsPublic() {
   const [match, params] = useRoute("/impact-labs/:slug");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <div className="pt-20">
         {match && params?.slug ? (
@@ -319,37 +385,43 @@ export default function ImpactLabsPublic() {
 
       <style>{`
         .article-content {
-          font-size: 1.125rem;
-          line-height: 1.8;
+          font-size: 1.0625rem;
+          line-height: 1.85;
           color: #374151;
+          font-feature-settings: "kern" 1, "liga" 1;
         }
         .article-content h1 {
-          font-size: 2rem;
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #111827;
+          margin-top: 2.5rem;
+          margin-bottom: 0.75rem;
+          letter-spacing: -0.02em;
+          line-height: 1.3;
+        }
+        .article-content h2 {
+          font-size: 1.375rem;
           font-weight: 700;
           color: #111827;
           margin-top: 2rem;
-          margin-bottom: 1rem;
-        }
-        .article-content h2 {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #111827;
-          margin-top: 1.75rem;
-          margin-bottom: 0.75rem;
+          margin-bottom: 0.5rem;
+          letter-spacing: -0.01em;
+          line-height: 1.35;
         }
         .article-content h3 {
-          font-size: 1.25rem;
+          font-size: 1.125rem;
           font-weight: 600;
           color: #1f2937;
-          margin-top: 1.5rem;
+          margin-top: 1.75rem;
           margin-bottom: 0.5rem;
+          line-height: 1.4;
         }
         .article-content p {
-          margin-bottom: 1.25rem;
+          margin-bottom: 1.5rem;
         }
         .article-content ul, .article-content ol {
-          margin-bottom: 1.25rem;
-          padding-left: 1.5rem;
+          margin-bottom: 1.5rem;
+          padding-left: 1.25rem;
         }
         .article-content ul {
           list-style-type: disc;
@@ -359,67 +431,74 @@ export default function ImpactLabsPublic() {
         }
         .article-content li {
           margin-bottom: 0.5rem;
+          padding-left: 0.25rem;
         }
         .article-content blockquote {
-          border-left: 4px solid #10b981;
-          padding: 1rem 1.5rem;
-          margin: 1.5rem 0;
-          background: #f0fdf4;
-          border-radius: 0 0.5rem 0.5rem 0;
-          color: #065f46;
+          border-left: 3px solid #d1d5db;
+          padding: 0.75rem 1.25rem;
+          margin: 2rem 0;
+          color: #4b5563;
           font-style: italic;
+          background: transparent;
         }
         .article-content img {
           max-width: 100%;
           height: auto;
-          border-radius: 0.75rem;
-          margin: 1.5rem 0;
+          border-radius: 0.5rem;
+          margin: 2rem 0;
         }
         .article-content a {
-          color: #059669;
+          color: #047857;
           text-decoration: underline;
-          text-underline-offset: 2px;
+          text-underline-offset: 3px;
+          text-decoration-color: #d1fae5;
+          transition: text-decoration-color 0.2s;
         }
         .article-content a:hover {
-          color: #047857;
+          text-decoration-color: #047857;
         }
         .article-content pre {
-          background: #1f2937;
-          color: #e5e7eb;
-          padding: 1rem 1.5rem;
-          border-radius: 0.75rem;
+          background: #1e293b;
+          color: #e2e8f0;
+          padding: 1.25rem;
+          border-radius: 0.5rem;
           overflow-x: auto;
-          margin: 1.5rem 0;
-          font-size: 0.875rem;
+          margin: 2rem 0;
+          font-size: 0.8125rem;
+          line-height: 1.7;
         }
         .article-content code {
-          background: #f3f4f6;
+          background: #f1f5f9;
           padding: 0.125rem 0.375rem;
           border-radius: 0.25rem;
-          font-size: 0.875em;
+          font-size: 0.85em;
+          color: #334155;
         }
         .article-content pre code {
           background: transparent;
           padding: 0;
+          color: inherit;
         }
         .article-content table {
           width: 100%;
           border-collapse: collapse;
-          margin: 1.5rem 0;
+          margin: 2rem 0;
+          font-size: 0.9375rem;
         }
         .article-content th, .article-content td {
           border: 1px solid #e5e7eb;
-          padding: 0.75rem 1rem;
+          padding: 0.625rem 1rem;
           text-align: left;
         }
         .article-content th {
-          background: #f9fafb;
+          background: #f8fafc;
           font-weight: 600;
+          color: #1e293b;
         }
         .article-content hr {
           border: none;
           border-top: 1px solid #e5e7eb;
-          margin: 2rem 0;
+          margin: 2.5rem 0;
         }
       `}</style>
     </div>

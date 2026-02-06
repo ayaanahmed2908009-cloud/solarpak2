@@ -1,10 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, User, FileText, FlaskConical } from "lucide-react";
+import { ArrowRight, Clock, FlaskConical } from "lucide-react";
 import type { ImpactLabsArticle } from "@shared/schema";
 
 function formatDate(date: string | Date | null | undefined) {
@@ -14,6 +11,12 @@ function formatDate(date: string | Date | null | undefined) {
     month: "short",
     day: "numeric",
   });
+}
+
+function estimateReadTime(content: string): number {
+  const text = content.replace(/<[^>]*>/g, "");
+  const words = text.split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / 200));
 }
 
 export default function ImpactLabsPreview() {
@@ -27,72 +30,78 @@ export default function ImpactLabsPreview() {
   const latestArticles = articles.slice(0, 3);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <FlaskConical className="w-5 h-5 text-green-600" />
-            <span className="text-green-600 font-semibold uppercase tracking-widest text-sm">
+    <section className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/8 to-emerald-500/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-gradient-to-r from-teal-500/6 to-cyan-500/6 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-3 block">
               Impact Labs
             </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+              Latest Research
+            </h2>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Latest Research & Reports
-          </h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Explore our latest findings on environmental impact, community development, and solar energy adoption.
-          </p>
+          <Link href="/impact-labs">
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors group">
+              View all
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {latestArticles.map((article) => (
             <Link key={article.id} href={`/impact-labs/${article.slug}`}>
-              <Card className="group h-full cursor-pointer overflow-hidden border border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 bg-white">
+              <div className="group h-full rounded-xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 hover:bg-white/8 transition-all duration-300 cursor-pointer">
                 <div className="relative h-44 overflow-hidden">
                   {article.coverImageUrl ? (
                     <img
                       src={article.coverImageUrl}
                       alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 flex items-center justify-center">
-                      <FileText className="w-10 h-10 text-white/60" />
+                    <div className="w-full h-full bg-gradient-to-br from-slate-700 to-emerald-900 flex items-center justify-center">
+                      <FlaskConical className="w-8 h-8 text-white/20" />
                     </div>
                   )}
-                  <div className="absolute top-3 left-3">
-                    <Badge className="bg-green-600 text-white hover:bg-green-700 capitalize text-xs">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <span className="text-[10px] font-medium text-white/90 bg-white/15 backdrop-blur-sm px-2 py-0.5 rounded-full uppercase tracking-wider">
                       {article.category}
-                    </Badge>
+                    </span>
+                    <span className="text-[10px] text-white/70 flex items-center gap-1">
+                      <Clock className="w-2.5 h-2.5" />
+                      {estimateReadTime(article.content)} min
+                    </span>
                   </div>
                 </div>
-                <CardContent className="p-5">
-                  <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-700 transition-colors">
+                <div className="p-5">
+                  <h3 className="text-sm font-semibold text-white mb-2 line-clamp-2 group-hover:text-green-300 transition-colors leading-snug">
                     {article.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{article.summary}</p>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5" />
-                      <span>{article.authorName}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{formatDate(article.publishedAt)}</span>
-                    </div>
+                  <p className="text-gray-400 text-xs mb-4 line-clamp-2 leading-relaxed">{article.summary}</p>
+                  <div className="flex items-center justify-between text-[11px] text-gray-500 pt-3 border-t border-white/5">
+                    <span className="text-gray-400">{article.authorName}</span>
+                    <span>{formatDate(article.publishedAt)}</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
 
-        <div className="text-center">
+        <div className="sm:hidden text-center">
           <Link href="/impact-labs">
-            <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3">
-              View All Reports
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+            <span className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors">
+              View all articles
+              <ArrowRight className="w-3.5 h-3.5" />
+            </span>
           </Link>
         </div>
       </div>

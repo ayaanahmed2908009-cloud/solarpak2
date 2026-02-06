@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LogOut,
   Plus,
@@ -25,8 +24,9 @@ import {
   ArrowLeft,
   Upload,
   Loader2,
-  Lock,
   FileText,
+  ChevronRight,
+  FlaskConical,
 } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -63,11 +63,7 @@ function generateSlug(title: string) {
     .trim();
 }
 
-function LoginScreen({
-  onLogin,
-}: {
-  onLogin: () => void;
-}) {
+function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState("");
   const { toast } = useToast();
 
@@ -85,18 +81,22 @@ function LoginScreen({
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
-            <Lock className="w-8 h-8 text-emerald-600" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-sm mx-4">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-4 border border-white/10">
+            <FlaskConical className="w-6 h-6 text-green-400" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">
-            SolarPak Impact Labs
-          </CardTitle>
-          <p className="text-gray-500 mt-2">Enter your password to access the dashboard</p>
-        </CardHeader>
-        <CardContent>
+          <h1 className="text-xl font-semibold text-white mb-1">Impact Labs</h1>
+          <p className="text-sm text-gray-400">Sign in to manage articles</p>
+        </div>
+
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -104,16 +104,20 @@ function LoginScreen({
             }}
             className="space-y-4"
           >
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loginMutation.isPending}
-            />
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
+              <Input
+                type="password"
+                placeholder="Enter team password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loginMutation.isPending}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20"
+              />
+            </div>
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-white text-gray-900 hover:bg-gray-100 font-medium"
               disabled={loginMutation.isPending || !password}
             >
               {loginMutation.isPending ? (
@@ -122,8 +126,8 @@ function LoginScreen({
               Sign In
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
@@ -225,154 +229,155 @@ function ArticleEditor({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={onBack} size="sm">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <h2 className="text-xl font-semibold">
-          {article ? "Edit Article" : "New Article"}
-        </h2>
+      <div className="flex items-center gap-2 text-sm text-gray-500">
+        <button onClick={onBack} className="hover:text-gray-900 transition-colors">Articles</button>
+        <ChevronRight className="w-3.5 h-3.5" />
+        <span className="text-gray-900 font-medium">{article ? "Edit" : "New article"}</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Article title"
+              className="text-base"
             />
             {title && (
-              <p className="text-xs text-gray-400 mt-1">
-                Slug: {generateSlug(title)}
+              <p className="text-xs text-gray-400 mt-1.5 font-mono">
+                /{generateSlug(title)}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Summary</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Summary</label>
             <Textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
-              placeholder="Brief summary or excerpt"
+              placeholder="A brief description for previews and search results"
               rows={3}
+              className="resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-            <div className="bg-white rounded-md border">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Content</label>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <ReactQuill
                 theme="snow"
                 value={content}
                 onChange={setContent}
                 modules={quillModules}
                 formats={quillFormats}
-                placeholder="Write your article content..."
-                className="min-h-[300px]"
+                placeholder="Start writing..."
+                className="min-h-[350px]"
               />
             </div>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
-                <Input
-                  value={authorName}
-                  onChange={(e) => setAuthorName(e.target.value)}
-                  placeholder="Author name"
-                />
-              </div>
+        <div className="space-y-5">
+          <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+            <h3 className="text-sm font-semibold text-gray-900">Details</h3>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="report">Report</SelectItem>
-                    <SelectItem value="article">Article</SelectItem>
-                    <SelectItem value="research">Research</SelectItem>
-                    <SelectItem value="case-study">Case Study</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Author</label>
+              <Input
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                placeholder="Author name"
+                className="text-sm"
+              />
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                <Input
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  placeholder="solar, energy, impact"
-                />
-                <p className="text-xs text-gray-400 mt-1">Comma-separated</p>
-              </div>
-            </CardContent>
-          </Card>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="report">Report</SelectItem>
+                  <SelectItem value="article">Article</SelectItem>
+                  <SelectItem value="research">Research</SelectItem>
+                  <SelectItem value="case-study">Case Study</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Cover Image</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {coverImageUrl && (
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Tags</label>
+              <Input
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="solar, energy, impact"
+                className="text-sm"
+              />
+              <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-gray-900">Cover Image</h3>
+            {coverImageUrl && (
+              <div className="relative rounded-lg overflow-hidden">
                 <img
                   src={coverImageUrl}
                   alt="Cover"
-                  className="w-full h-40 object-cover rounded-md"
+                  className="w-full h-36 object-cover"
                 />
-              )}
-              <div className="relative">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className="hidden"
-                  id="cover-upload"
-                />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  disabled={uploading}
-                  onClick={() => document.getElementById("cover-upload")?.click()}
+                <button
+                  onClick={() => setCoverImageUrl("")}
+                  className="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/70 transition-colors"
                 >
-                  {uploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : (
-                    <Upload className="w-4 h-4 mr-2" />
-                  )}
-                  {uploading ? "Uploading..." : "Upload Image"}
-                </Button>
+                  &times;
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            )}
+            <div>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="hidden"
+                id="cover-upload"
+              />
+              <Button
+                variant="outline"
+                className="w-full text-sm"
+                disabled={uploading}
+                onClick={() => document.getElementById("cover-upload")?.click()}
+              >
+                {uploading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
+                ) : (
+                  <Upload className="w-3.5 h-3.5 mr-2" />
+                )}
+                {uploading ? "Uploading..." : coverImageUrl ? "Replace image" : "Upload image"}
+              </Button>
+            </div>
+          </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="space-y-2">
             <Button
               onClick={() => handleSubmit(true)}
               disabled={isPending || !title || !authorName || !summary || !content}
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-sm font-medium"
             >
-              {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              {article?.isPublished ? "Update & Publish" : "Publish"}
+              {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : null}
+              {article?.isPublished ? "Update" : "Publish"}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleSubmit(false)}
               disabled={isPending || !title || !authorName || !summary || !content}
-              className="w-full"
+              className="w-full text-sm"
             >
-              Save as Draft
+              Save as draft
             </Button>
           </div>
         </div>
@@ -389,7 +394,7 @@ function ArticleList({
   onNew: () => void;
 }) {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("all");
+  const [filter, setFilter] = useState<"all" | "published" | "drafts">("all");
 
   const { data: articles = [], isLoading } = useQuery<ImpactLabsArticle[]>({
     queryKey: ["/api/impact-labs/articles/all"],
@@ -422,122 +427,131 @@ function ArticleList({
   });
 
   const filtered = articles.filter((a) => {
-    if (activeTab === "published") return a.isPublished;
-    if (activeTab === "drafts") return !a.isPublished;
+    if (filter === "published") return a.isPublished;
+    if (filter === "drafts") return !a.isPublished;
     return true;
   });
 
+  const publishedCount = articles.filter((a) => a.isPublished).length;
+  const draftCount = articles.filter((a) => !a.isPublished).length;
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <h2 className="text-xl font-semibold">Articles</h2>
-        <Button onClick={onNew} className="bg-emerald-600 hover:bg-emerald-700">
-          <Plus className="w-4 h-4 mr-2" />
-          New Article
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Articles</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {articles.length} total &middot; {publishedCount} published &middot; {draftCount} drafts
+          </p>
+        </div>
+        <Button onClick={onNew} className="bg-gray-900 hover:bg-gray-800 text-sm font-medium">
+          <Plus className="w-3.5 h-3.5 mr-1.5" />
+          New article
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="all">All ({articles.length})</TabsTrigger>
-          <TabsTrigger value="published">
-            Published ({articles.filter((a) => a.isPublished).length})
-          </TabsTrigger>
-          <TabsTrigger value="drafts">
-            Drafts ({articles.filter((a) => !a.isPublished).length})
-          </TabsTrigger>
-        </TabsList>
+      <div className="flex gap-1 bg-gray-100 p-0.5 rounded-lg w-fit">
+        {(["all", "published", "drafts"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`text-xs font-medium px-3 py-1.5 rounded-md transition-all capitalize ${
+              filter === f
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
 
-        <TabsContent value={activeTab} className="mt-4">
-          {filtered.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <FileText className="w-12 h-12 text-gray-300 mb-4" />
-                <p className="text-gray-500">No articles found</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {filtered.map((article) => (
-                <Card key={article.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="flex items-center justify-between p-4 flex-wrap gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {article.title}
-                        </h3>
-                        <Badge
-                          variant={article.isPublished ? "default" : "secondary"}
-                          className={
-                            article.isPublished
-                              ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
-                              : ""
-                          }
-                        >
-                          {article.isPublished ? "Published" : "Draft"}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {article.category}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        By {article.authorName} ·{" "}
-                        {new Date(article.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          togglePublishMutation.mutate({
-                            id: article.id,
-                            isPublished: !article.isPublished,
-                          })
-                        }
-                        title={article.isPublished ? "Unpublish" : "Publish"}
-                      >
-                        {article.isPublished ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(article)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (confirm("Delete this article?")) {
-                            deleteMutation.mutate(article.id);
-                          }
-                        }}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+      {filtered.length === 0 ? (
+        <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
+          <FileText className="w-8 h-8 text-gray-300 mx-auto mb-3" />
+          <p className="text-sm text-gray-500">No articles found</p>
+        </div>
+      ) : (
+        <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
+          {filtered.map((article) => (
+            <div
+              key={article.id}
+              className="flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50/50 transition-colors group"
+            >
+              <div className="flex-1 min-w-0 mr-4">
+                <div className="flex items-center gap-2.5 mb-1">
+                  <h3
+                    className="text-sm font-medium text-gray-900 truncate cursor-pointer hover:text-green-800 transition-colors"
+                    onClick={() => onEdit(article)}
+                  >
+                    {article.title}
+                  </h3>
+                  <span
+                    className={`inline-flex items-center text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      article.isPublished
+                        ? "bg-green-50 text-green-700"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {article.isPublished ? "Live" : "Draft"}
+                  </span>
+                  <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+                    {article.category}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400">
+                  {article.authorName} &middot;{" "}
+                  {new Date(article.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() =>
+                    togglePublishMutation.mutate({
+                      id: article.id,
+                      isPublished: !article.isPublished,
+                    })
+                  }
+                  className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  title={article.isPublished ? "Unpublish" : "Publish"}
+                >
+                  {article.isPublished ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+                <button
+                  onClick={() => onEdit(article)}
+                  className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  title="Edit"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm("Delete this article?")) {
+                      deleteMutation.mutate(article.id);
+                    }
+                  }}
+                  className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  title="Delete"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-          )}
-        </TabsContent>
-      </Tabs>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -566,8 +580,8 @@ export default function ImpactLabsDashboard() {
 
   if (authQuery.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
       </div>
     );
   }
@@ -584,27 +598,26 @@ export default function ImpactLabsDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white" />
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-gray-900 rounded-lg flex items-center justify-center">
+              <FlaskConical className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-lg font-bold text-gray-900">SolarPak Impact Labs</h1>
+            <span className="text-sm font-semibold text-gray-900">Impact Labs</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={() => logoutMutation.mutate()}
             disabled={logoutMutation.isPending}
+            className="text-xs text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1.5"
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+            <LogOut className="w-3.5 h-3.5" />
+            Sign out
+          </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-8">
         {view === "list" ? (
           <ArticleList
             onEdit={(article) => {
