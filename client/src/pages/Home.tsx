@@ -206,12 +206,12 @@ export default function Home() {
           <UnifiedImpactSection />
         </section>
         
-        <section id="impact-labs" className="snap-section">
-          <ImpactLabsPreview />
-        </section>
-
         <section className="snap-section">
           <FounderQuote />
+        </section>
+
+        <section id="impact-labs" className="snap-section">
+          <ImpactLabsPreview />
         </section>
         
         <section id="trust" className="snap-section">
