@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import YouthLeadershipSection from "@/components/YouthLeadershipSection";
-import CrisisSection from "@/components/CrisisSection";
+
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
 
@@ -193,10 +193,6 @@ export default function Home() {
           <YouthLeadershipSection />
         </section>
         
-        {/* Crisis Section - Immediate impact after hero */}
-        <section id="problem" className="snap-section">
-          <CrisisSection />
-        </section>
         
 
         
