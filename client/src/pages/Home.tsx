@@ -3,7 +3,7 @@ import YouthLeadershipSection from "@/components/YouthLeadershipSection";
 import CrisisSection from "@/components/CrisisSection";
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
 import EnhancedSolutionSection from "@/components/EnhancedSolutionSection";
-import CulturalDonationExperience from "@/components/CulturalDonationExperience";
+
 import TestimonialsSection from "@/components/TestimonialsSection";
 import TrustRoadmapSection from "@/components/TrustRoadmapSection";
 import DonationSection from "@/components/DonationSection";
@@ -207,12 +207,6 @@ export default function Home() {
         {/* Unified Impact Section - Comprehensive impact showcase */}
         <section id="impact" className="snap-section">
           <UnifiedImpactSection />
-        </section>
-        
-        
-        {/* Cultural Donation Experience - Pakistani-focused giving */}
-        <section className="snap-section">
-          <CulturalDonationExperience />
         </section>
         
         <section id="testimonials" className="snap-section">
