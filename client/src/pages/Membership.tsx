@@ -98,24 +98,33 @@ export default function Membership() {
   // Public page - no user-specific tier highlighting
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       
+      <div className="pt-20">
+        <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
+          </div>
+          <div className="container mx-auto px-6 relative z-10">
+            <div className={`max-w-2xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
+                Join Us
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
+                Membership Tiers
+              </h1>
+              <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
+                Join our community of supporters and help bring solar power to families in need. Every contribution makes a difference.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
       <div className="container mx-auto px-4 py-12 flex-grow">
         <div className={`max-w-6xl mx-auto transition-all duration-700 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="text-center mb-12">
-            <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-              Membership Tiers
-            </h1>
-            <div className="h-1 w-24 bg-primary rounded-full mx-auto mb-6"></div>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Join our community of supporters and help bring solar power to families 
-              in need. Every contribution makes a difference, and membership comes with 
-              benefits at each level.
-            </p>
-            
-
-          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {membershipTiers.map((tier, index) => (

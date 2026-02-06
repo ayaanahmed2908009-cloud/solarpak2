@@ -125,59 +125,47 @@ export default function Team() {
   const allMembers = [founder, ...teamDirectors, ...teamMembers];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       <main className="pt-20">
-        {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-green-600 via-blue-600 to-purple-600 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
-            {[...Array(15)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-2 h-2 bg-white rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animation: `float ${4 + Math.random() * 6}s ease-in-out infinite`,
-                  animationDelay: `${Math.random() * 3}s`
-                }}
-              />
-            ))}
+        <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-green-400/5 to-transparent rounded-full" />
           </div>
 
-          <div className="container mx-auto px-4 relative z-10">
-            <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm border border-white/30 px-6 py-3 rounded-full mb-8">
-                <span className="font-bold text-white text-sm uppercase tracking-wide">
-                  🌟 World's Largest Youth-Led Solar Nonprofit
+          <div className="container mx-auto px-6 relative z-10">
+            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+              <div className="max-w-3xl">
+                <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
+                  World's Largest Youth-Led Solar Nonprofit
                 </span>
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
+                  Meet Our Team
+                </h1>
+                <p className="text-lg text-gray-400 max-w-xl leading-relaxed mb-12">
+                  11 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy.
+                </p>
               </div>
-              
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
-                Meet Our Team
-              </h1>
-              <p className="text-xl md:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-12" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                11 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy
-              </p>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">17</div>
-                  <div className="text-white/90">Solar Panels Installed</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
+                  <div className="text-2xl font-bold text-white mb-1">17</div>
+                  <div className="text-xs text-gray-400">Panels Installed</div>
                 </div>
-                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">100</div>
-                  <div className="text-white/90">Lives Transformed</div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
+                  <div className="text-2xl font-bold text-white mb-1">100</div>
+                  <div className="text-xs text-gray-400">Lives Transformed</div>
                 </div>
-                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">11</div>
-                  <div className="text-white/90">Team Members</div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
+                  <div className="text-2xl font-bold text-white mb-1">11</div>
+                  <div className="text-xs text-gray-400">Team Members</div>
                 </div>
-                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
-                  <div className="text-4xl font-bold text-amber-300 mb-2">4</div>
-                  <div className="text-white/90">Departments</div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
+                  <div className="text-2xl font-bold text-white mb-1">4</div>
+                  <div className="text-xs text-gray-400">Departments</div>
                 </div>
               </div>
             </div>

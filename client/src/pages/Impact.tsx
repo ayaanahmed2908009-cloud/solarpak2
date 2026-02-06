@@ -17,22 +17,32 @@ export default function Impact() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow pt-20">
+        <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
+          </div>
+          <div className="container mx-auto px-6 relative z-10">
+            <div className={`max-w-2xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
+                Impact Visualization
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
+                Our Solar Impact Map
+              </h1>
+              <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
+                Explore our solar panel installations across Sindh province in Pakistan and the measurable impact of each project.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className={`max-w-5xl mx-auto transition-all duration-700 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="text-center mb-12">
-                <span className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">Impact Visualization</span>
-                <h1 className="font-heading font-bold text-3xl md:text-4xl lg:text-5xl mb-6">
-                  <span className="gradient-text">Our Solar Impact Map</span>
-                </h1>
-                <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                  Explore our solar panel installations across Sindh province in Pakistan. 
-                  See where we've brought sustainable electricity to families and the measurable impact of each project.
-                </p>
-              </div>
+            <div className="max-w-5xl mx-auto">
               
               <div className="mb-16 animate-fade-in" 
                 style={{ animationDuration: '1s', animationDelay: '0.3s', animationFillMode: 'both' }}>
