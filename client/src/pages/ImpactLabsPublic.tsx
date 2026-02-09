@@ -295,7 +295,7 @@ function ArticleView({ slug }: { slug: string }) {
           <div className="border-t border-gray-100 pt-10">
             <div
               className="article-content"
-              style={{ overflow: 'visible', maxHeight: 'none', WebkitLineClamp: 'unset', display: 'block', wordBreak: 'break-word' }}
+              style={{ overflow: 'visible', maxHeight: 'none', WebkitLineClamp: 'unset', display: 'block', overflowWrap: 'break-word', wordBreak: 'normal' }}
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
             />
           </div>
@@ -453,7 +453,10 @@ export default function ImpactLabsPublic() {
           max-height: none !important;
           -webkit-line-clamp: unset !important;
           display: block !important;
-          word-break: break-word;
+          overflow-wrap: break-word;
+          word-break: normal;
+          word-wrap: break-word;
+          hyphens: none;
         }
         .article-content * {
           overflow: visible !important;
@@ -622,6 +625,9 @@ export default function ImpactLabsPublic() {
           display: inline !important;
           -webkit-line-clamp: unset !important;
           white-space: normal !important;
+          word-break: normal !important;
+          overflow-wrap: break-word !important;
+          hyphens: none !important;
         }
       `}</style>
     </div>
