@@ -71,25 +71,18 @@ export default function TrustRoadmapSection() {
   return (
     <section 
       ref={sectionRef}
-      className="py-16 bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden"
+      className="py-16 bg-white relative"
     >
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-400 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-green-400 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-amber-400 rounded-full blur-3xl"></div>
-      </div>
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <CheckCircle className="h-4 w-4" />
+            <span className="inline-block text-emerald-700 font-semibold text-sm uppercase tracking-widest mb-4">
               Transparent Impact Tracking
             </span>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Your Journey of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">Impact</span>
+              Your Journey of <span className="text-emerald-700">Impact</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               See exactly how your donation transforms lives through our transparent three-step process
@@ -105,7 +98,7 @@ export default function TrustRoadmapSection() {
               {/* Progress Line */}
               <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 rounded-full transform -translate-y-1/2 z-0">
                 <div 
-                  className="h-full bg-gradient-to-r from-amber-500 via-blue-500 to-green-500 rounded-full transition-all duration-1000 ease-in-out"
+                  className="h-full bg-emerald-600 rounded-full transition-all duration-1000 ease-in-out"
                   style={{ 
                     width: isVisible ? `${((activeStep + 1) / roadmapSteps.length) * 100}%` : '0%' 
                   }}
@@ -205,7 +198,7 @@ export default function TrustRoadmapSection() {
           <div className={`mt-12 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-xl">
+            <Card className="bg-emerald-50 border-emerald-200 shadow-sm">
               <CardContent className="p-8">
                 <div className="flex items-start gap-6">
                   <div className="w-16 h-16 rounded-full bg-white border-4 border-green-500 flex items-center justify-center shadow-lg">
@@ -264,7 +257,7 @@ export default function TrustRoadmapSection() {
           }`}>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white px-8 py-4 text-lg font-semibold transition-colors duration-200"
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
             >
               Start Your Impact Journey

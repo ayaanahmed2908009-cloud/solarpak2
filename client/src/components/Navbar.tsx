@@ -52,95 +52,95 @@ function DropdownNavLink({ href, children, className, ...props }: { href: string
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/30">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <NavLink href="/" className="flex items-center space-x-3 group">
-            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-12 object-contain transition-transform duration-300 group-hover:scale-110" />
+            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-12 object-contain" />
             <div>
-              <span className="text-2xl font-bold text-green-800">SolarPak</span>
+              <span className="text-2xl font-bold text-gray-900">SolarPak</span>
             </div>
           </NavLink>
           
           <div className="hidden lg:flex items-center space-x-8">
             <NavLink 
               href="/" 
-              className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
               data-testid="link-home"
             >
               HOME
             </NavLink>
             <NavLink 
               href="/#solution" 
-              className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
               data-testid="link-what-we-do"
             >
               WHAT WE DO
             </NavLink>
             <NavLink 
               href="/#impact" 
-              className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
               data-testid="link-our-impact"
             >
               OUR IMPACT
             </NavLink>
             <NavLink 
               href="/impact-labs" 
-              className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
             >
               IMPACT LABS
             </NavLink>
             <div className="relative group">
-              <button className="text-green-700 hover:text-green-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
+              <button className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
                 GET INVOLVED
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
+              <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
                 <div className="py-2">
                   <DropdownNavLink 
                     href="/impact" 
-                    className="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 transition-colors duration-200"
+                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     data-testid="link-map"
                   >
-                    <MapPin className="w-4 h-4 mr-3 text-green-600" />
+                    <MapPin className="w-4 h-4 mr-3 text-gray-400" />
                     <div>
-                      <div className="font-semibold text-sm">Map</div>
-                      <div className="text-xs text-green-600">Locations</div>
+                      <div className="font-medium text-sm text-gray-700">Map</div>
+                      <div className="text-xs text-gray-400">Locations</div>
                     </div>
                   </DropdownNavLink>
                   <DropdownNavLink 
                     href="/membership" 
-                    className="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 transition-colors duration-200"
+                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     data-testid="link-membership"
                   >
-                    <Users className="w-4 h-4 mr-3 text-green-600" />
+                    <Users className="w-4 h-4 mr-3 text-gray-400" />
                     <div>
-                      <div className="font-semibold text-sm">Membership</div>
-                      <div className="text-xs text-green-600">Join us</div>
+                      <div className="font-medium text-sm text-gray-700">Membership</div>
+                      <div className="text-xs text-gray-400">Join us</div>
                     </div>
                   </DropdownNavLink>
                   <DropdownNavLink 
                     href="/gallery" 
-                    className="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 transition-colors duration-200"
+                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     data-testid="link-gallery"
                   >
-                    <Camera className="w-4 h-4 mr-3 text-green-600" />
+                    <Camera className="w-4 h-4 mr-3 text-gray-400" />
                     <div>
-                      <div className="font-semibold text-sm">Gallery</div>
-                      <div className="text-xs text-green-600">Photos</div>
+                      <div className="font-medium text-sm text-gray-700">Gallery</div>
+                      <div className="text-xs text-gray-400">Photos</div>
                     </div>
                   </DropdownNavLink>
                   <DropdownNavLink 
                     href="/worker/login" 
-                    className="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 transition-colors duration-200 border-t border-gray-100"
+                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200 border-t border-gray-100"
                     data-testid="link-team-login"
                   >
-                    <span className="mr-3">🔐</span>
+                    <span className="mr-3 text-gray-400">🔐</span>
                     <div>
-                      <div className="font-semibold text-sm">Team Login</div>
-                      <div className="text-xs text-green-600">Access portal</div>
+                      <div className="font-medium text-sm text-gray-700">Team Login</div>
+                      <div className="text-xs text-gray-400">Access portal</div>
                     </div>
                   </DropdownNavLink>
                 </div>
@@ -150,14 +150,14 @@ export default function Navbar() {
           
           <button 
             onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
-            className="hidden lg:block bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold py-3 px-8 rounded-lg text-sm uppercase tracking-wide transition-all duration-300 shadow-md hover:shadow-lg"
+            className="hidden lg:block bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 px-6 rounded-md text-sm uppercase tracking-wide transition-colors duration-200"
             data-testid="button-donate"
           >
             DONATE
           </button>
           
           <button 
-            className="lg:hidden p-2 text-green-700 hover:text-green-900 transition-colors duration-200"
+            className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200"
             onClick={() => {
               const menu = document.getElementById('mobile-menu');
               menu?.classList.toggle('hidden');
@@ -170,32 +170,32 @@ export default function Navbar() {
           </button>
         </div>
         
-        <div id="mobile-menu" className="hidden lg:hidden pt-4 pb-2 border-t border-gray-200 mt-4">
+        <div id="mobile-menu" className="hidden lg:hidden pt-4 pb-2 border-t border-gray-100 mt-4">
           <div className="flex flex-col space-y-2">
-            <NavLink href="/" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               HOME
             </NavLink>
-            <NavLink href="/#solution" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/#solution" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               WHAT WE DO
             </NavLink>
-            <NavLink href="/#impact" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/#impact" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               OUR IMPACT
             </NavLink>
-            <NavLink href="/impact" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/impact" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Map
             </NavLink>
-            <NavLink href="/membership" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/membership" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Membership
             </NavLink>
-            <NavLink href="/gallery" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/gallery" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Gallery
             </NavLink>
-            <NavLink href="/impact-labs" className="px-4 py-2 text-green-700 hover:bg-green-50 rounded-lg font-semibold transition-colors duration-200">
+            <NavLink href="/impact-labs" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Impact Labs
             </NavLink>
             <button 
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
-              className="mx-4 mt-2 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold py-3 px-6 rounded-lg text-sm uppercase tracking-wide transition-all duration-300"
+              className="mx-4 mt-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 px-6 rounded-md text-sm uppercase tracking-wide transition-colors duration-200"
             >
               DONATE
             </button>
