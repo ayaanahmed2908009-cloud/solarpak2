@@ -453,10 +453,12 @@ export default function ImpactLabsPublic() {
           max-height: none !important;
           -webkit-line-clamp: unset !important;
           display: block !important;
-          overflow-wrap: normal;
+          overflow-wrap: break-word;
           word-break: normal;
-          word-wrap: normal;
-          hyphens: none;
+          word-wrap: break-word;
+          hyphens: auto;
+          -webkit-hyphens: auto;
+          -ms-hyphens: auto;
           white-space: normal;
         }
         .article-content * {
@@ -501,9 +503,11 @@ export default function ImpactLabsPublic() {
           line-height: 2;
           white-space: normal;
           overflow: visible !important;
-          overflow-wrap: normal;
+          overflow-wrap: break-word;
           word-break: normal;
-          word-wrap: normal;
+          word-wrap: break-word;
+          hyphens: auto;
+          -webkit-hyphens: auto;
         }
         .article-content ul, .article-content ol {
           margin-bottom: 2rem;
@@ -630,8 +634,9 @@ export default function ImpactLabsPublic() {
           -webkit-line-clamp: unset !important;
           white-space: normal !important;
           word-break: normal !important;
-          overflow-wrap: normal !important;
-          hyphens: none !important;
+          overflow-wrap: break-word !important;
+          hyphens: auto !important;
+          -webkit-hyphens: auto !important;
         }
       `}</style>
     </div>
