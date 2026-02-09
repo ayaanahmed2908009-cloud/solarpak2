@@ -295,6 +295,7 @@ function ArticleView({ slug }: { slug: string }) {
           <div className="border-t border-gray-100 pt-10">
             <div
               className="article-content"
+              style={{ overflow: 'visible', maxHeight: 'none', WebkitLineClamp: 'unset', display: 'block', wordBreak: 'break-word' }}
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
             />
           </div>
@@ -443,11 +444,22 @@ export default function ImpactLabsPublic() {
 
       <style>{`
         .article-content {
-          font-size: 1.175rem;
-          line-height: 1.9;
+          font-size: 1.2rem;
+          line-height: 2;
           color: #1f2937;
           font-feature-settings: "kern" 1, "liga" 1;
           letter-spacing: -0.003em;
+          overflow: visible !important;
+          max-height: none !important;
+          -webkit-line-clamp: unset !important;
+          display: block !important;
+          word-break: break-word;
+        }
+        .article-content * {
+          overflow: visible !important;
+          max-height: none !important;
+          -webkit-line-clamp: unset !important;
+          text-overflow: unset !important;
         }
         .article-content > *:first-child {
           margin-top: 0;
@@ -459,36 +471,36 @@ export default function ImpactLabsPublic() {
           margin-top: 3rem;
           margin-bottom: 1rem;
           letter-spacing: -0.03em;
-          line-height: 1.2;
+          line-height: 1.25;
         }
         .article-content h2 {
           font-size: 1.625rem;
           font-weight: 700;
           color: #111827;
-          margin-top: 2.5rem;
-          margin-bottom: 0.75rem;
+          margin-top: 2.75rem;
+          margin-bottom: 1rem;
           letter-spacing: -0.02em;
           line-height: 1.3;
-          padding-bottom: 0.5rem;
-          border-bottom: 1px solid #f3f4f6;
+          padding-bottom: 0.625rem;
+          border-bottom: 1px solid #e5e7eb;
         }
         .article-content h3 {
-          font-size: 1.25rem;
+          font-size: 1.3rem;
           font-weight: 600;
           color: #1f2937;
-          margin-top: 2rem;
-          margin-bottom: 0.625rem;
+          margin-top: 2.25rem;
+          margin-bottom: 0.75rem;
           line-height: 1.35;
         }
         .article-content p {
           margin-bottom: 1.75rem;
-        }
-        .article-content p + p {
-          margin-top: 0;
+          line-height: 2;
+          white-space: normal;
+          overflow: visible !important;
         }
         .article-content ul, .article-content ol {
-          margin-bottom: 1.75rem;
-          padding-left: 1.5rem;
+          margin-bottom: 2rem;
+          padding-left: 1.75rem;
         }
         .article-content ul {
           list-style-type: disc;
@@ -497,21 +509,21 @@ export default function ImpactLabsPublic() {
           list-style-type: decimal;
         }
         .article-content li {
-          margin-bottom: 0.625rem;
-          padding-left: 0.375rem;
-          line-height: 1.8;
+          margin-bottom: 0.75rem;
+          padding-left: 0.5rem;
+          line-height: 1.9;
         }
         .article-content li::marker {
           color: #10b981;
         }
         .article-content blockquote {
           border-left: 4px solid #10b981;
-          padding: 1.25rem 1.5rem;
+          padding: 1.5rem 1.75rem;
           margin: 2.5rem 0;
           color: #374151;
           font-style: italic;
           font-size: 1.25rem;
-          line-height: 1.7;
+          line-height: 1.8;
           background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
           border-radius: 0 0.75rem 0.75rem 0;
         }
@@ -542,7 +554,8 @@ export default function ImpactLabsPublic() {
           color: #e2e8f0;
           padding: 1.5rem;
           border-radius: 0.75rem;
-          overflow-x: auto;
+          overflow-x: auto !important;
+          overflow-y: visible !important;
           margin: 2.5rem 0;
           font-size: 0.875rem;
           line-height: 1.7;
@@ -568,7 +581,7 @@ export default function ImpactLabsPublic() {
           margin: 2.5rem 0;
           font-size: 0.9375rem;
           border-radius: 0.75rem;
-          overflow: hidden;
+          overflow: hidden !important;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         .article-content th, .article-content td {
@@ -592,6 +605,23 @@ export default function ImpactLabsPublic() {
         .article-content strong {
           font-weight: 700;
           color: #111827;
+        }
+        .article-content em {
+          font-style: italic;
+          color: #374151;
+        }
+        .article-content p:last-child {
+          margin-bottom: 0;
+        }
+        .article-content div {
+          overflow: visible !important;
+          max-height: none !important;
+        }
+        .article-content span {
+          overflow: visible !important;
+          display: inline !important;
+          -webkit-line-clamp: unset !important;
+          white-space: normal !important;
         }
       `}</style>
     </div>
