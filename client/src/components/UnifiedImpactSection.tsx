@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Zap, Heart, Globe, Users, Home, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 import video1 from "@assets/mid_1756658713398.mp4";
 import video2 from "@assets/vidddd_1756658722814.mp4";
@@ -24,6 +25,7 @@ export default function UnifiedImpactSection() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const scrollRef = useScrollReveal(0.05);
   
   const videos = [
     { src: video1, title: "Solar Installation Process" },
@@ -135,9 +137,17 @@ export default function UnifiedImpactSection() {
   }, [isAutoPlay, currentVideo]);
 
   return (
-    <div ref={sectionRef} className="py-16 md:py-24 bg-gray-50 relative">
+    <div ref={(el) => {
+      (sectionRef as any).current = el;
+      if (scrollRef.current === null && el) {
+        (scrollRef as any).current = el;
+      }
+    }} className="py-16 md:py-24 bg-gray-50 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
+
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-14">
+        <div className="text-center mb-14 scroll-reveal">
           <span className="inline-block text-emerald-700 font-semibold text-sm uppercase tracking-widest mb-4">
             Our Global Impact
           </span>
@@ -156,22 +166,24 @@ export default function UnifiedImpactSection() {
             { icon: Home, value: counters.homesEmpowered, label: "Homes Empowered", note: "+4 families this month", accent: "emerald" },
             { icon: Heart, value: counters.livesImpacted, label: "Lives Transformed", note: "Every donation matters", accent: "emerald" },
           ].map((metric, i) => (
-            <div key={i} className="bg-white rounded-xl p-8 border border-gray-200 hover:border-emerald-200 transition-all duration-300 hover:shadow-md">
-              <div className="flex items-center justify-between mb-6">
-                <div className="p-3 bg-emerald-50 rounded-lg">
-                  <metric.icon className="w-7 h-7 text-emerald-700" />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl md:text-4xl font-bold text-gray-900 font-mono">
-                    {metric.value.toLocaleString()}
+            <div key={i} className={`scroll-reveal stagger-delay-${i + 1}`}>
+              <div className="bg-white rounded-xl p-8 border border-gray-200 hover:border-emerald-200 transition-all duration-500 hover:shadow-lg hover:shadow-emerald-900/5 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3 bg-emerald-50 rounded-lg">
+                    <metric.icon className="w-7 h-7 text-emerald-700" />
                   </div>
-                  <div className="text-sm text-gray-500">{metric.label}</div>
+                  <div className="text-right">
+                    <div className="text-3xl md:text-4xl font-bold text-gray-900 font-mono">
+                      {metric.value.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-500">{metric.label}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="bg-emerald-50 rounded-lg p-3">
-                <div className="flex items-center text-emerald-700 text-sm">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  {metric.note}
+                <div className="bg-emerald-50 rounded-lg p-3">
+                  <div className="flex items-center text-emerald-700 text-sm">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+                    {metric.note}
+                  </div>
                 </div>
               </div>
             </div>
@@ -179,76 +191,82 @@ export default function UnifiedImpactSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-          <div className="bg-white rounded-xl p-8 border border-gray-200">
-            <div className="flex items-center mb-6">
-              <div className="p-3 bg-emerald-50 rounded-lg mr-5">
-                <Zap className="w-8 h-8 text-emerald-700" />
+          <div className="scroll-reveal-left">
+            <div className="bg-white rounded-xl p-8 border border-gray-200 h-full hover:shadow-lg transition-all duration-500">
+              <div className="flex items-center mb-6">
+                <div className="p-3 bg-emerald-50 rounded-lg mr-5">
+                  <Zap className="w-8 h-8 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-mono">
+                    {counters.energyGenerated.toLocaleString()} kWh
+                  </h3>
+                  <p className="text-sm text-emerald-700">Clean Energy Generated Total</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-mono">
-                  {counters.energyGenerated.toLocaleString()} kWh
-                </h3>
-                <p className="text-sm text-emerald-700">Clean Energy Generated Total</p>
+              <div className="bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                <div 
+                  className="bg-emerald-600 h-2.5 rounded-full transition-all duration-2000 ease-out"
+                  style={{ width: isVisible ? '78%' : '0%' }}
+                ></div>
               </div>
+              <p className="text-sm text-gray-500">Enough to power 30 homes for a day</p>
             </div>
-            <div className="bg-gray-100 rounded-full h-2.5 mb-3">
-              <div 
-                className="bg-emerald-600 h-2.5 rounded-full transition-all duration-2000 ease-out"
-                style={{ width: '78%' }}
-              ></div>
-            </div>
-            <p className="text-sm text-gray-500">Enough to power 30 homes for a day</p>
           </div>
 
-          <div className="bg-white rounded-xl p-8 border border-gray-200">
-            <div className="flex items-center mb-6">
-              <div className="p-3 bg-emerald-50 rounded-lg mr-5">
-                <Globe className="w-8 h-8 text-emerald-700" />
+          <div className="scroll-reveal-right">
+            <div className="bg-white rounded-xl p-8 border border-gray-200 h-full hover:shadow-lg transition-all duration-500">
+              <div className="flex items-center mb-6">
+                <div className="p-3 bg-emerald-50 rounded-lg mr-5">
+                  <Globe className="w-8 h-8 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-mono">
+                    {counters.co2Prevented.toFixed(1)} kg
+                  </h3>
+                  <p className="text-sm text-emerald-700">CO₂ Emissions Prevented</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-mono">
-                  {counters.co2Prevented.toFixed(1)} kg
-                </h3>
-                <p className="text-sm text-emerald-700">CO₂ Emissions Prevented</p>
+              <div className="bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                <div 
+                  className="bg-emerald-600 h-2.5 rounded-full transition-all duration-2000 ease-out"
+                  style={{ width: isVisible ? '65%' : '0%' }}
+                ></div>
               </div>
+              <p className="text-sm text-gray-500">Equivalent to planting 95 trees this year</p>
             </div>
-            <div className="bg-gray-100 rounded-full h-2.5 mb-3">
-              <div 
-                className="bg-emerald-600 h-2.5 rounded-full transition-all duration-2000 ease-out"
-                style={{ width: '65%' }}
-              ></div>
-            </div>
-            <p className="text-sm text-gray-500">Equivalent to planting 95 trees this year</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-8 border border-gray-200 mb-16">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Solar Panel Goal</h3>
-            <p className="text-gray-600">Working toward 100 solar panels across Pakistan</p>
-          </div>
-          
-          <div className="max-w-2xl mx-auto">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-gray-900 font-semibold text-sm">Progress: 17 / 100 panels</span>
-              <span className="text-gray-500 text-sm">17%</span>
+        <div className="scroll-reveal">
+          <div className="bg-white rounded-xl p-8 border border-gray-200 mb-16 hover:shadow-lg transition-all duration-500">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Solar Panel Goal</h3>
+              <p className="text-gray-600">Working toward 100 solar panels across Pakistan</p>
             </div>
             
-            <div className="bg-gray-100 rounded-full h-3 mb-4">
-              <div 
-                className="bg-emerald-600 h-3 rounded-full transition-all duration-2000 ease-out"
-                style={{ width: '17%' }}
-              ></div>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-gray-700 font-medium">Every donation brings us closer to transforming 100 communities</p>
+            <div className="max-w-2xl mx-auto">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-gray-900 font-semibold text-sm">Progress: 17 / 100 panels</span>
+                <span className="text-gray-500 text-sm">17%</span>
+              </div>
+              
+              <div className="bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
+                <div 
+                  className="bg-emerald-600 h-3 rounded-full transition-all duration-2000 ease-out"
+                  style={{ width: isVisible ? '17%' : '0%' }}
+                ></div>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-gray-700 font-medium">Every donation brings us closer to transforming 100 communities</p>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="relative mb-16">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 scroll-reveal">
             <span className="inline-block text-emerald-700 font-semibold text-sm uppercase tracking-widest mb-4">
               Impact Videos
             </span>
@@ -260,8 +278,8 @@ export default function UnifiedImpactSection() {
             </p>
           </div>
           
-          <div className="relative max-w-5xl mx-auto">
-            <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8 shadow-sm">
+          <div className="relative max-w-5xl mx-auto scroll-reveal-scale">
+            <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-lg transition-all duration-500">
               <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden mb-6">
                 <video
                   ref={videoRef}
@@ -355,15 +373,17 @@ export default function UnifiedImpactSection() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center text-gray-700">
-            <div className="flex items-center mr-4">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></div>
-              <span className="text-sm font-medium text-gray-600">Live Updates</span>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <div className="animate-scroll whitespace-nowrap text-sm text-gray-500">
-                Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad &middot; Solar panels generating peak energy in Lahore &middot; Night lighting restored for 12 families in Multan &middot; Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad
+        <div className="scroll-reveal">
+          <div className="bg-white rounded-xl p-4 border border-gray-200">
+            <div className="flex items-center text-gray-700">
+              <div className="flex items-center mr-4">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></div>
+                <span className="text-sm font-medium text-gray-600">Live Updates</span>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <div className="animate-scroll whitespace-nowrap text-sm text-gray-500">
+                  Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad &middot; Solar panels generating peak energy in Lahore &middot; Night lighting restored for 12 families in Multan &middot; Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad
+                </div>
               </div>
             </div>
           </div>
