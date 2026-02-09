@@ -96,8 +96,13 @@ export default function Home() {
           {/* Hero Section with Video - No Tint */}
           <section ref={heroRef} className="relative w-full overflow-hidden" style={{ height: 'calc(100vh - 5rem)' }}>
             
-            {/* Static Background */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+            {/* Static Background (Instant Load) */}
+            <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900">
+              <div className="absolute inset-0 opacity-30">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-green-600/20 to-blue-600/20 animate-pulse"></div>
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-400/10 rounded-full blur-3xl animate-bounce" style={{ animationDuration: '6s' }}></div>
+                <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-blue-400/10 rounded-full blur-2xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
+              </div>
             </div>
 
             {/* Progressive Video Enhancement */}
@@ -141,28 +146,29 @@ export default function Home() {
             <div className="relative z-10 h-full flex items-center">
               <div className="container mx-auto px-6">
                 <div className="max-w-3xl">
-                  <div className="inline-flex items-center bg-white/10 border border-white/20 px-5 py-2.5 rounded-md mb-6">
-                    <span className="text-emerald-300 font-semibold text-sm uppercase tracking-widest">
-                      World's Largest Youth-Led Solar Nonprofit
+                  {/* Youth Leadership Badge */}
+                  <div className="inline-flex items-center bg-amber-400/20 backdrop-blur-sm border border-amber-400/40 px-6 py-3 rounded-full mb-6">
+                    <span className="text-amber-300 font-bold text-sm uppercase tracking-wide" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                      🌟 World's Largest Youth-Led Solar Nonprofit
                     </span>
                   </div>
                   
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
                     <span className="block mb-3">Powering Communities.</span>
-                    <span className="block text-emerald-400">Lighting Futures.</span>
+                    <span className="block text-amber-400">Lighting Futures.</span>
                   </h1>
                   
-                  <p className="text-xl md:text-2xl text-gray-300 mb-4 leading-relaxed">
+                  <p className="text-xl md:text-2xl text-white mb-4 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
                     SolarPak is the world's largest youth-led solar nonprofit, bringing clean, affordable solar energy to families and communities across Pakistan.
                   </p>
                   
-                  <p className="text-lg md:text-xl text-gray-400 mb-8 leading-relaxed">
+                  <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
                     Led by passionate young leaders, we're transforming lives through renewable energy, one solar panel at a time.
                   </p>
                   
                   <button 
                     onClick={() => document.getElementById('solution')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-10 rounded-md text-base transition-colors duration-200 shadow-lg"
+                    className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold py-4 px-10 rounded-md text-base transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
                     data-testid="button-explore-project"
                   >
                     Explore Our Project
