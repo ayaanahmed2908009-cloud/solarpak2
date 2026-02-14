@@ -275,9 +275,9 @@ function ArticleView({ slug }: { slug: string }) {
       )}
 
       <div className="container mx-auto px-6">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-[640px] mx-auto">
           {article.summary && (
-            <p className="text-xl md:text-2xl text-gray-600 font-light leading-relaxed mt-10 mb-8 border-l-4 border-green-500 pl-6">
+            <p className="text-xl text-gray-600 leading-[1.8] mt-10 mb-8 border-l-4 border-green-500 pl-6">
               {article.summary}
             </p>
           )}
@@ -292,10 +292,9 @@ function ArticleView({ slug }: { slug: string }) {
             </div>
           )}
 
-          <div className="border-t border-gray-100 pt-10">
+          <div className="border-t border-gray-200 pt-10">
             <div
-              className="article-content"
-              style={{ overflow: 'visible', maxHeight: 'none', WebkitLineClamp: 'unset', display: 'block' }}
+              className="article-content-bbc"
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
             />
           </div>
