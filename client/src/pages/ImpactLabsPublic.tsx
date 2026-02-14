@@ -295,7 +295,7 @@ function ArticleView({ slug }: { slug: string }) {
           <div className="border-t border-gray-200 pt-10">
             <div
               className="article-content-bbc"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ')) }}
             />
           </div>
 

@@ -206,11 +206,13 @@ function ArticleEditor({
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const cleanedContent = content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
+
     const data = {
       title,
       slug: generateSlug(title),
       summary,
-      content,
+      content: cleanedContent,
       coverImageUrl: coverImageUrl || null,
       authorName,
       category,
