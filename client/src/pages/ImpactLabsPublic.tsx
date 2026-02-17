@@ -83,12 +83,16 @@ function ArticleCard({ article, index }: { article: ImpactLabsArticle; index: nu
               src={article.coverImageUrl}
               alt={article.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+                const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
             />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900 flex items-center justify-center">
-              <FlaskConical className="w-10 h-10 text-white/30" />
-            </div>
-          )}
+          ) : null}
+          <div className={`w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900 items-center justify-center ${article.coverImageUrl ? 'hidden' : 'flex'}`}>
+            <FlaskConical className="w-10 h-10 text-white/30" />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
             <span className="text-xs font-medium text-white/90 bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full capitalize">
@@ -162,6 +166,7 @@ function ArticleViewSkeleton() {
 
 function ArticleView({ slug }: { slug: string }) {
   const [, setLocation] = useLocation();
+  const [imageError, setImageError] = useState(false);
 
   const { data: article, isLoading, error } = useQuery<ImpactLabsArticle>({
     queryKey: [`/api/impact-labs/articles/${slug}`],
@@ -202,12 +207,13 @@ function ArticleView({ slug }: { slug: string }) {
 
   return (
     <div className="min-h-screen bg-white">
-      {article.coverImageUrl && (
+      {article.coverImageUrl && !imageError && (
         <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-slate-900">
           <img
             src={article.coverImageUrl}
             alt={article.title}
             className="w-full h-full object-cover opacity-80"
+            onError={() => setImageError(true)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
           <div className="absolute top-6 left-6 z-10">
@@ -242,7 +248,7 @@ function ArticleView({ slug }: { slug: string }) {
         </div>
       )}
 
-      {!article.coverImageUrl && (
+      {(!article.coverImageUrl || imageError) && (
         <div className="pt-24 pb-12 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950">
           <div className="container mx-auto px-6">
             <button
