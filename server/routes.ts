@@ -7,6 +7,8 @@ import { workerStorage } from "./worker-storage";
 import { createTaskSchema, createEventSchema, createWorkSubmissionSchema, workerRegisterSchema } from "@shared/worker-schema";
 import { ObjectStorageService } from "./objectStorage";
 import { wsManager } from "./websocket";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema } from "@shared/schema";
 import { ZodError } from "zod";
@@ -15,37 +17,21 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Configure multer for file uploads
-const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage_multer = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, `impact-${uniqueSuffix}${ext}`);
-  }
-});
-
+// Configure multer for file uploads (memory storage for DB persistence)
 const upload = multer({
-  storage: storage_multer,
+  storage: multer.memoryStorage(),
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit
+    fileSize: 10 * 1024 * 1024, // 10MB limit for images
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|mp4|mov|avi|pdf|doc|docx/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    const mimetype = /image\/(jpeg|jpg|png|gif|webp)/.test(file.mimetype);
     
     if (mimetype && extname) {
       return cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only images, videos, and documents are allowed.'));
+      cb(new Error('Invalid file type. Only images are allowed.'));
     }
   }
 });
@@ -1163,15 +1149,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/impact-labs/upload", requireImpactLabsAuth, upload.single('image'), (req, res) => {
+  app.post("/api/impact-labs/upload", requireImpactLabsAuth, upload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
-      const fileUrl = `/uploads/${req.file.filename}`;
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      const filename = `impact-${uniqueSuffix}${ext}`;
+
+      await db.execute(
+        sql`INSERT INTO uploaded_images (filename, mime_type, data) VALUES (${filename}, ${req.file.mimetype}, ${req.file.buffer})`
+      );
+
+      const fileUrl = `/api/images/${filename}`;
       res.json({ url: fileUrl });
     } catch (error) {
+      console.error("Upload error:", error);
       res.status(500).json({ message: "Error uploading file" });
+    }
+  });
+
+  app.get("/api/images/:filename", async (req, res) => {
+    try {
+      const result = await db.execute(
+        sql`SELECT mime_type, data FROM uploaded_images WHERE filename = ${req.params.filename}`
+      );
+      const row = (result as any).rows?.[0];
+      if (!row) {
+        return res.status(404).json({ message: "Image not found" });
+      }
+      res.set('Content-Type', row.mime_type);
+      res.set('Cache-Control', 'public, max-age=31536000, immutable');
+      const buffer = Buffer.isBuffer(row.data) ? row.data : Buffer.from(row.data, 'base64');
+      res.send(buffer);
+    } catch (error) {
+      console.error("Image serve error:", error);
+      res.status(500).json({ message: "Error serving image" });
     }
   });
 

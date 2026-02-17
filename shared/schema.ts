@@ -159,6 +159,15 @@ export const insertSubscriberSchema = createInsertSchema(subscribers).omit({
   createdAt: true,
 });
 
+// Uploaded images (stored in database for persistence across deployments)
+export const uploadedImages = pgTable("uploaded_images", {
+  id: serial("id").primaryKey(),
+  filename: text("filename").notNull().unique(),
+  mimeType: text("mime_type").notNull(),
+  data: text("data").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Impact Labs articles
 export const impactLabsArticles = pgTable("impact_labs_articles", {
   id: serial("id").primaryKey(),
