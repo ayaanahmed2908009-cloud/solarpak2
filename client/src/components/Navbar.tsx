@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Sun, Zap, Users, Heart, MapPin, Camera, FlaskConical } from "lucide-react";
+import { Sun, Zap, Users, Heart, MapPin, Camera, FlaskConical, Briefcase } from "lucide-react";
 
 function NavLink({ href, children, className, ...props }: { href: string; children: React.ReactNode; className?: string; [key: string]: any }) {
   const [, setLocation] = useLocation();
@@ -133,6 +133,17 @@ export default function Navbar() {
                     </div>
                   </DropdownNavLink>
                   <DropdownNavLink 
+                    href="/opportunities" 
+                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+                    data-testid="link-opportunities"
+                  >
+                    <Briefcase className="w-4 h-4 mr-3 text-gray-400" />
+                    <div>
+                      <div className="font-medium text-sm text-gray-700">Opportunities</div>
+                      <div className="text-xs text-gray-400">Join our team</div>
+                    </div>
+                  </DropdownNavLink>
+                  <DropdownNavLink 
                     href="/worker/login" 
                     className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200 border-t border-gray-100"
                     data-testid="link-team-login"
@@ -192,6 +203,9 @@ export default function Navbar() {
             </NavLink>
             <NavLink href="/impact-labs" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Impact Labs
+            </NavLink>
+            <NavLink href="/opportunities" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
+              Opportunities
             </NavLink>
             <button 
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}

@@ -30,6 +30,7 @@ import PerformanceReport from "@/pages/worker/PerformanceReport";
 import TestPerformance from "@/pages/worker/TestPerformance";
 import ImpactLabsDashboard from "@/pages/ImpactLabsDashboard";
 import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
+import Opportunities from "@/pages/Opportunities";
 import { useEffect } from "react";
 
 
@@ -137,6 +138,7 @@ function Router() {
       
       <Route path="/impactlabs" component={ImpactLabsDashboard} />
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
+      <Route path="/opportunities" component={Opportunities} />
       
       <Route component={NotFound} />
     </Switch>

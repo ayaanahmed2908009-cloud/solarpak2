@@ -57,6 +57,7 @@ export default function Footer() {
               <li><Link href="/" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>FAQs</Link></li>
 
               <li><Link href="/gallery" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Gallery</Link></li>
+              <li><Link href="/opportunities" className="text-white/70 hover:text-amber-300 transition-colors duration-300 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Opportunities</Link></li>
             </ul>
           </div>
           
