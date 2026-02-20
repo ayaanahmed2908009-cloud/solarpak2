@@ -1,13 +1,21 @@
 import { useState, useRef, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import {
   ChevronDown,
   MapPin,
   Clock,
   Mail,
   ArrowUpRight,
+  Send,
+  CheckCircle2,
 } from "lucide-react";
+import type { JobListing as JobListingType } from "@shared/schema";
 
 const departments = [
   {
@@ -37,95 +45,6 @@ const departments = [
   {
     name: "General Management",
     description: "General management oversees day-to-day operations, coordinates across all departments, handles administrative tasks, and ensures SolarPak runs smoothly as an organisation. This team keeps everything connected and on track.",
-  },
-];
-
-interface JobOpportunity {
-  title: string;
-  department: string;
-  type: string;
-  location: string;
-  description: string;
-  responsibilities: string[];
-  qualifications: string[];
-}
-
-const jobOpportunities: JobOpportunity[] = [
-  {
-    title: "Volunteer Field Coordinator",
-    department: "Field Operations",
-    type: "Volunteer",
-    location: "Khairpur Mirs, Pakistan",
-    description: "Help coordinate solar panel installations in rural communities. Work directly with families to assess energy needs and oversee the installation process from start to finish.",
-    responsibilities: [
-      "Coordinate with local communities to schedule installations",
-      "Assist installation teams with logistics and on-site support",
-      "Document installations with photos, reports, and feedback",
-      "Maintain relationships with beneficiary families post-installation",
-    ],
-    qualifications: [
-      "Based in or willing to travel to Sindh, Pakistan",
-      "Strong communication skills in Urdu and/or Sindhi",
-      "Passionate about renewable energy and community development",
-      "Prior volunteer or fieldwork experience preferred",
-    ],
-  },
-  {
-    title: "Impact Research Intern",
-    department: "Impact & Research",
-    type: "Remote Internship",
-    location: "Remote",
-    description: "Contribute to SolarPak's Impact Labs by collecting and analyzing data on our solar installations. Help produce reports and articles that demonstrate our real-world outcomes.",
-    responsibilities: [
-      "Gather and organize data on energy production and cost savings",
-      "Assist in writing research articles and case studies",
-      "Create data visualizations and infographics for reports",
-      "Support the Impact Labs publishing pipeline",
-    ],
-    qualifications: [
-      "Currently enrolled in or recently graduated from university",
-      "Strong analytical and writing skills",
-      "Interest in renewable energy, sustainability, or international development",
-      "Familiarity with data analysis tools is a plus",
-    ],
-  },
-  {
-    title: "Social Media & Content Volunteer",
-    department: "Marketing & Communications",
-    type: "Volunteer (Remote)",
-    location: "Remote",
-    description: "Help grow SolarPak's online presence by creating compelling content that tells our story. Manage social media accounts and engage with our growing global community of supporters.",
-    responsibilities: [
-      "Create and schedule social media posts across platforms",
-      "Design graphics, short videos, and stories for campaigns",
-      "Engage with followers and respond to inquiries",
-      "Track engagement metrics and report on campaign performance",
-    ],
-    qualifications: [
-      "Experience managing social media accounts",
-      "Strong visual design or video editing skills",
-      "Excellent written English",
-      "Passionate about nonprofit storytelling and impact communication",
-    ],
-  },
-  {
-    title: "Web Developer Contributor",
-    department: "Technology",
-    type: "Volunteer (Remote)",
-    location: "Remote",
-    description: "Help build and improve SolarPak's web platform. Contribute to features across the donation system, worker portal, and public-facing site using modern web technologies.",
-    responsibilities: [
-      "Develop new features and fix bugs on the SolarPak platform",
-      "Collaborate with the tech lead on architecture decisions",
-      "Write clean, maintainable TypeScript/React code",
-      "Participate in code reviews and team discussions",
-    ],
-    qualifications: [
-      "Proficiency in React, TypeScript, and Node.js",
-      "Familiarity with PostgreSQL and REST APIs",
-      "Self-motivated with strong problem-solving skills",
-      "Open-source or volunteer development experience is a plus",
-    ],
   },
 ];
 
@@ -160,13 +79,75 @@ function DepartmentList() {
   );
 }
 
-function JobListing({ job }: { job: JobOpportunity }) {
+function ApplicationForm({ jobId, jobTitle, onClose }: { jobId: number; jobTitle: string; onClose: () => void }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coverLetter, setCoverLetter] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const applyMutation = useMutation({
+    mutationFn: () =>
+      apiRequest("POST", `/api/jobs/${jobId}/apply`, {
+        jobId,
+        name,
+        email,
+        phone: phone || undefined,
+        coverLetter,
+      }),
+    onSuccess: () => setSubmitted(true),
+  });
+
+  if (submitted) {
+    return (
+      <div className="bg-green-50 rounded-xl p-6 mt-4 text-center">
+        <CheckCircle2 className="w-8 h-8 text-green-600 mx-auto mb-3" />
+        <h4 className="text-sm font-semibold text-green-900 mb-1">Application submitted</h4>
+        <p className="text-xs text-green-700">We'll review your application and get back to you soon.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 rounded-xl p-6 mt-4">
+      <h4 className="text-sm font-semibold text-gray-900 mb-4">Apply for {jobTitle}</h4>
+      <div className="space-y-3">
+        <div className="grid md:grid-cols-2 gap-3">
+          <Input placeholder="Full name *" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="Email *" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <Input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <Textarea
+          placeholder="Tell us why you're interested and what you'd bring to the role *"
+          value={coverLetter}
+          onChange={(e) => setCoverLetter(e.target.value)}
+          rows={4}
+        />
+        <div className="flex gap-3 pt-1">
+          <Button
+            onClick={() => applyMutation.mutate()}
+            disabled={!name || !email || !coverLetter || applyMutation.isPending}
+            className="bg-gray-900 hover:bg-gray-800"
+            size="sm"
+          >
+            <Send className="w-3.5 h-3.5 mr-2" />
+            {applyMutation.isPending ? "Submitting..." : "Submit application"}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function JobListingCard({ job }: { job: JobListingType }) {
   const [open, setOpen] = useState(false);
+  const [showApply, setShowApply] = useState(false);
 
   return (
     <div className="border-b border-gray-100 last:border-b-0">
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => { setOpen(!open); if (open) setShowApply(false); }}
         className="w-full text-left py-6 group"
       >
         <div className="flex items-start justify-between gap-4">
@@ -197,7 +178,7 @@ function JobListing({ job }: { job: JobOpportunity }) {
         </div>
       </button>
 
-      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-[600px] opacity-100 pb-6" : "max-h-0 opacity-0"}`}>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-[1200px] opacity-100 pb-6" : "max-h-0 opacity-0"}`}>
         <p className="text-sm text-gray-600 leading-relaxed mb-6">{job.description}</p>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -224,13 +205,17 @@ function JobListing({ job }: { job: JobOpportunity }) {
         </div>
 
         <div className="mt-6 pt-4 border-t border-gray-50">
-          <a
-            href={`mailto:solarpakinitiative@gmail.com?subject=Interest: ${job.title}`}
-            className="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-900 transition-colors group/link"
-          >
-            Apply for this role
-            <ArrowUpRight className="w-3.5 h-3.5 ml-1 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-          </a>
+          {!showApply ? (
+            <button
+              onClick={() => setShowApply(true)}
+              className="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-900 transition-colors group/link"
+            >
+              Apply for this role
+              <ArrowUpRight className="w-3.5 h-3.5 ml-1 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+            </button>
+          ) : (
+            <ApplicationForm jobId={job.id} jobTitle={job.title} onClose={() => setShowApply(false)} />
+          )}
         </div>
       </div>
     </div>
@@ -240,6 +225,10 @@ function JobListing({ job }: { job: JobOpportunity }) {
 export default function Opportunities() {
   const heroRef = useRef<HTMLDivElement>(null);
   const [heroVisible, setHeroVisible] = useState(false);
+
+  const { data: jobs = [], isLoading } = useQuery<JobListingType[]>({
+    queryKey: ["/api/jobs"],
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -288,39 +277,43 @@ export default function Opportunities() {
         </div>
 
         <div className="container mx-auto px-6">
-          {/* Organisation section */}
           <div className="max-w-3xl py-16 md:py-20">
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-10">
               Organisation
             </h2>
-
             <DepartmentList />
           </div>
 
           <div className="h-px bg-gray-100" />
 
-          {/* Open roles section */}
           <div className="max-w-3xl py-16 md:py-20">
             <div className="flex items-end justify-between mb-3">
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                 Open roles
               </h2>
-              <span className="text-xs text-gray-400 font-medium">{jobOpportunities.length} positions</span>
+              {!isLoading && (
+                <span className="text-xs text-gray-400 font-medium">{jobs.length} position{jobs.length !== 1 ? "s" : ""}</span>
+              )}
             </div>
             <p className="text-gray-500 text-[15px] leading-relaxed mb-10 max-w-xl">
               All positions are volunteer-based or unpaid internships. Hours are flexible and most roles are remote.
             </p>
 
-            <div className="border-t border-gray-100">
-              {jobOpportunities.map((job) => (
-                <JobListing key={job.title} job={job} />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="py-12 text-center text-sm text-gray-400">Loading...</div>
+            ) : jobs.length === 0 ? (
+              <div className="py-12 text-center text-sm text-gray-400">No open positions at the moment. Check back soon.</div>
+            ) : (
+              <div className="border-t border-gray-100">
+                {jobs.map((job) => (
+                  <JobListingCard key={job.id} job={job} />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="h-px bg-gray-100" />
 
-          {/* Contact */}
           <div className="max-w-3xl py-16 md:py-20">
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-3">
               Get involved

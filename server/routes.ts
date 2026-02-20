@@ -8,9 +8,9 @@ import { createTaskSchema, createEventSchema, createWorkSubmissionSchema, worker
 import { ObjectStorageService } from "./objectStorage";
 import { wsManager } from "./websocket";
 import { db } from "./db";
-import { sql } from "drizzle-orm";
+import { sql, eq, desc } from "drizzle-orm";
 
-import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema } from "@shared/schema";
+import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema, insertJobListingSchema, insertJobApplicationSchema, jobListings, jobApplications } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -1186,6 +1186,155 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Image serve error:", error);
       res.status(500).json({ message: "Error serving image" });
+    }
+  });
+
+  // ============================================
+  // OPPORTUNITIES ADMIN ROUTES
+  // ============================================
+
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ayaanahmed";
+
+  const requireAdminAuth = (req: Request, res: Response, next: Function) => {
+    const session = req.session as any;
+    if (session?.adminAuth) {
+      return next();
+    }
+    res.status(401).json({ message: "Unauthorized" });
+  };
+
+  app.post("/api/admin/auth", (req, res) => {
+    const { password } = req.body;
+    if (password === ADMIN_PASSWORD) {
+      (req.session as any).adminAuth = true;
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ message: "Invalid password" });
+    }
+  });
+
+  app.get("/api/admin/auth/check", (req, res) => {
+    const session = req.session as any;
+    res.json({ authenticated: !!session?.adminAuth });
+  });
+
+  app.post("/api/admin/auth/logout", (req, res) => {
+    (req.session as any).adminAuth = false;
+    res.json({ success: true });
+  });
+
+  // Job listings CRUD
+  app.get("/api/admin/jobs", requireAdminAuth, async (_req, res) => {
+    try {
+      const jobs = await db.select().from(jobListings).orderBy(desc(jobListings.createdAt));
+      res.json(jobs);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching jobs" });
+    }
+  });
+
+  app.post("/api/admin/jobs", requireAdminAuth, async (req, res) => {
+    try {
+      const validated = insertJobListingSchema.parse(req.body);
+      const [job] = await db.insert(jobListings).values(validated).returning();
+      res.status(201).json(job);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: fromZodError(error).message });
+      }
+      res.status(500).json({ message: "Error creating job" });
+    }
+  });
+
+  app.patch("/api/admin/jobs/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const allowedFields = ["title", "department", "type", "location", "description", "responsibilities", "qualifications", "isActive"];
+      const updates: Record<string, any> = {};
+      for (const key of allowedFields) {
+        if (req.body[key] !== undefined) updates[key] = req.body[key];
+      }
+      if (Object.keys(updates).length === 0) return res.status(400).json({ message: "No valid fields to update" });
+      const [job] = await db.update(jobListings).set(updates).where(eq(jobListings.id, id)).returning();
+      if (!job) return res.status(404).json({ message: "Job not found" });
+      res.json(job);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating job" });
+    }
+  });
+
+  app.delete("/api/admin/jobs/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await db.delete(jobApplications).where(eq(jobApplications.jobId, id));
+      const [deleted] = await db.delete(jobListings).where(eq(jobListings.id, id)).returning();
+      if (!deleted) return res.status(404).json({ message: "Job not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting job" });
+    }
+  });
+
+  // Applications management
+  app.get("/api/admin/applications", requireAdminAuth, async (_req, res) => {
+    try {
+      const apps = await db.select().from(jobApplications).orderBy(desc(jobApplications.createdAt));
+      res.json(apps);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching applications" });
+    }
+  });
+
+  app.patch("/api/admin/applications/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validStatuses = ["pending", "reviewed", "accepted", "rejected"];
+      if (!req.body.status || !validStatuses.includes(req.body.status)) {
+        return res.status(400).json({ message: "Invalid status. Must be one of: " + validStatuses.join(", ") });
+      }
+      const [app] = await db.update(jobApplications).set({ status: req.body.status }).where(eq(jobApplications.id, id)).returning();
+      if (!app) return res.status(404).json({ message: "Application not found" });
+      res.json(app);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating application" });
+    }
+  });
+
+  app.delete("/api/admin/applications/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const [deleted] = await db.delete(jobApplications).where(eq(jobApplications.id, id)).returning();
+      if (!deleted) return res.status(404).json({ message: "Application not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting application" });
+    }
+  });
+
+  // Public routes for job listings & applications
+  app.get("/api/jobs", async (_req, res) => {
+    try {
+      const jobs = await db.select().from(jobListings).where(eq(jobListings.isActive, true)).orderBy(desc(jobListings.createdAt));
+      res.json(jobs);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching jobs" });
+    }
+  });
+
+  app.post("/api/jobs/:id/apply", async (req, res) => {
+    try {
+      const jobId = parseInt(req.params.id);
+      const [job] = await db.select().from(jobListings).where(eq(jobListings.id, jobId));
+      if (!job || !job.isActive) return res.status(404).json({ message: "Job not found" });
+
+      const validated = insertJobApplicationSchema.parse({ ...req.body, jobId });
+      const [application] = await db.insert(jobApplications).values(validated).returning();
+      res.status(201).json(application);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: fromZodError(error).message });
+      }
+      res.status(500).json({ message: "Error submitting application" });
     }
   });
 

@@ -208,7 +208,50 @@ export const insertUserImpactSchema = createInsertSchema(userImpacts).omit({
   createdAt: true,
 });
 
+// Job listings (managed via admin panel)
+export const jobListings = pgTable("job_listings", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  department: text("department").notNull(),
+  type: text("type").notNull(),
+  location: text("location").notNull(),
+  description: text("description").notNull(),
+  responsibilities: text("responsibilities").array().notNull(),
+  qualifications: text("qualifications").array().notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertJobListingSchema = createInsertSchema(jobListings).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Job applications
+export const jobApplications = pgTable("job_applications", {
+  id: serial("id").primaryKey(),
+  jobId: integer("job_id").notNull().references(() => jobListings.id),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  coverLetter: text("cover_letter").notNull(),
+  resumeUrl: text("resume_url"),
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertJobApplicationSchema = createInsertSchema(jobApplications).omit({
+  id: true,
+  status: true,
+  createdAt: true,
+});
+
 // Type exports
+export type JobListing = typeof jobListings.$inferSelect;
+export type InsertJobListing = z.infer<typeof insertJobListingSchema>;
+export type JobApplication = typeof jobApplications.$inferSelect;
+export type InsertJobApplication = z.infer<typeof insertJobApplicationSchema>;
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 

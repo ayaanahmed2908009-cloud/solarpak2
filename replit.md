@@ -37,7 +37,8 @@ SolarPak operates as a dual-platform system: a Public Donation Platform accessib
 - **Donation System**: Direct integration with Ko-fi.com for payment processing, automatic membership tier updates based on donations, impact tracking.
 - **Content Management**: Dynamic project management, impact stories, testimonials, real-time statistics, newsletter.
 - **Impact Labs**: Article/report publishing system. Team members sign in at `/impactlabs` with a shared password (env var `IMPACT_LABS_PASSWORD`, default `solarpak2025`) to write, format (rich text editor), and publish articles. Public articles visible at `/impact-labs` and as a section on the homepage. Articles stored in `impact_labs_articles` table with title, slug, summary, content (HTML), cover image, author, category, tags, and publish status.
-- **Opportunities Page**: Public page at `/opportunities` showcasing SolarPak's organizational structure (5 departments with expandable role details) and current volunteer/internship opportunities with detailed job descriptions, responsibilities, and qualifications.
+- **Opportunities Page**: Public page at `/opportunities` showcasing SolarPak's organizational structure (7 departments with expandable role details) and current volunteer/internship opportunities pulled from `job_listings` database table. Each listing has an inline application form that submits to `job_applications` table.
+- **Admin Panel**: Password-protected admin dashboard at `/admin` (password: env var `ADMIN_PASSWORD`, default `ayaanahmed`). Manages job listings (create, toggle active/hidden, delete) and reviews applications (status: pending/reviewed/accepted/rejected). Uses session-based auth similar to Impact Labs pattern.
 - **SEO Optimization**: Comprehensive meta tags, Open Graph, Twitter Card, structured data, XML sitemap, `robots.txt`, keyword-optimized content.
 
 ## External Dependencies
