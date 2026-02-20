@@ -300,16 +300,16 @@ export default function Opportunities() {
         </div>
 
         <div className="container mx-auto px-6">
-          <div className="max-w-3xl py-16 md:py-20">
+          <div className="max-w-5xl mx-auto py-16 md:py-20">
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-10">
               Organisation
             </h2>
             <DepartmentList />
           </div>
 
-          <div className="h-px bg-gray-100" />
+          <div className="max-w-5xl mx-auto"><div className="h-px bg-gray-100" /></div>
 
-          <div className="max-w-3xl py-16 md:py-20">
+          <div className="max-w-5xl mx-auto py-16 md:py-20">
             <div className="flex items-end justify-between mb-3">
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                 Open roles
@@ -358,9 +358,9 @@ export default function Opportunities() {
             )}
           </div>
 
-          <div className="h-px bg-gray-100" />
+          <div className="max-w-5xl mx-auto"><div className="h-px bg-gray-100" /></div>
 
-          <div className="max-w-3xl py-16 md:py-20">
+          <div className="max-w-5xl mx-auto py-16 md:py-20">
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-3">
               Get involved
             </h2>
