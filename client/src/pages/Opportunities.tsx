@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Users,
   Target,
@@ -12,7 +10,7 @@ import {
   MapPin,
   Clock,
   ChevronRight,
-  ArrowRight,
+  ChevronDown,
   Zap,
   BookOpen,
   BarChart3,
@@ -23,20 +21,17 @@ import {
   Shield,
   TrendingUp,
   Mail,
+  ArrowRight,
 } from "lucide-react";
 
 interface OrgRole {
   title: string;
   description: string;
   icon: any;
-  members?: string[];
 }
 
 interface Department {
   name: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
   description: string;
   roles: OrgRole[];
 }
@@ -49,15 +44,11 @@ interface JobOpportunity {
   description: string;
   responsibilities: string[];
   qualifications: string[];
-  color: string;
 }
 
 const departments: Department[] = [
   {
     name: "Executive Leadership",
-    color: "text-emerald-700",
-    bgColor: "bg-emerald-50",
-    borderColor: "border-emerald-200",
     description: "Guiding the vision and strategic direction of SolarPak across all operations.",
     roles: [
       { title: "Founder & CEO", description: "Sets overall vision, fundraising strategy, and organizational direction", icon: Target },
@@ -67,9 +58,6 @@ const departments: Department[] = [
   },
   {
     name: "Field Operations",
-    color: "text-amber-700",
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
     description: "Manages on-the-ground solar installations and community engagement in Pakistan.",
     roles: [
       { title: "Field Operations Director", description: "Coordinates installation teams, logistics, and community partnerships", icon: Globe },
@@ -79,9 +67,6 @@ const departments: Department[] = [
   },
   {
     name: "Impact & Research",
-    color: "text-blue-700",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
     description: "Tracks outcomes, publishes research, and quantifies our real-world impact.",
     roles: [
       { title: "Impact Labs Director", description: "Leads research initiatives, data collection, and impact reporting", icon: BarChart3 },
@@ -91,9 +76,6 @@ const departments: Department[] = [
   },
   {
     name: "Marketing & Communications",
-    color: "text-purple-700",
-    bgColor: "bg-purple-50",
-    borderColor: "border-purple-200",
     description: "Amplifies our story, manages campaigns, and grows our supporter base worldwide.",
     roles: [
       { title: "Communications Director", description: "Oversees messaging, PR, and public-facing content strategy", icon: Megaphone },
@@ -103,9 +85,6 @@ const departments: Department[] = [
   },
   {
     name: "Technology",
-    color: "text-sky-700",
-    bgColor: "bg-sky-50",
-    borderColor: "border-sky-200",
     description: "Builds and maintains the digital infrastructure powering SolarPak's platform.",
     roles: [
       { title: "Tech Lead", description: "Architects the web platform, dashboards, and internal tools", icon: Code },
@@ -134,7 +113,6 @@ const jobOpportunities: JobOpportunity[] = [
       "Passionate about renewable energy and community development",
       "Prior volunteer or fieldwork experience preferred",
     ],
-    color: "border-amber-300",
   },
   {
     title: "Impact Research Intern",
@@ -154,7 +132,6 @@ const jobOpportunities: JobOpportunity[] = [
       "Interest in renewable energy, sustainability, or international development",
       "Familiarity with data analysis tools is a plus",
     ],
-    color: "border-blue-300",
   },
   {
     title: "Social Media & Content Volunteer",
@@ -174,7 +151,6 @@ const jobOpportunities: JobOpportunity[] = [
       "Excellent written English",
       "Passionate about nonprofit storytelling and impact communication",
     ],
-    color: "border-purple-300",
   },
   {
     title: "Web Developer Contributor",
@@ -194,151 +170,169 @@ const jobOpportunities: JobOpportunity[] = [
       "Self-motivated with strong problem-solving skills",
       "Open-source or volunteer development experience is a plus",
     ],
-    color: "border-sky-300",
   },
 ];
 
-function AnimatedCard({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+function useReveal(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.1 }
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
+  }, [threshold]);
+  return { ref, visible };
 }
 
 function OrgChart() {
   const [expandedDept, setExpandedDept] = useState<string | null>(null);
 
   return (
-    <div className="space-y-6">
-      {departments.map((dept, i) => (
-        <AnimatedCard key={dept.name} delay={i * 100}>
+    <div className="space-y-4">
+      {departments.map((dept, i) => {
+        const { ref, visible } = useReveal();
+        return (
           <div
-            className={`rounded-xl border-2 ${dept.borderColor} overflow-hidden transition-all duration-300 ${expandedDept === dept.name ? "shadow-lg" : "shadow-sm hover:shadow-md"}`}
+            key={dept.name}
+            ref={ref}
+            className="transition-all duration-700"
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(24px)",
+              transitionDelay: `${i * 80}ms`,
+            }}
           >
-            <button
-              onClick={() => setExpandedDept(expandedDept === dept.name ? null : dept.name)}
-              className={`w-full flex items-center justify-between p-6 ${dept.bgColor} transition-colors duration-200`}
-            >
-              <div className="flex items-center gap-4 text-left">
-                <div className={`w-12 h-12 rounded-xl ${dept.bgColor} border-2 ${dept.borderColor} flex items-center justify-center`}>
-                  <Users className={`w-6 h-6 ${dept.color}`} />
-                </div>
-                <div>
-                  <h3 className={`text-lg font-bold ${dept.color}`}>{dept.name}</h3>
-                  <p className="text-sm text-gray-500 mt-0.5">{dept.description}</p>
-                </div>
-              </div>
-              <ChevronRight
-                className={`w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${expandedDept === dept.name ? "rotate-90" : ""}`}
-              />
-            </button>
-
             <div
-              className={`transition-all duration-300 overflow-hidden ${expandedDept === dept.name ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
+              className={`rounded-xl overflow-hidden bg-white border transition-all duration-300 ${
+                expandedDept === dept.name
+                  ? "border-gray-200 shadow-xl shadow-green-900/5"
+                  : "border-gray-100 hover:shadow-lg hover:shadow-green-900/5 hover:-translate-y-0.5"
+              }`}
             >
-              <div className="p-6 pt-2 bg-white space-y-4">
-                {dept.roles.map((role) => {
-                  const Icon = role.icon;
-                  return (
-                    <div key={role.title} className="flex items-start gap-4 p-4 rounded-lg bg-gray-50 border border-gray-100">
-                      <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-gray-600" />
+              <button
+                onClick={() => setExpandedDept(expandedDept === dept.name ? null : dept.name)}
+                className="w-full flex items-center justify-between p-5 md:p-6 text-left transition-colors duration-200 hover:bg-gray-50/50"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-800 to-emerald-900 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900 tracking-tight">{dept.name}</h3>
+                    <p className="text-sm text-gray-400 mt-0.5 hidden md:block">{dept.description}</p>
+                  </div>
+                </div>
+                <ChevronDown
+                  className={`w-4 h-4 text-gray-400 transition-transform duration-300 flex-shrink-0 ml-4 ${
+                    expandedDept === dept.name ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              <div
+                className={`transition-all duration-300 overflow-hidden ${
+                  expandedDept === dept.name ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                }`}
+              >
+                <div className="px-5 md:px-6 pb-5 md:pb-6 space-y-3 border-t border-gray-100 pt-4">
+                  {dept.roles.map((role) => {
+                    const Icon = role.icon;
+                    return (
+                      <div key={role.title} className="flex items-start gap-3.5 p-3.5 rounded-lg bg-gray-50/80">
+                        <div className="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Icon className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold text-gray-800">{role.title}</h4>
+                          <p className="text-sm text-gray-400 mt-0.5 leading-relaxed">{role.description}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800">{role.title}</h4>
-                        <p className="text-sm text-gray-500 mt-1">{role.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </AnimatedCard>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 function JobCard({ job, index }: { job: JobOpportunity; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const { ref, visible } = useReveal();
 
   return (
-    <AnimatedCard delay={index * 120}>
-      <div className={`bg-white rounded-xl border-2 ${job.color} shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden`}>
-        <div className="p-6">
+    <div
+      ref={ref}
+      className="transition-all duration-700"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transitionDelay: `${index * 80}ms`,
+      }}
+    >
+      <div
+        className={`rounded-xl overflow-hidden bg-white border transition-all duration-500 ${
+          expanded
+            ? "border-gray-200 shadow-xl shadow-green-900/5"
+            : "border-gray-100 hover:shadow-2xl hover:shadow-green-900/10 hover:-translate-y-1"
+        }`}
+      >
+        <div className="p-5 md:p-6">
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <Badge variant="secondary" className="text-xs font-medium bg-emerald-50 text-emerald-700 border-emerald-200">
+            <span className="text-xs font-medium text-green-700 bg-green-50 px-2.5 py-1 rounded-full">
               {job.type}
-            </Badge>
-            <Badge variant="outline" className="text-xs font-medium">
+            </span>
+            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
               {job.department}
-            </Badge>
-          </div>
-
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{job.title}</h3>
-
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" /> {job.location}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> Flexible hours
             </span>
           </div>
 
-          <p className="text-gray-600 leading-relaxed mb-4">{job.description}</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 tracking-tight">{job.title}</h3>
+
+          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 mb-4">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5" /> {job.location}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" /> Flexible hours
+            </span>
+          </div>
+
+          <p className="text-sm text-gray-500 leading-relaxed mb-4">{job.description}</p>
 
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-emerald-700 hover:text-emerald-800 font-medium text-sm flex items-center gap-1 transition-colors"
+            className="text-green-700 hover:text-green-900 font-medium text-sm flex items-center gap-1 transition-colors group"
           >
             {expanded ? "Show less" : "View details"}
-            <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`} />
+            <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 ${expanded ? "rotate-90" : ""}`} />
           </button>
 
-          <div className={`transition-all duration-300 overflow-hidden ${expanded ? "max-h-[500px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
-            <div className="space-y-4 pt-4 border-t border-gray-100">
+          <div className={`transition-all duration-300 overflow-hidden ${expanded ? "max-h-[500px] opacity-100 mt-5" : "max-h-0 opacity-0"}`}>
+            <div className="space-y-5 pt-5 border-t border-gray-100">
               <div>
-                <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-emerald-600" /> Responsibilities
-                </h4>
-                <ul className="space-y-1.5">
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Responsibilities</h4>
+                <ul className="space-y-2">
                   {job.responsibilities.map((r, i) => (
-                    <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                    <li key={i} className="text-sm text-gray-600 flex items-start gap-2.5 leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-2 flex-shrink-0" />
                       {r}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <Target className="w-4 h-4 text-emerald-600" /> Qualifications
-                </h4>
-                <ul className="space-y-1.5">
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Qualifications</h4>
+                <ul className="space-y-2">
                   {job.qualifications.map((q, i) => (
-                    <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
+                    <li key={i} className="text-sm text-gray-600 flex items-start gap-2.5 leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2 flex-shrink-0" />
                       {q}
                     </li>
                   ))}
@@ -348,120 +342,133 @@ function JobCard({ job, index }: { job: JobOpportunity; index: number }) {
           </div>
         </div>
       </div>
-    </AnimatedCard>
+    </div>
   );
 }
 
 export default function Opportunities() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [heroVisible, setHeroVisible] = useState(false);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setHeroVisible(true); },
+      { threshold: 0.2 }
+    );
+    if (heroRef.current) observer.observe(heroRef.current);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-gray-800">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <main className="pt-20">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 py-24 overflow-hidden">
+      <div className="pt-20">
+        {/* Hero — matches Impact Labs dark slate-to-emerald gradient */}
+        <div
+          ref={heroRef}
+          className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
+        >
           <div className="absolute inset-0">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl" />
+            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-green-400/5 to-transparent rounded-full" />
           </div>
-          <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-full mb-6">
-                <Briefcase className="w-4 h-4 text-emerald-300 mr-2" />
-                <span className="text-emerald-100 font-medium text-sm uppercase tracking-wide">
-                  Join Our Mission
-                </span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                Opportunities at <span className="text-emerald-300">SolarPak</span>
+
+          <div
+            className="container mx-auto px-6 relative z-10 transition-all duration-1000"
+            style={{
+              opacity: heroVisible ? 1 : 0,
+              transform: heroVisible ? "translateY(0)" : "translateY(20px)",
+            }}
+          >
+            <div className="max-w-2xl">
+              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
+                Join Our Mission
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
+                Opportunities
               </h1>
-              <p className="text-lg md:text-xl text-emerald-100/90 leading-relaxed mb-8 max-w-2xl">
-                Discover how SolarPak is organized as a youth-led nonprofit and explore volunteer
-                and internship opportunities to make a real difference in Pakistan's energy future.
+              <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
+                Discover how SolarPak is structured as a youth-led nonprofit, and explore volunteer and internship roles to help power Pakistan's energy future.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  onClick={() => document.getElementById("jobs")?.scrollIntoView({ behavior: "smooth" })}
-                  className="bg-white text-emerald-800 hover:bg-emerald-50 font-semibold px-8 py-3 rounded-md"
-                >
-                  View Open Roles <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-                <Button
-                  onClick={() => document.getElementById("org-structure")?.scrollIntoView({ behavior: "smooth" })}
-                  variant="outline"
-                  className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3 rounded-md"
-                >
-                  Our Structure
-                </Button>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* Mission Stats */}
-        <section className="py-16 bg-gray-50 border-b border-gray-100">
-          <div className="container mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {/* Quick nav pills */}
+        <div className="container mx-auto px-6 py-10">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "Organisation", target: "org-structure" },
+              { label: "Why Join", target: "why-join" },
+              { label: "Open Roles", target: "jobs" },
+              { label: "Contact", target: "contact" },
+            ].map((item) => (
+              <button
+                key={item.target}
+                onClick={() => document.getElementById(item.target)?.scrollIntoView({ behavior: "smooth" })}
+                className="text-sm px-4 py-2 rounded-full font-medium bg-gray-100 text-gray-600 hover:bg-gray-900 hover:text-white transition-all duration-200"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats bar */}
+        <div className="border-y border-gray-100">
+          <div className="container mx-auto px-6 py-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { value: "5", label: "Departments", icon: Users },
-                { value: "15+", label: "Team Members", icon: Heart },
-                { value: "100%", label: "Youth-Led", icon: Zap },
-                { value: "Global", label: "Volunteer Base", icon: Globe },
-              ].map((stat, i) => (
-                <AnimatedCard key={stat.label} delay={i * 100}>
-                  <div className="text-center p-6 bg-white rounded-xl border border-gray-100 shadow-sm">
-                    <stat.icon className="w-8 h-8 text-emerald-600 mx-auto mb-3" />
-                    <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                    <div className="text-sm text-gray-500 font-medium">{stat.label}</div>
-                  </div>
-                </AnimatedCard>
+                { value: "5", label: "Departments" },
+                { value: "15+", label: "Team Members" },
+                { value: "100%", label: "Youth-Led" },
+                { value: "Global", label: "Volunteer Base" },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">{stat.value}</div>
+                  <div className="text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">{stat.label}</div>
+                </div>
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Organizational Structure */}
-        <section id="org-structure" className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="max-w-3xl mx-auto text-center mb-14">
-              <AnimatedCard>
-                <Badge variant="outline" className="mb-4 text-emerald-700 border-emerald-200 bg-emerald-50 px-4 py-1">
-                  Our Organisation
-                </Badge>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  How SolarPak Is Structured
-                </h2>
-                <p className="text-gray-500 text-lg leading-relaxed">
-                  SolarPak operates through five core departments, each led by dedicated young leaders
-                  committed to bringing solar energy to communities across Pakistan.
-                </p>
-              </AnimatedCard>
-            </div>
-            <div className="max-w-3xl mx-auto">
-              <OrgChart />
-            </div>
+        <div id="org-structure" className="container mx-auto px-6 py-16 md:py-20">
+          <div className="max-w-2xl mb-12">
+            <span className="text-green-600 font-medium text-xs uppercase tracking-[0.2em] mb-3 block">
+              Our Organisation
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight leading-[1.1]">
+              How SolarPak Is Structured
+            </h2>
+            <p className="text-gray-400 text-base leading-relaxed">
+              SolarPak operates through five core departments, each led by dedicated young leaders committed to bringing solar energy to communities across Pakistan.
+            </p>
           </div>
-        </section>
+          <div className="max-w-3xl">
+            <OrgChart />
+          </div>
+        </div>
 
-        {/* Why Join Section */}
-        <section className="py-20 bg-gradient-to-b from-emerald-50 to-white">
-          <div className="container mx-auto px-6">
-            <div className="max-w-3xl mx-auto text-center mb-14">
-              <AnimatedCard>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  Why Join SolarPak?
-                </h2>
-                <p className="text-gray-500 text-lg leading-relaxed">
-                  As a volunteer or intern, you'll gain real-world experience while contributing
-                  to meaningful change in communities that need it most.
-                </p>
-              </AnimatedCard>
+        {/* Why Join */}
+        <div id="why-join" className="bg-gray-50/60 border-y border-gray-100">
+          <div className="container mx-auto px-6 py-16 md:py-20">
+            <div className="max-w-2xl mb-12">
+              <span className="text-green-600 font-medium text-xs uppercase tracking-[0.2em] mb-3 block">
+                Benefits
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight leading-[1.1]">
+                Why Join SolarPak?
+              </h2>
+              <p className="text-gray-400 text-base leading-relaxed">
+                As a volunteer or intern, you'll gain real-world experience while contributing to meaningful change in communities that need it most.
+              </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
                   icon: Globe,
@@ -478,76 +485,84 @@ export default function Opportunities() {
                   title: "Global Community",
                   description: "Join a network of young changemakers from around the world united by a shared mission for clean energy.",
                 },
-              ].map((item, i) => (
-                <AnimatedCard key={item.title} delay={i * 150}>
-                  <div className="bg-white rounded-xl border border-gray-100 p-8 shadow-sm hover:shadow-md transition-shadow duration-300 text-center">
-                    <div className="w-14 h-14 bg-emerald-50 border-2 border-emerald-200 rounded-xl flex items-center justify-center mx-auto mb-5">
-                      <item.icon className="w-7 h-7 text-emerald-700" />
+              ].map((item, i) => {
+                const { ref, visible } = useReveal();
+                return (
+                  <div
+                    key={item.title}
+                    ref={ref}
+                    className="transition-all duration-700"
+                    style={{
+                      opacity: visible ? 1 : 0,
+                      transform: visible ? "translateY(0)" : "translateY(24px)",
+                      transitionDelay: `${i * 100}ms`,
+                    }}
+                  >
+                    <div className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-2xl hover:shadow-green-900/10 hover:-translate-y-1 transition-all duration-500 h-full">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-800 to-emerald-900 flex items-center justify-center mb-5">
+                        <item.icon className="w-5 h-5 text-green-400" />
+                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 mb-2 tracking-tight">{item.title}</h3>
+                      <p className="text-sm text-gray-400 leading-relaxed">{item.description}</p>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
-                    <p className="text-gray-500 leading-relaxed">{item.description}</p>
                   </div>
-                </AnimatedCard>
-              ))}
+                );
+              })}
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Open Positions */}
-        <section id="jobs" className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="max-w-3xl mx-auto text-center mb-14">
-              <AnimatedCard>
-                <Badge variant="outline" className="mb-4 text-emerald-700 border-emerald-200 bg-emerald-50 px-4 py-1">
-                  Open Roles
-                </Badge>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  Current Opportunities
-                </h2>
-                <p className="text-gray-500 text-lg leading-relaxed">
-                  We're always looking for passionate individuals to join our team. All positions
-                  are volunteer-based or unpaid internships with flexible hours.
-                </p>
-              </AnimatedCard>
-            </div>
-            <div className="max-w-3xl mx-auto space-y-6">
-              {jobOpportunities.map((job, i) => (
-                <JobCard key={job.title} job={job} index={i} />
-              ))}
-            </div>
+        <div id="jobs" className="container mx-auto px-6 py-16 md:py-20">
+          <div className="max-w-2xl mb-12">
+            <span className="text-green-600 font-medium text-xs uppercase tracking-[0.2em] mb-3 block">
+              Open Roles
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight leading-[1.1]">
+              Current Opportunities
+            </h2>
+            <p className="text-gray-400 text-base leading-relaxed">
+              We're always looking for passionate individuals to join our team. All positions are volunteer-based or unpaid internships with flexible hours.
+            </p>
           </div>
-        </section>
+          <div className="max-w-3xl space-y-5">
+            {jobOpportunities.map((job, i) => (
+              <JobCard key={job.title} job={job} index={i} />
+            ))}
+          </div>
+        </div>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 relative overflow-hidden">
+        {/* CTA — dark gradient matching hero */}
+        <div id="contact" className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute top-0 left-1/2 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl" />
+            <div className="absolute top-1/4 right-0 w-96 h-96 bg-gradient-to-r from-green-500/8 to-emerald-500/8 rounded-full blur-3xl" />
           </div>
-          <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-2xl mx-auto text-center">
-              <AnimatedCard>
-                <Mail className="w-12 h-12 text-emerald-300 mx-auto mb-6" />
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Ready to Make a Difference?
-                </h2>
-                <p className="text-emerald-100/90 text-lg leading-relaxed mb-8">
-                  Send us your interest along with a brief introduction about yourself and the role
-                  you're interested in. We'd love to hear from you.
-                </p>
-                <Button
-                  onClick={() => window.open("mailto:solarpakinitiative@gmail.com?subject=SolarPak Volunteer Interest", "_blank")}
-                  className="bg-white text-emerald-800 hover:bg-emerald-50 font-semibold px-10 py-3 rounded-md text-base"
-                >
-                  <Mail className="w-4 h-4 mr-2" /> Get in Touch
-                </Button>
-                <p className="text-emerald-200/70 text-sm mt-4">solarpakinitiative@gmail.com</p>
-              </AnimatedCard>
+          <div className="container mx-auto px-6 py-20 md:py-24 relative z-10">
+            <div className="max-w-xl">
+              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
+                Get Started
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight leading-[1.1]">
+                Ready to Make a Difference?
+              </h2>
+              <p className="text-gray-400 leading-relaxed mb-8">
+                Send us your interest along with a brief introduction about yourself and the role you're interested in. We'd love to hear from you.
+              </p>
+              <button
+                onClick={() => window.open("mailto:solarpakinitiative@gmail.com?subject=SolarPak Volunteer Interest", "_blank")}
+                className="inline-flex items-center bg-white text-gray-900 hover:bg-gray-100 font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 group"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Get in Touch
+                <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+              <p className="text-gray-500 text-sm mt-4">solarpakinitiative@gmail.com</p>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
 
-        <Footer />
-      </main>
+      <Footer />
     </div>
   );
 }
