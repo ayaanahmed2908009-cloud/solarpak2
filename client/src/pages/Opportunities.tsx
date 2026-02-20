@@ -325,7 +325,25 @@ export default function Opportunities() {
             {isLoading ? (
               <div className="py-12 text-center text-sm text-gray-400">Loading...</div>
             ) : jobs.length === 0 ? (
-              <div className="py-12 text-center text-sm text-gray-400">No open positions at the moment. Check back soon.</div>
+              <div className="py-16 flex flex-col items-center text-center">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6 opacity-40">
+                  {/* Solar panel */}
+                  <rect x="18" y="30" width="28" height="22" rx="2" stroke="#047857" strokeWidth="2" fill="none" />
+                  <line x1="18" y1="37" x2="46" y2="37" stroke="#047857" strokeWidth="1.5" />
+                  <line x1="18" y1="44" x2="46" y2="44" stroke="#047857" strokeWidth="1.5" />
+                  <line x1="27" y1="30" x2="27" y2="52" stroke="#047857" strokeWidth="1.5" />
+                  <line x1="37" y1="30" x2="37" y2="52" stroke="#047857" strokeWidth="1.5" />
+                  {/* Panel stand */}
+                  <line x1="32" y1="52" x2="32" y2="62" stroke="#047857" strokeWidth="2" />
+                  <line x1="25" y1="62" x2="39" y2="62" stroke="#047857" strokeWidth="2" strokeLinecap="round" />
+                  {/* Crescent moon */}
+                  <path d="M56 18a14 14 0 1 0 0 28 10 10 0 1 1 0-28z" stroke="#047857" strokeWidth="2" fill="none" />
+                  {/* Star */}
+                  <polygon points="62,22 63.2,25 66.5,25 64,27 65,30 62,28 59,30 60,27 57.5,25 60.8,25" fill="#047857" opacity="0.6" />
+                </svg>
+                <p className="text-base font-semibold text-gray-800 mb-1.5">No opportunities available right now</p>
+                <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Check back again soon — new roles open up as our mission grows.</p>
+              </div>
             ) : (
               <div className="border-t border-gray-100">
                 {jobs.map((job) => (
