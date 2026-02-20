@@ -11,24 +11,32 @@ import {
 
 const departments = [
   {
-    name: "Executive Leadership",
-    roles: ["Founder & CEO", "Chief Operating Officer", "Chief Strategy Officer"],
-  },
-  {
     name: "Field Operations",
-    roles: ["Field Operations Director", "Installation Team Lead", "Community Liaison Officer"],
+    description: "Our field team works on the ground across Sindh, Pakistan — coordinating solar panel installations, managing logistics, and working directly with families to assess energy needs and deliver sustainable power solutions.",
   },
   {
-    name: "Impact & Research",
-    roles: ["Impact Labs Director", "Data Analyst", "Research Writer"],
+    name: "Social Media",
+    description: "The social media team manages SolarPak's digital presence across platforms, creating content that tells our story, engages our global community, and drives awareness of Pakistan's energy crisis and our mission to solve it.",
   },
   {
-    name: "Marketing & Communications",
-    roles: ["Communications Director", "Social Media Manager", "Content Creator"],
+    name: "Events & Community Outreach",
+    description: "This team organises fundraising events, community engagement initiatives, and public outreach programmes. They build relationships with local leaders, schools, and partner organisations to expand our reach and impact.",
   },
   {
-    name: "Technology",
-    roles: ["Tech Lead", "Full-Stack Developer", "UI/UX Designer"],
+    name: "Sales & Sponsorships",
+    description: "Our sales and sponsorships team identifies and secures partnerships with businesses, foundations, and individual sponsors. They develop funding proposals, manage donor relationships, and create sustainable revenue channels for SolarPak.",
+  },
+  {
+    name: "Predictive Systems",
+    description: "The predictive systems team uses data analysis and modelling to forecast energy demand, optimise installation planning, and measure long-term impact. They build the analytical tools that inform SolarPak's strategic decisions.",
+  },
+  {
+    name: "Impact Labs",
+    description: "Impact Labs is SolarPak's research and publishing arm. The team collects field data, writes reports and case studies, and produces articles that document our environmental and economic impact with rigorous, evidence-based analysis.",
+  },
+  {
+    name: "General Management",
+    description: "General management oversees day-to-day operations, coordinates across all departments, handles administrative tasks, and ensures SolarPak runs smoothly as an organisation. This team keeps everything connected and on track.",
   },
 ];
 
@@ -120,6 +128,37 @@ const jobOpportunities: JobOpportunity[] = [
     ],
   },
 ];
+
+function DepartmentList() {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  return (
+    <div className="border-t border-gray-100">
+      {departments.map((dept) => (
+        <div key={dept.name} className="border-b border-gray-100">
+          <button
+            onClick={() => setExpanded(expanded === dept.name ? null : dept.name)}
+            className="w-full flex items-center justify-between py-5 text-left group"
+          >
+            <h3 className="text-sm font-semibold text-gray-900 group-hover:text-green-800 transition-colors">
+              {dept.name}
+            </h3>
+            <ChevronDown
+              className={`w-4 h-4 text-gray-300 flex-shrink-0 transition-transform duration-200 ${
+                expanded === dept.name ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          <div className={`overflow-hidden transition-all duration-300 ${
+            expanded === dept.name ? "max-h-40 opacity-100 pb-5" : "max-h-0 opacity-0"
+          }`}>
+            <p className="text-sm text-gray-500 leading-relaxed">{dept.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function JobListing({ job }: { job: JobOpportunity }) {
   const [open, setOpen] = useState(false);
@@ -251,27 +290,11 @@ export default function Opportunities() {
         <div className="container mx-auto px-6">
           {/* Organisation section */}
           <div className="max-w-3xl py-16 md:py-20">
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-3">
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-10">
               Organisation
             </h2>
-            <p className="text-gray-500 text-[15px] leading-relaxed mb-10 max-w-xl">
-              SolarPak operates through five departments. Each is led by young professionals coordinating across Pakistan and remotely worldwide.
-            </p>
 
-            <div className="space-y-0 border-t border-gray-100">
-              {departments.map((dept) => (
-                <div key={dept.name} className="border-b border-gray-100 py-5">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">{dept.name}</h3>
-                  <div className="flex flex-wrap gap-x-1 gap-y-1">
-                    {dept.roles.map((role, i) => (
-                      <span key={role} className="text-sm text-gray-400">
-                        {role}{i < dept.roles.length - 1 && <span className="mx-1.5 text-gray-200">·</span>}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <DepartmentList />
           </div>
 
           <div className="h-px bg-gray-100" />
