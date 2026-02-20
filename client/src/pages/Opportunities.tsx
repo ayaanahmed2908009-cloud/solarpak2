@@ -342,10 +342,11 @@ export default function Opportunities() {
                   {/* Panel stand */}
                   <line x1="36" y1="52" x2="36" y2="68" stroke="#9ca3af" strokeWidth="1.5" />
                   <line x1="28" y1="68" x2="44" y2="68" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
-                  {/* Crescent moon - positioned to the right, outside the panel */}
-                  <path d="M92 12 A16 16 0 1 1 92 44 A12 12 0 1 0 92 12 Z" fill="#c5c9cf" />
+                  {/* Crescent moon - two overlapping circles */}
+                  <circle cx="88" cy="24" r="14" fill="#c5c9cf" />
+                  <circle cx="94" cy="20" r="12" fill="white" />
                   {/* Star */}
-                  <path d="M80 22l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#b0b5bc" />
+                  <path d="M78 16l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#b0b5bc" />
                 </svg>
                 <p className="text-base font-semibold text-gray-800 mb-1.5">No opportunities available right now</p>
                 <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Check back again soon — new roles open up as our mission grows.</p>
