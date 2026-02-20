@@ -318,28 +318,38 @@ export default function Opportunities() {
                 <span className="text-xs text-gray-400 font-medium">{jobs.length} position{jobs.length !== 1 ? "s" : ""}</span>
               )}
             </div>
-            <p className="text-gray-500 text-[15px] leading-relaxed mb-10 max-w-xl">
-              All positions are volunteer-based or unpaid internships. Hours are flexible and most roles are remote.
-            </p>
-
             {isLoading ? (
               <div className="py-12 text-center text-sm text-gray-400">Loading...</div>
             ) : jobs.length === 0 ? (
-              <div className="py-16 flex flex-col items-center text-center">
-                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6 opacity-40">
-                  {/* Solar panel */}
-                  <rect x="18" y="30" width="28" height="22" rx="2" stroke="#047857" strokeWidth="2" fill="none" />
-                  <line x1="18" y1="37" x2="46" y2="37" stroke="#047857" strokeWidth="1.5" />
-                  <line x1="18" y1="44" x2="46" y2="44" stroke="#047857" strokeWidth="1.5" />
-                  <line x1="27" y1="30" x2="27" y2="52" stroke="#047857" strokeWidth="1.5" />
-                  <line x1="37" y1="30" x2="37" y2="52" stroke="#047857" strokeWidth="1.5" />
-                  {/* Panel stand */}
-                  <line x1="32" y1="52" x2="32" y2="62" stroke="#047857" strokeWidth="2" />
-                  <line x1="25" y1="62" x2="39" y2="62" stroke="#047857" strokeWidth="2" strokeLinecap="round" />
+              <div className="py-20 flex flex-col items-center text-center">
+                <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6">
+                  {/* Solar panel - angled, realistic with frame and cells */}
+                  <g transform="translate(10, 32) rotate(-12, 28, 16)">
+                    {/* Panel outer frame */}
+                    <rect x="4" y="4" width="48" height="28" rx="1.5" stroke="#9ca3af" strokeWidth="1.5" fill="#f3f4f6" />
+                    {/* Panel cells - 3x2 grid */}
+                    <rect x="6" y="6" width="14" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="22" y="6" width="14" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="38" y="6" width="12" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="6" y="20" width="14" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="22" y="20" width="14" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="38" y="20" width="12" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    {/* Cell divider lines */}
+                    <line x1="13" y1="6" x2="13" y2="18" stroke="#9ca3af" strokeWidth="0.5" />
+                    <line x1="29" y1="6" x2="29" y2="18" stroke="#9ca3af" strokeWidth="0.5" />
+                    <line x1="44" y1="6" x2="44" y2="18" stroke="#9ca3af" strokeWidth="0.5" />
+                    <line x1="13" y1="20" x2="13" y2="30" stroke="#9ca3af" strokeWidth="0.5" />
+                    <line x1="29" y1="20" x2="29" y2="30" stroke="#9ca3af" strokeWidth="0.5" />
+                    <line x1="44" y1="20" x2="44" y2="30" stroke="#9ca3af" strokeWidth="0.5" />
+                  </g>
+                  {/* Panel stand / pole */}
+                  <line x1="38" y1="58" x2="38" y2="72" stroke="#9ca3af" strokeWidth="1.5" />
+                  <line x1="30" y1="72" x2="46" y2="72" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
                   {/* Crescent moon */}
-                  <path d="M56 18a14 14 0 1 0 0 28 10 10 0 1 1 0-28z" stroke="#047857" strokeWidth="2" fill="none" />
-                  {/* Star */}
-                  <polygon points="62,22 63.2,25 66.5,25 64,27 65,30 62,28 59,30 60,27 57.5,25 60.8,25" fill="#047857" opacity="0.6" />
+                  <circle cx="68" cy="26" r="12" stroke="#9ca3af" strokeWidth="1.5" fill="none" />
+                  <circle cx="73" cy="22" r="10" fill="#ffffff" stroke="none" />
+                  {/* Star beside crescent */}
+                  <polygon points="60,16 61,19 64,19 61.8,21 62.5,24 60,22.2 57.5,24 58.2,21 56,19 59,19" fill="#9ca3af" />
                 </svg>
                 <p className="text-base font-semibold text-gray-800 mb-1.5">No opportunities available right now</p>
                 <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Check back again soon — new roles open up as our mission grows.</p>
