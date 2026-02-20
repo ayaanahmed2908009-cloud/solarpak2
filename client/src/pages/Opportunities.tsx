@@ -322,19 +322,16 @@ export default function Opportunities() {
               <div className="py-12 text-center text-sm text-gray-400">Loading...</div>
             ) : jobs.length === 0 ? (
               <div className="py-20 flex flex-col items-center text-center">
-                <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6">
-                  {/* Solar panel - angled, realistic with frame and cells */}
-                  <g transform="translate(10, 32) rotate(-12, 28, 16)">
-                    {/* Panel outer frame */}
+                <svg width="120" height="88" viewBox="0 0 120 88" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6">
+                  {/* Solar panel - angled with cells */}
+                  <g transform="translate(8, 24) rotate(-10, 28, 16)">
                     <rect x="4" y="4" width="48" height="28" rx="1.5" stroke="#9ca3af" strokeWidth="1.5" fill="#f3f4f6" />
-                    {/* Panel cells - 3x2 grid */}
                     <rect x="6" y="6" width="14" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
                     <rect x="22" y="6" width="14" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
                     <rect x="38" y="6" width="12" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
                     <rect x="6" y="20" width="14" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
                     <rect x="22" y="20" width="14" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
                     <rect x="38" y="20" width="12" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
-                    {/* Cell divider lines */}
                     <line x1="13" y1="6" x2="13" y2="18" stroke="#9ca3af" strokeWidth="0.5" />
                     <line x1="29" y1="6" x2="29" y2="18" stroke="#9ca3af" strokeWidth="0.5" />
                     <line x1="44" y1="6" x2="44" y2="18" stroke="#9ca3af" strokeWidth="0.5" />
@@ -342,13 +339,13 @@ export default function Opportunities() {
                     <line x1="29" y1="20" x2="29" y2="30" stroke="#9ca3af" strokeWidth="0.5" />
                     <line x1="44" y1="20" x2="44" y2="30" stroke="#9ca3af" strokeWidth="0.5" />
                   </g>
-                  {/* Panel stand / pole */}
-                  <line x1="38" y1="58" x2="38" y2="72" stroke="#9ca3af" strokeWidth="1.5" />
-                  <line x1="30" y1="72" x2="46" y2="72" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
-                  {/* Crescent moon */}
-                  <path d="M72 14a14 14 0 1 0 0 28c-8 0-12-6-12-14s4-14 12-14z" fill="#d1d5db" />
+                  {/* Panel stand */}
+                  <line x1="36" y1="52" x2="36" y2="68" stroke="#9ca3af" strokeWidth="1.5" />
+                  <line x1="28" y1="68" x2="44" y2="68" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
+                  {/* Crescent moon - positioned to the right, outside the panel */}
+                  <path d="M92 12 A16 16 0 1 1 92 44 A12 12 0 1 0 92 12 Z" fill="#c5c9cf" />
                   {/* Star */}
-                  <path d="M63 18l1.5 3 3.5.5-2.5 2.4.6 3.4L63 25.6l-3.1 1.7.6-3.4L58 21.5l3.5-.5z" fill="#9ca3af" />
+                  <path d="M80 22l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#b0b5bc" />
                 </svg>
                 <p className="text-base font-semibold text-gray-800 mb-1.5">No opportunities available right now</p>
                 <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Check back again soon — new roles open up as our mission grows.</p>
