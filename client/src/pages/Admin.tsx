@@ -18,6 +18,7 @@ import {
   FileText,
   Eye,
   EyeOff,
+  Download,
 } from "lucide-react";
 import type { JobListing, JobApplication } from "@shared/schema";
 
@@ -246,6 +247,15 @@ function ApplicationRow({ app, jobs }: { app: JobApplication; jobs: JobListing[]
       <div className={`overflow-hidden transition-all duration-200 ${expanded ? "max-h-[500px] opacity-100 pb-4" : "max-h-0 opacity-0"}`}>
         {app.phone && (
           <p className="text-xs text-gray-400 mb-2">Phone: {app.phone}</p>
+        )}
+        {(app as any).resumeFilename && (
+          <a
+            href={`/api/admin/applications/${app.id}/resume`}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 mb-3 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download CV ({(app as any).resumeFilename})
+          </a>
         )}
         <div className="bg-gray-50 rounded-lg p-4 mb-4">
           <h5 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Cover letter</h5>

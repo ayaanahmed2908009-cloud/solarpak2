@@ -36,6 +36,27 @@ const upload = multer({
   }
 });
 
+const cvUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for CVs
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /pdf|doc|docx/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const allowedMimes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (extname && allowedMimes.includes(file.mimetype)) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only PDF, DOC, and DOCX files are allowed.'));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up worker authentication middleware
   setupWorkerAuth(app);
@@ -1321,20 +1342,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/jobs/:id/apply", async (req, res) => {
+  app.post("/api/jobs/:id/apply", cvUpload.single("resume"), async (req, res) => {
     try {
       const jobId = parseInt(req.params.id);
       const [job] = await db.select().from(jobListings).where(eq(jobListings.id, jobId));
       if (!job || !job.isActive) return res.status(404).json({ message: "Job not found" });
 
-      const validated = insertJobApplicationSchema.parse({ ...req.body, jobId });
+      const body = typeof req.body.data === "string" ? JSON.parse(req.body.data) : req.body;
+      const validated = insertJobApplicationSchema.parse({ ...body, jobId });
+
       const [application] = await db.insert(jobApplications).values(validated).returning();
+
+      if (req.file) {
+        await db.execute(
+          sql`UPDATE job_applications SET resume_filename = ${req.file.originalname}, resume_mime_type = ${req.file.mimetype}, resume_data = ${req.file.buffer} WHERE id = ${application.id}`
+        );
+      }
+
       res.status(201).json(application);
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ message: fromZodError(error).message });
       }
+      console.error("Apply error:", error);
       res.status(500).json({ message: "Error submitting application" });
+    }
+  });
+
+  app.get("/api/admin/applications/:id/resume", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await db.execute(
+        sql`SELECT resume_filename, resume_mime_type, resume_data FROM job_applications WHERE id = ${id}`
+      );
+      const row = result.rows[0] as any;
+      if (!row || !row.resume_data) return res.status(404).json({ message: "No resume found" });
+
+      res.setHeader("Content-Type", row.resume_mime_type);
+      res.setHeader("Content-Disposition", `attachment; filename="${row.resume_filename}"`);
+      res.send(Buffer.from(row.resume_data));
+    } catch (error) {
+      res.status(500).json({ message: "Error downloading resume" });
     }
   });
 

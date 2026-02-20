@@ -84,17 +84,31 @@ function ApplicationForm({ jobId, jobTitle, onClose }: { jobId: number; jobTitle
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   const applyMutation = useMutation({
-    mutationFn: () =>
-      apiRequest("POST", `/api/jobs/${jobId}/apply`, {
+    mutationFn: () => {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify({
         jobId,
         name,
         email,
         phone: phone || undefined,
         coverLetter,
-      }),
+      }));
+      if (resumeFile) {
+        formData.append("resume", resumeFile);
+      }
+      return fetch(`/api/jobs/${jobId}/apply`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      }).then(async (res) => {
+        if (!res.ok) throw new Error((await res.json()).message);
+        return res.json();
+      });
+    },
     onSuccess: () => setSubmitted(true),
   });
 
@@ -123,6 +137,15 @@ function ApplicationForm({ jobId, jobTitle, onClose }: { jobId: number; jobTitle
           onChange={(e) => setCoverLetter(e.target.value)}
           rows={4}
         />
+        <div>
+          <label className="text-xs font-medium text-gray-500 mb-1.5 block">CV / Resume (PDF, DOC, DOCX — max 5MB)</label>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+            className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer"
+          />
+        </div>
         <div className="flex gap-3 pt-1">
           <Button
             onClick={() => applyMutation.mutate()}

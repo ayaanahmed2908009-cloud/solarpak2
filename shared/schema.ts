@@ -236,6 +236,8 @@ export const jobApplications = pgTable("job_applications", {
   phone: text("phone"),
   coverLetter: text("cover_letter").notNull(),
   resumeUrl: text("resume_url"),
+  resumeFilename: text("resume_filename"),
+  resumeMimeType: text("resume_mime_type"),
   status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -243,6 +245,8 @@ export const jobApplications = pgTable("job_applications", {
 export const insertJobApplicationSchema = createInsertSchema(jobApplications).omit({
   id: true,
   status: true,
+  resumeFilename: true,
+  resumeMimeType: true,
   createdAt: true,
 });
 
