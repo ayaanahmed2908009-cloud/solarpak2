@@ -346,10 +346,9 @@ export default function Opportunities() {
                   <line x1="38" y1="58" x2="38" y2="72" stroke="#9ca3af" strokeWidth="1.5" />
                   <line x1="30" y1="72" x2="46" y2="72" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
                   {/* Crescent moon */}
-                  <circle cx="68" cy="26" r="12" stroke="#9ca3af" strokeWidth="1.5" fill="none" />
-                  <circle cx="73" cy="22" r="10" fill="#ffffff" stroke="none" />
-                  {/* Star beside crescent */}
-                  <polygon points="60,16 61,19 64,19 61.8,21 62.5,24 60,22.2 57.5,24 58.2,21 56,19 59,19" fill="#9ca3af" />
+                  <path d="M72 14a14 14 0 1 0 0 28c-8 0-12-6-12-14s4-14 12-14z" fill="#d1d5db" />
+                  {/* Star */}
+                  <path d="M63 18l1.5 3 3.5.5-2.5 2.4.6 3.4L63 25.6l-3.1 1.7.6-3.4L58 21.5l3.5-.5z" fill="#9ca3af" />
                 </svg>
                 <p className="text-base font-semibold text-gray-800 mb-1.5">No opportunities available right now</p>
                 <p className="text-sm text-gray-400 max-w-xs leading-relaxed">Check back again soon — new roles open up as our mission grows.</p>
