@@ -123,40 +123,46 @@ function ApplicationForm({ jobId, jobTitle, onClose }: { jobId: number; jobTitle
   }
 
   return (
-    <div className="bg-gray-50 rounded-xl p-6 mt-4">
+    <div className="bg-gray-50 rounded-xl p-4 sm:p-6 mt-4">
       <h4 className="text-sm font-semibold text-gray-900 mb-4">Apply for {jobTitle}</h4>
       <div className="space-y-3">
-        <div className="grid md:grid-cols-2 gap-3">
-          <Input placeholder="Full name *" value={name} onChange={(e) => setName(e.target.value)} />
-          <Input placeholder="Email *" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Input placeholder="Full name *" value={name} onChange={(e) => setName(e.target.value)} className="h-11 text-base sm:text-sm sm:h-9" />
+          <Input placeholder="Email *" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-11 text-base sm:text-sm sm:h-9" />
         </div>
-        <Input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <Input placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)} className="h-11 text-base sm:text-sm sm:h-9" />
         <Textarea
           placeholder="Tell us why you're interested and what you'd bring to the role *"
           value={coverLetter}
           onChange={(e) => setCoverLetter(e.target.value)}
           rows={4}
+          className="text-base sm:text-sm"
         />
         <div>
-          <label className="text-xs font-medium text-gray-500 mb-1.5 block">CV / Resume (PDF, DOC, DOCX — max 5MB)</label>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
-            className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer"
-          />
+          <label className="text-xs font-medium text-gray-500 mb-2 block">CV / Resume (PDF, DOC, DOCX — max 5MB)</label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <span className="inline-flex items-center gap-1.5 py-2 px-3 rounded-md bg-gray-100 text-gray-700 text-xs font-medium hover:bg-gray-200 transition-colors">
+              Choose file
+            </span>
+            <span className="text-xs text-gray-400 truncate">{resumeFile ? resumeFile.name : "No file chosen"}</span>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+              className="sr-only"
+            />
+          </label>
         </div>
-        <div className="flex gap-3 pt-1">
+        <div className="flex flex-col sm:flex-row gap-2 pt-1">
           <Button
             onClick={() => applyMutation.mutate()}
             disabled={!name || !email || !coverLetter || applyMutation.isPending}
-            className="bg-gray-900 hover:bg-gray-800"
-            size="sm"
+            className="bg-gray-900 hover:bg-gray-800 h-11 sm:h-9 text-sm"
           >
             <Send className="w-3.5 h-3.5 mr-2" />
             {applyMutation.isPending ? "Submitting..." : "Submit application"}
           </Button>
-          <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" className="h-11 sm:h-9 text-sm" onClick={onClose}>Cancel</Button>
         </div>
       </div>
     </div>
@@ -201,46 +207,48 @@ function JobListingCard({ job }: { job: JobListingType }) {
         </div>
       </button>
 
-      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-[1200px] opacity-100 pb-6" : "max-h-0 opacity-0"}`}>
-        <p className="text-sm text-gray-600 leading-relaxed mb-6">{job.description}</p>
+      {open && (
+        <div className="pb-6">
+          <p className="text-sm text-gray-600 leading-relaxed mb-6">{job.description}</p>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">What you'll do</h4>
-            <ul className="space-y-2">
-              {job.responsibilities.map((r, i) => (
-                <li key={i} className="text-sm text-gray-600 leading-relaxed pl-4 relative before:absolute before:left-0 before:top-[9px] before:w-1.5 before:h-1.5 before:rounded-full before:bg-green-400">
-                  {r}
-                </li>
-              ))}
-            </ul>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">What you'll do</h4>
+              <ul className="space-y-2">
+                {job.responsibilities.map((r, i) => (
+                  <li key={i} className="text-sm text-gray-600 leading-relaxed pl-4 relative before:absolute before:left-0 before:top-[9px] before:w-1.5 before:h-1.5 before:rounded-full before:bg-green-400">
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">What we're looking for</h4>
+              <ul className="space-y-2">
+                {job.qualifications.map((q, i) => (
+                  <li key={i} className="text-sm text-gray-600 leading-relaxed pl-4 relative before:absolute before:left-0 before:top-[9px] before:w-1.5 before:h-1.5 before:rounded-full before:bg-gray-300">
+                    {q}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">What we're looking for</h4>
-            <ul className="space-y-2">
-              {job.qualifications.map((q, i) => (
-                <li key={i} className="text-sm text-gray-600 leading-relaxed pl-4 relative before:absolute before:left-0 before:top-[9px] before:w-1.5 before:h-1.5 before:rounded-full before:bg-gray-300">
-                  {q}
-                </li>
-              ))}
-            </ul>
+
+          <div className="mt-6 pt-4 border-t border-gray-50">
+            {!showApply ? (
+              <button
+                onClick={() => setShowApply(true)}
+                className="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-900 transition-colors group/link"
+              >
+                Apply for this role
+                <ArrowUpRight className="w-3.5 h-3.5 ml-1 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+              </button>
+            ) : (
+              <ApplicationForm jobId={job.id} jobTitle={job.title} onClose={() => setShowApply(false)} />
+            )}
           </div>
         </div>
-
-        <div className="mt-6 pt-4 border-t border-gray-50">
-          {!showApply ? (
-            <button
-              onClick={() => setShowApply(true)}
-              className="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-900 transition-colors group/link"
-            >
-              Apply for this role
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-            </button>
-          ) : (
-            <ApplicationForm jobId={job.id} jobTitle={job.title} onClose={() => setShowApply(false)} />
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
