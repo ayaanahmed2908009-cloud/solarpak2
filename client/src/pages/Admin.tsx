@@ -16,8 +16,6 @@ import {
   LogOut,
   Briefcase,
   FileText,
-  Eye,
-  EyeOff,
   Download,
 } from "lucide-react";
 import type { JobListing, JobApplication } from "@shared/schema";
@@ -156,11 +154,6 @@ function CreateJobForm({ onClose }: { onClose: () => void }) {
 }
 
 function JobRow({ job }: { job: JobListing }) {
-  const toggleMutation = useMutation({
-    mutationFn: () => apiRequest("PATCH", `/api/admin/jobs/${job.id}`, { isActive: !job.isActive }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/admin/jobs"] }),
-  });
-
   const deleteMutation = useMutation({
     mutationFn: () => apiRequest("DELETE", `/api/admin/jobs/${job.id}`),
     onSuccess: () => {
@@ -181,13 +174,6 @@ function JobRow({ job }: { job: JobListing }) {
         <p className="text-xs text-gray-400">{job.department} · {job.location} · {job.type}</p>
       </div>
       <div className="flex items-center gap-1 ml-4">
-        <button
-          onClick={() => toggleMutation.mutate()}
-          className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
-          title={job.isActive ? "Hide listing" : "Show listing"}
-        >
-          {job.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-        </button>
         <button
           onClick={() => {
             if (window.confirm("Delete this job and all its applications?")) {
