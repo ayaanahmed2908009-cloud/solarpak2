@@ -244,7 +244,16 @@ function ApplicationRow({ app, jobs }: { app: JobApplication; jobs: JobListing[]
           </a>
         )}
         <div className="bg-gray-50 rounded-lg p-4 mb-4">
-          <h5 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Cover letter</h5>
+          <div className="flex items-center justify-between mb-2">
+            <h5 className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Cover letter</h5>
+            <a
+              href={`/api/admin/applications/${app.id}/cover-letter`}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download DOCX
+            </a>
+          </div>
           <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{app.coverLetter}</p>
         </div>
         <div className="flex flex-wrap gap-2">

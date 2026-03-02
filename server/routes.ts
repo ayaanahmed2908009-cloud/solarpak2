@@ -1369,6 +1369,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/applications/:id/cover-letter", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await db.execute(
+        sql`SELECT name, cover_letter, created_at FROM job_applications WHERE id = ${id}`
+      );
+      const row = result.rows[0] as any;
+      if (!row) return res.status(404).json({ message: "Application not found" });
+
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
+      const doc = new Document({
+        sections: [{
+          children: [
+            new Paragraph({
+              heading: HeadingLevel.HEADING_1,
+              children: [new TextRun({ text: "Cover Letter", bold: true })],
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Applicant: ${row.name}`, italics: true, color: "555555" })],
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Date: ${new Date(row.created_at).toLocaleDateString()}`, italics: true, color: "555555" })],
+            }),
+            new Paragraph({ children: [new TextRun({ text: "" })] }),
+            ...String(row.cover_letter || "").split("\n").map(
+              (line: string) => new Paragraph({ children: [new TextRun({ text: line })] })
+            ),
+          ],
+        }],
+      });
+
+      const buffer = await Packer.toBuffer(doc);
+      const filename = `cover-letter-${row.name.replace(/\s+/g, "-").toLowerCase()}.docx`;
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.send(buffer);
+    } catch (error) {
+      console.error("Cover letter DOCX error:", error);
+      res.status(500).json({ message: "Error generating cover letter" });
+    }
+  });
+
   app.get("/api/admin/applications/:id/resume", requireAdminAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
