@@ -382,7 +382,7 @@ export default function UnifiedImpactSection() {
               </div>
               <div className="flex-1 overflow-hidden">
                 <div className="animate-scroll whitespace-nowrap text-sm text-gray-500">
-                  Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad &middot; Solar panels generating peak energy in Lahore &middot; Night lighting restored for 12 families in Multan &middot; Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad
+                  Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad &middot; Solar panels generating peak energy in Lahore &middot; Night lighting restored for 12 families in Multan &middot; SolarPak exploring first school solar installation in Sindh &middot; Open roles available — visit Opportunities to apply &middot; Ahmed family in Karachi now has 24/7 power &middot; New installation completed in Hyderabad &middot; Solar panels generating peak energy in Lahore &middot; Night lighting restored for 12 families in Multan &middot; SolarPak exploring first school solar installation in Sindh &middot; Open roles available — visit Opportunities to apply
                 </div>
               </div>
             </div>
