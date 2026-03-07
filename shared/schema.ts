@@ -219,6 +219,7 @@ export const jobListings = pgTable("job_listings", {
   responsibilities: text("responsibilities").array().notNull(),
   qualifications: text("qualifications").array().notNull(),
   isActive: boolean("is_active").notNull().default(true),
+  applicationsOpen: boolean("applications_open").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

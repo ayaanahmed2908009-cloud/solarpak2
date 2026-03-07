@@ -188,6 +188,11 @@ function JobListingCard({ job }: { job: JobListingType }) {
               <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded font-medium">
                 {job.type}
               </span>
+              {(job as any).applicationsOpen === false && (
+                <span className="text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded font-medium">
+                  Applications Closed
+                </span>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-x-4 text-xs text-gray-400">
               <span>{job.department}</span>
@@ -235,7 +240,29 @@ function JobListingCard({ job }: { job: JobListingType }) {
           </div>
 
           <div className="mt-6 pt-4 border-t border-gray-50">
-            {!showApply ? (
+            {(job as any).applicationsOpen === false ? (
+              <div className="flex items-start gap-4 py-4 px-5 bg-gray-50 rounded-xl">
+                <svg width="36" height="28" viewBox="0 0 120 88" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 mt-0.5 opacity-60">
+                  <g transform="translate(8, 24) rotate(-10, 28, 16)">
+                    <rect x="4" y="4" width="48" height="28" rx="1.5" stroke="#9ca3af" strokeWidth="1.5" fill="#f3f4f6" />
+                    <rect x="6" y="6" width="14" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="22" y="6" width="14" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="38" y="6" width="12" height="12" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="6" y="20" width="14" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="22" y="20" width="14" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                    <rect x="38" y="20" width="12" height="10" rx="0.5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="0.75" />
+                  </g>
+                  <line x1="36" y1="52" x2="36" y2="68" stroke="#9ca3af" strokeWidth="1.5" />
+                  <line x1="28" y1="68" x2="44" y2="68" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="88" cy="24" r="14" fill="#c5c9cf" />
+                  <circle cx="94" cy="20" r="12" fill="white" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 mb-0.5">Applications are currently closed</p>
+                  <p className="text-sm text-gray-400 leading-relaxed">If you've already applied, you'll hear from our team by email.</p>
+                </div>
+              </div>
+            ) : !showApply ? (
               <button
                 onClick={() => setShowApply(true)}
                 className="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-900 transition-colors group/link"

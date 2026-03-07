@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Lock,
+  LockOpen,
   Plus,
   Trash2,
   ChevronDown,
@@ -154,6 +155,11 @@ function CreateJobForm({ onClose }: { onClose: () => void }) {
 }
 
 function JobRow({ job }: { job: JobListing }) {
+  const toggleAppsMutation = useMutation({
+    mutationFn: () => apiRequest("PATCH", `/api/admin/jobs/${job.id}`, { applicationsOpen: !(job as any).applicationsOpen }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/admin/jobs"] }),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: () => apiRequest("DELETE", `/api/admin/jobs/${job.id}`),
     onSuccess: () => {
@@ -162,18 +168,31 @@ function JobRow({ job }: { job: JobListing }) {
     },
   });
 
+  const appsOpen = (job as any).applicationsOpen !== false;
+
   return (
     <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
+        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
           <h4 className="text-sm font-semibold text-gray-900 truncate">{job.title}</h4>
           {!job.isActive && (
             <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">Hidden</span>
+          )}
+          {!appsOpen && (
+            <span className="text-[10px] font-medium text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">Applications Closed</span>
           )}
         </div>
         <p className="text-xs text-gray-400">{job.department} · {job.location} · {job.type}</p>
       </div>
       <div className="flex items-center gap-1 ml-4">
+        <button
+          onClick={() => toggleAppsMutation.mutate()}
+          disabled={toggleAppsMutation.isPending}
+          title={appsOpen ? "Close applications" : "Open applications"}
+          className={`p-2 rounded-lg transition-colors ${appsOpen ? "text-green-600 hover:text-orange-500 hover:bg-orange-50" : "text-orange-500 hover:text-green-600 hover:bg-green-50"}`}
+        >
+          {appsOpen ? <LockOpen className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+        </button>
         <button
           onClick={() => {
             if (window.confirm("Delete this job and all its applications?")) {

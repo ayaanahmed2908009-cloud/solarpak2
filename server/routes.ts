@@ -1270,7 +1270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/jobs/:id", requireAdminAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const allowedFields = ["title", "department", "type", "location", "description", "responsibilities", "qualifications", "isActive"];
+      const allowedFields = ["title", "department", "type", "location", "description", "responsibilities", "qualifications", "isActive", "applicationsOpen"];
       const updates: Record<string, any> = {};
       for (const key of allowedFields) {
         if (req.body[key] !== undefined) updates[key] = req.body[key];
