@@ -1347,6 +1347,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const jobId = parseInt(req.params.id);
       const [job] = await db.select().from(jobListings).where(eq(jobListings.id, jobId));
       if (!job || !job.isActive) return res.status(404).json({ message: "Job not found" });
+      if ((job as any).applicationsOpen === false) return res.status(403).json({ message: "Applications for this role are currently closed" });
 
       const body = typeof req.body.data === "string" ? JSON.parse(req.body.data) : req.body;
       const validated = insertJobApplicationSchema.parse({ ...body, jobId });
