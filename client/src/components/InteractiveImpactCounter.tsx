@@ -157,14 +157,14 @@ export default function InteractiveImpactCounter() {
           
           <div className="max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-white font-semibold">Progress: 3 / 100 panels</span>
-              <span className="text-purple-200">3%</span>
+              <span className="text-white font-semibold">Progress: 20 / 100 panels</span>
+              <span className="text-purple-200">20%</span>
             </div>
             
             <div className="bg-white/20 rounded-full h-4 mb-4 overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-yellow-400 to-orange-500 h-4 rounded-full transition-all duration-2000 ease-out relative"
-                style={{ width: '3%' }}
+                style={{ width: '20%' }}
               >
                 <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full"></div>
               </div>
