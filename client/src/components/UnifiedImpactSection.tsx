@@ -51,7 +51,7 @@ export default function UnifiedImpactSection() {
     energyGenerated: 270,
     co2Prevented: 1900,
     hoursOfPower: 3,
-    panelsInstalled: 23,
+    panelsInstalled: 20,
     homesEmpowered: 20
   };
 
@@ -162,8 +162,8 @@ export default function UnifiedImpactSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
           {[
-            { icon: Zap, value: counters.panelsInstalled, label: "Solar Panels Installed", note: "+4 panels this month", accent: "emerald" },
-            { icon: Home, value: counters.homesEmpowered, label: "Homes Empowered", note: "+4 families this month", accent: "emerald" },
+            { icon: Zap, value: counters.panelsInstalled, label: "Solar Panels Installed", note: "+3 panels this month", accent: "emerald" },
+            { icon: Home, value: counters.homesEmpowered, label: "Homes Empowered", note: "+3 families this month", accent: "emerald" },
             { icon: Heart, value: counters.livesImpacted, label: "Lives Transformed", note: "Every donation matters", accent: "emerald" },
           ].map((metric, i) => (
             <div key={i} className={`scroll-reveal stagger-delay-${i + 1}`}>
@@ -247,14 +247,14 @@ export default function UnifiedImpactSection() {
             
             <div className="max-w-2xl mx-auto">
               <div className="flex justify-between items-center mb-3">
-                <span className="text-gray-900 font-semibold text-sm">Progress: 23 / 100 panels</span>
-                <span className="text-gray-500 text-sm">23%</span>
+                <span className="text-gray-900 font-semibold text-sm">Progress: 20 / 100 panels</span>
+                <span className="text-gray-500 text-sm">20%</span>
               </div>
               
               <div className="bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
                 <div 
                   className="bg-emerald-600 h-3 rounded-full transition-all duration-2000 ease-out"
-                  style={{ width: isVisible ? '23%' : '0%' }}
+                  style={{ width: isVisible ? '20%' : '0%' }}
                 ></div>
               </div>
               
