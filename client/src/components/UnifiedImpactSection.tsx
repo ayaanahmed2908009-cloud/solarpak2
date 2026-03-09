@@ -51,7 +51,7 @@ export default function UnifiedImpactSection() {
     energyGenerated: 270,
     co2Prevented: 1900,
     hoursOfPower: 3,
-    panelsInstalled: 20,
+    panelsInstalled: 23,
     homesEmpowered: 20
   };
 
@@ -247,14 +247,14 @@ export default function UnifiedImpactSection() {
             
             <div className="max-w-2xl mx-auto">
               <div className="flex justify-between items-center mb-3">
-                <span className="text-gray-900 font-semibold text-sm">Progress: 20 / 100 panels</span>
-                <span className="text-gray-500 text-sm">20%</span>
+                <span className="text-gray-900 font-semibold text-sm">Progress: 23 / 100 panels</span>
+                <span className="text-gray-500 text-sm">23%</span>
               </div>
               
               <div className="bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
                 <div 
                   className="bg-emerald-600 h-3 rounded-full transition-all duration-2000 ease-out"
-                  style={{ width: isVisible ? '20%' : '0%' }}
+                  style={{ width: isVisible ? '23%' : '0%' }}
                 ></div>
               </div>
               

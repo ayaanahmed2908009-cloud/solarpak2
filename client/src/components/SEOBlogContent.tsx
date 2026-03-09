@@ -34,15 +34,15 @@ export function SEOBlogContent() {
             Solar energy presents an immediate and sustainable solution to Pakistan's electricity 
             shortage. Unlike grid-dependent power, solar panels provide consistent, renewable energy 
             that empowers families with 24/7 electricity access. Our solar installations have already 
-            transformed 20 homes, demonstrating the life-changing impact of clean energy technology.
+            transformed 23 homes, demonstrating the life-changing impact of clean energy technology.
           </p>
         </section>
 
         <section>
           <h2>Community-Driven Impact: How Donations Transform Lives</h2>
           <p>
-            Through community donations, SolarPak has successfully installed 20 solar panel systems 
-            across Pakistan, directly empowering 20 families and positively impacting 120 lives. 
+            Through community donations, SolarPak has successfully installed 23 solar panel systems 
+            across Pakistan, directly empowering 23 families and positively impacting 120 lives. 
             These installations generate 270 kWh of clean energy daily, preventing 1,900 kg of CO₂ 
             emissions - equivalent to planting 95 trees annually.
           </p>
@@ -72,7 +72,7 @@ export function SEOBlogContent() {
           <h2>Environmental Sustainability and Climate Action</h2>
           <p>
             Each solar panel installation contributes to Pakistan's environmental sustainability goals. 
-            Our 20 installations prevent 1,900 kg of CO₂ emissions annually, equivalent to the 
+            Our 23 installations prevent 1,900 kg of CO₂ emissions annually, equivalent to the 
             environmental benefit of planting 95 trees. Solar energy reduces Pakistan's dependence 
             on fossil fuels while providing clean, renewable power to communities in need.
           </p>

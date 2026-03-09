@@ -30,7 +30,7 @@ const founder: TeamMember = {
   expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
-    "Led 20 successful solar installations across Pakistan",
+    "Led 23 successful solar installations across Pakistan",
     "Transformed 120 lives through clean energy access",
     "Built partnerships with local communities and suppliers",
     "Certified Solar Energy Specialist and Social Entrepreneur",
