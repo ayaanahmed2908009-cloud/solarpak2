@@ -25,39 +25,32 @@ const TEAM_META: Record<string, { name: string; color: string }> = {
 
 const TEAM_IDS = ["marketing", "partnerships", "management", "impactlabs", "events"];
 
-const INPUT_FIELDS: Record<string, { key: string; label: string; type: "number" | "pct" | "decimal" }[]> = {
+const INPUT_FIELDS: Record<string, { key: string; label: string; hint: string; type: "number" | "decimal" | "binary" }[]> = {
   marketing: [
-    { key: "total_social_following", label: "Total Social Following (combined platforms)", type: "number" },
-    { key: "avg_engagement_rate_pct", label: "Avg Engagement Rate (%)", type: "pct" },
-    { key: "posts_per_month", label: "Posts Published Per Month", type: "number" },
-    { key: "press_mentions_per_year", label: "Press / Media Mentions (this year)", type: "number" },
+    { key: "posts_this_week", label: "Posts published this week", hint: "Target: 3 posts/week", type: "number" },
+    { key: "follower_gain_this_week", label: "Total follower gain this week", hint: "Target: 50 new followers/week", type: "number" },
+    { key: "press_contacts_this_week", label: "Press contacts reached out to this week", hint: "Target: at least 1 outreach (1 = 100%)", type: "number" },
   ],
   partnerships: [
-    { key: "active_partners", label: "Active Institutional Partners", type: "number" },
-    { key: "communities_reached", label: "Distinct Communities Reached", type: "number" },
-    { key: "outreach_meetings_per_month", label: "Outreach Meetings Held Per Month", type: "number" },
-    { key: "conversion_rate_pct", label: "Partnership Conversion Rate (%)", type: "pct" },
+    { key: "outreach_meetings_this_week", label: "Outreach meetings held this week", hint: "Target: 0.5/week — 1 meeting = 200% (surplus banked)", type: "number" },
+    { key: "partnerships_formalised_this_week", label: "New partnerships formalised this week", hint: "Target: 0.12/week — ~1 new partner every 8 weeks", type: "number" },
+    { key: "communities_engaged_this_week", label: "New communities engaged this week", hint: "Target: 0.1/week — ~1 new community every 10 weeks", type: "number" },
   ],
   management: [
-    { key: "active_team_members", label: "Active Team Members", type: "number" },
-    { key: "retention_rate_pct", label: "Member Retention Rate (6+ months, %)", type: "pct" },
-    { key: "okr_completion_pct", label: "Quarterly OKR Completion Rate (%)", type: "pct" },
-    { key: "team_leads_in_place", label: "Team Leads in Place", type: "number" },
-    { key: "total_teams", label: "Total Teams", type: "number" },
+    { key: "new_members_this_week", label: "New members who joined SolarPak this week", hint: "Target: 0.15/week — ~8 new members needed over the year (14 → 22)", type: "number" },
+    { key: "member_departures_this_week", label: "Members who left or became inactive this week", hint: "Target: 0 departures — each departure costs 25 points", type: "number" },
+    { key: "okr_tasks_completed", label: "OKR tasks completed this week", hint: "Target: 70% of tasks due — enter total tasks due below", type: "number" },
+    { key: "okr_tasks_total", label: "Total OKR tasks due this week", hint: "Required to calculate completion rate", type: "number" },
   ],
   impactlabs: [
-    { key: "impact_reports_published", label: "Annual Impact Reports Published", type: "number" },
-    { key: "research_articles", label: "Research Articles Published (this year)", type: "number" },
-    { key: "data_accuracy_pct", label: "Data Accuracy Audit Score (%)", type: "pct" },
-    { key: "external_citations", label: "External Citations / References", type: "number" },
+    { key: "articles_in_progress", label: "Research articles or drafts actively worked on", hint: "Target: at least 1 in progress at all times (1 = 100%)", type: "number" },
+    { key: "data_points_verified", label: "Data points or KPIs verified this week", hint: "Target: 3 data points/week", type: "number" },
+    { key: "findings_shared_externally", label: "Were SolarPak findings shared externally? (1 = yes, 0 = no)", hint: "Target: 1 every 6 weeks — binary yes/no", type: "binary" },
   ],
   events: [
-    { key: "events_per_year", label: "Events Organised (this year)", type: "number" },
-    { key: "total_attendees", label: "Total Event Attendees (this year)", type: "number" },
-    { key: "avg_attendees_per_event", label: "Avg Attendees Per Event", type: "number" },
-    { key: "satisfaction_score", label: "Post-Event Satisfaction Score (out of 5)", type: "decimal" },
-    { key: "repeat_attendee_rate_pct", label: "Repeat Attendee Rate (%)", type: "pct" },
-    { key: "events_with_sponsor", label: "Events with a Sponsor / Partner", type: "number" },
+    { key: "event_planning_hours", label: "Hours spent on event planning this week", hint: "Target: 3 hours/week", type: "number" },
+    { key: "sponsor_conversations", label: "Sponsor or partner conversations held this week", hint: "Target: 0.5/week — 1 conversation every fortnight", type: "number" },
+    { key: "registrations_this_week", label: "People registered for upcoming events this week", hint: "Target: 6 registrations/week", type: "number" },
   ],
 };
 
@@ -482,25 +475,40 @@ function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setFie
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            {fields.map((field) => {
-              const kpi = ts?.kpiScores.find((k) =>
-                k.name.toLowerCase().includes(field.label.split(" ")[0].toLowerCase().replace("₂", "").replace("(", "").trim())
-              );
-              return (
-                <div key={field.key} className="space-y-1.5">
-                  <label className="text-xs text-white/50">{field.label}</label>
+            {fields.map((field) => (
+              <div key={field.key} className="space-y-1.5">
+                <label className="text-xs font-medium text-white/70">{field.label}</label>
+                {field.type === "binary" ? (
+                  <div className="flex gap-2">
+                    {[{ v: 0, label: "No" }, { v: 1, label: "Yes" }].map(({ v, label }) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setField(teamId, field.key, v)}
+                        className={`flex-1 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                          (inputs[field.key] ?? 0) === v
+                            ? "bg-yellow-400/20 border-yellow-400/60 text-yellow-300"
+                            : "bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/8"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
                   <input
                     type="number"
                     min="0"
-                    step={field.type === "pct" || field.type === "decimal" ? "0.1" : "1"}
+                    step={field.type === "decimal" ? "0.1" : "1"}
                     value={inputs[field.key] ?? ""}
                     onChange={(e) => setField(teamId, field.key, Number(e.target.value) || 0)}
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-yellow-400/50 transition-colors"
                     placeholder="0"
                   />
-                </div>
-              );
-            })}
+                )}
+                <p className="text-[10px] text-white/30 leading-tight">{field.hint}</p>
+              </div>
+            ))}
           </div>
 
           {/* KPI Score Breakdown */}
@@ -811,10 +819,18 @@ function SettingsTab({ startDateDraft, setStartDateDraft, onSave, isPending, wee
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-green-500" />80–100 = Green (On Track)</div>
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500" />50–79 = Amber (Needs Attention)</div>
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />0–49 = Red (Critical)</div>
-          <div className="mt-3 pt-3 border-t border-white/8">All scores are capped at 100 and floored at 0.</div>
-          <div>Team score = average of its KPI scores.</div>
-          <div>Overall score = average of all 5 team scores.</div>
-          <div className="mt-2">Scores are benchmarked against Year 1 / 2 / 3 targets from the 3-Year KPI Framework.</div>
+          <div className="mt-3 pt-3 border-t border-white/8">Inputs are entered weekly by each team lead.</div>
+          <div>Each KPI is scored as (actual ÷ weekly target) × 100, capped at 100.</div>
+          <div>Team score = average of its weekly KPI scores.</div>
+          <div>Overall score = average of all 5 team scores. Target: 70%+</div>
+          <div className="mt-2 pt-2 border-t border-white/8 space-y-1">
+            <div className="font-medium text-white/50 mb-1">Weekly targets per team:</div>
+            <div>Marketing: 3 posts · 50 followers · 1 press contact</div>
+            <div>Partnerships: 0.5 meetings · 0.12 partnerships · 0.1 communities</div>
+            <div>Management: 0.15 new members · 0 departures · 70% OKR rate</div>
+            <div>Impact Labs: 1 article in progress · 3 data points · findings shared</div>
+            <div>Events: 3 planning hours · 0.5 sponsor convos · 6 registrations</div>
+          </div>
         </div>
       </div>
     </div>
