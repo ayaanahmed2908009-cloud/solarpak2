@@ -283,3 +283,35 @@ export type InsertUserImpact = z.infer<typeof insertUserImpactSchema>;
 
 export type ImpactLabsArticle = typeof impactLabsArticles.$inferSelect;
 export type InsertImpactLabsArticle = z.infer<typeof insertImpactLabsArticleSchema>;
+
+// KPI Submissions — weekly score snapshots per team
+export const kpiSubmissions = pgTable("kpi_submissions", {
+  id: serial("id").primaryKey(),
+  teamId: text("team_id").notNull(),
+  weekNumber: integer("week_number").notNull(),
+  inputs: jsonb("inputs").notNull(),
+  kpiScores: jsonb("kpi_scores").notNull(),
+  teamScore: doublePrecision("team_score").notNull(),
+  submittedAt: timestamp("submitted_at").notNull().defaultNow(),
+});
+
+export const insertKpiSubmissionSchema = createInsertSchema(kpiSubmissions).omit({
+  id: true,
+  submittedAt: true,
+});
+export type KpiSubmission = typeof kpiSubmissions.$inferSelect;
+export type InsertKpiSubmission = z.infer<typeof insertKpiSubmissionSchema>;
+
+// KPI Settings — configurable start date
+export const kpiSettings = pgTable("kpi_settings", {
+  id: serial("id").primaryKey(),
+  startDate: text("start_date").notNull().default("2025-01-01"),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpiSettingsSchema = createInsertSchema(kpiSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+export type KpiSettings = typeof kpiSettings.$inferSelect;
+export type InsertKpiSettings = z.infer<typeof insertKpiSettingsSchema>;

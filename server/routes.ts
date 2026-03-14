@@ -1429,6 +1429,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // KPI Settings
+  app.get("/api/kpi/settings", async (req, res) => {
+    try {
+      const settings = await storage.getKpiSettings();
+      res.json(settings || { startDate: "2025-01-01" });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching KPI settings" });
+    }
+  });
+
+  app.post("/api/kpi/settings", async (req, res) => {
+    try {
+      const { startDate } = req.body;
+      if (!startDate) return res.status(400).json({ message: "startDate required" });
+      const settings = await storage.upsertKpiSettings(startDate);
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Error saving KPI settings" });
+    }
+  });
+
+  // KPI Submissions
+  app.get("/api/kpi/submissions", async (req, res) => {
+    try {
+      const { teamId } = req.query;
+      const submissions = teamId
+        ? await storage.getKpiSubmissionsByTeam(String(teamId))
+        : await storage.getKpiSubmissions();
+      res.json(submissions);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching KPI submissions" });
+    }
+  });
+
+  app.post("/api/kpi/submissions", async (req, res) => {
+    try {
+      const { teamId, weekNumber, inputs, kpiScores, teamScore } = req.body;
+      if (!teamId || weekNumber == null || !inputs || !kpiScores || teamScore == null) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      const submission = await storage.createKpiSubmission({
+        teamId,
+        weekNumber,
+        inputs,
+        kpiScores,
+        teamScore,
+      });
+      res.status(201).json(submission);
+    } catch (error) {
+      res.status(500).json({ message: "Error saving KPI submission" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

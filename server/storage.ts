@@ -7,7 +7,9 @@ import {
   stats, type Stats, type InsertStats,
   subscribers, type Subscriber, type InsertSubscriber,
   userImpacts, type UserImpact, type InsertUserImpact,
-  impactLabsArticles, type ImpactLabsArticle, type InsertImpactLabsArticle
+  impactLabsArticles, type ImpactLabsArticle, type InsertImpactLabsArticle,
+  kpiSubmissions, type KpiSubmission, type InsertKpiSubmission,
+  kpiSettings, type KpiSettings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -71,6 +73,13 @@ export interface IStorage {
   createArticle(article: InsertImpactLabsArticle): Promise<ImpactLabsArticle>;
   updateArticle(id: number, updates: Partial<InsertImpactLabsArticle>): Promise<ImpactLabsArticle | undefined>;
   deleteArticle(id: number): Promise<boolean>;
+
+  // KPI operations
+  getKpiSubmissions(): Promise<KpiSubmission[]>;
+  getKpiSubmissionsByTeam(teamId: string): Promise<KpiSubmission[]>;
+  createKpiSubmission(submission: InsertKpiSubmission): Promise<KpiSubmission>;
+  getKpiSettings(): Promise<KpiSettings | undefined>;
+  upsertKpiSettings(startDate: string): Promise<KpiSettings>;
 }
 
 // In-memory storage implementation
@@ -942,6 +951,42 @@ export class DatabaseStorage implements IStorage {
   async deleteArticle(id: number): Promise<boolean> {
     const result = await db.delete(impactLabsArticles).where(eq(impactLabsArticles.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getKpiSubmissions(): Promise<KpiSubmission[]> {
+    return db.select().from(kpiSubmissions).orderBy(desc(kpiSubmissions.submittedAt));
+  }
+
+  async getKpiSubmissionsByTeam(teamId: string): Promise<KpiSubmission[]> {
+    return db
+      .select()
+      .from(kpiSubmissions)
+      .where(eq(kpiSubmissions.teamId, teamId))
+      .orderBy(desc(kpiSubmissions.submittedAt));
+  }
+
+  async createKpiSubmission(submission: InsertKpiSubmission): Promise<KpiSubmission> {
+    const [created] = await db.insert(kpiSubmissions).values(submission).returning();
+    return created;
+  }
+
+  async getKpiSettings(): Promise<KpiSettings | undefined> {
+    const rows = await db.select().from(kpiSettings).limit(1);
+    return rows[0] || undefined;
+  }
+
+  async upsertKpiSettings(startDate: string): Promise<KpiSettings> {
+    const existing = await this.getKpiSettings();
+    if (existing) {
+      const [updated] = await db
+        .update(kpiSettings)
+        .set({ startDate, updatedAt: new Date() })
+        .where(eq(kpiSettings.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(kpiSettings).values({ startDate }).returning();
+    return created;
   }
 }
 

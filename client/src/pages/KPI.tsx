@@ -3,171 +3,230 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart, Bar, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, FunnelChart, Funnel, LabelList, Cell,
+  ResponsiveContainer,
 } from "recharts";
-import { TEAMS, RISKS, IMPACT_DATA, SUMMARY_STATS } from "@/data/kpiData";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import {
+  weeksElapsed, scoreAllTeams, calcOverallScore, ragStatus,
+  DEFAULT_INPUTS,
+  type TeamScore,
+} from "@/lib/scoring";
+import { IMPACT_DATA } from "@/data/kpiData";
 
-type Year = 0 | 1 | 2;
-type Tab = "overview" | "teams" | "risks" | "impact";
+type Tab = "scores" | "input" | "history" | "impact" | "settings";
 
-const YEAR_LABELS = ["Year 1", "Year 2", "Year 3"];
+const TEAM_META: Record<string, { name: string; color: string }> = {
+  operations: { name: "Operations & Installations", color: "#16a34a" },
+  fundraising: { name: "Fundraising & Donations", color: "#2563eb" },
+  marketing: { name: "Marketing & Outreach", color: "#7c3aed" },
+  volunteers: { name: "Volunteer Management", color: "#d97706" },
+  impactlabs: { name: "Impact Labs", color: "#0891b2" },
+  events: { name: "Events & Community Outreach", color: "#db2777" },
+};
 
-function getRagStatus(actual: number, target: number): "green" | "amber" | "red" {
-  if (target === 0) return "green";
-  const pct = (actual / target) * 100;
-  if (pct >= 90) return "green";
-  if (pct >= 70) return "amber";
-  return "red";
+const TEAM_IDS = ["operations", "fundraising", "marketing", "volunteers", "impactlabs", "events"];
+
+const INPUT_FIELDS: Record<string, { key: string; label: string; type: "number" | "pct" }[]> = {
+  operations: [
+    { key: "families_served_to_date", label: "Families Served (to date)", type: "number" },
+    { key: "completion_rate_pct", label: "Same-Day Completion Rate (%)", type: "pct" },
+    { key: "uptime_failures", label: "Uptime Failures (0 = perfect)", type: "number" },
+    { key: "co2_reports_submitted", label: "CO₂ Reports Submitted", type: "number" },
+    { key: "co2_rounds_completed", label: "CO₂ Rounds Completed", type: "number" },
+    { key: "install_reports_published", label: "Install Reports Published", type: "number" },
+    { key: "install_rounds_completed", label: "Install Rounds Completed", type: "number" },
+  ],
+  fundraising: [
+    { key: "funds_raised_to_date", label: "Funds Raised to Date ($)", type: "number" },
+    { key: "retained_donors", label: "Retained Donors", type: "number" },
+    { key: "total_prior_donors", label: "Total Prior Donors", type: "number" },
+    { key: "new_funding_sources", label: "New Funding Sources", type: "number" },
+    { key: "cost_per_family_last_round", label: "Cost Per Family ($)", type: "number" },
+  ],
+  marketing: [
+    { key: "follower_count_start", label: "Follower Count (Baseline)", type: "number" },
+    { key: "follower_count_now", label: "Follower Count (Now)", type: "number" },
+    { key: "avg_monthly_reach", label: "Avg Monthly Reach", type: "number" },
+    { key: "media_mentions_to_date", label: "Media Mentions (to date)", type: "number" },
+    { key: "donor_conversion_pct", label: "Website Donor Conversion (%)", type: "pct" },
+  ],
+  volunteers: [
+    { key: "active_volunteers", label: "Active Volunteers", type: "number" },
+    { key: "tasks_on_time_pct", label: "Tasks Completed On Time (%)", type: "pct" },
+    { key: "meetings_held_pct", label: "Weekly Meetings Held (%)", type: "pct" },
+  ],
+  impactlabs: [
+    { key: "surveys_completed_pct", label: "Follow-Up Survey Completion (%)", type: "pct" },
+    { key: "reports_published", label: "Reports Published", type: "number" },
+    { key: "reports_due", label: "Reports Due", type: "number" },
+    { key: "co2_documented_rounds", label: "CO₂ Rounds Documented", type: "number" },
+    { key: "total_rounds", label: "Total Rounds", type: "number" },
+    { key: "energy_saving_pct", label: "Avg Household Energy Saving (%)", type: "pct" },
+  ],
+  events: [
+    { key: "events_hosted_to_date", label: "Events Hosted (to date)", type: "number" },
+    { key: "attendee_growth_pct", label: "Attendee Growth vs Prior Event (%)", type: "pct" },
+    { key: "fundraising_raised_to_date", label: "Event Fundraising ($)", type: "number" },
+  ],
+};
+
+function ragColors(rag: "green" | "amber" | "red") {
+  if (rag === "green") return { bg: "bg-green-900/20", border: "border-green-500/40", text: "text-green-400", badge: "bg-green-500" };
+  if (rag === "amber") return { bg: "bg-amber-900/20", border: "border-amber-500/40", text: "text-amber-400", badge: "bg-amber-500" };
+  return { bg: "bg-red-900/20", border: "border-red-500/40", text: "text-red-400", badge: "bg-red-500" };
 }
 
-function getRagColor(status: "green" | "amber" | "red") {
-  if (status === "green") return "#16a34a";
-  if (status === "amber") return "#d97706";
-  return "#dc2626";
-}
-
-function getRagBg(status: "green" | "amber" | "red") {
-  if (status === "green") return "bg-green-100 text-green-700 border-green-300";
-  if (status === "amber") return "bg-amber-100 text-amber-700 border-amber-300";
-  return "bg-red-100 text-red-700 border-red-300";
-}
-
-function getRiskColor(score: number) {
-  if (score >= 15) return "#dc2626";
-  if (score >= 8) return "#ea580c";
-  if (score >= 4) return "#d97706";
-  return "#16a34a";
-}
-
-function getRiskBg(score: number) {
-  if (score >= 15) return "bg-red-50 border-red-200";
-  if (score >= 8) return "bg-orange-50 border-orange-200";
-  if (score >= 4) return "bg-amber-50 border-amber-200";
-  return "bg-green-50 border-green-200";
-}
-
-const STORAGE_KEY = "solarpak_kpi_actuals";
-
-function loadActuals(): Record<string, number> {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function saveActuals(actuals: Record<string, number>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(actuals));
-}
-
-function formatValue(value: number, unit: string) {
-  if (unit === "$") return `$${value.toLocaleString()}`;
-  if (unit === "%") return `${value}%`;
-  if (unit === "×") return `${value}×`;
-  if (unit === "people" && value >= 1000) return `${(value / 1000).toFixed(0)}K`;
-  return `${value.toLocaleString()} ${unit}`;
+function ScoreRing({ score, size = 80, strokeWidth = 8, color }: { score: number; size?: number; strokeWidth?: number; color: string }) {
+  const r = (size - strokeWidth) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = (score / 100) * circ;
+  return (
+    <svg width={size} height={size}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={strokeWidth} />
+      <circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke={color} strokeWidth={strokeWidth}
+        strokeDasharray={`${dash} ${circ}`}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        style={{ transition: "stroke-dasharray 0.8s ease" }}
+      />
+      <text x="50%" y="50%" textAnchor="middle" dy="0.35em" fill="white" fontSize={size * 0.22} fontWeight="bold">
+        {Math.round(score)}
+      </text>
+    </svg>
+  );
 }
 
 const pageVariants = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -8 },
 };
 
 export default function KPI() {
-  const [year, setYear] = useState<Year>(0);
-  const [tab, setTab] = useState<Tab>("overview");
-  const [selectedTeam, setSelectedTeam] = useState(0);
-  const [actuals, setActuals] = useState<Record<string, number>>(loadActuals);
-  const [tooltip, setTooltip] = useState<{
-    risk: (typeof RISKS)[0];
-    x: number;
-    y: number;
-  } | null>(null);
-  const [sortField, setSortField] = useState<"name" | "likelihood" | "impact" | "score">("score");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
-
-  useEffect(() => {
-    saveActuals(actuals);
-  }, [actuals]);
-
-  function setActual(teamId: string, kpiName: string, value: number) {
-    const key = `${teamId}__${kpiName}__${year}`;
-    setActuals((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function getActual(teamId: string, kpiName: string): number {
-    const key = `${teamId}__${kpiName}__${year}`;
-    return actuals[key] ?? 0;
-  }
-
-  function getTeamCompletion(teamId: string, yearIdx: Year) {
-    const team = TEAMS.find((t) => t.id === teamId)!;
-    let total = 0, count = 0;
-    team.kpis.forEach((kpi) => {
-      const target = kpi.targets[yearIdx];
-      if (target === 0) return;
-      const key = `${teamId}__${kpi.name}__${yearIdx}`;
-      const actual = actuals[key] ?? 0;
-      total += Math.min((actual / target) * 100, 100);
-      count++;
-    });
-    return count > 0 ? total / count : 0;
-  }
-
-  const sortedRisks = [...RISKS].sort((a, b) => {
-    const getVal = (r: (typeof RISKS)[0]) => {
-      if (sortField === "score") return r.likelihood * r.impact;
-      if (sortField === "likelihood") return r.likelihood;
-      if (sortField === "impact") return r.impact;
-      return 0;
-    };
-    if (sortField === "name") {
-      return sortDir === "asc"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
+  const [tab, setTab] = useState<Tab>("scores");
+  const [selectedInputTeam, setSelectedInputTeam] = useState(0);
+  const [inputDrafts, setInputDrafts] = useState<Record<string, any>>(
+    () => {
+      try { return JSON.parse(localStorage.getItem("kpi_drafts") || "{}"); } catch { return {}; }
     }
-    return sortDir === "asc" ? getVal(a) - getVal(b) : getVal(b) - getVal(a);
+  );
+  const [startDateDraft, setStartDateDraft] = useState("");
+  const [saved, setSaved] = useState(false);
+  const qc = useQueryClient();
+
+  const { data: settings } = useQuery<{ startDate: string }>({
+    queryKey: ["/api/kpi/settings"],
   });
 
-  function toggleSort(field: typeof sortField) {
-    if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortField(field); setSortDir("desc"); }
+  const { data: submissions = [] } = useQuery<any[]>({
+    queryKey: ["/api/kpi/submissions"],
+  });
+
+  const settingsMutation = useMutation({
+    mutationFn: (startDate: string) =>
+      apiRequest("POST", "/api/kpi/settings", { startDate }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/kpi/settings"] }),
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: (body: any) =>
+      apiRequest("POST", "/api/kpi/submissions", body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/kpi/submissions"] });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    },
+  });
+
+  const startDate = settings?.startDate || "2025-01-01";
+  const weeks = weeksElapsed(startDate);
+
+  useEffect(() => {
+    setStartDateDraft(startDate);
+  }, [startDate]);
+
+  useEffect(() => {
+    localStorage.setItem("kpi_drafts", JSON.stringify(inputDrafts));
+  }, [inputDrafts]);
+
+  function getInputs(teamId: string): Record<string, any> {
+    return { ...DEFAULT_INPUTS[teamId], ...(inputDrafts[teamId] || {}) };
   }
 
-  const today = new Date().toLocaleDateString("en-GB", {
-    day: "numeric", month: "long", year: "numeric",
+  function setField(teamId: string, key: string, value: number) {
+    setInputDrafts((prev) => ({
+      ...prev,
+      [teamId]: { ...DEFAULT_INPUTS[teamId], ...(prev[teamId] || {}), [key]: value },
+    }));
+  }
+
+  const allInputs: Record<string, any> = {};
+  TEAM_IDS.forEach((id) => { allInputs[id] = getInputs(id); });
+
+  const teamScores = scoreAllTeams(allInputs, weeks);
+  const overallScore = calcOverallScore(teamScores);
+  const overallRag = ragStatus(overallScore);
+
+  function handleSubmitTeam(teamId: string) {
+    const ts = teamScores.find((t) => t.teamId === teamId);
+    if (!ts) return;
+    submitMutation.mutate({
+      teamId,
+      weekNumber: weeks,
+      inputs: getInputs(teamId),
+      kpiScores: ts.kpiScores,
+      teamScore: ts.teamScore,
+    });
+  }
+
+  const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+  const ragColors2 = ragColors(overallRag);
+
+  const historyByTeam: Record<string, any[]> = {};
+  (submissions as any[]).forEach((s) => {
+    if (!historyByTeam[s.teamId]) historyByTeam[s.teamId] = [];
+    historyByTeam[s.teamId].push({
+      week: `W${s.weekNumber}`,
+      score: Math.round(s.teamScore),
+      date: new Date(s.submittedAt).toLocaleDateString("en-GB", { month: "short", day: "numeric" }),
+    });
+  });
+
+  const overallHistory: any[] = [];
+  const weekNums = [...new Set((submissions as any[]).map((s) => s.weekNumber))].sort((a, b) => a - b);
+  weekNums.forEach((wk) => {
+    const weekSubs = (submissions as any[]).filter((s) => s.weekNumber === wk);
+    const avg = weekSubs.reduce((sum, s) => sum + s.teamScore, 0) / (weekSubs.length || 1);
+    overallHistory.push({ week: `W${wk}`, score: Math.round(avg) });
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0f1e] text-white flex flex-col">
-      {/* Sidebar + Content */}
+    <div className="min-h-screen bg-[#080d1a] text-white flex flex-col">
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="hidden md:flex flex-col w-64 bg-[#0d1528] border-r border-white/10 fixed top-0 left-0 h-full z-20">
-          <div className="p-6 border-b border-white/10">
+        <aside className="hidden md:flex flex-col w-60 bg-[#0c1326] border-r border-white/8 fixed top-0 left-0 h-full z-20">
+          <div className="p-5 border-b border-white/8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center font-black text-black text-lg">S</div>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center font-black text-black text-base">S</div>
               <div>
                 <div className="font-bold text-white text-sm">SolarPak</div>
-                <div className="text-xs text-white/40">KPI Dashboard</div>
+                <div className="text-[11px] text-white/40">KPI Scoring System</div>
               </div>
             </div>
           </div>
 
-          <nav className="flex-1 p-4 space-y-1">
-            {(["overview", "teams", "risks", "impact"] as Tab[]).map((t) => {
-              const icons: Record<Tab, string> = {
-                overview: "⬡",
-                teams: "◈",
-                risks: "⚠",
-                impact: "◉",
-              };
-              const labels: Record<Tab, string> = {
-                overview: "Overview",
-                teams: "Team KPIs",
-                risks: "Risk Heatmap",
-                impact: "Impact Summary",
+          <nav className="flex-1 p-3 space-y-1">
+            {(["scores", "input", "history", "impact", "settings"] as Tab[]).map((t) => {
+              const meta: Record<Tab, { icon: string; label: string }> = {
+                scores: { icon: "◉", label: "Scores" },
+                input: { icon: "✎", label: "Weekly Input" },
+                history: { icon: "◈", label: "History" },
+                impact: { icon: "⬡", label: "Impact Charts" },
+                settings: { icon: "⚙", label: "Settings" },
               };
               return (
                 <button
@@ -175,108 +234,113 @@ export default function KPI() {
                   onClick={() => setTab(t)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     tab === t
-                      ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/30"
-                      : "text-white/50 hover:text-white hover:bg-white/5"
+                      ? "bg-yellow-400/15 text-yellow-300 border border-yellow-400/25"
+                      : "text-white/40 hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  <span className="text-base">{icons[t]}</span>
-                  {labels[t]}
+                  <span>{meta[t].icon}</span>{meta[t].label}
                 </button>
               );
             })}
           </nav>
 
-          <div className="p-4 border-t border-white/10 space-y-2">
-            <div className="text-xs text-white/30 uppercase tracking-widest mb-2">Teams</div>
-            {TEAMS.map((team) => {
-              const pct = getTeamCompletion(team.id as any, year);
-              const rag = pct >= 90 ? "green" : pct >= 70 ? "amber" : "red";
+          <div className="p-4 border-t border-white/8">
+            <div className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Week {weeks}</div>
+            {teamScores.map((ts) => {
+              const meta = TEAM_META[ts.teamId];
               return (
-                <div key={team.id} className="flex items-center gap-2 text-xs">
-                  <div
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: getRagColor(rag) }}
-                  />
-                  <span className="text-white/60 truncate">{team.name.split(" ")[0]}</span>
-                  <span className="ml-auto text-white/40">{Math.round(pct)}%</span>
+                <div key={ts.teamId} className="flex items-center gap-2 py-1">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ragColors(ts.rag).badge === "bg-green-500" ? "#22c55e" : ts.rag === "amber" ? "#f59e0b" : "#ef4444" }} />
+                  <span className="text-[11px] text-white/50 truncate flex-1">{meta?.name.split(" ")[0]}</span>
+                  <span className="text-[11px] font-bold text-white/60">{Math.round(ts.teamScore)}</span>
                 </div>
               );
             })}
           </div>
         </aside>
 
-        {/* Main Content */}
-        <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
+        <div className="flex-1 md:ml-60 flex flex-col min-h-screen">
           {/* Top Bar */}
-          <header className="sticky top-0 z-10 bg-[#0a0f1e]/90 backdrop-blur border-b border-white/10 px-6 py-4 flex items-center justify-between">
+          <header className="sticky top-0 z-10 bg-[#080d1a]/90 backdrop-blur border-b border-white/8 px-6 py-4 flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-white">
-                {tab === "overview" && "Dashboard Overview"}
-                {tab === "teams" && "Team KPI Tracker"}
-                {tab === "risks" && "Risk Heatmap"}
+              <h1 className="text-lg font-bold text-white">
+                {tab === "scores" && "Score Dashboard"}
+                {tab === "input" && "Weekly Input"}
+                {tab === "history" && "Score History"}
                 {tab === "impact" && "Impact Summary"}
+                {tab === "settings" && "Settings"}
               </h1>
-              <p className="text-xs text-white/40 mt-0.5">SolarPak · Impact Operations</p>
+              <p className="text-[11px] text-white/35 mt-0.5">Week {weeks} · Started {startDate}</p>
             </div>
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl p-1 border border-white/10">
-              {YEAR_LABELS.map((lbl, i) => (
-                <button
-                  key={i}
-                  onClick={() => setYear(i as Year)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                    year === i
-                      ? "bg-yellow-400 text-black shadow"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  {lbl}
-                </button>
-              ))}
+
+            <div className="flex items-center gap-3">
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${ragColors2.bg} ${ragColors2.border} ${ragColors2.text}`}>
+                <span>Overall</span>
+                <span className="text-xl font-black">{Math.round(overallScore)}</span>
+              </div>
             </div>
           </header>
 
-          {/* Page Body */}
           <main className="flex-1 p-6">
             <AnimatePresence mode="wait">
-              {tab === "overview" && (
-                <motion.div key="overview" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
-                  <OverviewTab year={year} actuals={actuals} getTeamCompletion={getTeamCompletion} />
+              {tab === "scores" && (
+                <motion.div key="scores" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <ScoresTab teamScores={teamScores} overallScore={overallScore} overallRag={overallRag} weeks={weeks} />
                 </motion.div>
               )}
-              {tab === "teams" && (
-                <motion.div key="teams" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
-                  <TeamsTab year={year} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} actuals={actuals} getActual={getActual} setActual={setActual} />
+              {tab === "input" && (
+                <motion.div key="input" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <InputTab
+                    selectedTeam={selectedInputTeam}
+                    setSelectedTeam={setSelectedInputTeam}
+                    teamScores={teamScores}
+                    getInputs={getInputs}
+                    setField={setField}
+                    handleSubmit={handleSubmitTeam}
+                    isPending={submitMutation.isPending}
+                    saved={saved}
+                  />
                 </motion.div>
               )}
-              {tab === "risks" && (
-                <motion.div key="risks" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
-                  <RisksTab sortedRisks={sortedRisks} sortField={sortField} sortDir={sortDir} toggleSort={toggleSort} tooltip={tooltip} setTooltip={setTooltip} />
+              {tab === "history" && (
+                <motion.div key="history" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <HistoryTab historyByTeam={historyByTeam} overallHistory={overallHistory} />
                 </motion.div>
               )}
               {tab === "impact" && (
-                <motion.div key="impact" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
-                  <ImpactTab year={year} />
+                <motion.div key="impact" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <ImpactTab />
+                </motion.div>
+              )}
+              {tab === "settings" && (
+                <motion.div key="settings" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <SettingsTab
+                    startDateDraft={startDateDraft}
+                    setStartDateDraft={setStartDateDraft}
+                    onSave={() => settingsMutation.mutate(startDateDraft)}
+                    isPending={settingsMutation.isPending}
+                    weeks={weeks}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
           </main>
 
-          {/* Footer */}
-          <footer className="px-6 py-4 border-t border-white/10 flex items-center justify-between text-xs text-white/30">
-            <span>SolarPak KPI Dashboard · Impact Labs Design System</span>
+          <footer className="px-6 py-3 border-t border-white/8 flex items-center justify-between text-[11px] text-white/25">
+            <span>SolarPak KPI System · Year 1</span>
             <span>Last updated: {today}</span>
           </footer>
         </div>
       </div>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0d1528] border-t border-white/10 z-20 flex">
-        {(["overview", "teams", "risks", "impact"] as Tab[]).map((t) => {
-          const icons: Record<Tab, string> = { overview: "⬡", teams: "◈", risks: "⚠", impact: "◉" };
-          const labels: Record<Tab, string> = { overview: "Overview", teams: "Teams", risks: "Risks", impact: "Impact" };
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0c1326] border-t border-white/8 z-20 flex">
+        {(["scores", "input", "history", "impact", "settings"] as Tab[]).map((t) => {
+          const icons: Record<Tab, string> = { scores: "◉", input: "✎", history: "◈", impact: "⬡", settings: "⚙" };
+          const labels: Record<Tab, string> = { scores: "Scores", input: "Input", history: "History", impact: "Impact", settings: "Settings" };
           return (
-            <button key={t} onClick={() => setTab(t)} className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-all ${tab === t ? "text-yellow-400" : "text-white/40"}`}>
-              <span className="text-lg">{icons[t]}</span>
+            <button key={t} onClick={() => setTab(t)} className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all ${tab === t ? "text-yellow-400" : "text-white/35"}`}>
+              <span className="text-base">{icons[t]}</span>
               {labels[t]}
             </button>
           );
@@ -286,454 +350,420 @@ export default function KPI() {
   );
 }
 
-function StatCard({ label, value, sub, color }: { label: string; value: string; sub?: string; color: string }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.03, borderColor: color }}
-      className="bg-[#0d1528] border border-white/10 rounded-2xl p-6 flex flex-col gap-2 transition-colors cursor-default"
-    >
-      <div className="text-xs text-white/40 uppercase tracking-widest">{label}</div>
-      <div className="text-4xl font-black" style={{ color }}>{value}</div>
-      {sub && <div className="text-xs text-white/30">{sub}</div>}
-    </motion.div>
-  );
-}
-
-function OverviewTab({ year, actuals, getTeamCompletion }: {
-  year: Year;
-  actuals: Record<string, number>;
-  getTeamCompletion: (teamId: string, yearIdx: Year) => number;
+function ScoresTab({ teamScores, overallScore, overallRag, weeks }: {
+  teamScores: TeamScore[];
+  overallScore: number;
+  overallRag: "green" | "amber" | "red";
+  weeks: number;
 }) {
-  const completions = TEAMS.map((t) => ({
-    name: t.name.split(" ")[0],
-    pct: Math.round(getTeamCompletion(t.id, year)),
-    color: t.color,
-  }));
+  const overallColor = overallRag === "green" ? "#22c55e" : overallRag === "amber" ? "#f59e0b" : "#ef4444";
 
   return (
-    <div className="space-y-8">
-      {/* Stat Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Families Served" value="220" sub="Cumulative Y1–Y3" color="#facc15" />
-        <StatCard label="Total CO₂ Avoided" value="110t" sub="Cumulative Y1–Y3" color="#34d399" />
-        <StatCard label="Total Funds Raised" value="$70K" sub="Cumulative Y1–Y3" color="#60a5fa" />
-        <StatCard label="Active Volunteers" value="80" sub="Year 3 target" color="#f472b6" />
-      </div>
-
-      {/* Progress Per Team */}
-      <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-        <h2 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-6">Team KPI Completion — {YEAR_LABELS[year]}</h2>
-        <div className="space-y-4">
-          {TEAMS.map((team) => {
-            const pct = Math.round(getTeamCompletion(team.id, year));
-            const rag = pct >= 90 ? "green" : pct >= 70 ? "amber" : "red";
-            return (
-              <div key={team.id} className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-white/80 font-medium">{team.name}</span>
-                  <span className="font-bold" style={{ color: getRagColor(rag) }}>{pct}%</span>
-                </div>
-                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: team.color }}
-                  />
-                </div>
+    <div className="space-y-6">
+      {/* Overall Score Hero */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8">
+        <div className="flex flex-col items-center">
+          <ScoreRing score={overallScore} size={140} strokeWidth={12} color={overallColor} />
+          <div className="mt-2 text-sm text-white/40">Overall Score</div>
+        </div>
+        <div className="flex-1">
+          <div className="text-2xl font-black text-white mb-1">
+            SolarPak — Week {weeks}
+          </div>
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold mb-4 ${overallRag === "green" ? "bg-green-500/15 text-green-400" : overallRag === "amber" ? "bg-amber-500/15 text-amber-400" : "bg-red-500/15 text-red-400"}`}>
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: overallColor }} />
+            {overallRag === "green" ? "On Track" : overallRag === "amber" ? "Needs Attention" : "Critical"}
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: "Teams Scoring Green", value: teamScores.filter((t) => t.rag === "green").length },
+              { label: "Teams At Risk", value: teamScores.filter((t) => t.rag === "amber").length },
+              { label: "Teams Critical", value: teamScores.filter((t) => t.rag === "red").length },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-3xl font-black text-white">{stat.value}</div>
+                <div className="text-xs text-white/40 mt-0.5">{stat.label}</div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Health RAG Pills */}
-      <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-        <h2 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-4">Health At A Glance — {YEAR_LABELS[year]}</h2>
-        <div className="flex flex-wrap gap-3">
-          {TEAMS.map((team) => {
-            const pct = Math.round(getTeamCompletion(team.id, year));
-            const rag = pct >= 90 ? "green" : pct >= 70 ? "amber" : "red";
-            const labels = { green: "On Track", amber: "At Risk", red: "Behind" };
-            return (
-              <div key={team.id} className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${getRagBg(rag)}`}>
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: getRagColor(rag) }} />
-                <span>{team.name.split(" ")[0]}</span>
-                <span className="opacity-60">{labels[rag]}</span>
+      {/* Team Score Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {teamScores.map((ts) => {
+          const meta = TEAM_META[ts.teamId];
+          const rag = ragColors(ts.rag);
+          const ringColor = ts.rag === "green" ? "#22c55e" : ts.rag === "amber" ? "#f59e0b" : "#ef4444";
+          return (
+            <motion.div
+              key={ts.teamId}
+              whileHover={{ scale: 1.02 }}
+              className={`bg-[#0c1326] border rounded-2xl p-5 hover:border-white/20 transition-colors ${rag.border}`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: meta?.color }} />
+                    <span className="text-xs text-white/40 uppercase tracking-widest">Team</span>
+                  </div>
+                  <div className="font-bold text-white text-sm leading-tight">{meta?.name}</div>
+                </div>
+                <ScoreRing score={ts.teamScore} size={64} strokeWidth={6} color={ringColor} />
               </div>
-            );
-          })}
-        </div>
+              <div className="space-y-1.5">
+                {ts.kpiScores.map((kpi) => {
+                  const kRag = kpi.rag === "green" ? "#22c55e" : kpi.rag === "amber" ? "#f59e0b" : "#ef4444";
+                  return (
+                    <div key={kpi.name} className="flex items-center gap-2 text-xs">
+                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: kRag }} />
+                      <span className="text-white/50 flex-1 truncate">{kpi.name}</span>
+                      <span className="font-bold text-white/70">{Math.round(kpi.score)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function TeamsTab({ year, selectedTeam, setSelectedTeam, actuals, getActual, setActual }: {
-  year: Year;
+function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setField, handleSubmit, isPending, saved }: {
   selectedTeam: number;
   setSelectedTeam: (i: number) => void;
-  actuals: Record<string, number>;
-  getActual: (teamId: string, kpiName: string) => number;
-  setActual: (teamId: string, kpiName: string, value: number) => void;
+  teamScores: TeamScore[];
+  getInputs: (teamId: string) => Record<string, any>;
+  setField: (teamId: string, key: string, value: number) => void;
+  handleSubmit: (teamId: string) => void;
+  isPending: boolean;
+  saved: boolean;
 }) {
-  const team = TEAMS[selectedTeam];
+  const teamId = TEAM_IDS[selectedTeam];
+  const meta = TEAM_META[teamId];
+  const fields = INPUT_FIELDS[teamId] || [];
+  const inputs = getInputs(teamId);
+  const ts = teamScores.find((t) => t.teamId === teamId);
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Team Selector */}
-      <div className="md:w-56 flex md:flex-col gap-2 overflow-x-auto md:overflow-visible">
-        {TEAMS.map((t, i) => (
-          <button
-            key={t.id}
-            onClick={() => setSelectedTeam(i)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap md:w-full ${
-              selectedTeam === i
-                ? "text-white border"
-                : "text-white/40 hover:text-white hover:bg-white/5"
-            }`}
-            style={selectedTeam === i ? { backgroundColor: `${t.color}20`, borderColor: `${t.color}50` } : {}}
-          >
-            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: t.color }} />
-            <span className="text-left">{t.name}</span>
-          </button>
-        ))}
+      <div className="md:w-52 flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+        {TEAM_IDS.map((id, i) => {
+          const m = TEAM_META[id];
+          const ts2 = teamScores.find((t) => t.teamId === id);
+          return (
+            <button
+              key={id}
+              onClick={() => setSelectedTeam(i)}
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap md:w-full ${
+                selectedTeam === i ? "text-white border" : "text-white/40 hover:text-white hover:bg-white/5"
+              }`}
+              style={selectedTeam === i ? { backgroundColor: `${m.color}18`, borderColor: `${m.color}40` } : {}}
+            >
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
+              <span className="flex-1 text-left">{m.name}</span>
+              {ts2 && <span className="font-bold text-white/50">{Math.round(ts2.teamScore)}</span>}
+            </button>
+          );
+        })}
       </div>
 
-      {/* KPI Cards */}
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={team.id + year}
-            className="contents"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {team.kpis.map((kpi) => {
-              const target = kpi.targets[year];
-              const actual = getActual(team.id, kpi.name);
-              const pct = target > 0 ? Math.min(Math.round((actual / target) * 100), 100) : 0;
-              const rag = target === 0 ? "green" : getRagStatus(actual, target);
+      {/* Input Form */}
+      <div className="flex-1 space-y-4">
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: meta.color }} />
+                <span className="text-xs text-white/40 uppercase tracking-widest">Weekly Input</span>
+              </div>
+              <h2 className="text-lg font-bold text-white">{meta.name}</h2>
+            </div>
+            {ts && (
+              <div className="flex flex-col items-end">
+                <div className="text-3xl font-black text-white">{Math.round(ts.teamScore)}</div>
+                <div className="text-xs text-white/40">Team Score</div>
+              </div>
+            )}
+          </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            {fields.map((field) => {
+              const kpi = ts?.kpiScores.find((k) =>
+                k.name.toLowerCase().includes(field.label.split(" ")[0].toLowerCase().replace("₂", "").replace("(", "").trim())
+              );
               return (
-                <motion.div
-                  key={kpi.name}
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-[#0d1528] border border-white/10 rounded-2xl p-5 flex flex-col gap-4 hover:border-white/20 transition-colors"
-                >
-                  <div>
-                    <div className="text-xs text-white/40 uppercase tracking-widest mb-1">KPI</div>
-                    <div className="font-bold text-white">{kpi.name}</div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <div>
-                      <div className="text-white/40 text-xs">Target</div>
-                      <div className="font-semibold text-white">{formatValue(target, kpi.unit)}</div>
-                    </div>
-                    <div className={`px-2.5 py-1 rounded-full border text-xs font-bold ${getRagBg(rag)}`}>
-                      {pct}%
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-3">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6 }}
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: team.color }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xs text-white/40 mb-1">Actual</div>
-                    <input
-                      type="number"
-                      value={actual === 0 ? "" : actual}
-                      placeholder="Enter actual"
-                      onChange={(e) => setActual(team.id, kpi.name, Number(e.target.value) || 0)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-yellow-400/50 transition-colors"
-                    />
-                  </div>
-                </motion.div>
+                <div key={field.key} className="space-y-1.5">
+                  <label className="text-xs text-white/50">{field.label}</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step={field.type === "pct" ? "0.1" : "1"}
+                    value={inputs[field.key] ?? ""}
+                    onChange={(e) => setField(teamId, field.key, Number(e.target.value) || 0)}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-yellow-400/50 transition-colors"
+                    placeholder="0"
+                  />
+                </div>
               );
             })}
-          </motion.div>
-        </AnimatePresence>
+          </div>
+
+          {/* KPI Score Breakdown */}
+          {ts && (
+            <div className="border-t border-white/8 pt-4 mb-4">
+              <div className="text-xs text-white/40 uppercase tracking-widest mb-3">Live Score Breakdown</div>
+              <div className="space-y-2">
+                {ts.kpiScores.map((kpi) => {
+                  const kColor = kpi.rag === "green" ? "#22c55e" : kpi.rag === "amber" ? "#f59e0b" : "#ef4444";
+                  return (
+                    <div key={kpi.name} className="flex items-center gap-3">
+                      <span className="text-xs text-white/50 w-40 truncate">{kpi.name}</span>
+                      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${kpi.score}%`, backgroundColor: kColor }} />
+                      </div>
+                      <span className="text-xs font-bold w-8 text-right" style={{ color: kColor }}>{Math.round(kpi.score)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={() => handleSubmit(teamId)}
+            disabled={isPending}
+            className="w-full py-3 rounded-xl bg-yellow-400 text-black font-bold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-50"
+          >
+            {isPending ? "Saving..." : saved ? "✓ Saved!" : "Save Weekly Snapshot"}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function RisksTab({ sortedRisks, sortField, sortDir, toggleSort, tooltip, setTooltip }: {
-  sortedRisks: typeof RISKS;
-  sortField: string;
-  sortDir: "asc" | "desc";
-  toggleSort: (f: any) => void;
-  tooltip: any;
-  setTooltip: (t: any) => void;
-}) {
-  const xLabels = ["Negligible", "Minor", "Moderate", "Significant", "Severe"];
-  const yLabels = ["Rare", "Unlikely", "Possible", "Likely", "Critical"];
+function HistoryTab({ historyByTeam, overallHistory }: { historyByTeam: Record<string, any[]>; overallHistory: any[] }) {
+  const TEAM_COLORS = Object.entries(TEAM_META).map(([id, m]) => ({ id, color: m.color }));
 
-  function getRiskForCell(likelihood: number, impact: number) {
-    return RISKS.filter((r) => r.likelihood === likelihood && r.impact === impact);
+  const combined: Record<string, any> = {};
+  TEAM_IDS.forEach((id) => {
+    (historyByTeam[id] || []).forEach((entry) => {
+      if (!combined[entry.week]) combined[entry.week] = { week: entry.week };
+      combined[entry.week][id] = entry.score;
+    });
+  });
+  const combinedData = Object.values(combined).sort((a, b) => a.week.localeCompare(b.week));
+
+  if (overallHistory.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-white/30 text-center">
+        <div className="text-4xl mb-4">◈</div>
+        <div className="text-lg font-semibold mb-2">No history yet</div>
+        <div className="text-sm">Submit weekly snapshots from the Weekly Input tab to see progress over time.</div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Heatmap Grid */}
-      <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-        <h2 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-6">5×5 Risk Matrix</h2>
-        <div className="relative overflow-x-auto">
-          <div className="min-w-[460px]">
-            {/* X labels */}
-            <div className="flex ml-16 mb-1">
-              {xLabels.map((l) => (
-                <div key={l} className="flex-1 text-center text-xs text-white/30 px-1">{l}</div>
-              ))}
-            </div>
-            {/* Grid rows (likelihood 5 → 1) */}
-            <div className="flex flex-col gap-1">
-              {[5, 4, 3, 2, 1].map((likelihood) => (
-                <div key={likelihood} className="flex items-center gap-1">
-                  <div className="w-16 text-xs text-white/30 text-right pr-2">{yLabels[likelihood - 1]}</div>
-                  {[1, 2, 3, 4, 5].map((impact) => {
-                    const score = likelihood * impact;
-                    const risks = getRiskForCell(likelihood, impact);
-                    const bg =
-                      score >= 15 ? "bg-red-900/60 border-red-700/40" :
-                      score >= 8 ? "bg-orange-900/60 border-orange-700/40" :
-                      score >= 4 ? "bg-amber-900/40 border-amber-700/30" :
-                      "bg-green-900/30 border-green-700/20";
-
-                    return (
-                      <div
-                        key={impact}
-                        className={`flex-1 aspect-square rounded-lg border ${bg} flex flex-wrap items-center justify-center gap-1 p-1 min-h-[52px]`}
-                      >
-                        {risks.map((risk) => (
-                          <button
-                            key={risk.id}
-                            className="w-5 h-5 rounded-full border-2 border-white/30 cursor-pointer transition-transform hover:scale-125 flex items-center justify-center text-[8px] font-bold text-white"
-                            style={{ backgroundColor: getRiskColor(risk.likelihood * risk.impact) }}
-                            onMouseEnter={(e) => {
-                              const rect = (e.target as HTMLElement).getBoundingClientRect();
-                              setTooltip({ risk, x: rect.left, y: rect.top });
-                            }}
-                            onMouseLeave={() => setTooltip(null)}
-                            title={risk.name}
-                          >
-                            {risk.id}
-                          </button>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-            <div className="ml-16 mt-1 text-center text-xs text-white/30">← Impact →</div>
-          </div>
-        </div>
-        {/* Legend */}
-        <div className="flex flex-wrap gap-4 mt-4 text-xs">
-          {[
-            { label: "Critical (≥15)", color: "bg-red-600" },
-            { label: "High (8–14)", color: "bg-orange-500" },
-            { label: "Medium (4–7)", color: "bg-amber-500" },
-            { label: "Low (<4)", color: "bg-green-600" },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-2 text-white/50">
-              <span className={`w-3 h-3 rounded-full ${item.color}`} />
-              {item.label}
-            </div>
-          ))}
-        </div>
+    <div className="space-y-6">
+      {/* Overall Line */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Overall SolarPak Score — Weekly</h3>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={overallHistory}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
+            <Line type="monotone" dataKey="score" name="Overall" stroke="#facc15" strokeWidth={3} dot={{ fill: "#facc15", r: 4 }} />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* Risk Register Table */}
-      <div className="bg-[#0d1528] border border-white/10 rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-widest">Risk Register</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10">
-                {[
-                  { key: "name", label: "Risk" },
-                  { key: "category", label: "Category" },
-                  { key: "likelihood", label: "Likelihood" },
-                  { key: "impact", label: "Impact" },
-                  { key: "score", label: "Score" },
-                ].map(({ key, label }) => (
-                  <th
-                    key={key}
-                    className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-widest cursor-pointer hover:text-white transition-colors select-none"
-                    onClick={() => toggleSort(key as any)}
-                  >
-                    {label}
-                    {sortField === key && (
-                      <span className="ml-1 text-yellow-400">{sortDir === "desc" ? "↓" : "↑"}</span>
-                    )}
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-widest">Mitigation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedRisks.map((risk) => {
-                const score = risk.likelihood * risk.impact;
-                return (
-                  <tr key={risk.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3 font-medium text-white">{risk.name}</td>
-                    <td className="px-4 py-3 text-white/50">{risk.category}</td>
-                    <td className="px-4 py-3 text-center text-white/70">{risk.likelihood}</td>
-                    <td className="px-4 py-3 text-center text-white/70">{risk.impact}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg font-bold text-white text-sm"
-                        style={{ backgroundColor: getRiskColor(score) }}
-                      >
-                        {score}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-white/40 text-xs max-w-xs">{risk.mitigation}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Tooltip */}
-      {tooltip && (
-        <div
-          className="fixed z-50 bg-[#1a2540] border border-white/20 rounded-xl p-4 shadow-2xl text-sm max-w-xs pointer-events-none"
-          style={{ left: tooltip.x + 12, top: tooltip.y - 100 }}
-        >
-          <div className="font-bold text-white mb-1">{tooltip.risk.name}</div>
-          <div className="text-white/50 text-xs mb-2">{tooltip.risk.category}</div>
-          <div className="flex gap-3 text-xs mb-2">
-            <span className="text-white/60">Score: <span className="font-bold" style={{ color: getRiskColor(tooltip.risk.likelihood * tooltip.risk.impact) }}>{tooltip.risk.likelihood * tooltip.risk.impact}</span></span>
-            <span className="text-white/60">L: {tooltip.risk.likelihood} · I: {tooltip.risk.impact}</span>
-          </div>
-          <div className="text-white/50 text-xs">{tooltip.risk.mitigation}</div>
+      {/* Per-Team Lines */}
+      {combinedData.length > 0 && (
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Team Scores — Weekly</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart data={combinedData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
+              <Legend wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }} />
+              {TEAM_COLORS.map(({ id, color }) => (
+                historyByTeam[id]?.length > 0 && (
+                  <Line key={id} type="monotone" dataKey={id} name={TEAM_META[id].name.split(" ")[0]} stroke={color} strokeWidth={2} dot={false} />
+                )
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       )}
+
+      {/* Per-team table */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {TEAM_IDS.map((id) => {
+          const hist = historyByTeam[id];
+          if (!hist?.length) return null;
+          const latest = hist[0];
+          const prev = hist[1];
+          const delta = prev ? latest.score - prev.score : null;
+          return (
+            <div key={id} className="bg-[#0c1326] border border-white/10 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: TEAM_META[id].color }} />
+                  <span className="text-sm font-semibold text-white">{TEAM_META[id].name.split(" ")[0]}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {delta !== null && (
+                    <span className={`text-xs font-bold ${delta >= 0 ? "text-green-400" : "text-red-400"}`}>
+                      {delta >= 0 ? "+" : ""}{delta}
+                    </span>
+                  )}
+                  <span className="text-lg font-black text-white">{latest.score}</span>
+                </div>
+              </div>
+              <div className="flex gap-1 flex-wrap">
+                {hist.slice(0, 8).reverse().map((h: any, i: number) => (
+                  <div key={i} className="flex flex-col items-center gap-0.5">
+                    <div className="w-6 h-8 bg-white/5 rounded flex items-end overflow-hidden">
+                      <div className="w-full rounded" style={{ height: `${h.score}%`, backgroundColor: TEAM_META[id].color, opacity: 0.7 }} />
+                    </div>
+                    <span className="text-[9px] text-white/30">{h.week}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function ImpactTab({ year }: { year: Year }) {
-  const COLORS = ["#facc15", "#34d399", "#60a5fa"];
-  const FUNNEL_COLORS = ["#facc15", "#f59e0b", "#d97706", "#b45309"];
-
+function ImpactTab() {
   return (
-    <div className="space-y-8">
-      {/* Families Served Bar Chart */}
+    <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-4">Cumulative Families Served</h3>
-          <ResponsiveContainer width="100%" height={220}>
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Cumulative Families Served</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={IMPACT_DATA.familiesServed}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
               <Bar dataKey="value" name="Families" radius={[6, 6, 0, 0]} fill="#facc15" />
             </BarChart>
           </ResponsiveContainer>
         </div>
-
-        <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-4">CO₂ Avoided (tonnes)</h3>
-          <ResponsiveContainer width="100%" height={220}>
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">CO₂ Avoided (tonnes)</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={IMPACT_DATA.co2Avoided}>
               <defs>
-                <linearGradient id="co2grad" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="co2g" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-              <Area type="monotone" dataKey="value" name="CO₂ (t)" stroke="#34d399" fill="url(#co2grad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="value" name="CO₂ (t)" stroke="#34d399" fill="url(#co2g)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-4">Household Energy Saving (%)</h3>
-          <ResponsiveContainer width="100%" height={220}>
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Energy Saving (%)</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={IMPACT_DATA.energySaving}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} unit="%" />
+              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} unit="%" />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-              <Line type="monotone" dataKey="value" name="Energy Saving" stroke="#a78bfa" strokeWidth={3} dot={{ fill: "#a78bfa", r: 5 }} />
+              <Line type="monotone" dataKey="value" name="Saving %" stroke="#a78bfa" strokeWidth={3} dot={{ fill: "#a78bfa", r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
-
-        <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-4">Fundraising Breakdown ($)</h3>
-          <ResponsiveContainer width="100%" height={220}>
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Fundraising Breakdown ($)</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={IMPACT_DATA.fundraising}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-              <Legend wrapperStyle={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }} />
-              <Bar dataKey="individual" name="Individual" stackId="a" fill="#facc15" radius={[0, 0, 0, 0]} />
+              <Legend wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }} />
+              <Bar dataKey="individual" name="Individual" stackId="a" fill="#facc15" />
               <Bar dataKey="events" name="Events" stackId="a" fill="#34d399" />
               <Bar dataKey="grants" name="Grants" stackId="a" fill="#60a5fa" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Donor Pipeline */}
-      <div className="bg-[#0d1528] border border-white/10 rounded-2xl p-6">
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-6">Donor Pipeline Funnel</h3>
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          {IMPACT_DATA.donorPipeline.map((stage, i) => {
-            const maxVal = IMPACT_DATA.donorPipeline[0].value;
-            const widthPct = (stage.value / maxVal) * 100;
-            return (
-              <div key={stage.stage} className="w-full flex flex-col items-center gap-2">
-                <div className="text-xs text-white/40 uppercase tracking-widest">{stage.stage}</div>
-                <div
-                  className="h-14 rounded-xl flex items-center justify-center font-bold text-white text-lg transition-all"
-                  style={{
-                    width: `${widthPct}%`,
-                    minWidth: 80,
-                    backgroundColor: FUNNEL_COLORS[i],
-                    margin: "0 auto",
-                  }}
-                >
-                  {stage.value.toLocaleString()}
-                </div>
-                {i < IMPACT_DATA.donorPipeline.length - 1 && (
-                  <div className="text-white/20 text-xs hidden md:block">
-                    {Math.round((IMPACT_DATA.donorPipeline[i + 1].value / stage.value) * 100)}% conversion
-                  </div>
-                )}
-              </div>
-            );
-          })}
+function SettingsTab({ startDateDraft, setStartDateDraft, onSave, isPending, weeks }: {
+  startDateDraft: string;
+  setStartDateDraft: (v: string) => void;
+  onSave: () => void;
+  isPending: boolean;
+  weeks: number;
+}) {
+  return (
+    <div className="max-w-lg space-y-6">
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-1">Programme Settings</h2>
+        <p className="text-xs text-white/30 mb-6">Set the programme start date. Week number is calculated automatically.</p>
+
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs text-white/50 mb-1.5 block">Programme Start Date</label>
+            <input
+              type="date"
+              value={startDateDraft}
+              onChange={(e) => setStartDateDraft(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors"
+            />
+          </div>
+
+          <div className="flex items-center gap-4 p-4 bg-yellow-400/8 border border-yellow-400/20 rounded-xl">
+            <div className="text-3xl font-black text-yellow-400">{weeks}</div>
+            <div>
+              <div className="text-sm font-semibold text-white">Weeks Elapsed</div>
+              <div className="text-xs text-white/40">Based on selected start date</div>
+            </div>
+          </div>
+
+          <button
+            onClick={onSave}
+            disabled={isPending}
+            className="w-full py-3 rounded-xl bg-yellow-400 text-black font-bold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-50"
+          >
+            {isPending ? "Saving..." : "Save Settings"}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Scoring Rules</h2>
+        <div className="space-y-2 text-xs text-white/40">
+          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-green-500" />80–100 = Green (On Track)</div>
+          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500" />50–79 = Amber (Needs Attention)</div>
+          <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />0–49 = Red (Critical)</div>
+          <div className="mt-3 pt-3 border-t border-white/8">All scores are capped at 100 and floored at 0.</div>
+          <div>Team score = average of its KPI scores.</div>
+          <div>Overall score = average of all 6 team scores.</div>
         </div>
       </div>
     </div>
