@@ -8,58 +8,60 @@ export function weeksElapsed(startDate: string): number {
   return Math.max(1, Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000)) + 1);
 }
 
-export interface OperationsInputs {
-  families_served_to_date: number;
-  completion_rate_pct: number;
-  uptime_failures: number;
-  co2_reports_submitted: number;
-  co2_rounds_completed: number;
-  install_reports_published: number;
-  install_rounds_completed: number;
+export function yearFromWeeks(weeks: number): number {
+  if (weeks <= 52) return 1;
+  if (weeks <= 104) return 2;
+  return 3;
 }
 
-export interface FundraisingInputs {
-  funds_raised_to_date: number;
-  retained_donors: number;
-  total_prior_donors: number;
-  new_funding_sources: number;
-  cost_per_family_last_round: number;
+function progressScore(current: number, y1: number, y2: number, y3: number, year: number): number {
+  const target = year === 1 ? y1 : year === 2 ? y2 : y3;
+  if (target <= 0) return 100;
+  return cap((current / target) * 100);
 }
 
 export interface MarketingInputs {
-  follower_count_start: number;
-  follower_count_now: number;
-  avg_monthly_reach: number;
-  media_mentions_to_date: number;
-  donor_conversion_pct: number;
+  total_social_following: number;
+  avg_engagement_rate_pct: number;
+  posts_per_month: number;
+  press_mentions_per_year: number;
 }
 
-export interface VolunteerInputs {
-  active_volunteers: number;
-  tasks_on_time_pct: number;
-  meetings_held_pct: number;
+export interface PartnershipsInputs {
+  active_partners: number;
+  communities_reached: number;
+  outreach_meetings_per_month: number;
+  conversion_rate_pct: number;
+}
+
+export interface ManagementInputs {
+  active_team_members: number;
+  retention_rate_pct: number;
+  okr_completion_pct: number;
+  team_leads_in_place: number;
+  total_teams: number;
 }
 
 export interface ImpactLabsInputs {
-  surveys_completed_pct: number;
-  reports_published: number;
-  reports_due: number;
-  co2_documented_rounds: number;
-  total_rounds: number;
-  energy_saving_pct: number;
+  impact_reports_published: number;
+  research_articles: number;
+  data_accuracy_pct: number;
+  external_citations: number;
 }
 
 export interface EventsInputs {
-  events_hosted_to_date: number;
-  attendee_growth_pct: number;
-  fundraising_raised_to_date: number;
+  events_per_year: number;
+  total_attendees: number;
+  avg_attendees_per_event: number;
+  satisfaction_score: number;
+  repeat_attendee_rate_pct: number;
+  events_with_sponsor: number;
 }
 
 export type TeamInputs =
-  | { team: "operations"; inputs: OperationsInputs }
-  | { team: "fundraising"; inputs: FundraisingInputs }
   | { team: "marketing"; inputs: MarketingInputs }
-  | { team: "volunteers"; inputs: VolunteerInputs }
+  | { team: "partnerships"; inputs: PartnershipsInputs }
+  | { team: "management"; inputs: ManagementInputs }
   | { team: "impactlabs"; inputs: ImpactLabsInputs }
   | { team: "events"; inputs: EventsInputs };
 
@@ -82,106 +84,74 @@ export function ragStatus(score: number): "green" | "amber" | "red" {
   return "red";
 }
 
-export function scoreOperations(inputs: OperationsInputs, weeks: number): KpiScore[] {
-  const familiesTarget = (40 / 52) * weeks;
-  const families = cap((inputs.families_served_to_date / familiesTarget) * 100);
-  const completion = cap((inputs.completion_rate_pct / 90) * 100);
-  const uptime = inputs.uptime_failures === 0 ? 100 : 0;
-  const co2 = inputs.co2_rounds_completed > 0
-    ? cap((inputs.co2_reports_submitted / inputs.co2_rounds_completed) * 100)
-    : 100;
-  const installReports = inputs.install_rounds_completed > 0
-    ? cap((inputs.install_reports_published / inputs.install_rounds_completed) * 100)
-    : 100;
-
+export function scoreMarketing(inputs: MarketingInputs, year: number): KpiScore[] {
+  const following = progressScore(inputs.total_social_following, 5000, 15000, 40000, year);
+  const engagement = progressScore(inputs.avg_engagement_rate_pct, 5, 7, 8, year);
+  const posts = progressScore(inputs.posts_per_month, 12, 20, 30, year);
+  const press = progressScore(inputs.press_mentions_per_year, 4, 10, 20, year);
   return [
-    { name: "Families Served", score: families, rag: ragStatus(families) },
-    { name: "Completion Rate", score: completion, rag: ragStatus(completion) },
-    { name: "System Uptime", score: uptime, rag: ragStatus(uptime) },
-    { name: "CO₂ Reports", score: co2, rag: ragStatus(co2) },
-    { name: "Install Reports", score: installReports, rag: ragStatus(installReports) },
+    { name: "Total Social Following", score: following, rag: ragStatus(following) },
+    { name: "Avg Engagement Rate", score: engagement, rag: ragStatus(engagement) },
+    { name: "Posts Per Month", score: posts, rag: ragStatus(posts) },
+    { name: "Press / Media Mentions", score: press, rag: ragStatus(press) },
   ];
 }
 
-export function scoreFundraising(inputs: FundraisingInputs, weeks: number): KpiScore[] {
-  const fundsTarget = (10000 / 52) * weeks;
-  const funds = cap((inputs.funds_raised_to_date / fundsTarget) * 100);
-  const retention = inputs.total_prior_donors > 0
-    ? cap((inputs.retained_donors / inputs.total_prior_donors) * 100)
-    : 100;
-  const sources = cap((inputs.new_funding_sources / 1) * 100);
-  const cost = inputs.cost_per_family_last_round > 0
-    ? cap((120 / inputs.cost_per_family_last_round) * 100)
-    : 100;
-
+export function scorePartnerships(inputs: PartnershipsInputs, year: number): KpiScore[] {
+  const partners = progressScore(inputs.active_partners, 6, 15, 30, year);
+  const communities = progressScore(inputs.communities_reached, 5, 12, 25, year);
+  const meetings = progressScore(inputs.outreach_meetings_per_month, 2, 5, 10, year);
+  const conversion = progressScore(inputs.conversion_rate_pct, 30, 35, 40, year);
   return [
-    { name: "Funds Raised", score: funds, rag: ragStatus(funds) },
-    { name: "Donor Retention", score: retention, rag: ragStatus(retention) },
-    { name: "New Funding Sources", score: sources, rag: ragStatus(sources) },
-    { name: "Cost Per Family", score: cost, rag: ragStatus(cost) },
+    { name: "Active Institutional Partners", score: partners, rag: ragStatus(partners) },
+    { name: "Communities Reached", score: communities, rag: ragStatus(communities) },
+    { name: "Outreach Meetings / Month", score: meetings, rag: ragStatus(meetings) },
+    { name: "Partnership Conversion Rate", score: conversion, rag: ragStatus(conversion) },
   ];
 }
 
-export function scoreMarketing(inputs: MarketingInputs, weeks: number): KpiScore[] {
-  const followerGrowth = inputs.follower_count_start > 0
-    ? cap(((inputs.follower_count_now - inputs.follower_count_start) / inputs.follower_count_start) / 1.0 * 100)
-    : 0;
-  const reach = cap((inputs.avg_monthly_reach / 5000) * 100);
-  const mentionsTarget = (2 / 52) * weeks;
-  const mentions = cap((inputs.media_mentions_to_date / mentionsTarget) * 100);
-  const conversion = cap((inputs.donor_conversion_pct / 2) * 100);
-
-  return [
-    { name: "Follower Growth", score: followerGrowth, rag: ragStatus(followerGrowth) },
-    { name: "Monthly Reach", score: reach, rag: ragStatus(reach) },
-    { name: "Media Mentions", score: mentions, rag: ragStatus(mentions) },
-    { name: "Donor Conversion", score: conversion, rag: ragStatus(conversion) },
-  ];
-}
-
-export function scoreVolunteers(inputs: VolunteerInputs): KpiScore[] {
-  const volunteers = cap((inputs.active_volunteers / 30) * 100);
-  const tasks = cap((inputs.tasks_on_time_pct / 80) * 100);
-  const meetings = cap((inputs.meetings_held_pct / 85) * 100);
-
-  return [
-    { name: "Active Volunteers", score: volunteers, rag: ragStatus(volunteers) },
-    { name: "Tasks On Time", score: tasks, rag: ragStatus(tasks) },
-    { name: "Meetings Held", score: meetings, rag: ragStatus(meetings) },
-  ];
-}
-
-export function scoreImpactLabs(inputs: ImpactLabsInputs): KpiScore[] {
-  const surveys = cap((inputs.surveys_completed_pct / 70) * 100);
-  const reports = inputs.reports_due > 0
-    ? cap((inputs.reports_published / inputs.reports_due) * 100)
+export function scoreManagement(inputs: ManagementInputs, year: number): KpiScore[] {
+  const members = progressScore(inputs.active_team_members, 22, 40, 70, year);
+  const retention = progressScore(inputs.retention_rate_pct, 80, 85, 90, year);
+  const okr = progressScore(inputs.okr_completion_pct, 70, 75, 80, year);
+  const leads = inputs.total_teams > 0
+    ? cap((inputs.team_leads_in_place / inputs.total_teams) * 100)
     : 100;
-  const co2 = inputs.total_rounds > 0
-    ? cap((inputs.co2_documented_rounds / inputs.total_rounds) * 100)
-    : 100;
-  const energy = cap((inputs.energy_saving_pct / 20) * 100);
-  const institutionalFunding = 100;
-
   return [
-    { name: "Survey Completion", score: surveys, rag: ragStatus(surveys) },
-    { name: "Reports Published", score: reports, rag: ragStatus(reports) },
-    { name: "CO₂ Documented", score: co2, rag: ragStatus(co2) },
-    { name: "Energy Saving", score: energy, rag: ragStatus(energy) },
-    { name: "Institutional Funding", score: institutionalFunding, rag: ragStatus(institutionalFunding) },
+    { name: "Active Team Members", score: members, rag: ragStatus(members) },
+    { name: "Member Retention Rate", score: retention, rag: ragStatus(retention) },
+    { name: "OKR Completion Rate", score: okr, rag: ragStatus(okr) },
+    { name: "Team Leads in Place", score: leads, rag: ragStatus(leads) },
   ];
 }
 
-export function scoreEvents(inputs: EventsInputs, weeks: number): KpiScore[] {
-  const eventsTarget = (4 / 52) * weeks;
-  const events = cap((inputs.events_hosted_to_date / eventsTarget) * 100);
-  const attendees = cap((inputs.attendee_growth_pct / 20) * 100);
-  const fundraisingTarget = (5000 / 52) * weeks;
-  const fundraising = cap((inputs.fundraising_raised_to_date / fundraisingTarget) * 100);
-
+export function scoreImpactLabs(inputs: ImpactLabsInputs, year: number): KpiScore[] {
+  const reports = inputs.impact_reports_published >= 1 ? 100 : 0;
+  const articles = progressScore(inputs.research_articles, 4, 10, 18, year);
+  const accuracy = progressScore(inputs.data_accuracy_pct, 85, 92, 97, year);
+  const citations = progressScore(inputs.external_citations, 2, 8, 20, year);
   return [
-    { name: "Events Hosted", score: events, rag: ragStatus(events) },
-    { name: "Attendee Growth", score: attendees, rag: ragStatus(attendees) },
-    { name: "Event Fundraising", score: fundraising, rag: ragStatus(fundraising) },
+    { name: "Impact Report Published", score: reports, rag: ragStatus(reports) },
+    { name: "Research Articles", score: articles, rag: ragStatus(articles) },
+    { name: "Data Accuracy Score", score: accuracy, rag: ragStatus(accuracy) },
+    { name: "External Citations", score: citations, rag: ragStatus(citations) },
+  ];
+}
+
+export function scoreEvents(inputs: EventsInputs, year: number): KpiScore[] {
+  const events = progressScore(inputs.events_per_year, 3, 7, 15, year);
+  const attendees = progressScore(inputs.total_attendees, 300, 1000, 3000, year);
+  const avgAttendees = progressScore(inputs.avg_attendees_per_event, 100, 140, 200, year);
+  const satisfaction = progressScore(inputs.satisfaction_score, 4.0, 4.3, 4.5, year);
+  const repeat = progressScore(inputs.repeat_attendee_rate_pct, 15, 25, 35, year);
+  const sponsored = progressScore(inputs.events_with_sponsor, 1, 4, 10, year);
+  return [
+    { name: "Events per Year", score: events, rag: ragStatus(events) },
+    { name: "Total Attendees", score: attendees, rag: ragStatus(attendees) },
+    { name: "Avg Attendees / Event", score: avgAttendees, rag: ragStatus(avgAttendees) },
+    { name: "Satisfaction Score", score: satisfaction, rag: ragStatus(satisfaction) },
+    { name: "Repeat Attendee Rate", score: repeat, rag: ragStatus(repeat) },
+    { name: "Events with Sponsor", score: sponsored, rag: ragStatus(sponsored) },
   ];
 }
 
@@ -200,45 +170,39 @@ export function scoreAllTeams(
   weeks: number
 ): TeamScore[] {
   const results: TeamScore[] = [];
-
-  const ops = inputs["operations"] as OperationsInputs | undefined;
-  if (ops) {
-    const kpiScores = scoreOperations(ops, weeks);
-    const teamScore = calcTeamScore(kpiScores);
-    results.push({ teamId: "operations", teamScore, rag: ragStatus(teamScore), kpiScores });
-  }
-
-  const fund = inputs["fundraising"] as FundraisingInputs | undefined;
-  if (fund) {
-    const kpiScores = scoreFundraising(fund, weeks);
-    const teamScore = calcTeamScore(kpiScores);
-    results.push({ teamId: "fundraising", teamScore, rag: ragStatus(teamScore), kpiScores });
-  }
+  const year = yearFromWeeks(weeks);
 
   const mkt = inputs["marketing"] as MarketingInputs | undefined;
   if (mkt) {
-    const kpiScores = scoreMarketing(mkt, weeks);
+    const kpiScores = scoreMarketing(mkt, year);
     const teamScore = calcTeamScore(kpiScores);
     results.push({ teamId: "marketing", teamScore, rag: ragStatus(teamScore), kpiScores });
   }
 
-  const vol = inputs["volunteers"] as VolunteerInputs | undefined;
-  if (vol) {
-    const kpiScores = scoreVolunteers(vol);
+  const prt = inputs["partnerships"] as PartnershipsInputs | undefined;
+  if (prt) {
+    const kpiScores = scorePartnerships(prt, year);
     const teamScore = calcTeamScore(kpiScores);
-    results.push({ teamId: "volunteers", teamScore, rag: ragStatus(teamScore), kpiScores });
+    results.push({ teamId: "partnerships", teamScore, rag: ragStatus(teamScore), kpiScores });
+  }
+
+  const mgmt = inputs["management"] as ManagementInputs | undefined;
+  if (mgmt) {
+    const kpiScores = scoreManagement(mgmt, year);
+    const teamScore = calcTeamScore(kpiScores);
+    results.push({ teamId: "management", teamScore, rag: ragStatus(teamScore), kpiScores });
   }
 
   const labs = inputs["impactlabs"] as ImpactLabsInputs | undefined;
   if (labs) {
-    const kpiScores = scoreImpactLabs(labs);
+    const kpiScores = scoreImpactLabs(labs, year);
     const teamScore = calcTeamScore(kpiScores);
     results.push({ teamId: "impactlabs", teamScore, rag: ragStatus(teamScore), kpiScores });
   }
 
   const ev = inputs["events"] as EventsInputs | undefined;
   if (ev) {
-    const kpiScores = scoreEvents(ev, weeks);
+    const kpiScores = scoreEvents(ev, year);
     const teamScore = calcTeamScore(kpiScores);
     results.push({ teamId: "events", teamScore, rag: ragStatus(teamScore), kpiScores });
   }
@@ -247,45 +211,37 @@ export function scoreAllTeams(
 }
 
 export const DEFAULT_INPUTS: Record<string, any> = {
-  operations: {
-    families_served_to_date: 0,
-    completion_rate_pct: 0,
-    uptime_failures: 0,
-    co2_reports_submitted: 0,
-    co2_rounds_completed: 0,
-    install_reports_published: 0,
-    install_rounds_completed: 0,
-  } as OperationsInputs,
-  fundraising: {
-    funds_raised_to_date: 0,
-    retained_donors: 0,
-    total_prior_donors: 0,
-    new_funding_sources: 0,
-    cost_per_family_last_round: 120,
-  } as FundraisingInputs,
   marketing: {
-    follower_count_start: 1000,
-    follower_count_now: 1000,
-    avg_monthly_reach: 0,
-    media_mentions_to_date: 0,
-    donor_conversion_pct: 0,
+    total_social_following: 0,
+    avg_engagement_rate_pct: 0,
+    posts_per_month: 0,
+    press_mentions_per_year: 0,
   } as MarketingInputs,
-  volunteers: {
-    active_volunteers: 0,
-    tasks_on_time_pct: 0,
-    meetings_held_pct: 0,
-  } as VolunteerInputs,
+  partnerships: {
+    active_partners: 0,
+    communities_reached: 0,
+    outreach_meetings_per_month: 0,
+    conversion_rate_pct: 0,
+  } as PartnershipsInputs,
+  management: {
+    active_team_members: 0,
+    retention_rate_pct: 0,
+    okr_completion_pct: 0,
+    team_leads_in_place: 0,
+    total_teams: 4,
+  } as ManagementInputs,
   impactlabs: {
-    surveys_completed_pct: 0,
-    reports_published: 0,
-    reports_due: 1,
-    co2_documented_rounds: 0,
-    total_rounds: 1,
-    energy_saving_pct: 0,
+    impact_reports_published: 0,
+    research_articles: 0,
+    data_accuracy_pct: 0,
+    external_citations: 0,
   } as ImpactLabsInputs,
   events: {
-    events_hosted_to_date: 0,
-    attendee_growth_pct: 0,
-    fundraising_raised_to_date: 0,
+    events_per_year: 0,
+    total_attendees: 0,
+    avg_attendees_per_event: 0,
+    satisfaction_score: 0,
+    repeat_attendee_rate_pct: 0,
+    events_with_sponsor: 0,
   } as EventsInputs,
 };

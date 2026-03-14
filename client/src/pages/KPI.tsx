@@ -8,66 +8,56 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  weeksElapsed, scoreAllTeams, calcOverallScore, ragStatus,
+  weeksElapsed, yearFromWeeks, scoreAllTeams, calcOverallScore, ragStatus,
   DEFAULT_INPUTS,
   type TeamScore,
 } from "@/lib/scoring";
-import { IMPACT_DATA } from "@/data/kpiData";
 
 type Tab = "scores" | "input" | "history" | "impact" | "settings";
 
 const TEAM_META: Record<string, { name: string; color: string }> = {
-  operations: { name: "Operations & Installations", color: "#16a34a" },
-  fundraising: { name: "Fundraising & Donations", color: "#2563eb" },
-  marketing: { name: "Marketing & Outreach", color: "#7c3aed" },
-  volunteers: { name: "Volunteer Management", color: "#d97706" },
-  impactlabs: { name: "Impact Labs", color: "#0891b2" },
+  marketing: { name: "Marketing & Social Media", color: "#7c3aed" },
+  partnerships: { name: "Partnerships & Outreach", color: "#0891b2" },
+  management: { name: "General Management", color: "#d97706" },
+  impactlabs: { name: "Impact Labs", color: "#16a34a" },
   events: { name: "Events & Community Outreach", color: "#db2777" },
 };
 
-const TEAM_IDS = ["operations", "fundraising", "marketing", "volunteers", "impactlabs", "events"];
+const TEAM_IDS = ["marketing", "partnerships", "management", "impactlabs", "events"];
 
-const INPUT_FIELDS: Record<string, { key: string; label: string; type: "number" | "pct" }[]> = {
-  operations: [
-    { key: "families_served_to_date", label: "Families Served (to date)", type: "number" },
-    { key: "completion_rate_pct", label: "Same-Day Completion Rate (%)", type: "pct" },
-    { key: "uptime_failures", label: "Uptime Failures (0 = perfect)", type: "number" },
-    { key: "co2_reports_submitted", label: "CO₂ Reports Submitted", type: "number" },
-    { key: "co2_rounds_completed", label: "CO₂ Rounds Completed", type: "number" },
-    { key: "install_reports_published", label: "Install Reports Published", type: "number" },
-    { key: "install_rounds_completed", label: "Install Rounds Completed", type: "number" },
-  ],
-  fundraising: [
-    { key: "funds_raised_to_date", label: "Funds Raised to Date ($)", type: "number" },
-    { key: "retained_donors", label: "Retained Donors", type: "number" },
-    { key: "total_prior_donors", label: "Total Prior Donors", type: "number" },
-    { key: "new_funding_sources", label: "New Funding Sources", type: "number" },
-    { key: "cost_per_family_last_round", label: "Cost Per Family ($)", type: "number" },
-  ],
+const INPUT_FIELDS: Record<string, { key: string; label: string; type: "number" | "pct" | "decimal" }[]> = {
   marketing: [
-    { key: "follower_count_start", label: "Follower Count (Baseline)", type: "number" },
-    { key: "follower_count_now", label: "Follower Count (Now)", type: "number" },
-    { key: "avg_monthly_reach", label: "Avg Monthly Reach", type: "number" },
-    { key: "media_mentions_to_date", label: "Media Mentions (to date)", type: "number" },
-    { key: "donor_conversion_pct", label: "Website Donor Conversion (%)", type: "pct" },
+    { key: "total_social_following", label: "Total Social Following (combined platforms)", type: "number" },
+    { key: "avg_engagement_rate_pct", label: "Avg Engagement Rate (%)", type: "pct" },
+    { key: "posts_per_month", label: "Posts Published Per Month", type: "number" },
+    { key: "press_mentions_per_year", label: "Press / Media Mentions (this year)", type: "number" },
   ],
-  volunteers: [
-    { key: "active_volunteers", label: "Active Volunteers", type: "number" },
-    { key: "tasks_on_time_pct", label: "Tasks Completed On Time (%)", type: "pct" },
-    { key: "meetings_held_pct", label: "Weekly Meetings Held (%)", type: "pct" },
+  partnerships: [
+    { key: "active_partners", label: "Active Institutional Partners", type: "number" },
+    { key: "communities_reached", label: "Distinct Communities Reached", type: "number" },
+    { key: "outreach_meetings_per_month", label: "Outreach Meetings Held Per Month", type: "number" },
+    { key: "conversion_rate_pct", label: "Partnership Conversion Rate (%)", type: "pct" },
+  ],
+  management: [
+    { key: "active_team_members", label: "Active Team Members", type: "number" },
+    { key: "retention_rate_pct", label: "Member Retention Rate (6+ months, %)", type: "pct" },
+    { key: "okr_completion_pct", label: "Quarterly OKR Completion Rate (%)", type: "pct" },
+    { key: "team_leads_in_place", label: "Team Leads in Place", type: "number" },
+    { key: "total_teams", label: "Total Teams", type: "number" },
   ],
   impactlabs: [
-    { key: "surveys_completed_pct", label: "Follow-Up Survey Completion (%)", type: "pct" },
-    { key: "reports_published", label: "Reports Published", type: "number" },
-    { key: "reports_due", label: "Reports Due", type: "number" },
-    { key: "co2_documented_rounds", label: "CO₂ Rounds Documented", type: "number" },
-    { key: "total_rounds", label: "Total Rounds", type: "number" },
-    { key: "energy_saving_pct", label: "Avg Household Energy Saving (%)", type: "pct" },
+    { key: "impact_reports_published", label: "Annual Impact Reports Published", type: "number" },
+    { key: "research_articles", label: "Research Articles Published (this year)", type: "number" },
+    { key: "data_accuracy_pct", label: "Data Accuracy Audit Score (%)", type: "pct" },
+    { key: "external_citations", label: "External Citations / References", type: "number" },
   ],
   events: [
-    { key: "events_hosted_to_date", label: "Events Hosted (to date)", type: "number" },
-    { key: "attendee_growth_pct", label: "Attendee Growth vs Prior Event (%)", type: "pct" },
-    { key: "fundraising_raised_to_date", label: "Event Fundraising ($)", type: "number" },
+    { key: "events_per_year", label: "Events Organised (this year)", type: "number" },
+    { key: "total_attendees", label: "Total Event Attendees (this year)", type: "number" },
+    { key: "avg_attendees_per_event", label: "Avg Attendees Per Event", type: "number" },
+    { key: "satisfaction_score", label: "Post-Event Satisfaction Score (out of 5)", type: "decimal" },
+    { key: "repeat_attendee_rate_pct", label: "Repeat Attendee Rate (%)", type: "pct" },
+    { key: "events_with_sponsor", label: "Events with a Sponsor / Partner", type: "number" },
   ],
 };
 
@@ -183,6 +173,7 @@ export default function KPI() {
   }
 
   const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const currentYear = yearFromWeeks(weeks);
 
   const ragColors2 = ragColors(overallRag);
 
@@ -270,7 +261,7 @@ export default function KPI() {
                 {tab === "impact" && "Impact Summary"}
                 {tab === "settings" && "Settings"}
               </h1>
-              <p className="text-[11px] text-white/35 mt-0.5">Week {weeks} · Started {startDate}</p>
+              <p className="text-[11px] text-white/35 mt-0.5">Week {weeks} · Year {currentYear} of 3 · Started {startDate}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -327,7 +318,7 @@ export default function KPI() {
           </main>
 
           <footer className="px-6 py-3 border-t border-white/8 flex items-center justify-between text-[11px] text-white/25">
-            <span>SolarPak KPI System · Year 1</span>
+            <span>SolarPak KPI System · Year {currentYear} of 3</span>
             <span>Last updated: {today}</span>
           </footer>
         </div>
@@ -501,7 +492,7 @@ function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setFie
                   <input
                     type="number"
                     min="0"
-                    step={field.type === "pct" ? "0.1" : "1"}
+                    step={field.type === "pct" || field.type === "decimal" ? "0.1" : "1"}
                     value={inputs[field.key] ?? ""}
                     onChange={(e) => setField(teamId, field.key, Number(e.target.value) || 0)}
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-yellow-400/50 transition-colors"
@@ -650,62 +641,121 @@ function HistoryTab({ historyByTeam, overallHistory }: { historyByTeam: Record<s
 function ImpactTab() {
   return (
     <div className="space-y-6">
+      {/* Year targets summary */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">3-Year KPI Targets — Key Highlights</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-white/30 text-xs uppercase tracking-widest">
+                <th className="text-left pb-3 pr-4">KPI</th>
+                <th className="text-right pb-3 px-4">Year 1</th>
+                <th className="text-right pb-3 px-4">Year 2</th>
+                <th className="text-right pb-3">Year 3</th>
+              </tr>
+            </thead>
+            <tbody className="space-y-1">
+              {[
+                { name: "Total Social Following", y1: "5,000", y2: "15,000", y3: "40,000", color: "#7c3aed" },
+                { name: "Avg Engagement Rate", y1: "4–6%", y2: "6–8%", y3: "8%+", color: "#7c3aed" },
+                { name: "Active Partners", y1: "6", y2: "15", y3: "30", color: "#0891b2" },
+                { name: "Communities Reached", y1: "5", y2: "12", y3: "25", color: "#0891b2" },
+                { name: "Active Team Members", y1: "22", y2: "40", y3: "70", color: "#d97706" },
+                { name: "Member Retention", y1: "80%", y2: "85%", y3: "90%", color: "#d97706" },
+                { name: "Research Articles / yr", y1: "4", y2: "10", y3: "18", color: "#16a34a" },
+                { name: "Data Accuracy Score", y1: "85%", y2: "92%", y3: "97%", color: "#16a34a" },
+                { name: "Events / Year", y1: "3", y2: "7", y3: "15", color: "#db2777" },
+                { name: "Total Event Attendees", y1: "300", y2: "1,000", y3: "3,000", color: "#db2777" },
+              ].map((row) => (
+                <tr key={row.name} className="border-t border-white/5">
+                  <td className="py-2.5 pr-4">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: row.color }} />
+                      <span className="text-white/70">{row.name}</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-semibold text-yellow-400">{row.y1}</td>
+                  <td className="py-2.5 px-4 text-right font-semibold text-blue-300">{row.y2}</td>
+                  <td className="py-2.5 text-right font-semibold text-green-400">{row.y3}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Cumulative Families Served</h3>
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Social Following Growth Target</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={IMPACT_DATA.familiesServed}>
+            <BarChart data={[{ year: "Y1", value: 5000 }, { year: "Y2", value: 15000 }, { year: "Y3", value: 40000 }]}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-              <Bar dataKey="value" name="Families" radius={[6, 6, 0, 0]} fill="#facc15" />
+              <Bar dataKey="value" name="Followers" radius={[6, 6, 0, 0]} fill="#7c3aed" />
             </BarChart>
           </ResponsiveContainer>
         </div>
+
         <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">CO₂ Avoided (tonnes)</h3>
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Community Reach Targets</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={IMPACT_DATA.co2Avoided}>
+            <BarChart data={[
+              { year: "Y1", partners: 6, communities: 5 },
+              { year: "Y2", partners: 15, communities: 12 },
+              { year: "Y3", partners: 30, communities: 25 },
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
+              <Legend wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }} />
+              <Bar dataKey="partners" name="Partners" radius={[4, 4, 0, 0]} fill="#0891b2" />
+              <Bar dataKey="communities" name="Communities" radius={[4, 4, 0, 0]} fill="#d97706" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Event Attendance Targets</h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={[
+              { year: "Y1", attendees: 300 },
+              { year: "Y2", attendees: 1000 },
+              { year: "Y3", attendees: 3000 },
+            ]}>
               <defs>
-                <linearGradient id="co2g" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+                <linearGradient id="evg" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#db2777" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#db2777" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-              <Area type="monotone" dataKey="value" name="CO₂ (t)" stroke="#34d399" fill="url(#co2g)" strokeWidth={2} />
+              <Area type="monotone" dataKey="attendees" name="Attendees" stroke="#db2777" fill="url(#evg)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
+
         <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Energy Saving (%)</h3>
+          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Team & Research Growth</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={IMPACT_DATA.energySaving}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} unit="%" />
-              <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-              <Line type="monotone" dataKey="value" name="Saving %" stroke="#a78bfa" strokeWidth={3} dot={{ fill: "#a78bfa", r: 4 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Fundraising Breakdown ($)</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={IMPACT_DATA.fundraising}>
+            <LineChart data={[
+              { year: "Y1", members: 22, articles: 4 },
+              { year: "Y2", members: 40, articles: 10 },
+              { year: "Y3", members: 70, articles: 18 },
+            ]}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="year" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
               <Legend wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }} />
-              <Bar dataKey="individual" name="Individual" stackId="a" fill="#facc15" />
-              <Bar dataKey="events" name="Events" stackId="a" fill="#34d399" />
-              <Bar dataKey="grants" name="Grants" stackId="a" fill="#60a5fa" radius={[6, 6, 0, 0]} />
-            </BarChart>
+              <Line type="monotone" dataKey="members" name="Team Members" stroke="#d97706" strokeWidth={3} dot={{ fill: "#d97706", r: 4 }} />
+              <Line type="monotone" dataKey="articles" name="Research Articles" stroke="#16a34a" strokeWidth={3} dot={{ fill: "#16a34a", r: 4 }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
@@ -763,7 +813,8 @@ function SettingsTab({ startDateDraft, setStartDateDraft, onSave, isPending, wee
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />0–49 = Red (Critical)</div>
           <div className="mt-3 pt-3 border-t border-white/8">All scores are capped at 100 and floored at 0.</div>
           <div>Team score = average of its KPI scores.</div>
-          <div>Overall score = average of all 6 team scores.</div>
+          <div>Overall score = average of all 5 team scores.</div>
+          <div className="mt-2">Scores are benchmarked against Year 1 / 2 / 3 targets from the 3-Year KPI Framework.</div>
         </div>
       </div>
     </div>
