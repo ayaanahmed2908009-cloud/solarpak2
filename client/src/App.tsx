@@ -2,6 +2,7 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { lazy, Suspense } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Checkout from "@/pages/Checkout";
@@ -32,8 +33,9 @@ import ImpactLabsDashboard from "@/pages/ImpactLabsDashboard";
 import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
 import Opportunities from "@/pages/Opportunities";
 import Admin from "@/pages/Admin";
-import KPI from "@/pages/KPI";
 import { useEffect, Component, type ReactNode } from "react";
+
+const KPI = lazy(() => import("@/pages/KPI"));
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
   constructor(props: any) {
@@ -166,7 +168,13 @@ function Router() {
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/admin" component={Admin} />
-      <Route path="/kpi" component={() => <ErrorBoundary><KPI /></ErrorBoundary>} />
+      <Route path="/kpi" component={() => (
+        <ErrorBoundary>
+          <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080d1a" }} />}>
+            <KPI />
+          </Suspense>
+        </ErrorBoundary>
+      )} />
       
       <Route component={NotFound} />
     </Switch>
