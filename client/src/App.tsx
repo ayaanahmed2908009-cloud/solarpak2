@@ -32,6 +32,7 @@ import ImpactLabsDashboard from "@/pages/ImpactLabsDashboard";
 import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
 import Opportunities from "@/pages/Opportunities";
 import Admin from "@/pages/Admin";
+import KPI from "@/pages/KPI";
 import { useEffect } from "react";
 
 
@@ -141,6 +142,7 @@ function Router() {
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/admin" component={Admin} />
+      <Route path="/kpi" component={KPI} />
       
       <Route component={NotFound} />
     </Switch>
