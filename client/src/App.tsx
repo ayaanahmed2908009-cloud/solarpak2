@@ -61,6 +61,15 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: string |
   }
 }
 
+function KpiRoute() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080d1a" }} />}>
+        <KPI />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
 
 // Smooth scroll behavior utility
 function setSmoothScroll() {
@@ -168,13 +177,7 @@ function Router() {
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/admin" component={Admin} />
-      <Route path="/kpi" component={() => (
-        <ErrorBoundary>
-          <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080d1a" }} />}>
-            <KPI />
-          </Suspense>
-        </ErrorBoundary>
-      )} />
+      <Route path="/kpi" component={KpiRoute} />
       
       <Route component={NotFound} />
     </Switch>
