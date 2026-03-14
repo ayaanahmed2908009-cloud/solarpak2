@@ -197,7 +197,7 @@ export default function KPI() {
   });
 
   const overallHistory: any[] = [];
-  const weekNums = [...new Set((submissions as any[]).map((s) => s.weekNumber))].sort((a, b) => a - b);
+  const weekNums = Array.from(new Set((submissions as any[]).map((s) => s.weekNumber))).sort((a, b) => a - b);
   weekNums.forEach((wk) => {
     const weekSubs = (submissions as any[]).filter((s) => s.weekNumber === wk);
     const avg = weekSubs.reduce((sum, s) => sum + s.teamScore, 0) / (weekSubs.length || 1);
