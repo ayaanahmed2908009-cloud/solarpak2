@@ -96,6 +96,12 @@ export default function Navbar() {
             >
               OPPORTUNITIES
             </NavLink>
+            <NavLink 
+              href="/kpi" 
+              className="text-emerald-700 hover:text-emerald-900 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide border border-emerald-200 rounded px-3 py-1 hover:bg-emerald-50"
+            >
+              KPI Dashboard
+            </NavLink>
             <div className="relative group">
               <button className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
                 GET INVOLVED
