@@ -1,0 +1,39 @@
+SolarPak KPI Dashboard — Replit Build Prompt
+Build a full-stack KPI dashboard web app for SolarPak, a solar nonprofit operating in Pakistan. The app should feel premium and data-driven. Use the Impact Labs design system for all colours, typography, and visual styling — Replit has access to this. Think bold data visualisation, clean surfaces, and a modern nonprofit impact report aesthetic. All data is hardcoded in a central data.js config file. No backend required.
+
+Tech stack
+React (Vite) · Tailwind CSS · Recharts · React Router · Framer Motion · all data in data.js
+
+App structure
+The app has a persistent sidebar with SolarPak branding and colour-coded team indicators. On mobile the sidebar collapses to a bottom nav. All pages share a year selector toggle (Year 1 / Year 2 / Year 3) in the top bar that switches all data across every view simultaneously. All KPI actuals entered by the user persist in localStorage.
+
+Pages
+1. Overview (/)
+Top stat bar with four large metric cards: total families served to date, total CO₂ avoided, total funds raised, active volunteers. Below that, a progress ring or bar chart per team showing overall KPI completion % for the selected year. A health-at-a-glance row shows one RAG (red/amber/green) status pill per team — green ≥90% of target, amber 70–89%, red below 70%.
+2. Team KPI Tracker (/teams)
+Tab or sidebar selector for each of the 6 teams. Each team view shows its KPIs as cards containing: KPI name, Year 1/2/3 target, an editable Actual input field, a progress bar filling toward the target, and a % completion badge colour-coded by RAG status. Actuals persist in localStorage.
+3. Risk Heatmap (/risks)
+An interactive 5×5 grid — X axis is Impact (Negligible to Severe), Y axis is Likelihood (Rare to Critical). Cell background colours: score ≥15 = red, ≥8 = orange, ≥4 = amber, <4 = green. Each of the 9 risks is plotted as a coloured dot on the grid at its correct likelihood/impact coordinate. Hovering a dot shows a tooltip with: risk name, category, score, and mitigation note. Below the grid is a sortable risk register table with columns: Risk, Category, Likelihood, Impact, Score, Priority, Mitigation. Category colour coding: Operational = coral, Financial = purple, Reputational = blue, People & Volunteers = teal.
+4. Impact Summary (/impact)
+Cumulative families served bar chart across Y1/Y2/Y3. CO₂ avoided area chart. Household energy saving % line chart (20% → 35% → 50%). Fundraising stacked bar split by individual donors, events, and grants per year. A donor pipeline funnel: Reached → Approached → Committed → Retained.
+
+Full data for data.js
+Teams and KPIs across 3 years:
+Operations & Installations — families served 40/70/110 · same-day completion rate 90%/93%/97% · system uptime at 6 months 100%/100%/100% · CO₂ avoided 20t/35t/55t · post-round install report every round across all years
+Fundraising & Donations — annual funds raised $10K/$20K/$40K · donor retention rate 20%/30%/50% · new funding sources 1/3/5+ · cost per family $120/$120/$120
+Marketing & Outreach — follower growth 2×/3×/2×Y2 · avg monthly reach 5K/10K/20K · media mentions 2/4/15 per year · website donor conversion 2%/3%/4%
+Volunteer Management — active volunteers 30/55/80 · team tasks completed on time 80%/85%/90% · weekly meetings held 85%/90%/95%
+Impact Labs — follow-up survey completion 70%/80%/90% · reporting cadence Annual report / Quarterly reports / Quarterly + whitepaper · CO₂ data documented every round · institutional funding funneled 0/1 source/2 sources · avg household energy saving +20%/+35%/+50%
+Events & Community Outreach — events hosted 4/6/10 per year · attendee growth vs prior event +20%/+30%/+40% · fundraising via events $5K/$10K/$15K
+Risks (9 total with likelihood 1–5 and impact 1–5):
+Panel failure post-installation (Operational, L5, I3, mitigation: rigorous QC checklist and mandatory post-install test) · Donor dropout (Financial, L5, I3, mitigation: diversify to grants and corporate sponsors, build 3-month reserve) · Supply delays (Operational, L4, I3, mitigation: maintain buffer stock and identify 2 alternate suppliers) · Volunteer burnout (People & Volunteers, L4, I2, mitigation: rotate roles, enforce rest periods, recognise contributions) · Negative press (Reputational, L2, I4, mitigation: comms protocol, designated spokesperson, community SLAs) · Budget overrun (Financial, L3, I3, mitigation: monthly spend tracking, bulk procurement contracts) · Low event turnout (People & Volunteers, L3, I2, mitigation: partner with community orgs, promote 4 weeks ahead) · Social media backlash (Reputational, L2, I3, mitigation: content review process, community engagement guidelines) · Currency risk (Financial, L1, I4, mitigation: monitor PKR/USD monthly, hold USD reserves)
+
+UX details
+
+Use the Impact Labs design system throughout — colours, fonts, component style, and spacing should all follow that language
+Smooth page transitions with Framer Motion
+Cards have hover states — border brightens, subtle scale up
+Mobile responsive with collapsing sidebar to bottom nav
+Small "Last updated" timestamp in the footer set to today's date
+Risk heatmap grid built with CSS grid grid-template-columns: repeat(5, 1fr) — each risk plotted as an absolutely positioned dot within its cell at the correct likelihood/impact coordinate
+
