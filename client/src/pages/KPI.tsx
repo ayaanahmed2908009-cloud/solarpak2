@@ -15,6 +15,150 @@ import {
 
 type Tab = "scores" | "input" | "history" | "impact" | "settings";
 
+type UserRole = "admin" | "team";
+
+interface KpiUser {
+  username: string;
+  password: string;
+  role: UserRole;
+  displayName: string;
+  teamId: string | null;
+}
+
+interface KpiSession {
+  username: string;
+  role: UserRole;
+  displayName: string;
+  teamId: string | null;
+}
+
+const USERS: KpiUser[] = [
+  { username: "ceo", password: "SolarPak@CEO", role: "admin", displayName: "CEO", teamId: null },
+  { username: "management", password: "SolarPak@Mgmt", role: "admin", displayName: "General Management", teamId: "management" },
+  { username: "marketing", password: "SolarPak@Mktg", role: "team", displayName: "Marketing & Social Media", teamId: "marketing" },
+  { username: "partnerships", password: "SolarPak@Prtnr", role: "team", displayName: "Partnerships & Outreach", teamId: "partnerships" },
+  { username: "impactlabs", password: "SolarPak@Labs", role: "team", displayName: "Impact Labs", teamId: "impactlabs" },
+  { username: "events", password: "SolarPak@Events", role: "team", displayName: "Events & Community Outreach", teamId: "events" },
+];
+
+const SESSION_KEY = "kpi_session";
+
+function loadSession(): KpiSession | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveSession(s: KpiSession) {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+}
+
+function clearSession() {
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
+function KpiLogin({ onLogin }: { onLogin: (s: KpiSession) => void }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showPw, setShowPw] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const user = USERS.find(
+      (u) => u.username === username.trim().toLowerCase() && u.password === password
+    );
+    if (!user) {
+      setError("Invalid username or password.");
+      return;
+    }
+    const session: KpiSession = {
+      username: user.username,
+      role: user.role,
+      displayName: user.displayName,
+      teamId: user.teamId,
+    };
+    saveSession(session);
+    onLogin(session);
+  }
+
+  return (
+    <div className="min-h-screen bg-[#080d1a] flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-sm"
+      >
+        <div className="flex items-center gap-3 mb-8 justify-center">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center font-black text-black text-lg">S</div>
+          <div>
+            <div className="font-black text-white text-lg leading-none">SolarPak</div>
+            <div className="text-[12px] text-white/40 mt-0.5">KPI Scoring System</div>
+          </div>
+        </div>
+
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-7">
+          <h1 className="text-xl font-bold text-white mb-1">Sign in</h1>
+          <p className="text-sm text-white/35 mb-6">Internal access only. Contact your team lead for credentials.</p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/50 font-medium">Username</label>
+              <input
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-yellow-400/50 transition-colors"
+                placeholder="e.g. marketing"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/50 font-medium">Password</label>
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-sm text-white placeholder-white/20 focus:outline-none focus:border-yellow-400/50 transition-colors"
+                  placeholder="••••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw((p) => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 text-xs px-1"
+                >
+                  {showPw ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-xl bg-yellow-400 text-black font-bold text-sm hover:bg-yellow-300 active:scale-95 transition-all mt-2"
+            >
+              Sign In
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-[11px] text-white/20 mt-6">
+          SolarPak Internal · Restricted Access
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
 const TEAM_META: Record<string, { name: string; color: string }> = {
   marketing: { name: "Marketing & Social Media", color: "#7c3aed" },
   partnerships: { name: "Partnerships & Outreach", color: "#0891b2" },
@@ -89,8 +233,26 @@ const pageVariants = {
 };
 
 export default function KPI() {
-  const [tab, setTab] = useState<Tab>("scores");
-  const [selectedInputTeam, setSelectedInputTeam] = useState(0);
+  const [session, setSession] = useState<KpiSession | null>(() => loadSession());
+
+  if (!session) {
+    return <KpiLogin onLogin={(s) => setSession(s)} />;
+  }
+
+  return <KpiDashboard session={session} onLogout={() => { clearSession(); setSession(null); }} />;
+}
+
+function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: () => void }) {
+  const isAdmin = session.role === "admin";
+  const visibleTeamIds = isAdmin ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
+  const allowedTabs: Tab[] = isAdmin
+    ? ["scores", "input", "history", "impact", "settings"]
+    : ["scores", "input", "history"];
+
+  const [tab, setTab] = useState<Tab>(allowedTabs[0]);
+  const [selectedInputTeam, setSelectedInputTeam] = useState(
+    () => isAdmin ? 0 : Math.max(0, TEAM_IDS.indexOf(session.teamId || ""))
+  );
   const [inputDrafts, setInputDrafts] = useState<Record<string, any>>(
     () => {
       try { return JSON.parse(localStorage.getItem("kpi_drafts") || "{}"); } catch { return {}; }
@@ -188,6 +350,14 @@ export default function KPI() {
     overallHistory.push({ week: `W${wk}`, score: Math.round(avg) });
   });
 
+  const tabMeta: Record<Tab, { icon: string; label: string }> = {
+    scores: { icon: "◉", label: "Scores" },
+    input: { icon: "✎", label: "Weekly Input" },
+    history: { icon: "◈", label: "History" },
+    impact: { icon: "⬡", label: "Impact Charts" },
+    settings: { icon: "⚙", label: "Settings" },
+  };
+
   return (
     <div className="min-h-screen bg-[#080d1a] text-white flex flex-col">
       <div className="flex flex-1">
@@ -204,42 +374,55 @@ export default function KPI() {
           </div>
 
           <nav className="flex-1 p-3 space-y-1">
-            {(["scores", "input", "history", "impact", "settings"] as Tab[]).map((t) => {
-              const meta: Record<Tab, { icon: string; label: string }> = {
-                scores: { icon: "◉", label: "Scores" },
-                input: { icon: "✎", label: "Weekly Input" },
-                history: { icon: "◈", label: "History" },
-                impact: { icon: "⬡", label: "Impact Charts" },
-                settings: { icon: "⚙", label: "Settings" },
-              };
-              return (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                    tab === t
-                      ? "bg-yellow-400/15 text-yellow-300 border border-yellow-400/25"
-                      : "text-white/40 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <span>{meta[t].icon}</span>{meta[t].label}
-                </button>
-              );
-            })}
+            {allowedTabs.map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  tab === t
+                    ? "bg-yellow-400/15 text-yellow-300 border border-yellow-400/25"
+                    : "text-white/40 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>{tabMeta[t].icon}</span>{tabMeta[t].label}
+              </button>
+            ))}
           </nav>
 
-          <div className="p-4 border-t border-white/8">
+          <div className="p-4 border-t border-white/8 space-y-1">
             <div className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Week {weeks}</div>
-            {teamScores.map((ts) => {
-              const meta = TEAM_META[ts.teamId];
-              return (
-                <div key={ts.teamId} className="flex items-center gap-2 py-1">
-                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ragColors(ts.rag).badge === "bg-green-500" ? "#22c55e" : ts.rag === "amber" ? "#f59e0b" : "#ef4444" }} />
-                  <span className="text-[11px] text-white/50 truncate flex-1">{meta?.name.split(" ")[0]}</span>
-                  <span className="text-[11px] font-bold text-white/60">{Math.round(ts.teamScore)}</span>
-                </div>
-              );
-            })}
+            {teamScores
+              .filter((ts) => visibleTeamIds.includes(ts.teamId))
+              .map((ts) => {
+                const meta = TEAM_META[ts.teamId];
+                const dot = ts.rag === "green" ? "#22c55e" : ts.rag === "amber" ? "#f59e0b" : "#ef4444";
+                return (
+                  <div key={ts.teamId} className="flex items-center gap-2 py-1">
+                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: dot }} />
+                    <span className="text-[11px] text-white/50 truncate flex-1">{meta?.name.split(" ")[0]}</span>
+                    <span className="text-[11px] font-bold text-white/60">{Math.round(ts.teamScore)}</span>
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* User / Logout */}
+          <div className="p-4 border-t border-white/8">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-full bg-yellow-400/20 border border-yellow-400/30 flex items-center justify-center text-yellow-300 text-xs font-bold">
+                {session.displayName[0].toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-semibold text-white truncate">{session.displayName}</div>
+                <div className="text-[10px] text-white/30">{isAdmin ? "Full Access" : "Team View"}</div>
+              </div>
+            </div>
+            <button
+              onClick={onLogout}
+              className="w-full text-xs text-white/35 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 rounded-lg px-3 py-2 transition-all text-left"
+            >
+              Sign Out
+            </button>
           </div>
         </aside>
 
@@ -258,10 +441,29 @@ export default function KPI() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${ragColors2.bg} ${ragColors2.border} ${ragColors2.text}`}>
-                <span>Overall</span>
-                <span className="text-xl font-black">{Math.round(overallScore)}</span>
-              </div>
+              {isAdmin && (
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${ragColors2.bg} ${ragColors2.border} ${ragColors2.text}`}>
+                  <span>Overall</span>
+                  <span className="text-xl font-black">{Math.round(overallScore)}</span>
+                </div>
+              )}
+              {!isAdmin && session.teamId && (() => {
+                const myTs = teamScores.find((t) => t.teamId === session.teamId);
+                const myRag = myTs ? ragColors(myTs.rag) : ragColors("red");
+                return myTs ? (
+                  <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${myRag.bg} ${myRag.border} ${myRag.text}`}>
+                    <span>Score</span>
+                    <span className="text-xl font-black">{Math.round(myTs.teamScore)}</span>
+                  </div>
+                ) : null;
+              })()}
+              {/* Mobile sign out */}
+              <button
+                onClick={onLogout}
+                className="md:hidden text-xs text-white/35 hover:text-red-400 border border-white/10 hover:border-red-500/30 rounded-lg px-3 py-2 transition-all"
+              >
+                Sign Out
+              </button>
             </div>
           </header>
 
@@ -269,34 +471,48 @@ export default function KPI() {
             <AnimatePresence mode="wait">
               {tab === "scores" && (
                 <motion.div key="scores" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
-                  <ScoresTab teamScores={teamScores} overallScore={overallScore} overallRag={overallRag} weeks={weeks} />
+                  <ScoresTab
+                    teamScores={teamScores}
+                    overallScore={overallScore}
+                    overallRag={overallRag}
+                    weeks={weeks}
+                    visibleTeamIds={visibleTeamIds}
+                    isAdmin={isAdmin}
+                  />
                 </motion.div>
               )}
               {tab === "input" && (
                 <motion.div key="input" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
                   <InputTab
                     selectedTeam={selectedInputTeam}
-                    setSelectedTeam={setSelectedInputTeam}
+                    setSelectedTeam={isAdmin ? setSelectedInputTeam : () => {}}
                     teamScores={teamScores}
                     getInputs={getInputs}
                     setField={setField}
                     handleSubmit={handleSubmitTeam}
                     isPending={submitMutation.isPending}
                     saved={saved}
+                    visibleTeamIds={visibleTeamIds}
+                    isAdmin={isAdmin}
                   />
                 </motion.div>
               )}
               {tab === "history" && (
                 <motion.div key="history" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
-                  <HistoryTab historyByTeam={historyByTeam} overallHistory={overallHistory} />
+                  <HistoryTab
+                    historyByTeam={historyByTeam}
+                    overallHistory={overallHistory}
+                    visibleTeamIds={visibleTeamIds}
+                    isAdmin={isAdmin}
+                  />
                 </motion.div>
               )}
-              {tab === "impact" && (
+              {tab === "impact" && isAdmin && (
                 <motion.div key="impact" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
                   <ImpactTab />
                 </motion.div>
               )}
-              {tab === "settings" && (
+              {tab === "settings" && isAdmin && (
                 <motion.div key="settings" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
                   <SettingsTab
                     startDateDraft={startDateDraft}
@@ -319,63 +535,64 @@ export default function KPI() {
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0c1326] border-t border-white/8 z-20 flex">
-        {(["scores", "input", "history", "impact", "settings"] as Tab[]).map((t) => {
-          const icons: Record<Tab, string> = { scores: "◉", input: "✎", history: "◈", impact: "⬡", settings: "⚙" };
-          const labels: Record<Tab, string> = { scores: "Scores", input: "Input", history: "History", impact: "Impact", settings: "Settings" };
-          return (
-            <button key={t} onClick={() => setTab(t)} className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all ${tab === t ? "text-yellow-400" : "text-white/35"}`}>
-              <span className="text-base">{icons[t]}</span>
-              {labels[t]}
-            </button>
-          );
-        })}
+        {allowedTabs.map((t) => (
+          <button key={t} onClick={() => setTab(t)} className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all ${tab === t ? "text-yellow-400" : "text-white/35"}`}>
+            <span className="text-base">{tabMeta[t].icon}</span>
+            {tabMeta[t].label}
+          </button>
+        ))}
       </nav>
     </div>
   );
 }
 
-function ScoresTab({ teamScores, overallScore, overallRag, weeks }: {
+function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds, isAdmin }: {
   teamScores: TeamScore[];
   overallScore: number;
   overallRag: "green" | "amber" | "red";
   weeks: number;
+  visibleTeamIds: string[];
+  isAdmin: boolean;
 }) {
   const overallColor = overallRag === "green" ? "#22c55e" : overallRag === "amber" ? "#f59e0b" : "#ef4444";
+  const visibleScores = teamScores.filter((t) => visibleTeamIds.includes(t.teamId));
 
   return (
     <div className="space-y-6">
-      {/* Overall Score Hero */}
-      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8">
-        <div className="flex flex-col items-center">
-          <ScoreRing score={overallScore} size={140} strokeWidth={12} color={overallColor} />
-          <div className="mt-2 text-sm text-white/40">Overall Score</div>
+      {/* Overall Score Hero — admin only */}
+      {isAdmin && (
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8">
+          <div className="flex flex-col items-center">
+            <ScoreRing score={overallScore} size={140} strokeWidth={12} color={overallColor} />
+            <div className="mt-2 text-sm text-white/40">Overall Score</div>
+          </div>
+          <div className="flex-1">
+            <div className="text-2xl font-black text-white mb-1">
+              SolarPak — Week {weeks}
+            </div>
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold mb-4 ${overallRag === "green" ? "bg-green-500/15 text-green-400" : overallRag === "amber" ? "bg-amber-500/15 text-amber-400" : "bg-red-500/15 text-red-400"}`}>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: overallColor }} />
+              {overallRag === "green" ? "On Track" : overallRag === "amber" ? "Needs Attention" : "Critical"}
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { label: "Teams Scoring Green", value: teamScores.filter((t) => t.rag === "green").length },
+                { label: "Teams At Risk", value: teamScores.filter((t) => t.rag === "amber").length },
+                { label: "Teams Critical", value: teamScores.filter((t) => t.rag === "red").length },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-3xl font-black text-white">{stat.value}</div>
+                  <div className="text-xs text-white/40 mt-0.5">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="flex-1">
-          <div className="text-2xl font-black text-white mb-1">
-            SolarPak — Week {weeks}
-          </div>
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold mb-4 ${overallRag === "green" ? "bg-green-500/15 text-green-400" : overallRag === "amber" ? "bg-amber-500/15 text-amber-400" : "bg-red-500/15 text-red-400"}`}>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: overallColor }} />
-            {overallRag === "green" ? "On Track" : overallRag === "amber" ? "Needs Attention" : "Critical"}
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: "Teams Scoring Green", value: teamScores.filter((t) => t.rag === "green").length },
-              { label: "Teams At Risk", value: teamScores.filter((t) => t.rag === "amber").length },
-              { label: "Teams Critical", value: teamScores.filter((t) => t.rag === "red").length },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl font-black text-white">{stat.value}</div>
-                <div className="text-xs text-white/40 mt-0.5">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Team Score Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {teamScores.map((ts) => {
+        {visibleScores.map((ts) => {
           const meta = TEAM_META[ts.teamId];
           const rag = ragColors(ts.rag);
           const ringColor = ts.rag === "green" ? "#22c55e" : ts.rag === "amber" ? "#f59e0b" : "#ef4444";
@@ -415,7 +632,7 @@ function ScoresTab({ teamScores, overallScore, overallRag, weeks }: {
   );
 }
 
-function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setField, handleSubmit, isPending, saved }: {
+function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setField, handleSubmit, isPending, saved, visibleTeamIds, isAdmin }: {
   selectedTeam: number;
   setSelectedTeam: (i: number) => void;
   teamScores: TeamScore[];
@@ -424,8 +641,12 @@ function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setFie
   handleSubmit: (teamId: string) => void;
   isPending: boolean;
   saved: boolean;
+  visibleTeamIds: string[];
+  isAdmin: boolean;
 }) {
-  const teamId = TEAM_IDS[selectedTeam];
+  const visibleIds = TEAM_IDS.filter((id) => visibleTeamIds.includes(id));
+  const effectiveIndex = Math.min(selectedTeam, visibleIds.length - 1);
+  const teamId = visibleIds[effectiveIndex] || visibleIds[0];
   const meta = TEAM_META[teamId];
   const fields = INPUT_FIELDS[teamId] || [];
   const inputs = getInputs(teamId);
@@ -433,27 +654,29 @@ function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setFie
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
-      {/* Team Selector */}
-      <div className="md:w-52 flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
-        {TEAM_IDS.map((id, i) => {
-          const m = TEAM_META[id];
-          const ts2 = teamScores.find((t) => t.teamId === id);
-          return (
-            <button
-              key={id}
-              onClick={() => setSelectedTeam(i)}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap md:w-full ${
-                selectedTeam === i ? "text-white border" : "text-white/40 hover:text-white hover:bg-white/5"
-              }`}
-              style={selectedTeam === i ? { backgroundColor: `${m.color}18`, borderColor: `${m.color}40` } : {}}
-            >
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
-              <span className="flex-1 text-left">{m.name}</span>
-              {ts2 && <span className="font-bold text-white/50">{Math.round(ts2.teamScore)}</span>}
-            </button>
-          );
-        })}
-      </div>
+      {/* Team Selector — only shown to admins or when multiple teams visible */}
+      {isAdmin && (
+        <div className="md:w-52 flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+          {visibleIds.map((id, i) => {
+            const m = TEAM_META[id];
+            const ts2 = teamScores.find((t) => t.teamId === id);
+            return (
+              <button
+                key={id}
+                onClick={() => setSelectedTeam(i)}
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap md:w-full ${
+                  effectiveIndex === i ? "text-white border" : "text-white/40 hover:text-white hover:bg-white/5"
+                }`}
+                style={effectiveIndex === i ? { backgroundColor: `${m.color}18`, borderColor: `${m.color}40` } : {}}
+              >
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
+                <span className="flex-1 text-left">{m.name}</span>
+                {ts2 && <span className="font-bold text-white/50">{Math.round(ts2.teamScore)}</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Input Form */}
       <div className="flex-1 space-y-4">
@@ -545,11 +768,18 @@ function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setFie
   );
 }
 
-function HistoryTab({ historyByTeam, overallHistory }: { historyByTeam: Record<string, any[]>; overallHistory: any[] }) {
-  const TEAM_COLORS = Object.entries(TEAM_META).map(([id, m]) => ({ id, color: m.color }));
+function HistoryTab({ historyByTeam, overallHistory, visibleTeamIds, isAdmin }: {
+  historyByTeam: Record<string, any[]>;
+  overallHistory: any[];
+  visibleTeamIds: string[];
+  isAdmin: boolean;
+}) {
+  const TEAM_COLORS = Object.entries(TEAM_META)
+    .filter(([id]) => visibleTeamIds.includes(id))
+    .map(([id, m]) => ({ id, color: m.color }));
 
   const combined: Record<string, any> = {};
-  TEAM_IDS.forEach((id) => {
+  visibleTeamIds.forEach((id) => {
     (historyByTeam[id] || []).forEach((entry) => {
       if (!combined[entry.week]) combined[entry.week] = { week: entry.week };
       combined[entry.week][id] = entry.score;
@@ -569,24 +799,28 @@ function HistoryTab({ historyByTeam, overallHistory }: { historyByTeam: Record<s
 
   return (
     <div className="space-y-6">
-      {/* Overall Line */}
-      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-        <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Overall SolarPak Score — Weekly</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={overallHistory}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
-            <Line type="monotone" dataKey="score" name="Overall" stroke="#facc15" strokeWidth={3} dot={{ fill: "#facc15", r: 4 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Overall Line — admin only */}
+      {isAdmin && (
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Overall SolarPak Score — Weekly</h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={overallHistory}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#1a2540", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff" }} />
+              <Line type="monotone" dataKey="score" name="Overall" stroke="#facc15" strokeWidth={3} dot={{ fill: "#facc15", r: 4 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Per-Team Lines */}
       {combinedData.length > 0 && (
         <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Team Scores — Weekly</h3>
+          <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
+            {isAdmin ? "Team Scores — Weekly" : "Your Team Score — Weekly"}
+          </h3>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={combinedData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -606,7 +840,7 @@ function HistoryTab({ historyByTeam, overallHistory }: { historyByTeam: Record<s
 
       {/* Per-team table */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {TEAM_IDS.map((id) => {
+        {visibleTeamIds.map((id) => {
           const hist = historyByTeam[id];
           if (!hist?.length) return null;
           const latest = hist[0];
