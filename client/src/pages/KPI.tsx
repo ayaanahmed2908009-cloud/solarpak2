@@ -15,7 +15,7 @@ import {
   type TeamScore,
 } from "@/lib/scoring";
 
-type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships";
+type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships" | "management";
 
 type UserRole = "admin" | "team" | "social" | "sponsorships";
 
@@ -257,7 +257,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     : isSponsorship
     ? ["sponsorships"]
     : isAdmin
-    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships"]
+    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships", "management"]
     : ["scores", "input", "history"];
 
   const [tab, setTab] = useState<Tab>(allowedTabs[0]);
@@ -369,6 +369,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     settings: { icon: "⚙", label: "Settings" },
     social: { icon: "📱", label: "Social Media" },
     sponsorships: { icon: "🤝", label: "Sponsorships" },
+    management: { icon: "🏢", label: "General Mgmt" },
   };
 
   return (
@@ -659,6 +660,16 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                   </motion.div>
                 );
               })()}
+
+              {tab === "management" && isAdmin && (
+                <motion.div key="management" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-white mb-1">General Management Dashboard</h2>
+                    <p className="text-sm text-white/40">Headcount · OKR Heatmap · Team Satisfaction · Week {weeks}</p>
+                  </div>
+                  <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} />
+                </motion.div>
+              )}
             </AnimatePresence>
           </main>
 
