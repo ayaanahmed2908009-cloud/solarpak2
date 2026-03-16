@@ -536,20 +536,67 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                   />
                 </motion.div>
               )}
-              {tab === "social" && (isAdmin || isSocial) && (
-                <motion.div key="social" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold text-white mb-1">Social Media Dashboard</h2>
-                    <p className="text-sm text-white/40">Live executive metrics — all teams · Week {weeks}</p>
-                  </div>
-                  <ExecutiveSummaryPanel
-                    teamScores={teamScores}
-                    overallScore={overallScore}
-                    historyByTeam={historyByTeam}
-                    weeks={weeks}
-                  />
-                </motion.div>
-              )}
+              {tab === "social" && (isAdmin || isSocial) && (() => {
+                const mkt = teamScores.find((t) => t.teamId === "marketing");
+                if (!mkt) return null;
+                const meta = TEAM_META["marketing"];
+                const ringColor = mkt.rag === "green" ? "#22c55e" : mkt.rag === "amber" ? "#f59e0b" : "#ef4444";
+                return (
+                  <motion.div key="social" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                    <div className="mb-6">
+                      <h2 className="text-xl font-bold text-white mb-1">Social Media Dashboard</h2>
+                      <p className="text-sm text-white/40">Marketing &amp; Social Media team · Week {weeks}</p>
+                    </div>
+                    <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+                      <div className="flex items-center gap-2 mb-6">
+                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: meta?.color }} />
+                        <h2 className="text-lg font-bold text-white">{meta?.name}</h2>
+                        <div className={`ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${mkt.rag === "green" ? "bg-green-500/15 text-green-400" : mkt.rag === "amber" ? "bg-amber-500/15 text-amber-400" : "bg-red-500/15 text-red-400"}`}>
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ringColor }} />
+                          {mkt.rag === "green" ? "On Track" : mkt.rag === "amber" ? "Needs Attention" : "Critical"}
+                        </div>
+                      </div>
+                      <div className="flex flex-col md:flex-row gap-8 items-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <ScoreRing score={mkt.teamScore} size={140} strokeWidth={12} color={ringColor} />
+                          <div className="text-xs text-white/35">Weekly Score</div>
+                          <div className="text-xs text-white/25">Target: 70 / 100</div>
+                        </div>
+                        <div className="flex-1 w-full">
+                          <div className="text-xs text-white/35 uppercase tracking-widest mb-2 text-center">KPI Radar</div>
+                          <ResponsiveContainer width="100%" height={200}>
+                            <RadarChart data={mkt.kpiScores.map((k) => ({ name: k.name, score: k.score, target: 70 }))}>
+                              <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                              <PolarAngleAxis dataKey="name" tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 10 }} />
+                              <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+                              <Radar name="Target" dataKey="target" stroke="#facc15" fill="#facc15" fillOpacity={0.06} strokeWidth={1} strokeDasharray="4 3" />
+                              <Radar name="Score" dataKey="score" stroke={meta?.color} fill={meta?.color} fillOpacity={0.3} strokeWidth={2.5} />
+                            </RadarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className="w-full md:w-56 space-y-3">
+                          {mkt.kpiScores.map((kpi) => {
+                            const kColor = kpi.rag === "green" ? "#22c55e" : kpi.rag === "amber" ? "#f59e0b" : "#ef4444";
+                            return (
+                              <div key={kpi.name}>
+                                <div className="flex justify-between mb-1">
+                                  <span className="text-xs text-white/50">{kpi.name}</span>
+                                  <span className="text-xs font-bold" style={{ color: kColor }}>{Math.round(kpi.score)}</span>
+                                </div>
+                                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                  <motion.div className="h-full rounded-full" style={{ backgroundColor: kColor }}
+                                    initial={{ width: 0 }} animate={{ width: `${kpi.score}%` }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })()}
               {tab === "sponsorships" && (isAdmin || isSponsorship) && (
                 <motion.div key="sponsorships" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
                   <div className="mb-6">
@@ -749,54 +796,110 @@ function ExecutiveSummaryPanel({ teamScores, overallScore, historyByTeam, weeks 
 }
 
 function Speedometer({ score }: { score: number }) {
-  const W = 320, H = 198;
-  const cx = W / 2, cy = 162;
-  const r = 126;
-  const trackSW = 26, fillSW = 16;
+  const W = 300, H = 248;
+  const cx = 150, cy = 158;
+  const r = 110;
+  const trackSW = 26;
 
-  function pt(s: number): [number, number] {
-    const θ = Math.PI * (1 - s / 100);
-    return [+(cx + r * Math.cos(θ)).toFixed(2), +(cy - r * Math.sin(θ)).toFixed(2)];
+  // 270° sweep: score 0 → 225°, score 100 → -45° (clockwise on screen)
+  function ang(s: number): number {
+    return (225 - s * 2.7) * (Math.PI / 180);
   }
-
+  function pt(s: number, rr = r): [number, number] {
+    const a = ang(s);
+    return [+(cx + rr * Math.cos(a)).toFixed(2), +(cy - rr * Math.sin(a)).toFixed(2)];
+  }
   function arc(s1: number, s2: number): string {
     const [x1, y1] = pt(s1);
     const [x2, y2] = pt(s2);
-    const la = (s2 - s1) >= 50 ? 1 : 0;
-    return `M ${x1} ${y1} A ${r} ${r} 0 ${la} 0 ${x2} ${y2}`;
+    const large = (s2 - s1) * 2.7 > 180 ? 1 : 0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
   }
 
-  const nθ = Math.PI * (1 - score / 100);
-  const nl = r * 0.76;
-  const nx = +(cx + nl * Math.cos(nθ)).toFixed(2);
-  const ny = +(cy - nl * Math.sin(nθ)).toFixed(2);
   const nc = score >= 70 ? "#22c55e" : score >= 50 ? "#f59e0b" : "#ef4444";
+  const [nx, ny] = pt(score, r * 0.74);
 
-  const ticks = [0, 25, 50, 70, 100];
+  // Tick dividers at zone boundaries
+  const dividers = [
+    { s: 50, color: "#f59e0b" },
+    { s: 70, color: "#22c55e" },
+  ];
+
+  // Labels outside the track
+  const labelR = r + trackSW / 2 + 14;
+  const labels = [
+    { s: 0, text: "0" },
+    { s: 50, text: "50" },
+    { s: 100, text: "100" },
+  ];
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: 340 }}>
-      <path d={arc(0, 100)} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={trackSW} />
-      <path d={arc(0, 49)} fill="none" stroke="#ef4444" strokeWidth={trackSW} opacity={0.4} strokeLinecap="butt" />
-      <path d={arc(49, 70)} fill="none" stroke="#f59e0b" strokeWidth={trackSW} opacity={0.4} strokeLinecap="butt" />
-      <path d={arc(70, 100)} fill="none" stroke="#22c55e" strokeWidth={trackSW} opacity={0.4} strokeLinecap="butt" />
-      {score > 0.5 && <path d={arc(0, Math.min(score, 99.9))} fill="none" stroke={nc} strokeWidth={fillSW} strokeLinecap="round" />}
-      {ticks.map((s) => {
-        const [tx, ty] = pt(s);
-        const inθ = Math.PI * (1 - s / 100);
-        const ir = r - trackSW / 2 - 4;
-        const ix = +(cx + ir * Math.cos(inθ)).toFixed(2);
-        const iy = +(cy - ir * Math.sin(inθ)).toFixed(2);
-        return <line key={s} x1={tx} y1={ty} x2={ix} y2={iy} stroke="rgba(255,255,255,0.35)" strokeWidth={s === 70 ? 2.5 : 1.5} />;
+      <defs>
+        <filter id="ndl-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feFlood floodColor={nc} floodOpacity="0.6" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="shadow" />
+          <feMerge><feMergeNode in="shadow" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <radialGradient id="hub-grad" cx="50%" cy="50%">
+          <stop offset="0%" stopColor={nc} stopOpacity="0.9" />
+          <stop offset="100%" stopColor={nc} stopOpacity="0.6" />
+        </radialGradient>
+      </defs>
+
+      {/* Background track */}
+      <path d={arc(0, 100)} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={trackSW} />
+
+      {/* Color zone bands */}
+      <path d={arc(0, 49)}   fill="none" stroke="#ef4444" strokeWidth={trackSW} opacity={0.28} strokeLinecap="butt" />
+      <path d={arc(49, 70)}  fill="none" stroke="#f59e0b" strokeWidth={trackSW} opacity={0.28} strokeLinecap="butt" />
+      <path d={arc(70, 100)} fill="none" stroke="#22c55e" strokeWidth={trackSW} opacity={0.28} strokeLinecap="butt" />
+
+      {/* Score fill (thinner, bright) */}
+      {score > 0.5 && (
+        <path d={arc(0, Math.min(score, 99.9))} fill="none" stroke={nc} strokeWidth={trackSW - 12}
+              strokeLinecap="round" opacity={0.95} />
+      )}
+
+      {/* Zone divider lines */}
+      {dividers.map(({ s, color }) => {
+        const a = ang(s);
+        const [x1, y1] = pt(s, r - trackSW / 2 - 1);
+        const [x2, y2] = pt(s, r + trackSW / 2 + 1);
+        return <line key={s} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={2.5} opacity={0.9} />;
       })}
-      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth={2.5} strokeLinecap="round" />
-      <circle cx={cx} cy={cy} r={9} fill={nc} />
-      <circle cx={cx} cy={cy} r={4} fill="#080d1a" />
-      <text x={cx} y={cy - 18} textAnchor="middle" fill="white" fontSize="48" fontWeight="900">{Math.round(score)}</text>
-      <text x={cx} y={cy - 4} textAnchor="middle" fill="rgba(255,255,255,0.28)" fontSize="11">out of 100</text>
-      <text x={16} y={H - 4} fill="#ef4444" fontSize="9.5" opacity={0.75}>Critical</text>
-      <text x={cx} y="14" textAnchor="middle" fill="#f59e0b" fontSize="9.5" opacity={0.75}>Needs Attention</text>
-      <text x={W - 16} y={H - 4} textAnchor="end" fill="#22c55e" fontSize="9.5" opacity={0.75}>On Track</text>
+
+      {/* Outer tick labels */}
+      {labels.map(({ s, text }) => {
+        const [lx, ly] = pt(s, labelR);
+        return (
+          <text key={s} x={lx} y={ly} textAnchor="middle" dominantBaseline="middle"
+                fill="rgba(255,255,255,0.32)" fontSize={9.5} fontWeight={500}>{text}</text>
+        );
+      })}
+
+      {/* Needle shadow */}
+      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={nc} strokeWidth={6} strokeLinecap="round" opacity={0.15} />
+      {/* Needle */}
+      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="white" strokeWidth={2.5} strokeLinecap="round" filter="url(#ndl-glow)" />
+
+      {/* Hub */}
+      <circle cx={cx} cy={cy} r={13} fill={nc} opacity={0.12} />
+      <circle cx={cx} cy={cy} r={8} fill="url(#hub-grad)" />
+      <circle cx={cx} cy={cy} r={3.5} fill="#080d1a" />
+
+      {/* Score */}
+      <text x={cx} y={cy + 34} textAnchor="middle" fill="white" fontSize={50} fontWeight="900"
+            style={{ fontVariantNumeric: "tabular-nums" }}>{Math.round(score)}</text>
+      <text x={cx} y={cy + 50} textAnchor="middle" fill="rgba(255,255,255,0.22)" fontSize={11}>out of 100</text>
+      <text x={cx} y={cy + 66} textAnchor="middle" fill={nc} fontSize={10} fontWeight={700}
+            letterSpacing="1.2">{score >= 70 ? "ON TRACK" : score >= 50 ? "NEEDS ATTENTION" : "CRITICAL"}</text>
+
+      {/* Zone legend inside bottom gap */}
+      <text x={54} y={H - 10} fill="#ef4444" fontSize={8.5} opacity={0.65} textAnchor="middle">Critical</text>
+      <text x={150} y={H - 2} fill="#f59e0b" fontSize={8.5} opacity={0.65} textAnchor="middle">At Risk</text>
+      <text x={246} y={H - 10} fill="#22c55e" fontSize={8.5} opacity={0.65} textAnchor="middle">On Track</text>
     </svg>
   );
 }
