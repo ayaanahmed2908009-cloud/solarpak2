@@ -597,20 +597,67 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                   </motion.div>
                 );
               })()}
-              {tab === "sponsorships" && (isAdmin || isSponsorship) && (
-                <motion.div key="sponsorships" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold text-white mb-1">Sponsorships & Fundraising Dashboard</h2>
-                    <p className="text-sm text-white/40">Live executive metrics — all teams · Week {weeks}</p>
-                  </div>
-                  <ExecutiveSummaryPanel
-                    teamScores={teamScores}
-                    overallScore={overallScore}
-                    historyByTeam={historyByTeam}
-                    weeks={weeks}
-                  />
-                </motion.div>
-              )}
+              {tab === "sponsorships" && (isAdmin || isSponsorship) && (() => {
+                const prtnr = teamScores.find((t) => t.teamId === "partnerships");
+                if (!prtnr) return null;
+                const meta = TEAM_META["partnerships"];
+                const ringColor = prtnr.rag === "green" ? "#22c55e" : prtnr.rag === "amber" ? "#f59e0b" : "#ef4444";
+                return (
+                  <motion.div key="sponsorships" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                    <div className="mb-6">
+                      <h2 className="text-xl font-bold text-white mb-1">Sponsorships &amp; Fundraising Dashboard</h2>
+                      <p className="text-sm text-white/40">Partnerships &amp; Outreach team · Week {weeks}</p>
+                    </div>
+                    <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+                      <div className="flex items-center gap-2 mb-6">
+                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: meta?.color }} />
+                        <h2 className="text-lg font-bold text-white">{meta?.name}</h2>
+                        <div className={`ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${prtnr.rag === "green" ? "bg-green-500/15 text-green-400" : prtnr.rag === "amber" ? "bg-amber-500/15 text-amber-400" : "bg-red-500/15 text-red-400"}`}>
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ringColor }} />
+                          {prtnr.rag === "green" ? "On Track" : prtnr.rag === "amber" ? "Needs Attention" : "Critical"}
+                        </div>
+                      </div>
+                      <div className="flex flex-col md:flex-row gap-8 items-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <ScoreRing score={prtnr.teamScore} size={140} strokeWidth={12} color={ringColor} />
+                          <div className="text-xs text-white/35">Weekly Score</div>
+                          <div className="text-xs text-white/25">Target: 70 / 100</div>
+                        </div>
+                        <div className="flex-1 w-full">
+                          <div className="text-xs text-white/35 uppercase tracking-widest mb-2 text-center">KPI Radar</div>
+                          <ResponsiveContainer width="100%" height={200}>
+                            <RadarChart data={prtnr.kpiScores.map((k) => ({ name: k.name, score: k.score, target: 70 }))}>
+                              <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                              <PolarAngleAxis dataKey="name" tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 10 }} />
+                              <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+                              <Radar name="Target" dataKey="target" stroke="#facc15" fill="#facc15" fillOpacity={0.06} strokeWidth={1} strokeDasharray="4 3" />
+                              <Radar name="Score" dataKey="score" stroke={meta?.color} fill={meta?.color} fillOpacity={0.3} strokeWidth={2.5} />
+                            </RadarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className="w-full md:w-56 space-y-3">
+                          {prtnr.kpiScores.map((kpi) => {
+                            const kColor = kpi.rag === "green" ? "#22c55e" : kpi.rag === "amber" ? "#f59e0b" : "#ef4444";
+                            return (
+                              <div key={kpi.name}>
+                                <div className="flex justify-between mb-1">
+                                  <span className="text-xs text-white/50">{kpi.name}</span>
+                                  <span className="text-xs font-bold" style={{ color: kColor }}>{Math.round(kpi.score)}</span>
+                                </div>
+                                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                  <motion.div className="h-full rounded-full" style={{ backgroundColor: kColor }}
+                                    initial={{ width: 0 }} animate={{ width: `${kpi.score}%` }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })()}
             </AnimatePresence>
           </main>
 
