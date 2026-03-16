@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart, Bar, AreaChart, Area, LineChart, Line,
+  PieChart, Pie,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, ReferenceLine, Cell,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -951,6 +952,299 @@ function Speedometer({ score }: { score: number }) {
   );
 }
 
+// ─── Management Analytics ────────────────────────────────────────────────────
+
+const HEADCOUNT_SEED: { headcount: number; joins: number; departures: number }[] = [
+  { headcount: 4,  joins: 4, departures: 0 }, { headcount: 5,  joins: 1, departures: 0 },
+  { headcount: 6,  joins: 1, departures: 0 }, { headcount: 6,  joins: 0, departures: 0 },
+  { headcount: 7,  joins: 1, departures: 0 }, { headcount: 8,  joins: 2, departures: 1 },
+  { headcount: 9,  joins: 1, departures: 0 }, { headcount: 9,  joins: 0, departures: 0 },
+  { headcount: 10, joins: 2, departures: 1 }, { headcount: 11, joins: 1, departures: 0 },
+  { headcount: 12, joins: 2, departures: 1 }, { headcount: 12, joins: 0, departures: 0 },
+  { headcount: 13, joins: 1, departures: 0 }, { headcount: 14, joins: 2, departures: 1 },
+  { headcount: 15, joins: 1, departures: 0 }, { headcount: 16, joins: 1, departures: 0 },
+  { headcount: 17, joins: 2, departures: 1 }, { headcount: 18, joins: 1, departures: 0 },
+  { headcount: 19, joins: 1, departures: 0 }, { headcount: 19, joins: 0, departures: 0 },
+  { headcount: 20, joins: 1, departures: 0 }, { headcount: 21, joins: 2, departures: 1 },
+  { headcount: 22, joins: 1, departures: 0 }, { headcount: 23, joins: 1, departures: 0 },
+  { headcount: 24, joins: 2, departures: 1 }, { headcount: 25, joins: 1, departures: 0 },
+  { headcount: 26, joins: 2, departures: 1 }, { headcount: 27, joins: 1, departures: 0 },
+  { headcount: 28, joins: 2, departures: 1 }, { headcount: 28, joins: 0, departures: 0 },
+  { headcount: 29, joins: 1, departures: 0 }, { headcount: 30, joins: 1, departures: 0 },
+  { headcount: 31, joins: 2, departures: 1 }, { headcount: 32, joins: 1, departures: 0 },
+  { headcount: 33, joins: 2, departures: 1 }, { headcount: 34, joins: 1, departures: 0 },
+  { headcount: 35, joins: 2, departures: 1 }, { headcount: 36, joins: 1, departures: 0 },
+  { headcount: 37, joins: 2, departures: 1 }, { headcount: 38, joins: 1, departures: 0 },
+  { headcount: 39, joins: 2, departures: 1 }, { headcount: 40, joins: 1, departures: 0 },
+  { headcount: 41, joins: 2, departures: 1 }, { headcount: 42, joins: 1, departures: 0 },
+  { headcount: 43, joins: 2, departures: 1 }, { headcount: 44, joins: 1, departures: 0 },
+  { headcount: 45, joins: 2, departures: 1 }, { headcount: 46, joins: 1, departures: 0 },
+  { headcount: 47, joins: 2, departures: 1 }, { headcount: 48, joins: 1, departures: 0 },
+  { headcount: 49, joins: 2, departures: 1 }, { headcount: 50, joins: 1, departures: 0 },
+];
+
+const OKR_MATRIX: Record<string, number[]> = {
+  marketing:    [72,68,75,71,80,76,83,78,82,85,79,88,85,90,87,92,90,93,91,95,92,96,94,97,95,97,96,98,96,98,97,99,97,99,98,99,98,99,98,99,99,99,99,99,99,99,99,99,99,99,99,99],
+  partnerships: [65,70,68,74,72,69,75,73,77,74,80,78,82,79,85,83,86,84,88,87,89,88,91,90,92,91,93,92,93,92,94,93,94,93,95,94,95,94,95,95,96,95,96,95,96,96,97,96,97,96,97,97],
+  management:   [80,82,78,85,83,86,84,88,87,91,89,92,90,94,93,95,94,96,95,97,96,97,96,98,97,98,97,98,97,99,98,99,98,99,98,99,98,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99],
+  impactlabs:   [55,60,58,63,61,66,64,70,68,72,71,75,73,78,76,80,79,82,81,84,83,86,85,88,87,89,88,91,90,92,91,93,91,93,92,94,93,95,94,95,94,95,95,96,95,96,96,96,96,97,97,97],
+  events:       [45,50,52,55,60,58,65,63,68,66,72,70,75,73,78,76,80,78,82,80,84,82,86,84,87,85,88,86,89,87,90,88,90,89,91,89,91,90,92,90,92,91,93,91,93,92,93,92,94,93,94,93],
+};
+
+const SATISFACTION_HISTORY = [
+  { quarter: "Q1 2025", satisfied: 82 },
+  { quarter: "Q2 2025", satisfied: 87 },
+  { quarter: "Q3 2025", satisfied: 85 },
+  { quarter: "Q4 2025", satisfied: 91 },
+];
+
+function HeadcountDot(props: any) {
+  const { cx, cy, payload } = props;
+  if (!payload || (!payload.joins && !payload.departures)) {
+    return <circle cx={cx} cy={cy} r={2} fill="#60a5fa" opacity={0.6} />;
+  }
+  return (
+    <g>
+      {(payload.joins ?? 0) > 0 && (
+        <g>
+          <polygon points={`${cx},${cy - 14} ${cx - 5},${cy - 7} ${cx + 5},${cy - 7}`} fill="#22c55e" opacity={0.9} />
+          {payload.joins > 1 && (
+            <text x={cx} y={cy - 17} textAnchor="middle" fill="#22c55e" fontSize={8} fontWeight={700}>+{payload.joins}</text>
+          )}
+        </g>
+      )}
+      {(payload.departures ?? 0) > 0 && (
+        <g>
+          <polygon points={`${cx},${cy + 14} ${cx - 5},${cy + 7} ${cx + 5},${cy + 7}`} fill="#ef4444" opacity={0.9} />
+        </g>
+      )}
+      <circle cx={cx} cy={cy} r={2.5} fill="#60a5fa" />
+    </g>
+  );
+}
+
+function OkrHeatmap({ weeks }: { weeks: number }) {
+  const displayWeeks = Math.min(weeks, 52);
+  const teams = [
+    { id: "marketing",    label: "Marketing" },
+    { id: "partnerships", label: "Partnerships" },
+    { id: "management",   label: "Management" },
+    { id: "impactlabs",   label: "Impact Labs" },
+    { id: "events",       label: "Events" },
+  ];
+  const labelW = 86;
+  const cellH = 30;
+  const headerH = 20;
+  const gap = 1;
+  const maxCellW = 32;
+  const minCellW = 10;
+  const availW = 680;
+  const cellW = Math.max(minCellW, Math.min(maxCellW, Math.floor((availW - labelW) / displayWeeks)));
+  const svgW = labelW + displayWeeks * cellW;
+  const svgH = headerH + teams.length * (cellH + gap);
+
+  function scoreColor(s: number) {
+    if (s >= 90) return "#14532d";
+    if (s >= 80) return "#166534";
+    if (s >= 70) return "#15803d";
+    if (s >= 60) return "#16a34a";
+    if (s >= 50) return "#d97706";
+    return "#b91c1c";
+  }
+  function scoreOpacity(s: number) { return 0.18 + (s / 100) * 0.72; }
+
+  return (
+    <div className="overflow-x-auto">
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} width={svgW} height={svgH} style={{ minWidth: svgW }}>
+        {Array.from({ length: displayWeeks }, (_, wi) => {
+          const showLabel = displayWeeks <= 20 || wi % Math.ceil(displayWeeks / 16) === 0;
+          return showLabel ? (
+            <text key={wi} x={labelW + wi * cellW + cellW / 2} y={12}
+                  textAnchor="middle" fill="rgba(255,255,255,0.28)" fontSize={7.5}>W{wi + 1}</text>
+          ) : null;
+        })}
+        {teams.map((team, ti) => {
+          const rowY = headerH + ti * (cellH + gap);
+          const scores = OKR_MATRIX[team.id] ?? [];
+          return (
+            <g key={team.id}>
+              <text x={labelW - 5} y={rowY + cellH / 2 + 1} textAnchor="end" dominantBaseline="middle"
+                    fill="rgba(255,255,255,0.45)" fontSize={9}>{team.label}</text>
+              {Array.from({ length: displayWeeks }, (_, wi) => {
+                const score = scores[wi] ?? 50;
+                return (
+                  <g key={wi}>
+                    <rect x={labelW + wi * cellW + gap} y={rowY} width={cellW - gap} height={cellH}
+                          rx={2} fill={scoreColor(score)} opacity={scoreOpacity(score)} />
+                    {cellW >= 22 && (
+                      <text x={labelW + wi * cellW + cellW / 2} y={rowY + cellH / 2 + 1}
+                            textAnchor="middle" dominantBaseline="middle"
+                            fill="rgba(255,255,255,0.75)" fontSize={7.5}>{Math.round(score)}</text>
+                    )}
+                  </g>
+                );
+              })}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function SatisfactionDonut() {
+  const current = SATISFACTION_HISTORY[SATISFACTION_HISTORY.length - 1];
+  const pct = current.satisfied;
+  const target = 90;
+  const nc = pct >= target ? "#22c55e" : pct >= target - 10 ? "#f59e0b" : "#ef4444";
+  const data = [
+    { name: "Satisfied", value: pct },
+    { name: "Gap", value: 100 - pct },
+  ];
+  return (
+    <div className="relative">
+      <ResponsiveContainer width="100%" height={180}>
+        <PieChart>
+          <Pie data={data} cx="50%" cy="50%" innerRadius={54} outerRadius={78}
+               dataKey="value" startAngle={90} endAngle={-270} strokeWidth={0}>
+            <Cell fill={nc} opacity={0.88} />
+            <Cell fill="rgba(255,255,255,0.05)" />
+          </Pie>
+          {/* Target indicator ring */}
+          <Pie data={[{ value: target }, { value: 100 - target }]} cx="50%" cy="50%"
+               innerRadius={80} outerRadius={82} dataKey="value" startAngle={90} endAngle={-270} strokeWidth={0}>
+            <Cell fill="#facc15" opacity={0.6} />
+            <Cell fill="transparent" />
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <div className="text-4xl font-black" style={{ color: nc }}>{pct}%</div>
+        <div className="text-[10px] text-white/35 mt-0.5">satisfied</div>
+        <div className={`text-[10px] font-bold mt-1 ${pct >= target ? "text-green-400" : "text-amber-400"}`}>
+          target {target}%
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
+  historyByTeam: Record<string, any[]>;
+  weeks: number;
+}) {
+  const slice = HEADCOUNT_SEED.slice(0, Math.min(weeks, HEADCOUNT_SEED.length))
+    .map((d, i) => ({ ...d, week: `W${i + 1}` }));
+  const currentHC = slice[slice.length - 1]?.headcount ?? 0;
+  const phase = currentHC >= 70 ? 3 : currentHC >= 40 ? 2 : currentHC >= 22 ? 1 : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-5 rounded-full bg-violet-400" />
+        <h3 className="text-sm font-bold text-white uppercase tracking-widest">General Management Analytics</h3>
+        <span className="text-[10px] text-white/25 ml-auto">Headcount · OKRs · Satisfaction</span>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        {/* ── Headcount Growth ── */}
+        <div className="lg:col-span-2 bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Headcount Growth</div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-white">{currentHC}</span>
+                <span className="text-xs text-white/30">active members</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${phase >= 1 ? "bg-blue-500/15 text-blue-400" : "bg-white/5 text-white/30"}`}>
+                  Phase {phase > 0 ? phase : "—"} reached
+                </span>
+              </div>
+            </div>
+            <div className="flex gap-3 text-[10px] text-white/40 mt-1">
+              <span className="flex items-center gap-1"><span className="text-green-400 font-bold">▲</span> Joins</span>
+              <span className="flex items-center gap-1"><span className="text-red-400 font-bold">▽</span> Departures</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={185}>
+            <LineChart data={slice} margin={{ top: 22, right: 48, left: -24, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8.5 }}
+                     axisLine={false} tickLine={false}
+                     interval={Math.max(0, Math.floor(slice.length / 8) - 1)} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8.5 }}
+                     axisLine={false} tickLine={false} domain={[0, 75]} />
+              <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                       itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                       formatter={(v: any, name: string) => name === "headcount" ? [`${v} members`, "Headcount"] : [v, name]} />
+              <ReferenceLine y={22} stroke="#60a5fa" strokeDasharray="4 3" strokeOpacity={0.55}
+                             label={{ value: "Ph.1 · 22", position: "right", fill: "#60a5fa", fontSize: 8.5, opacity: 0.7 }} />
+              <ReferenceLine y={40} stroke="#a78bfa" strokeDasharray="4 3" strokeOpacity={0.55}
+                             label={{ value: "Ph.2 · 40", position: "right", fill: "#a78bfa", fontSize: 8.5, opacity: 0.7 }} />
+              <ReferenceLine y={70} stroke="#f472b6" strokeDasharray="4 3" strokeOpacity={0.55}
+                             label={{ value: "Ph.3 · 70", position: "right", fill: "#f472b6", fontSize: 8.5, opacity: 0.7 }} />
+              <Line type="monotone" dataKey="headcount" stroke="#60a5fa" strokeWidth={2.5}
+                    dot={<HeadcountDot />} activeDot={{ r: 5, fill: "#60a5fa", strokeWidth: 0 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* ── Satisfaction Donut ── */}
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5 flex flex-col">
+          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Team Satisfaction</div>
+          <div className="text-[10px] text-white/20 mb-2">Quarterly survey · target ≥ 90%</div>
+          <SatisfactionDonut />
+          <div className="mt-auto space-y-1.5 pt-2">
+            {SATISFACTION_HISTORY.map((h) => {
+              const c = h.satisfied >= 90 ? "#22c55e" : h.satisfied >= 80 ? "#f59e0b" : "#ef4444";
+              return (
+                <div key={h.quarter} className="flex items-center gap-2">
+                  <span className="text-[9.5px] text-white/30 w-14 shrink-0">{h.quarter}</span>
+                  <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${h.satisfied}%`, backgroundColor: c }} />
+                  </div>
+                  <span className="text-[9.5px] font-bold w-7 text-right" style={{ color: c }}>{h.satisfied}%</span>
+                </div>
+              );
+            })}
+            {/* 90% target line label */}
+            <div className="flex items-center gap-2 pt-0.5">
+              <span className="text-[9px] text-white/20 w-14 shrink-0">Target</span>
+              <div className="flex-1 h-px border-t border-dashed border-yellow-400/40" />
+              <span className="text-[9px] text-yellow-400/60 w-7 text-right">90%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── OKR Heatmap ── */}
+        <div className="lg:col-span-3 bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+            <div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">OKR Completion Heatmap</div>
+              <div className="text-[10px] text-white/20">Teams × weeks — cell colour = OKR completion rate</div>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              {[
+                { label: "< 50", bg: "rgba(185,28,28,0.45)", fg: "#fca5a5" },
+                { label: "50 – 70", bg: "rgba(217,119,6,0.4)", fg: "#fcd34d" },
+                { label: "70 – 90", bg: "rgba(21,128,61,0.5)", fg: "#86efac" },
+                { label: "≥ 90", bg: "rgba(20,83,45,0.8)", fg: "#4ade80" },
+              ].map((l) => (
+                <span key={l.label} className="px-2 py-0.5 rounded text-[9px] font-medium"
+                      style={{ background: l.bg, color: l.fg }}>{l.label}</span>
+              ))}
+            </div>
+          </div>
+          <OkrHeatmap weeks={weeks} />
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds, isAdmin, historyByTeam }: {
   teamScores: TeamScore[];
   overallScore: number;
@@ -968,6 +1262,10 @@ function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds
 
       {isAdmin && (
         <ExecutiveSummaryPanel teamScores={teamScores} overallScore={overallScore} historyByTeam={historyByTeam} weeks={weeks} />
+      )}
+
+      {isAdmin && (
+        <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} />
       )}
 
       {/* Overall Score Hero — admin only */}
