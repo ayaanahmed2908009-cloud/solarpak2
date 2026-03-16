@@ -1482,6 +1482,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/kpi/submissions", async (req, res) => {
+    try {
+      await storage.deleteAllKpiSubmissions();
+      res.json({ message: "All KPI submissions deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting submissions" });
+    }
+  });
+
+  // AI Probability Analysis
+  app.post("/api/kpi/analysis", async (req, res) => {
+    try {
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        return res.status(503).json({ message: "ANTHROPIC_API_KEY not configured. Please add it in Secrets." });
+      }
+
+      const Anthropic = (await import("@anthropic-ai/sdk")).default;
+      const anthropic = new Anthropic({ apiKey });
+
+      const { weekNumber, submissions, currentInputs } = req.body;
+      if (weekNumber == null || !submissions || !currentInputs) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const kpiTargets = {
+        marketing: {
+          "Total Social Following": "5,000 followers by end of Year 1",
+          "Avg Engagement Rate": "5% average engagement rate",
+          "Posts Per Month": "12 posts per month (3/week)",
+          "Press / Media Mentions": "4 confirmed mentions in Year 1",
+        },
+        partnerships: {
+          "Active Institutional Partners": "6 active partners by end of Year 1",
+          "Communities Reached": "5 communities reached",
+          "Outreach Meetings / Month": "2 outreach meetings per month",
+          "Partnership Conversion Rate": "30% conversion rate from outreach to partnership",
+        },
+        management: {
+          "Active Team Members": "22 active members (up from 14)",
+          "Member Retention Rate": "80% retention rate",
+          "OKR Completion Rate": "70% of OKR tasks completed on time",
+          "Team Leads in Place": "4 team leads",
+        },
+        impactlabs: {
+          "Annual Impact Report": "1 published impact report",
+          "Research Articles Published": "8 research articles in Year 1",
+          "Data Accuracy Audit Score": "85% audit score",
+          "External Citations": "2 external citations",
+        },
+        events: {
+          "Events Organised / Year": "3 events organised",
+          "Total Event Attendees": "300 total attendees",
+          "Avg Attendees / Event": "100 average attendees per event",
+          "Post-Event Satisfaction": "4.0 / 5 satisfaction score",
+          "Repeat Attendee Rate": "15% repeat attendees",
+          "Events with a Sponsor": "1 event with a confirmed sponsor",
+        },
+      };
+
+      const prompt = `You are a KPI performance analyst for SolarPak, a growing solar energy nonprofit.
+
+Given the complete weekly input history for all five teams, the Year 1 annual KPI targets, and the current week number out of 52, calculate the probability (0–100%) that each team will hit each KPI's annual target by year end, based on current pace and trajectory.
+
+Current week: ${weekNumber} of 52 (${52 - weekNumber} weeks remaining)
+
+Annual KPI targets:
+${JSON.stringify(kpiTargets, null, 2)}
+
+Weekly input history (most recent ${Math.min(submissions.length, 20)} submissions of ${submissions.length} total):
+${JSON.stringify(submissions.slice(-20), null, 2)}
+
+Current week inputs:
+${JSON.stringify(currentInputs, null, 2)}
+
+Analysis instructions:
+- Calculate probability based on current pace vs what is needed by week 52
+- Consider trajectory: is performance improving, flat, or declining?
+- For cumulative KPIs (total followers, total articles, total attendees), extrapolate from current rate
+- For quarterly fields, treat 0 as "not submitted this week" and use the last non-zero value
+- For binary/event-triggered fields, check rolling frequency
+- If there is no history yet, use current week inputs to estimate pace and return a moderate probability (40–60%) with appropriate uncertainty
+- Self-assessed probability field should be cross-checked against your own calculation
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no explanation):
+{
+  "marketing": {
+    "overall": <0-100 integer>,
+    "kpis": {
+      "Total Social Following": <0-100>,
+      "Avg Engagement Rate": <0-100>,
+      "Posts Per Month": <0-100>,
+      "Press / Media Mentions": <0-100>
+    }
+  },
+  "partnerships": {
+    "overall": <0-100>,
+    "kpis": {
+      "Active Institutional Partners": <0-100>,
+      "Communities Reached": <0-100>,
+      "Outreach Meetings / Month": <0-100>,
+      "Partnership Conversion Rate": <0-100>
+    }
+  },
+  "management": {
+    "overall": <0-100>,
+    "kpis": {
+      "Active Team Members": <0-100>,
+      "Member Retention Rate": <0-100>,
+      "OKR Completion Rate": <0-100>,
+      "Team Leads in Place": <0-100>
+    }
+  },
+  "impactlabs": {
+    "overall": <0-100>,
+    "kpis": {
+      "Annual Impact Report": <0-100>,
+      "Research Articles Published": <0-100>,
+      "Data Accuracy Audit Score": <0-100>,
+      "External Citations": <0-100>
+    }
+  },
+  "events": {
+    "overall": <0-100>,
+    "kpis": {
+      "Events Organised / Year": <0-100>,
+      "Total Event Attendees": <0-100>,
+      "Avg Attendees / Event": <0-100>,
+      "Post-Event Satisfaction": <0-100>,
+      "Repeat Attendee Rate": <0-100>,
+      "Events with a Sponsor": <0-100>
+    }
+  }
+}`;
+
+      const message = await anthropic.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 2048,
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const raw = message.content[0].type === "text" ? message.content[0].text : "";
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        return res.status(500).json({ message: "AI returned invalid response", raw });
+      }
+      const probabilities = JSON.parse(jsonMatch[0]);
+
+      const teamIds = ["marketing", "partnerships", "management", "impactlabs", "events"];
+      const executiveScore = Math.round(
+        teamIds.reduce((sum, id) => sum + (probabilities[id]?.overall ?? 0), 0) / teamIds.length
+      );
+
+      res.json({ probabilities, executiveScore, weekNumber, timestamp: new Date().toISOString() });
+    } catch (error: any) {
+      console.error("AI analysis error:", error);
+      res.status(500).json({ message: error.message || "Analysis failed" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

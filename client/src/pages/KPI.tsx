@@ -173,32 +173,59 @@ const TEAM_META: Record<string, { name: string; color: string }> = {
 
 const TEAM_IDS = ["marketing", "partnerships", "management", "impactlabs", "events"];
 
-const INPUT_FIELDS: Record<string, { key: string; label: string; hint: string; type: "number" | "decimal" | "binary" }[]> = {
+const INPUT_FIELDS: Record<string, { key: string; label: string; hint: string; type: "number" | "decimal" | "binary"; tag?: string }[]> = {
   marketing: [
-    { key: "posts_this_week", label: "Posts published this week", hint: "Target: 3 posts/week", type: "number" },
-    { key: "follower_gain_this_week", label: "Total follower gain this week", hint: "Target: 50 new followers/week", type: "number" },
-    { key: "press_contacts_this_week", label: "Press contacts reached out to this week", hint: "Target: at least 1 outreach (1 = 100%)", type: "number" },
+    { key: "posts_this_week", label: "Posts published this week", hint: "Feeds posts/month KPI and stacked bar chart · Target: 3/week", type: "number" },
+    { key: "videos_this_week", label: "Videos published this week", hint: "Combined with posts to calculate post:video ratio trend", type: "number" },
+    { key: "follower_gain_this_week", label: "Net follower gain this week", hint: "Feeds cumulative follower growth line chart · Target: 50/week", type: "number" },
+    { key: "total_followers", label: "Total followers right now", hint: "Absolute figure for line chart Y-axis and probability gap", type: "number" },
+    { key: "avg_engagement_rate", label: "Average engagement rate this week (%)", hint: "Feeds gauge dial and rolling average for probability · e.g. 3.2", type: "decimal" },
+    { key: "press_contacts_this_week", label: "Press contacts reached out to this week", hint: "Pipeline proxy for press mentions KPI probability", type: "number" },
+    { key: "press_mentions_this_week", label: "Press mentions confirmed this week", hint: "Cumulative count feeds funnel chart and probability", type: "number" },
   ],
   partnerships: [
-    { key: "outreach_meetings_this_week", label: "Outreach meetings held this week", hint: "Target: 0.5/week — 1 meeting = 200% (surplus banked)", type: "number" },
-    { key: "partnerships_formalised_this_week", label: "New partnerships formalised this week", hint: "Target: 0.12/week — ~1 new partner every 8 weeks", type: "number" },
-    { key: "communities_engaged_this_week", label: "New communities engaged this week", hint: "Target: 0.1/week — ~1 new community every 10 weeks", type: "number" },
+    { key: "outreach_meetings_this_week", label: "Outreach meetings held this week", hint: "Stage 1 of partner pipeline · feeds conversion rate calc · Target: 0.5/week", type: "number" },
+    { key: "prospects_outreach", label: "Prospects currently in outreach stage", hint: "Kanban column 1 badge count (infographic only)", type: "number" },
+    { key: "prospects_meeting", label: "Prospects currently in meeting stage", hint: "Kanban column 2 badge count (infographic only)", type: "number" },
+    { key: "new_partnerships_this_week", label: "New partnerships formalised this week", hint: "Kanban column 3 · cumulative partner count and probability · Target: ~1 every 8 weeks", type: "number" },
+    { key: "total_active_partners", label: "Total active partners right now", hint: "Absolute count for probability gap calculation", type: "number" },
+    { key: "funds_raised_this_week", label: "Funds raised or committed this week (USD)", hint: "Feeds monthly fundraising bar chart and thermometer", type: "number" },
+    { key: "total_funds_ytd", label: "Total funds raised YTD (USD)", hint: "Absolute figure for thermometer fill and probability gap", type: "number" },
   ],
   management: [
-    { key: "new_members_this_week", label: "New members who joined SolarPak this week", hint: "Target: 0.15/week — ~8 new members needed over the year (14 → 22)", type: "number" },
-    { key: "member_departures_this_week", label: "Members who left or became inactive this week", hint: "Target: 0 departures — each departure costs 25 points", type: "number" },
-    { key: "okr_tasks_completed", label: "OKR tasks completed this week", hint: "Target: 70% of tasks due — enter total tasks due below", type: "number" },
-    { key: "okr_tasks_total", label: "Total OKR tasks due this week", hint: "Required to calculate completion rate", type: "number" },
+    { key: "new_members_this_week", label: "New members joined this week", hint: "Upward tick on headcount line chart · Target: ~8 new/year (14 → 22)", type: "number" },
+    { key: "members_left_this_week", label: "Members who left or went inactive this week", hint: "Downward tick on headcount chart · feeds churn and retention calc", type: "number" },
+    { key: "total_active_members", label: "Total active members right now", hint: "Absolute figure for headcount chart Y-axis and probability gap", type: "number" },
+    { key: "okr_tasks_completed", label: "OKR tasks completed this week", hint: "Numerator for OKR completion rate heatmap", type: "number" },
+    { key: "okr_tasks_due", label: "Total OKR tasks due this week", hint: "Denominator for OKR completion rate heatmap", type: "number" },
+    { key: "probability_self_assessed", label: "Self-assessed probability of hitting targets (%)", hint: "AI cross-checks this against its own calculation · e.g. 72", type: "decimal" },
+    { key: "worker_satisfaction_pct", label: "Worker satisfaction — % satisfied", hint: "Feeds satisfaction donut chart · enter 0 in non-survey weeks", type: "decimal", tag: "QUARTERLY" },
+    { key: "survey_respondents", label: "Number of survey respondents", hint: "Low response count reduces AI confidence in satisfaction score", type: "number", tag: "QUARTERLY" },
   ],
   impactlabs: [
-    { key: "articles_in_progress", label: "Research articles or drafts actively worked on", hint: "Target: at least 1 in progress at all times (1 = 100%)", type: "number" },
-    { key: "data_points_verified", label: "Data points or KPIs verified this week", hint: "Target: 3 data points/week", type: "number" },
-    { key: "findings_shared_externally", label: "Were SolarPak findings shared externally? (1 = yes, 0 = no)", hint: "Target: 1 every 6 weeks — binary yes/no", type: "binary" },
+    { key: "articles_research_stage", label: "Articles currently in research stage", hint: "Feeds production tracker progress bar stage 1 (infographic only)", type: "number" },
+    { key: "articles_draft_stage", label: "Articles currently in draft stage", hint: "Feeds production tracker progress bar stage 2 (infographic only)", type: "number" },
+    { key: "articles_review_stage", label: "Articles currently in review stage", hint: "Feeds production tracker progress bar stage 3 (infographic only)", type: "number" },
+    { key: "articles_published_this_week", label: "Articles published this week", hint: "Cumulative count vs annual target of 8 for probability", type: "number" },
+    { key: "total_articles_ytd", label: "Total articles published YTD", hint: "Absolute count for probability gap calculation", type: "number" },
+    { key: "ai_quality_score", label: "AI quality score of report reviewed this week (0–100)", hint: "Feeds quality score trend and probability threshold · enter 0 if no report reviewed", type: "decimal" },
+    { key: "data_points_verified", label: "Data points verified or updated this week", hint: "Weekly proxy for data accuracy KPI probability · Target: 3/week", type: "number" },
+    { key: "data_accuracy_audit_score", label: "Data accuracy audit score (%)", hint: "Quarterly gauge input and probability · enter 0 in non-audit weeks", type: "decimal", tag: "QUARTERLY" },
+    { key: "external_citations_this_week", label: "External citations confirmed this week", hint: "Feeds citation growth bar chart and cumulative count", type: "number" },
+    { key: "findings_submitted_externally", label: "SolarPak findings submitted externally this week?", hint: "Feeds 6-week rolling window check in AI probability prompt", type: "binary" },
+    { key: "annual_report_pct_complete", label: "Annual impact report % complete", hint: "Feeds report progress bar · update monthly, enter 0 in non-update weeks", type: "number" },
   ],
   events: [
-    { key: "event_planning_hours", label: "Hours spent on event planning this week", hint: "Target: 3 hours/week", type: "number" },
-    { key: "sponsor_conversations", label: "Sponsor or partner conversations held this week", hint: "Target: 0.5/week — 1 conversation every fortnight", type: "number" },
-    { key: "registrations_this_week", label: "People registered for upcoming events this week", hint: "Target: 6 registrations/week", type: "number" },
+    { key: "planning_hours_this_week", label: "Hours spent on event planning this week", hint: "Effort proxy for events organised KPI when no event is imminent · e.g. 4.5", type: "decimal" },
+    { key: "event_active", label: "Is an event live or within 2 weeks?", hint: "Triggers active event highlighting on calendar heatmap", type: "binary" },
+    { key: "events_completed_ytd", label: "Events completed YTD", hint: "Absolute count vs annual target for probability gap · Year 1 target: 3", type: "number" },
+    { key: "new_registrations_this_week", label: "New registrations confirmed this week", hint: "Cumulative count feeds attendee tracker", type: "number" },
+    { key: "total_attendees_ytd", label: "Total confirmed attendees YTD", hint: "Absolute count for probability gap calculation · Year 1 target: 300", type: "number" },
+    { key: "sponsor_conversations_this_week", label: "Sponsor or partner conversations held this week", hint: "Pipeline proxy for sponsored events KPI", type: "number" },
+    { key: "events_with_sponsor_ytd", label: "Events with a confirmed sponsor YTD", hint: "Absolute count for probability calculation and pipeline tracker", type: "number" },
+    { key: "post_event_satisfaction", label: "Post-event satisfaction score (out of 5)", hint: "Feeds satisfaction trend chart · enter 0 if no event closed this week", type: "decimal", tag: "EVENT-TRIGGERED" },
+    { key: "repeat_attendees_at_event", label: "Repeat attendees at the closed event", hint: "Numerator for repeat attendee rate", type: "number", tag: "EVENT-TRIGGERED" },
+    { key: "total_attendees_at_event", label: "Total attendees at the closed event", hint: "Denominator for repeat rate and avg attendees per event calculation", type: "number", tag: "EVENT-TRIGGERED" },
   ],
 };
 
@@ -277,6 +304,15 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
   );
   const [startDateDraft, setStartDateDraft] = useState("");
   const [saved, setSaved] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any | null>(() => {
+    try { return JSON.parse(localStorage.getItem("kpi_analysis") || "null"); } catch { return null; }
+  });
+  const [analysisHistory, setAnalysisHistory] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("kpi_analysis_history") || "[]"); } catch { return []; }
+  });
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [resetConfirm, setResetConfirm] = useState(false);
   const qc = useQueryClient();
 
   const { data: settings } = useQuery<{ startDate: string }>({
@@ -341,6 +377,61 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
       inputs: getInputs(teamId),
       kpiScores: ts.kpiScores,
       teamScore: ts.teamScore,
+    });
+  }
+
+  async function runAnalysis() {
+    setAnalysisLoading(true);
+    setAnalysisError(null);
+    try {
+      const resp = await apiRequest("POST", "/api/kpi/analysis", {
+        weekNumber: weeks,
+        submissions,
+        currentInputs: allInputs,
+      });
+      const data = await resp.json();
+      setAnalysisResult(data);
+      localStorage.setItem("kpi_analysis", JSON.stringify(data));
+      const newHistory = [...analysisHistory, data].slice(-12);
+      setAnalysisHistory(newHistory);
+      localStorage.setItem("kpi_analysis_history", JSON.stringify(newHistory));
+    } catch (err: any) {
+      setAnalysisError(err.message || "Analysis failed");
+    } finally {
+      setAnalysisLoading(false);
+    }
+  }
+
+  function handleExport() {
+    const blob = new Blob([JSON.stringify(submissions, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `solarpak-kpi-history-week${weeks}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleReset() {
+    try {
+      await apiRequest("DELETE", "/api/kpi/submissions");
+      qc.invalidateQueries({ queryKey: ["/api/kpi/submissions"] });
+      setAnalysisResult(null);
+      setAnalysisHistory([]);
+      localStorage.removeItem("kpi_analysis");
+      localStorage.removeItem("kpi_analysis_history");
+      setResetConfirm(false);
+    } catch {}
+  }
+
+  // Leadership warning: any team below 50% in all last 6 consecutive analysis runs
+  const leadershipWarnings: string[] = [];
+  if (analysisHistory.length >= 6) {
+    TEAM_IDS.forEach((id) => {
+      const last6 = analysisHistory.slice(-6);
+      if (last6.every((r) => (r.probabilities?.[id]?.overall ?? 100) < 50)) {
+        leadershipWarnings.push(id);
+      }
     });
   }
 
@@ -490,6 +581,22 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
           </header>
 
           <main className="flex-1 p-6">
+            {/* Leadership Warning Banner */}
+            {leadershipWarnings.length > 0 && (
+              <div className="mb-4 p-4 bg-red-500/15 border border-red-500/40 rounded-2xl flex flex-wrap items-start gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-lg">⚠</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-red-400 mb-1">Leadership Review Triggered</div>
+                  {leadershipWarnings.map((id) => (
+                    <div key={id} className="text-xs text-red-300/70">
+                      <span className="font-semibold" style={{ color: TEAM_META[id]?.color }}>{TEAM_META[id]?.name}</span>
+                      {" — "}Leadership review triggered — this team has been below 50% probability for 6 consecutive weeks.
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <AnimatePresence mode="wait">
               {tab === "scores" && (
                 <motion.div key="scores" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
@@ -501,6 +608,10 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     visibleTeamIds={visibleTeamIds}
                     isAdmin={isAdmin}
                     historyByTeam={historyByTeam}
+                    analysisResult={analysisResult}
+                    analysisLoading={analysisLoading}
+                    analysisError={analysisError}
+                    onRunAnalysis={runAnalysis}
                   />
                 </motion.div>
               )}
@@ -543,6 +654,11 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     onSave={() => settingsMutation.mutate(startDateDraft)}
                     isPending={settingsMutation.isPending}
                     weeks={weeks}
+                    submissionCount={(submissions as any[]).length}
+                    onExport={handleExport}
+                    onReset={handleReset}
+                    resetConfirm={resetConfirm}
+                    setResetConfirm={setResetConfirm}
                   />
                 </motion.div>
               )}
@@ -1704,7 +1820,7 @@ function EventsAnalyticsPanel() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds, isAdmin, historyByTeam }: {
+function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds, isAdmin, historyByTeam, analysisResult, analysisLoading, analysisError, onRunAnalysis }: {
   teamScores: TeamScore[];
   overallScore: number;
   overallRag: "green" | "amber" | "red";
@@ -1712,12 +1828,102 @@ function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds
   visibleTeamIds: string[];
   isAdmin: boolean;
   historyByTeam: Record<string, any[]>;
+  analysisResult: any | null;
+  analysisLoading: boolean;
+  analysisError: string | null;
+  onRunAnalysis: () => void;
 }) {
   const overallColor = overallRag === "green" ? "#22c55e" : overallRag === "amber" ? "#f59e0b" : "#ef4444";
   const visibleScores = teamScores.filter((t) => visibleTeamIds.includes(t.teamId));
 
+  const execProb = analysisResult?.executiveScore ?? null;
+  const execColor = execProb == null ? "#6b7280" : execProb >= 70 ? "#22c55e" : execProb >= 50 ? "#f59e0b" : "#ef4444";
+  const execLabel = execProb == null ? "—" : execProb >= 70 ? "On Track" : execProb >= 50 ? "At Risk" : "Critical";
+
   return (
     <div className="space-y-6">
+
+      {/* AI Executive Probability + Run Analysis */}
+      {isAdmin && (
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="flex flex-wrap items-start gap-4">
+            {/* Executive probability score */}
+            <div className="flex items-center gap-5">
+              <div className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl border-2"
+                   style={{ borderColor: `${execColor}40`, backgroundColor: `${execColor}0d` }}>
+                <div className="text-3xl font-black" style={{ color: execColor }}>
+                  {execProb != null ? execProb : "—"}
+                </div>
+                <div className="text-[10px] text-white/30 text-center leading-tight mt-0.5">AI Score</div>
+              </div>
+              <div>
+                <div className="text-xs text-white/30 uppercase tracking-widest mb-0.5">AI Executive Score</div>
+                <div className="text-lg font-bold" style={{ color: execColor }}>{execLabel}</div>
+                <div className="text-[11px] text-white/30 mt-0.5">Year-end probability · avg of all 5 teams</div>
+                {analysisResult && (
+                  <div className="text-[10px] text-white/20 mt-1">
+                    Last run: {new Date(analysisResult.timestamp).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · Week {analysisResult.weekNumber}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 ml-auto">
+              <button
+                onClick={onRunAnalysis}
+                disabled={analysisLoading}
+                className="px-5 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-50"
+                style={{ backgroundColor: "#facc15", color: "#000" }}
+              >
+                {analysisLoading ? "Analysing…" : "Run AI Analysis"}
+              </button>
+              {analysisError && (
+                <div className="text-[11px] text-red-400 max-w-xs text-right">{analysisError}</div>
+              )}
+            </div>
+          </div>
+
+          {/* Per-team probability grid */}
+          {analysisResult?.probabilities && (
+            <div className="mt-5 pt-4 border-t border-white/8">
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Year-end probability per team</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+                {TEAM_IDS.filter((id) => visibleTeamIds.includes(id)).map((id) => {
+                  const meta = TEAM_META[id];
+                  const prob = analysisResult.probabilities[id];
+                  if (!prob) return null;
+                  const pc = prob.overall ?? 0;
+                  const pCol = pc >= 70 ? "#22c55e" : pc >= 50 ? "#f59e0b" : "#ef4444";
+                  return (
+                    <div key={id} className="bg-white/4 border border-white/8 rounded-xl p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: meta?.color }} />
+                          <span className="text-[11px] font-bold text-white/70">{meta?.name.split(" ")[0]}</span>
+                        </div>
+                        <span className="text-sm font-black" style={{ color: pCol }}>{pc}%</span>
+                      </div>
+                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${pc}%`, backgroundColor: pCol }} />
+                      </div>
+                      <div className="space-y-1">
+                        {Object.entries(prob.kpis || {}).map(([kpiName, val]: [string, any]) => {
+                          const kCol = val >= 70 ? "#22c55e" : val >= 50 ? "#f59e0b" : "#ef4444";
+                          return (
+                            <div key={kpiName} className="flex items-center justify-between gap-1">
+                              <span className="text-[9px] text-white/30 truncate flex-1">{kpiName}</span>
+                              <span className="text-[9px] font-bold flex-shrink-0" style={{ color: kCol }}>{val}%</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {isAdmin && (
         <ExecutiveSummaryPanel teamScores={teamScores} overallScore={overallScore} historyByTeam={historyByTeam} weeks={weeks} />
@@ -2048,7 +2254,15 @@ function InputTab({ selectedTeam, setSelectedTeam, teamScores, getInputs, setFie
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             {fields.map((field) => (
               <div key={field.key} className="space-y-1.5">
-                <label className="text-xs font-medium text-white/70">{field.label}</label>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <label className="text-xs font-medium text-white/70 flex-1">{field.label}</label>
+                  {field.tag === "QUARTERLY" && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 border border-blue-500/25 uppercase tracking-wide flex-shrink-0">Quarterly</span>
+                  )}
+                  {field.tag === "EVENT-TRIGGERED" && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/25 uppercase tracking-wide flex-shrink-0">Event</span>
+                  )}
+                </div>
                 {field.type === "binary" ? (
                   <div className="flex gap-2">
                     {[{ v: 0, label: "No" }, { v: 1, label: "Yes" }].map(({ v, label }) => (
@@ -2385,12 +2599,17 @@ function ImpactTab() {
   );
 }
 
-function SettingsTab({ startDateDraft, setStartDateDraft, onSave, isPending, weeks }: {
+function SettingsTab({ startDateDraft, setStartDateDraft, onSave, isPending, weeks, submissionCount, onExport, onReset, resetConfirm, setResetConfirm }: {
   startDateDraft: string;
   setStartDateDraft: (v: string) => void;
   onSave: () => void;
   isPending: boolean;
   weeks: number;
+  submissionCount: number;
+  onExport: () => void;
+  onReset: () => void;
+  resetConfirm: boolean;
+  setResetConfirm: (v: boolean) => void;
 }) {
   return (
     <div className="max-w-lg space-y-6">
@@ -2427,23 +2646,62 @@ function SettingsTab({ startDateDraft, setStartDateDraft, onSave, isPending, wee
         </div>
       </div>
 
+      {/* Data Management */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-1">Data Management</h2>
+        <p className="text-xs text-white/30 mb-5">Export or reset all historical weekly input data.</p>
+
+        <div className="flex items-center gap-3 p-3 bg-white/4 border border-white/8 rounded-xl mb-5">
+          <div className="text-2xl font-black text-white">{submissionCount}</div>
+          <div>
+            <div className="text-sm font-semibold text-white">Weekly submissions stored</div>
+            <div className="text-xs text-white/35">Full input history including all team fields</div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onExport}
+            className="w-full py-2.5 rounded-xl border border-white/15 text-white/70 hover:text-white hover:border-white/30 text-sm font-medium transition-all flex items-center justify-center gap-2"
+          >
+            <span>↓</span> Export all history as JSON
+          </button>
+
+          {!resetConfirm ? (
+            <button
+              onClick={() => setResetConfirm(true)}
+              className="w-full py-2.5 rounded-xl border border-red-500/25 text-red-400/70 hover:text-red-400 hover:border-red-500/50 text-sm font-medium transition-all"
+            >
+              Reset — clear all history
+            </button>
+          ) : (
+            <div className="p-4 bg-red-500/10 border border-red-500/40 rounded-xl space-y-3">
+              <div className="text-sm font-semibold text-red-400">This will permanently delete all {submissionCount} submissions and analysis history. Are you sure?</div>
+              <div className="flex gap-2">
+                <button onClick={onReset} className="flex-1 py-2 rounded-lg bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors">
+                  Yes, delete everything
+                </button>
+                <button onClick={() => setResetConfirm(false)} className="flex-1 py-2 rounded-lg border border-white/15 text-white/50 hover:text-white text-sm font-medium transition-all">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Scoring Rules</h2>
         <div className="space-y-2 text-xs text-white/40">
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-green-500" />80–100 = Green (On Track)</div>
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500" />50–79 = Amber (Needs Attention)</div>
           <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />0–49 = Red (Critical)</div>
-          <div className="mt-3 pt-3 border-t border-white/8">Inputs are entered weekly by each team lead.</div>
+          <div className="mt-3 pt-3 border-t border-white/8">Inputs are entered weekly by each team lead. Quarterly fields should be entered once per quarter (enter 0 in non-survey weeks). Event-triggered fields are only entered when an event closes.</div>
           <div>Each KPI is scored as (actual ÷ weekly target) × 100, capped at 100.</div>
           <div>Team score = average of its weekly KPI scores.</div>
           <div>Overall score = average of all 5 team scores. Target: 70%+</div>
-          <div className="mt-2 pt-2 border-t border-white/8 space-y-1">
-            <div className="font-medium text-white/50 mb-1">Weekly targets per team:</div>
-            <div>Marketing: 3 posts · 50 followers · 1 press contact</div>
-            <div>Partnerships: 0.5 meetings · 0.12 partnerships · 0.1 communities</div>
-            <div>Management: 0.15 new members · 0 departures · 70% OKR rate</div>
-            <div>Impact Labs: 1 article in progress · 3 data points · findings shared</div>
-            <div>Events: 3 planning hours · 0.5 sponsor convos · 6 registrations</div>
+          <div className="mt-2 pt-2 border-t border-white/8 text-white/30">
+            <span className="font-medium">AI probability:</span> Click "Run AI Analysis" in the Scores tab to get year-end probability estimates from Claude Sonnet. Requires ANTHROPIC_API_KEY in Secrets.
           </div>
         </div>
       </div>

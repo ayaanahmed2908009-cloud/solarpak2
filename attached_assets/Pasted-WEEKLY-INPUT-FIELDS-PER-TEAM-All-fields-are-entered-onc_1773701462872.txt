@@ -1,0 +1,74 @@
+WEEKLY INPUT FIELDS PER TEAM
+All fields are entered once per week by the team lead. Fields marked QUARTERLY are entered once per quarter (enter 0 in non-relevant weeks). Fields marked EVENT-TRIGGERED are only entered when an event closes (enter 0 otherwise).
+Marketing & Social Media:
+
+Posts published this week (integer) → feeds posts/month KPI and stacked bar chart
+Videos published this week (integer) → combined with posts to calculate post:video ratio trend
+Net follower gain this week (integer) → feeds cumulative follower growth line chart
+Total followers right now (integer) → absolute figure for line chart Y-axis and probability gap
+Average engagement rate this week (decimal %, e.g. 3.2) → feeds gauge dial and rolling average for probability
+Press contacts reached out to this week (integer) → pipeline proxy for press mentions KPI probability
+Press mentions confirmed this week (integer) → cumulative count feeds funnel chart and probability
+
+Sponsorships & Fundraising:
+
+Outreach meetings held this week (integer) → stage 1 of partner pipeline Kanban; feeds conversion rate calc
+Prospects currently in outreach stage (integer) → Kanban column 1 badge count (infographic only)
+Prospects currently in meeting stage (integer) → Kanban column 2 badge count (infographic only)
+New partnerships formalised this week (integer) → Kanban column 3; cumulative partner count and probability
+Total active partners right now (integer) → absolute count for probability gap calculation
+Funds raised or committed this week in USD (integer) → feeds monthly fundraising bar chart and thermometer
+Total funds raised YTD in USD (integer) → absolute figure for thermometer fill and probability gap
+
+General Management:
+
+New members joined this week (integer) → upward tick on headcount line chart
+Members who left or went inactive this week (integer) → downward tick on headcount chart; feeds churn and retention calc
+Total active members right now (integer) → absolute figure for headcount chart Y-axis and probability gap
+OKR tasks completed this week (integer) → numerator for OKR completion rate heatmap
+Total OKR tasks due this week (integer) → denominator for OKR completion rate heatmap
+Probability achievement score this week, self-assessed % (decimal) → AI cross-checks this against its own calculation
+Worker satisfaction survey % satisfied (decimal %, QUARTERLY) → feeds satisfaction donut chart; enter 0 in non-survey weeks
+Number of survey respondents (integer, QUARTERLY) → low response count should reduce AI confidence in satisfaction score
+
+Impact Labs:
+
+Articles currently in research stage (integer) → feeds production tracker progress bar stage 1 (infographic only)
+Articles currently in draft stage (integer) → feeds production tracker progress bar stage 2 (infographic only)
+Articles currently in review stage (integer) → feeds production tracker progress bar stage 3 (infographic only)
+Articles published this week (integer) → cumulative count vs annual target of 8 for probability
+Total articles published YTD (integer) → absolute count for probability gap calculation
+AI quality score of any report reviewed this week, 0–100 (decimal; enter 0 if no report reviewed) → feeds quality score trend line chart and probability threshold check
+Data points verified or updated this week (integer) → weekly proxy for data accuracy KPI probability
+Data accuracy audit score (decimal %, QUARTERLY; enter 0 in non-audit weeks) → quarterly gauge input and probability
+External citations confirmed this week (integer) → feeds citation growth bar chart and cumulative count
+SolarPak findings submitted externally this week, 1=yes 0=no (binary) → feeds 6-week rolling window check in AI probability prompt
+Annual impact report % complete (integer %, enter 0 in non-update weeks; update monthly) → feeds report progress bar
+
+Events & Community Outreach:
+
+Hours spent on event planning this week (decimal, e.g. 4.5) → effort proxy for events organised KPI when no event is imminent
+Is an event live or within 2 weeks, 1=yes 0=no (binary) → triggers active event highlighting on calendar heatmap
+Events completed YTD (integer) → absolute count vs annual target for probability gap
+New registrations confirmed this week (integer) → cumulative count feeds attendee tracker
+Total confirmed attendees YTD (integer) → absolute count for probability gap calculation
+Sponsor or partner conversations held this week (integer) → pipeline proxy for sponsored events KPI
+Events with a confirmed sponsor YTD (integer) → absolute count for probability calculation and pipeline tracker
+Post-event satisfaction score for any event that closed this week, out of 5 (decimal, EVENT-TRIGGERED; enter 0 otherwise) → feeds satisfaction trend line chart
+Repeat attendees at the closed event (integer, EVENT-TRIGGERED; enter 0 otherwise) → numerator for repeat attendee rate
+Total attendees at the closed event (integer, EVENT-TRIGGERED; enter 0 otherwise) → denominator for repeat rate and avg attendees per event calculation
+
+
+THE AI PROBABILITY ENGINE
+When the user clicks "Run analysis", the app sends all historical weekly inputs plus the current week's inputs to Claude Sonnet via the Anthropic API. The prompt instructs Claude as follows:
+You are a KPI performance analyst for SolarPak, a growing solar energy nonprofit. You will be given the complete weekly input history for all five teams, the annual KPI targets for Year 1, and the current week number out of 52. For each KPI across all five teams, calculate the probability (0–100%) that the team will hit that KPI's annual target by the end of the year, based on current pace and trajectory. Return a JSON object with the following structure: for each team, an array of KPI objects each containing the KPI name, the probability as an integer, a one-sentence rationale, and a risk flag which is one of "on track", "at risk", or "critical". Also include an overall team probability as an integer (average of all KPI probabilities for that team) and a diagnosis paragraph of 2–3 sentences explaining the team's overall trajectory, what is dragging probability down if anything, and one specific action that would most improve their score. If fewer than 4 weeks of data exist, include a low-confidence flag on the team object and caveat the estimates accordingly. Return only valid JSON, no preamble, no markdown fences.
+Parse the JSON response and render it in the UI.
+
+THE LEADERSHIP WARNING RULE
+Client-side logic (no AI needed): after each analysis run, check whether any team's overall probability has been below 50% for 6 or more consecutive weeks. If yes, render a red banner at the top of the dashboard with the team name and the message: "Leadership review triggered — this team has been below 50% probability for 6 consecutive weeks."
+
+THE EXECUTIVE SCORE
+At the top of the dashboard show a single composite score (0–100) which is the average of all five teams' overall probabilities from the latest analysis run. Display it as a large number with a colour: red if below 50, amber if 50–69, green if 70 and above.
+
+DATA PERSISTENCE
+Store the full weekly input history in localStorage as a JSON array. Each entry contains the week number, the date submitted, and all input fields for all five teams. On page load, hydrate the app from localStorage. Provide a clearly labelled export button that downloads the full history as a JSON file. Provide a reset button (with a confirmation dialog) that clears all history.

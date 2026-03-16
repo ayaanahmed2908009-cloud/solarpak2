@@ -78,6 +78,7 @@ export interface IStorage {
   getKpiSubmissions(): Promise<KpiSubmission[]>;
   getKpiSubmissionsByTeam(teamId: string): Promise<KpiSubmission[]>;
   createKpiSubmission(submission: InsertKpiSubmission): Promise<KpiSubmission>;
+  deleteAllKpiSubmissions(): Promise<void>;
   getKpiSettings(): Promise<KpiSettings | undefined>;
   upsertKpiSettings(startDate: string): Promise<KpiSettings>;
 }
@@ -968,6 +969,10 @@ export class DatabaseStorage implements IStorage {
   async createKpiSubmission(submission: InsertKpiSubmission): Promise<KpiSubmission> {
     const [created] = await db.insert(kpiSubmissions).values(submission).returning();
     return created;
+  }
+
+  async deleteAllKpiSubmissions(): Promise<void> {
+    await db.delete(kpiSubmissions);
   }
 
   async getKpiSettings(): Promise<KpiSettings | undefined> {
