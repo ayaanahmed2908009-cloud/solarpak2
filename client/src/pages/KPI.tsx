@@ -14,9 +14,9 @@ import {
   type TeamScore,
 } from "@/lib/scoring";
 
-type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social";
+type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships";
 
-type UserRole = "admin" | "team" | "social";
+type UserRole = "admin" | "team" | "social" | "sponsorships";
 
 interface KpiUser {
   username: string;
@@ -37,6 +37,7 @@ const USERS: KpiUser[] = [
   { username: "ceo", password: "SolarPak@CEO", role: "admin", displayName: "CEO", teamId: null },
   { username: "management", password: "SolarPak@Mgmt", role: "admin", displayName: "General Management", teamId: "management" },
   { username: "socialmedia", password: "SolarPak@Social", role: "social", displayName: "Social Media Head", teamId: null },
+  { username: "sponsorships", password: "SolarPak@Spnsr", role: "sponsorships", displayName: "Sponsorships & Fundraising", teamId: null },
   { username: "marketing", password: "SolarPak@Mktg", role: "team", displayName: "Marketing & Social Media", teamId: "marketing" },
   { username: "partnerships", password: "SolarPak@Prtnr", role: "team", displayName: "Partnerships & Outreach", teamId: "partnerships" },
   { username: "impactlabs", password: "SolarPak@Labs", role: "team", displayName: "Impact Labs", teamId: "impactlabs" },
@@ -247,11 +248,15 @@ export default function KPI() {
 function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: () => void }) {
   const isAdmin = session.role === "admin";
   const isSocial = session.role === "social";
-  const visibleTeamIds = (isAdmin || isSocial) ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
+  const isSponsorship = session.role === "sponsorships";
+  const isViewer = isSocial || isSponsorship;
+  const visibleTeamIds = (isAdmin || isViewer) ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
   const allowedTabs: Tab[] = isSocial
     ? ["social"]
+    : isSponsorship
+    ? ["sponsorships"]
     : isAdmin
-    ? ["scores", "input", "history", "impact", "settings", "social"]
+    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships"]
     : ["scores", "input", "history"];
 
   const [tab, setTab] = useState<Tab>(allowedTabs[0]);
@@ -362,6 +367,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     impact: { icon: "⬡", label: "Impact Charts" },
     settings: { icon: "⚙", label: "Settings" },
     social: { icon: "📱", label: "Social Media" },
+    sponsorships: { icon: "🤝", label: "Sponsorships" },
   };
 
   return (
@@ -420,7 +426,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-semibold text-white truncate">{session.displayName}</div>
-                <div className="text-[10px] text-white/30">{isAdmin ? "Full Access" : isSocial ? "Social Media View" : "Team View"}</div>
+                <div className="text-[10px] text-white/30">{isAdmin ? "Full Access" : isSocial ? "Social Media View" : isSponsorship ? "Sponsorships View" : "Team View"}</div>
               </div>
             </div>
             <button
@@ -534,6 +540,20 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                 <motion.div key="social" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
                   <div className="mb-6">
                     <h2 className="text-xl font-bold text-white mb-1">Social Media Dashboard</h2>
+                    <p className="text-sm text-white/40">Live executive metrics — all teams · Week {weeks}</p>
+                  </div>
+                  <ExecutiveSummaryPanel
+                    teamScores={teamScores}
+                    overallScore={overallScore}
+                    historyByTeam={historyByTeam}
+                    weeks={weeks}
+                  />
+                </motion.div>
+              )}
+              {tab === "sponsorships" && (isAdmin || isSponsorship) && (
+                <motion.div key="sponsorships" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-white mb-1">Sponsorships & Fundraising Dashboard</h2>
                     <p className="text-sm text-white/40">Live executive metrics — all teams · Week {weeks}</p>
                   </div>
                   <ExecutiveSummaryPanel
