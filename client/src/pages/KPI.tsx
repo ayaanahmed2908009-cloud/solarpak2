@@ -15,7 +15,7 @@ import {
   type TeamScore,
 } from "@/lib/scoring";
 
-type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships" | "management";
+type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships" | "management" | "labs";
 
 type UserRole = "admin" | "team" | "social" | "sponsorships";
 
@@ -251,13 +251,16 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
   const isSocial = session.role === "social";
   const isSponsorship = session.role === "sponsorships";
   const isViewer = isSocial || isSponsorship;
+  const isImpactLabs = session.role === "team" && session.teamId === "impactlabs";
   const visibleTeamIds = (isAdmin || isViewer) ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
   const allowedTabs: Tab[] = isSocial
     ? ["social"]
     : isSponsorship
     ? ["sponsorships"]
     : isAdmin
-    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships", "management"]
+    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships", "management", "labs"]
+    : isImpactLabs
+    ? ["scores", "input", "history", "labs"]
     : ["scores", "input", "history"];
 
   const [tab, setTab] = useState<Tab>(allowedTabs[0]);
@@ -370,6 +373,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     social: { icon: "📱", label: "Social Media" },
     sponsorships: { icon: "🤝", label: "Sponsorships" },
     management: { icon: "🏢", label: "General Mgmt" },
+    labs: { icon: "🔬", label: "Impact Labs" },
   };
 
   return (
@@ -668,6 +672,16 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     <p className="text-sm text-white/40">Headcount · OKR Heatmap · Team Satisfaction · Week {weeks}</p>
                   </div>
                   <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} />
+                </motion.div>
+              )}
+
+              {tab === "labs" && (isAdmin || isImpactLabs) && (
+                <motion.div key="labs" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-white mb-1">Impact Labs Dashboard</h2>
+                    <p className="text-sm text-white/40">Article pipeline · AI quality scores · citation growth · Week {weeks}</p>
+                  </div>
+                  <ImpactLabsAnalyticsPanel weeks={weeks} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1247,6 +1261,193 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
             </div>
           </div>
           <OkrHeatmap weeks={weeks} />
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ─── Impact Labs Analytics ───────────────────────────────────────────────────
+
+const STAGE_LABELS = ["Research", "Draft", "Review", "Published"] as const;
+const STAGE_COLORS = ["#60a5fa", "#a78bfa", "#f59e0b", "#22c55e"];
+const STAGE_PCT = [0.08, 0.36, 0.68, 1.0];
+
+const ARTICLES_DATA = [
+  { title: "Solar Microgrids in East Africa",        stage: 3, date: "Jan 15, 2025" },
+  { title: "Carbon Offset Methodologies Reviewed",   stage: 2, date: "Feb 28, 2025" },
+  { title: "Community Solar: A Case Study",          stage: 2, date: "Mar 30, 2025" },
+  { title: "AI in Renewable Energy Monitoring",      stage: 1, date: "Apr 15, 2025" },
+  { title: "Solar Panel Efficiency Benchmarks",      stage: 1, date: "May 1, 2025"  },
+  { title: "Impact of Subsidies on Solar Adoption",  stage: 0, date: "Jun 30, 2025" },
+  { title: "Rural Electrification: Progress Report", stage: 0, date: "Aug 15, 2025" },
+  { title: "Annual Impact Report 2025",              stage: 0, date: "Dec 1, 2025"  },
+];
+
+const AI_QUALITY_DATA = [
+  { label: "R1", title: "Microgrids",      score: 82 },
+  { label: "R2", title: "Carbon Offsets",  score: 88 },
+  { label: "R3", title: "Community Solar", score: 91 },
+  { label: "R4", title: "AI Monitoring",   score: 85 },
+  { label: "R5", title: "Efficiency",      score: 78 },
+  { label: "R6", title: "Subsidies",       score: 93 },
+  { label: "R7", title: "Rural Elec.",     score: 88 },
+  { label: "R8", title: "Impact Review",   score: 96 },
+];
+
+const CITATION_DATA = [
+  { quarter: "Q1 '25", citations: 12, cumulative: 12,  note: null },
+  { quarter: "Q2 '25", citations: 18, cumulative: 30,  note: "Microgrids article" },
+  { quarter: "Q3 '25", citations: 31, cumulative: 61,  note: "Carbon Offset spike" },
+  { quarter: "Q4 '25", citations: 14, cumulative: 75,  note: null },
+];
+
+function ImpactLabsAnalyticsPanel({ weeks }: { weeks: number }) {
+  const year = yearFromWeeks(weeks);
+  const threshold = year <= 1 ? 85 : year === 2 ? 90 : 95;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-5 rounded-full bg-teal-400" />
+        <h3 className="text-sm font-bold text-white uppercase tracking-widest">Impact Labs Analytics</h3>
+        <span className="text-[10px] text-white/25 ml-auto">Articles · AI Quality · Citations</span>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        {/* ── Article Production Tracker ── */}
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Article Production Tracker</div>
+          <div className="text-[10px] text-white/20 mb-4">8 articles · Research → Draft → Review → Published</div>
+
+          {/* Stage legend */}
+          <div className="flex gap-3 mb-4">
+            {STAGE_LABELS.map((s, i) => (
+              <div key={s} className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STAGE_COLORS[i] }} />
+                <span className="text-[9px] text-white/35">{s}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3">
+            {ARTICLES_DATA.map((a, i) => {
+              const pct = STAGE_PCT[a.stage];
+              const col = STAGE_COLORS[a.stage];
+              const stageLabel = STAGE_LABELS[a.stage];
+              return (
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] text-white/70 truncate flex-1 mr-2" title={a.title}>{a.title}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded font-medium"
+                            style={{ backgroundColor: `${col}20`, color: col }}>{stageLabel}</span>
+                      <span className="text-[9px] text-white/25">{a.date}</span>
+                    </div>
+                  </div>
+                  <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                    {/* Stage threshold marks */}
+                    {STAGE_PCT.slice(0, 3).map((tp, ti) => (
+                      <div key={ti} className="absolute top-0 bottom-0 w-px bg-white/10"
+                           style={{ left: `${tp * 100}%` }} />
+                    ))}
+                    <motion.div className="h-full rounded-full" style={{ backgroundColor: col }}
+                      initial={{ width: 0 }} animate={{ width: `${pct * 100}%` }}
+                      transition={{ duration: 0.9, ease: "easeOut", delay: i * 0.05 }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── AI Quality Score Trend ── */}
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="flex items-start justify-between mb-1">
+            <div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">AI Quality Score</div>
+              <div className="text-[10px] text-white/20">Per report · threshold {threshold}% (Y{year} target)</div>
+            </div>
+            <div className="flex gap-2 text-[9px] mt-0.5">
+              <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-green-500" /> Above</span>
+              <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-red-500" /> Below</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={AI_QUALITY_DATA} margin={{ top: 16, right: 12, left: -24, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <YAxis domain={[60, 100]} tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                formatter={(v: any, _: any, p: any) => [`${v}% — ${p.payload.title}`, "Score"]} />
+              <ReferenceLine y={threshold} stroke="#facc15" strokeDasharray="5 4" strokeOpacity={0.7}
+                             label={{ value: `Target ${threshold}%`, position: "right", fill: "#facc15", fontSize: 9, opacity: 0.7 }} />
+              <Line type="monotone" dataKey="score" stroke="rgba(255,255,255,0.15)" strokeWidth={2}
+                    dot={(props: any) => {
+                      const { cx, cy, payload, key } = props;
+                      const below = payload.score < threshold;
+                      return (
+                        <g key={key}>
+                          <circle cx={cx} cy={cy} r={7} fill={below ? "#ef4444" : "#22c55e"} opacity={0.18} />
+                          <circle cx={cx} cy={cy} r={4.5} fill={below ? "#ef4444" : "#22c55e"} />
+                        </g>
+                      );
+                    }}
+                    activeDot={{ r: 6, strokeWidth: 0 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* ── Citation Growth Bar Chart ── */}
+        <div className="lg:col-span-2 bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Citation Growth</div>
+              <div className="text-[10px] text-white/20">Cumulative external citations per quarter · annotations mark spike drivers</div>
+            </div>
+            <div className="text-2xl font-black text-white">
+              {CITATION_DATA[CITATION_DATA.length - 1].cumulative}
+              <span className="text-sm font-normal text-white/30 ml-1">total citations</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={CITATION_DATA} margin={{ top: 30, right: 20, left: -20, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="quarter" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                formatter={(v: any) => [`${v} citations`, "Cumulative"]} />
+              <Bar dataKey="cumulative" radius={[4, 4, 0, 0]}>
+                {CITATION_DATA.map((entry, idx) => (
+                  <Cell key={idx} fill={entry.note ? "#22c55e" : "#3b82f6"} opacity={entry.note ? 0.85 : 0.55} />
+                ))}
+              </Bar>
+              {/* Annotation labels for spike quarters */}
+              {CITATION_DATA.map((entry, idx) =>
+                entry.note ? (
+                  <ReferenceLine key={idx} x={entry.quarter} stroke="#22c55e" strokeOpacity={0.3} strokeDasharray="3 3"
+                                 label={{ value: `↑ ${entry.note}`, position: "insideTopRight", fill: "#4ade80", fontSize: 9, offset: 6 }} />
+                ) : null
+              )}
+            </BarChart>
+          </ResponsiveContainer>
+          {/* Quarter breakdown */}
+          <div className="grid grid-cols-4 gap-2 mt-3">
+            {CITATION_DATA.map((d) => (
+              <div key={d.quarter} className="bg-white/3 rounded-lg p-2 text-center">
+                <div className="text-[9px] text-white/30 mb-0.5">{d.quarter}</div>
+                <div className="text-base font-black text-white">{d.cumulative}</div>
+                <div className="text-[9px] text-white/25">+{d.citations} new</div>
+                {d.note && <div className="text-[8px] text-green-400 mt-0.5 leading-tight">{d.note}</div>}
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
