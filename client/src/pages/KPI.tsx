@@ -15,7 +15,7 @@ import {
   type TeamScore,
 } from "@/lib/scoring";
 
-type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships" | "management" | "labs";
+type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social" | "sponsorships" | "management" | "labs" | "evts";
 
 type UserRole = "admin" | "team" | "social" | "sponsorships";
 
@@ -252,15 +252,18 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
   const isSponsorship = session.role === "sponsorships";
   const isViewer = isSocial || isSponsorship;
   const isImpactLabs = session.role === "team" && session.teamId === "impactlabs";
+  const isEvents = session.role === "team" && session.teamId === "events";
   const visibleTeamIds = (isAdmin || isViewer) ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
   const allowedTabs: Tab[] = isSocial
     ? ["social"]
     : isSponsorship
     ? ["sponsorships"]
     : isAdmin
-    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships", "management", "labs"]
+    ? ["scores", "input", "history", "impact", "settings", "social", "sponsorships", "management", "labs", "evts"]
     : isImpactLabs
     ? ["scores", "input", "history", "labs"]
+    : isEvents
+    ? ["scores", "input", "history", "evts"]
     : ["scores", "input", "history"];
 
   const [tab, setTab] = useState<Tab>(allowedTabs[0]);
@@ -374,6 +377,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     sponsorships: { icon: "🤝", label: "Sponsorships" },
     management: { icon: "🏢", label: "General Mgmt" },
     labs: { icon: "🔬", label: "Impact Labs" },
+    evts: { icon: "🎪", label: "Events" },
   };
 
   return (
@@ -682,6 +686,16 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     <p className="text-sm text-white/40">Article pipeline · AI quality scores · citation growth · Week {weeks}</p>
                   </div>
                   <ImpactLabsAnalyticsPanel weeks={weeks} />
+                </motion.div>
+              )}
+
+              {tab === "evts" && (isAdmin || isEvents) && (
+                <motion.div key="evts" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-white mb-1">Events & Community Dashboard</h2>
+                    <p className="text-sm text-white/40">Calendar heatmap · attendee mix · satisfaction trend · 2025</p>
+                  </div>
+                  <EventsAnalyticsPanel />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1448,6 +1462,239 @@ function ImpactLabsAnalyticsPanel({ weeks }: { weeks: number }) {
               </div>
             ))}
           </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ─── Events Analytics ────────────────────────────────────────────────────────
+
+const MONTH_WEEKS = [
+  { short: "Jan", weeks: [1,2,3,4] },
+  { short: "Feb", weeks: [5,6,7,8] },
+  { short: "Mar", weeks: [9,10,11,12] },
+  { short: "Apr", weeks: [13,14,15,16,17] },
+  { short: "May", weeks: [18,19,20,21] },
+  { short: "Jun", weeks: [22,23,24,25] },
+  { short: "Jul", weeks: [26,27,28,29,30] },
+  { short: "Aug", weeks: [31,32,33,34] },
+  { short: "Sep", weeks: [35,36,37,38] },
+  { short: "Oct", weeks: [39,40,41,42,43] },
+  { short: "Nov", weeks: [44,45,46,47] },
+  { short: "Dec", weeks: [48,49,50,51,52] },
+];
+
+// 0=quiet, 1=planning, 2=active, 3=event
+const EVENT_WEEK_MAP: Record<number, { label: string; level: 0|1|2|3 }> = {
+  3:  { label: "New Year Kickoff",       level: 3 },
+  4:  { label: "Post-event wrap",        level: 2 },
+  7:  { label: "Solar Summit",           level: 3 },
+  8:  { label: "Summit follow-up",       level: 2 },
+  11: { label: "Community Day",          level: 3 },
+  13: { label: "Earth Day planning",     level: 1 },
+  14: { label: "Earth Day planning",     level: 1 },
+  15: { label: "Earth Day planning",     level: 1 },
+  16: { label: "Earth Day Fair",         level: 3 },
+  17: { label: "Post-event debrief",     level: 2 },
+  19: { label: "Outreach planning",      level: 1 },
+  20: { label: "School Outreach Week",   level: 3 },
+  21: { label: "Outreach wrap-up",       level: 2 },
+  22: { label: "Gala prep",             level: 1 },
+  23: { label: "Gala prep",             level: 1 },
+  24: { label: "Mid-Year Gala",          level: 3 },
+  25: { label: "Post-gala review",       level: 2 },
+  28: { label: "Partner Breakfast",      level: 3 },
+  31: { label: "Workshop planning",      level: 1 },
+  32: { label: "Workshop planning",      level: 1 },
+  33: { label: "Youth Workshop",         level: 3 },
+  34: { label: "Workshop follow-up",     level: 2 },
+  35: { label: "Harvest prep",           level: 1 },
+  36: { label: "Harvest prep",           level: 1 },
+  37: { label: "Harvest prep",           level: 1 },
+  38: { label: "Harvest Festival",       level: 3 },
+  39: { label: "Post-harvest debrief",   level: 2 },
+  40: { label: "Conference prep",        level: 1 },
+  41: { label: "Conference prep",        level: 1 },
+  42: { label: "Conference prep",        level: 2 },
+  43: { label: "Impact Conference",      level: 3 },
+  44: { label: "Conference follow-up",   level: 2 },
+  45: { label: "Year-end planning",      level: 1 },
+  46: { label: "Year-end planning",      level: 1 },
+  47: { label: "Year-End Celebration",   level: 3 },
+  49: { label: "Year wrap-up",           level: 2 },
+  50: { label: "Planning Sprint",        level: 2 },
+};
+
+const ATTENDEE_DATA = [
+  { event: "Solar Summit",     total: 280, repeat: 112 },
+  { event: "Earth Day Fair",   total: 450, repeat: 234 },
+  { event: "Mid-Year Gala",    total: 320, repeat: 182 },
+  { event: "Youth Workshop",   total: 180, repeat:  81 },
+  { event: "Harvest Festival", total: 520, repeat: 322 },
+  { event: "Conf. 2025",       total: 410, repeat: 262 },
+];
+
+const EVENT_SATISFACTION = [
+  { short: "Kickoff",   score: 4.2 },
+  { short: "Summit",    score: 4.5 },
+  { short: "Comm.Day",  score: 3.8 },
+  { short: "Earth Day", score: 4.6 },
+  { short: "Outreach",  score: 3.9 },
+  { short: "Gala",      score: 4.7 },
+  { short: "Breakfast", score: 4.1 },
+  { short: "Workshop",  score: 3.7 },
+  { short: "Harvest",   score: 4.4 },
+  { short: "Conf.",     score: 4.8 },
+];
+
+function MiniDonut({ pct, color }: { pct: number; color: string }) {
+  const r = 28, sw = 10, cx = 40, cy = 40;
+  const circ = 2 * Math.PI * r;
+  const fill = (pct / 100) * circ;
+  return (
+    <svg viewBox="0 0 80 80" width={80} height={80}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={sw} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth={sw}
+              strokeDasharray={`${fill} ${circ - fill}`}
+              strokeLinecap="round" strokeDashoffset={circ / 4}
+              style={{ transform: "rotate(-90deg)", transformOrigin: "40px 40px" }} />
+      <text x={cx} y={cy - 4} textAnchor="middle" fill="white" fontSize={13} fontWeight={900}>{pct}%</text>
+      <text x={cx} y={cy + 9} textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize={7.5}>repeat</text>
+    </svg>
+  );
+}
+
+function EventsAnalyticsPanel() {
+  const LEVEL_COLORS = [
+    "rgba(255,255,255,0.04)",  // 0 quiet
+    "rgba(20,184,166,0.20)",   // 1 planning — pale teal
+    "rgba(20,184,166,0.52)",   // 2 active   — medium teal
+    "#0f766e",                 // 3 event    — dark teal
+  ];
+  const LEVEL_LABELS = ["Quiet", "Planning", "Active", "Event"];
+  const SAT_THRESHOLD = 4.0;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-5 rounded-full bg-orange-400" />
+        <h3 className="text-sm font-bold text-white uppercase tracking-widest">Events & Community Analytics</h3>
+        <span className="text-[10px] text-white/25 ml-auto">Calendar · Attendees · Satisfaction</span>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        {/* ── Calendar Heatmap (full width) ── */}
+        <div className="lg:col-span-3 bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+            <div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Event Calendar Heatmap — 2025</div>
+              <div className="text-[10px] text-white/20">Each cell = one week · hover for event name</div>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              {LEVEL_LABELS.map((l, i) => (
+                <span key={l} className="flex items-center gap-1 text-[9px] text-white/40">
+                  <span className="w-3 h-3 rounded-sm inline-block"
+                        style={{ backgroundColor: LEVEL_COLORS[i], border: i === 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }} />
+                  {l}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-1.5">
+            {MONTH_WEEKS.map((m) => (
+              <div key={m.short}>
+                <div className="text-[9px] text-white/35 text-center mb-1.5 font-medium">{m.short}</div>
+                <div className="space-y-1">
+                  {m.weeks.map((w) => {
+                    const ev = EVENT_WEEK_MAP[w];
+                    const level = ev?.level ?? 0;
+                    return (
+                      <div key={w} className="w-full h-5 rounded-sm cursor-default transition-opacity hover:opacity-80"
+                           style={{ backgroundColor: LEVEL_COLORS[level] }}
+                           title={ev ? `W${w}: ${ev.label}` : `W${w}: No activity`} />
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── New vs Repeat Attendee Donuts ── */}
+        <div className="lg:col-span-2 bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">New vs Repeat Attendees</div>
+          <div className="text-[10px] text-white/20 mb-4">Per event · repeat % in centre · trend shows community building</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {ATTENDEE_DATA.map((d) => {
+              const pct = Math.round((d.repeat / d.total) * 100);
+              const newPct = 100 - pct;
+              const col = pct >= 60 ? "#22c55e" : pct >= 40 ? "#f59e0b" : "#60a5fa";
+              return (
+                <div key={d.event} className="flex flex-col items-center gap-1">
+                  <MiniDonut pct={pct} color={col} />
+                  <div className="text-[10px] text-white/60 text-center font-medium leading-tight">{d.event}</div>
+                  <div className="text-[9px] text-white/25 text-center">{d.total.toLocaleString()} attendees</div>
+                  <div className="flex gap-2 text-[8.5px] mt-0.5">
+                    <span style={{ color: col }}>↩ {pct}% repeat</span>
+                    <span className="text-white/25">✦ {newPct}% new</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Trend note */}
+          <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-2">
+            <span className="text-[9px] text-white/25">Repeat % trend:</span>
+            {ATTENDEE_DATA.map((d, i) => {
+              const pct = Math.round((d.repeat / d.total) * 100);
+              const col = pct >= 60 ? "#22c55e" : pct >= 40 ? "#f59e0b" : "#60a5fa";
+              return (
+                <div key={i} className="flex flex-col items-end gap-0.5">
+                  <div className="w-5 rounded-sm" style={{ height: `${Math.round(pct * 0.3)}px`, backgroundColor: col, opacity: 0.7 }} />
+                  <span className="text-[8px]" style={{ color: col }}>{pct}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Satisfaction Trend ── */}
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Satisfaction Score Trend</div>
+          <div className="text-[10px] text-white/20 mb-3">Post-event survey / 5 · threshold 4.0</div>
+          <div className="flex gap-3 text-[9px] mb-3">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> ≥ 4.0</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> Below</span>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={EVENT_SATISFACTION} margin={{ top: 12, right: 8, left: -28, bottom: 24 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="short" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8 }}
+                     axisLine={false} tickLine={false} angle={-35} textAnchor="end" interval={0} />
+              <YAxis domain={[3.0, 5.0]} ticks={[3.0,3.5,4.0,4.5,5.0]}
+                     tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                       itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                       formatter={(v: any) => [`${v} / 5`, "Satisfaction"]} />
+              <ReferenceLine y={SAT_THRESHOLD} stroke="#facc15" strokeDasharray="5 4" strokeOpacity={0.7}
+                             label={{ value: "4.0 target", position: "right", fill: "#facc15", fontSize: 8.5, opacity: 0.7 }} />
+              <Line type="monotone" dataKey="score" stroke="rgba(255,255,255,0.12)" strokeWidth={2}
+                    dot={(props: any) => {
+                      const { cx, cy, payload, key } = props;
+                      const below = payload.score < SAT_THRESHOLD;
+                      return (
+                        <g key={key}>
+                          <circle cx={cx} cy={cy} r={6} fill={below ? "#ef4444" : "#22c55e"} opacity={0.2} />
+                          <circle cx={cx} cy={cy} r={4} fill={below ? "#ef4444" : "#22c55e"} />
+                        </g>
+                      );
+                    }}
+                    activeDot={{ r: 6, strokeWidth: 0 }} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
       </div>
