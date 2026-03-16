@@ -14,9 +14,9 @@ import {
   type TeamScore,
 } from "@/lib/scoring";
 
-type Tab = "scores" | "input" | "history" | "impact" | "settings";
+type Tab = "scores" | "input" | "history" | "impact" | "settings" | "social";
 
-type UserRole = "admin" | "team";
+type UserRole = "admin" | "team" | "social";
 
 interface KpiUser {
   username: string;
@@ -36,6 +36,7 @@ interface KpiSession {
 const USERS: KpiUser[] = [
   { username: "ceo", password: "SolarPak@CEO", role: "admin", displayName: "CEO", teamId: null },
   { username: "management", password: "SolarPak@Mgmt", role: "admin", displayName: "General Management", teamId: "management" },
+  { username: "socialmedia", password: "SolarPak@Social", role: "social", displayName: "Social Media Head", teamId: null },
   { username: "marketing", password: "SolarPak@Mktg", role: "team", displayName: "Marketing & Social Media", teamId: "marketing" },
   { username: "partnerships", password: "SolarPak@Prtnr", role: "team", displayName: "Partnerships & Outreach", teamId: "partnerships" },
   { username: "impactlabs", password: "SolarPak@Labs", role: "team", displayName: "Impact Labs", teamId: "impactlabs" },
@@ -245,9 +246,12 @@ export default function KPI() {
 
 function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: () => void }) {
   const isAdmin = session.role === "admin";
-  const visibleTeamIds = isAdmin ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
-  const allowedTabs: Tab[] = isAdmin
-    ? ["scores", "input", "history", "impact", "settings"]
+  const isSocial = session.role === "social";
+  const visibleTeamIds = (isAdmin || isSocial) ? TEAM_IDS : (session.teamId ? [session.teamId] : TEAM_IDS);
+  const allowedTabs: Tab[] = isSocial
+    ? ["social"]
+    : isAdmin
+    ? ["scores", "input", "history", "impact", "settings", "social"]
     : ["scores", "input", "history"];
 
   const [tab, setTab] = useState<Tab>(allowedTabs[0]);
@@ -357,6 +361,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     history: { icon: "◈", label: "History" },
     impact: { icon: "⬡", label: "Impact Charts" },
     settings: { icon: "⚙", label: "Settings" },
+    social: { icon: "📱", label: "Social Media" },
   };
 
   return (
@@ -415,7 +420,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-semibold text-white truncate">{session.displayName}</div>
-                <div className="text-[10px] text-white/30">{isAdmin ? "Full Access" : "Team View"}</div>
+                <div className="text-[10px] text-white/30">{isAdmin ? "Full Access" : isSocial ? "Social Media View" : "Team View"}</div>
               </div>
             </div>
             <button
@@ -525,6 +530,20 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                   />
                 </motion.div>
               )}
+              {tab === "social" && (isAdmin || isSocial) && (
+                <motion.div key="social" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-white mb-1">Social Media Dashboard</h2>
+                    <p className="text-sm text-white/40">Live executive metrics — all teams · Week {weeks}</p>
+                  </div>
+                  <ExecutiveSummaryPanel
+                    teamScores={teamScores}
+                    overallScore={overallScore}
+                    historyByTeam={historyByTeam}
+                    weeks={weeks}
+                  />
+                </motion.div>
+              )}
             </AnimatePresence>
           </main>
 
@@ -544,6 +563,167 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
           </button>
         ))}
       </nav>
+    </div>
+  );
+}
+
+function ExecutiveSummaryPanel({ teamScores, overallScore, historyByTeam, weeks }: {
+  teamScores: TeamScore[];
+  overallScore: number;
+  historyByTeam: Record<string, any[]>;
+  weeks: number;
+}) {
+  const [ragSort, setRagSort] = useState<"rag" | "team" | "score">("rag");
+
+  const allKpis: { team: string; teamColor: string; kpi: string; score: number; rag: "green" | "amber" | "red" }[] = [];
+  teamScores.forEach((ts) => {
+    ts.kpiScores.forEach((k) => {
+      allKpis.push({ team: TEAM_META[ts.teamId]?.name.split(" ")[0], teamColor: TEAM_META[ts.teamId]?.color, kpi: k.name, score: k.score, rag: k.rag });
+    });
+  });
+  const ragOrder = { red: 0, amber: 1, green: 2 };
+  const sortedKpis = [...allKpis].sort((a, b) => {
+    if (ragSort === "rag") return ragOrder[a.rag] - ragOrder[b.rag];
+    if (ragSort === "team") return a.team.localeCompare(b.team);
+    return a.score - b.score;
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* 1. Speedometer + Team Pentagon Radar */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6 flex flex-col items-center">
+          <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">Weekly Score Speedometer</div>
+          <p className="text-[11px] text-white/20 mb-4 text-center">Composite executive score — Week {weeks}</p>
+          <Speedometer score={overallScore} />
+          <div className="mt-3 flex gap-5 text-[11px]">
+            <div className="flex items-center gap-1.5 text-red-400"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40" />0–49 Critical</div>
+            <div className="flex items-center gap-1.5 text-amber-400"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500/40" />50–69 At Risk</div>
+            <div className="flex items-center gap-1.5 text-green-400"><span className="w-2.5 h-2.5 rounded-sm bg-green-500/40" />70+ On Track</div>
+          </div>
+        </div>
+
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6 flex flex-col">
+          <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">Team Performance Radar</div>
+          <p className="text-[11px] text-white/20 mb-2">Pentagon — each axis = one team's weekly score</p>
+          <div className="flex-1">
+            <ResponsiveContainer width="100%" height={230}>
+              <RadarChart
+                data={teamScores.map((ts) => ({
+                  team: TEAM_META[ts.teamId]?.name.split(" ")[0],
+                  score: Math.round(ts.teamScore),
+                  target: 70,
+                }))}
+                margin={{ top: 16, right: 28, bottom: 16, left: 28 }}
+              >
+                <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                <PolarAngleAxis
+                  dataKey="team"
+                  tick={({ x, y, payload }: any) => {
+                    const ts = teamScores.find((t) => TEAM_META[t.teamId]?.name.split(" ")[0] === payload.value);
+                    const c = ts ? TEAM_META[ts.teamId]?.color : "#fff";
+                    return <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill={c} fontSize={11} fontWeight={600}>{payload.value}</text>;
+                  }}
+                />
+                <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+                <Radar name="Target" dataKey="target" stroke="#facc15" fill="#facc15" fillOpacity={0.05} strokeWidth={1} strokeDasharray="4 3" />
+                <Radar name="Score" dataKey="score" stroke="#facc15" fill="#facc15" fillOpacity={0.18} strokeWidth={2.5} dot={{ fill: "#facc15", r: 4 }} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex gap-4 text-[10px] text-white/30 justify-center mt-1">
+            <div className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-yellow-400" />Score</div>
+            <div className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded border-t border-dashed border-yellow-400/50" style={{ borderTopStyle: "dashed" }} />Target 70</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. 6-week mini trend charts per team */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">6-Week Score Trend per Team</div>
+        <p className="text-[11px] text-white/20 mb-5">Red line at 50 — teams below this for 6+ weeks trigger a leadership review</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+          {teamScores.map((ts) => {
+            const meta = TEAM_META[ts.teamId];
+            const hist = (historyByTeam[ts.teamId] || []).slice(0, 6).reverse();
+            const chartData = hist.length > 0 ? hist : [{ week: "now", score: Math.round(ts.teamScore) }];
+            const c = meta?.color;
+            return (
+              <div key={ts.teamId} className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: c }} />
+                  <span className="text-[11px] font-semibold text-white/60">{meta?.name.split(" ")[0]}</span>
+                  <span className="ml-auto text-[11px] font-black" style={{ color: c }}>{Math.round(ts.teamScore)}</span>
+                </div>
+                <ResponsiveContainer width="100%" height={80}>
+                  <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
+                    <YAxis domain={[0, 100]} hide />
+                    <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 8 }} axisLine={false} tickLine={false} />
+                    <ReferenceLine y={50} stroke="#ef4444" strokeDasharray="3 2" strokeWidth={1.5} opacity={0.6} />
+                    <ReferenceLine y={70} stroke="#22c55e" strokeDasharray="3 2" strokeWidth={1} opacity={0.35} />
+                    <Line type="monotone" dataKey="score" stroke={c} strokeWidth={2} dot={{ fill: c, r: 2.5 }} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex gap-5 mt-3 text-[10px] text-white/30">
+          <div className="flex items-center gap-1.5"><span className="w-4 border-t border-dashed border-red-400/60" style={{ borderTopStyle: "dashed" }} />Review trigger at 50</div>
+          <div className="flex items-center gap-1.5"><span className="w-4 border-t border-dashed border-green-400/40" style={{ borderTopStyle: "dashed" }} />Target at 70</div>
+        </div>
+      </div>
+
+      {/* 3. RAG Status Summary Table */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-xs font-semibold text-white/40 uppercase tracking-widest">RAG Status Summary</div>
+          <div className="flex gap-1">
+            {(["rag", "team", "score"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setRagSort(s)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${ragSort === s ? "bg-yellow-400/15 text-yellow-300 border border-yellow-400/30" : "text-white/30 hover:text-white/60 hover:bg-white/5"}`}
+              >
+                Sort: {s === "rag" ? "Status" : s === "team" ? "Team" : "Score ↑"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="text-[11px] text-white/20 mb-4">All {allKpis.length} KPIs across {teamScores.length} teams — scan for reds first</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-white/8">
+                <th className="text-left text-white/30 font-medium pb-2 pr-3 w-8">Status</th>
+                <th className="text-left text-white/30 font-medium pb-2 pr-3">KPI</th>
+                <th className="text-left text-white/30 font-medium pb-2 pr-3">Team</th>
+                <th className="text-right text-white/30 font-medium pb-2">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedKpis.map((row, i) => {
+                const dotColor = row.rag === "green" ? "#22c55e" : row.rag === "amber" ? "#f59e0b" : "#ef4444";
+                return (
+                  <tr key={i} className="border-b border-white/5 hover:bg-white/3 transition-colors">
+                    <td className="py-2 pr-3">
+                      <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: dotColor }} />
+                    </td>
+                    <td className="py-2 pr-3 text-white/70 font-medium">{row.kpi}</td>
+                    <td className="py-2 pr-3">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: row.teamColor }} />
+                        <span className="text-white/40">{row.team}</span>
+                      </span>
+                    </td>
+                    <td className="py-2 text-right font-bold" style={{ color: dotColor }}>{Math.round(row.score)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
@@ -610,168 +790,15 @@ function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds
   isAdmin: boolean;
   historyByTeam: Record<string, any[]>;
 }) {
-  const [ragSort, setRagSort] = useState<"rag" | "team" | "score">("rag");
   const overallColor = overallRag === "green" ? "#22c55e" : overallRag === "amber" ? "#f59e0b" : "#ef4444";
   const visibleScores = teamScores.filter((t) => visibleTeamIds.includes(t.teamId));
-
-  // Build flat KPI list for RAG table
-  const allKpis: { team: string; teamColor: string; kpi: string; score: number; rag: "green" | "amber" | "red" }[] = [];
-  teamScores.forEach((ts) => {
-    ts.kpiScores.forEach((k) => {
-      allKpis.push({ team: TEAM_META[ts.teamId]?.name.split(" ")[0], teamColor: TEAM_META[ts.teamId]?.color, kpi: k.name, score: k.score, rag: k.rag });
-    });
-  });
-  const ragOrder = { red: 0, amber: 1, green: 2 };
-  const sortedKpis = [...allKpis].sort((a, b) => {
-    if (ragSort === "rag") return ragOrder[a.rag] - ragOrder[b.rag];
-    if (ragSort === "team") return a.team.localeCompare(b.team);
-    return a.score - b.score;
-  });
 
   return (
     <div className="space-y-6">
 
-      {/* ── EXECUTIVE INFOGRAPHICS ── */}
-      {isAdmin && (<>
-
-        {/* 1. Speedometer + Team Pentagon Radar */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Speedometer */}
-          <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6 flex flex-col items-center">
-            <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">Weekly Score Speedometer</div>
-            <p className="text-[11px] text-white/20 mb-4 text-center">Composite executive score — Week {weeks}</p>
-            <Speedometer score={overallScore} />
-            <div className="mt-3 flex gap-5 text-[11px]">
-              <div className="flex items-center gap-1.5 text-red-400"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40" />0–49 Critical</div>
-              <div className="flex items-center gap-1.5 text-amber-400"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500/40" />50–69 At Risk</div>
-              <div className="flex items-center gap-1.5 text-green-400"><span className="w-2.5 h-2.5 rounded-sm bg-green-500/40" />70+ On Track</div>
-            </div>
-          </div>
-
-          {/* Team Pentagon Radar */}
-          <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6 flex flex-col">
-            <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">Team Performance Radar</div>
-            <p className="text-[11px] text-white/20 mb-2">Pentagon — each axis = one team's weekly score</p>
-            <div className="flex-1">
-              <ResponsiveContainer width="100%" height={230}>
-                <RadarChart
-                  data={teamScores.map((ts) => ({
-                    team: TEAM_META[ts.teamId]?.name.split(" ")[0],
-                    score: Math.round(ts.teamScore),
-                    target: 70,
-                  }))}
-                  margin={{ top: 16, right: 28, bottom: 16, left: 28 }}
-                >
-                  <PolarGrid stroke="rgba(255,255,255,0.08)" />
-                  <PolarAngleAxis
-                    dataKey="team"
-                    tick={({ x, y, payload }: any) => {
-                      const ts = teamScores.find((t) => TEAM_META[t.teamId]?.name.split(" ")[0] === payload.value);
-                      const c = ts ? TEAM_META[ts.teamId]?.color : "#fff";
-                      return <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill={c} fontSize={11} fontWeight={600}>{payload.value}</text>;
-                    }}
-                  />
-                  <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                  <Radar name="Target" dataKey="target" stroke="#facc15" fill="#facc15" fillOpacity={0.05} strokeWidth={1} strokeDasharray="4 3" />
-                  <Radar name="Score" dataKey="score" stroke="#facc15" fill="#facc15" fillOpacity={0.18} strokeWidth={2.5} dot={{ fill: "#facc15", r: 4 }} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex gap-4 text-[10px] text-white/30 justify-center mt-1">
-              <div className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-yellow-400" />Score</div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded border-t border-dashed border-yellow-400/50" style={{ borderTopStyle: "dashed" }} />Target 70</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. 6-week mini trend charts per team */}
-        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <div className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">6-Week Score Trend per Team</div>
-          <p className="text-[11px] text-white/20 mb-5">Red line at 50 — teams below this for 6+ weeks trigger a leadership review</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-            {teamScores.map((ts) => {
-              const meta = TEAM_META[ts.teamId];
-              const hist = (historyByTeam[ts.teamId] || []).slice(0, 6).reverse();
-              const chartData = hist.length > 0 ? hist : [{ week: "now", score: Math.round(ts.teamScore) }];
-              const c = meta?.color;
-              return (
-                <div key={ts.teamId} className="space-y-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: c }} />
-                    <span className="text-[11px] font-semibold text-white/60">{meta?.name.split(" ")[0]}</span>
-                    <span className="ml-auto text-[11px] font-black" style={{ color: c }}>{Math.round(ts.teamScore)}</span>
-                  </div>
-                  <ResponsiveContainer width="100%" height={80}>
-                    <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
-                      <YAxis domain={[0, 100]} hide />
-                      <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 8 }} axisLine={false} tickLine={false} />
-                      <ReferenceLine y={50} stroke="#ef4444" strokeDasharray="3 2" strokeWidth={1.5} opacity={0.6} />
-                      <ReferenceLine y={70} stroke="#22c55e" strokeDasharray="3 2" strokeWidth={1} opacity={0.35} />
-                      <Line type="monotone" dataKey="score" stroke={c} strokeWidth={2} dot={{ fill: c, r: 2.5 }} isAnimationActive={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex gap-5 mt-3 text-[10px] text-white/30">
-            <div className="flex items-center gap-1.5"><span className="w-4 border-t border-dashed border-red-400/60" style={{ borderTopStyle: "dashed" }} />Review trigger at 50</div>
-            <div className="flex items-center gap-1.5"><span className="w-4 border-t border-dashed border-green-400/40" style={{ borderTopStyle: "dashed" }} />Target at 70</div>
-          </div>
-        </div>
-
-        {/* 3. RAG Status Summary Table */}
-        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-1">
-            <div className="text-xs font-semibold text-white/40 uppercase tracking-widest">RAG Status Summary</div>
-            <div className="flex gap-1">
-              {(["rag", "team", "score"] as const).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setRagSort(s)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${ragSort === s ? "bg-yellow-400/15 text-yellow-300 border border-yellow-400/30" : "text-white/30 hover:text-white/60 hover:bg-white/5"}`}
-                >
-                  Sort: {s === "rag" ? "Status" : s === "team" ? "Team" : "Score ↑"}
-                </button>
-              ))}
-            </div>
-          </div>
-          <p className="text-[11px] text-white/20 mb-4">All {allKpis.length} KPIs across {teamScores.length} teams — scan for reds first</p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-white/8">
-                  <th className="text-left text-white/30 font-medium pb-2 pr-3 w-8">Status</th>
-                  <th className="text-left text-white/30 font-medium pb-2 pr-3">KPI</th>
-                  <th className="text-left text-white/30 font-medium pb-2 pr-3">Team</th>
-                  <th className="text-right text-white/30 font-medium pb-2">Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedKpis.map((row, i) => {
-                  const dotColor = row.rag === "green" ? "#22c55e" : row.rag === "amber" ? "#f59e0b" : "#ef4444";
-                  return (
-                    <tr key={i} className="border-b border-white/5 hover:bg-white/3 transition-colors">
-                      <td className="py-2 pr-3">
-                        <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: dotColor }} />
-                      </td>
-                      <td className="py-2 pr-3 text-white/70 font-medium">{row.kpi}</td>
-                      <td className="py-2 pr-3">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: row.teamColor }} />
-                          <span className="text-white/40">{row.team}</span>
-                        </span>
-                      </td>
-                      <td className="py-2 text-right font-bold" style={{ color: dotColor }}>{Math.round(row.score)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </>)}
+      {isAdmin && (
+        <ExecutiveSummaryPanel teamScores={teamScores} overallScore={overallScore} historyByTeam={historyByTeam} weeks={weeks} />
+      )}
 
       {/* Overall Score Hero — admin only */}
       {isAdmin && (
