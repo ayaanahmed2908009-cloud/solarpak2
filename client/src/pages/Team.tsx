@@ -37,7 +37,7 @@ const founder: TeamMember = {
     "Website developer"
   ],
   image: "/ayaan-ahmed.jpg",
-  social: { email: "ayaan@solarpak.com" }
+  social: { email: "solarpakorg@gmail.com" }
 };
 
 const teamDirectors: TeamMember[] = [
@@ -52,7 +52,7 @@ const teamDirectors: TeamMember[] = [
     image: hamzaMemonPhoto,
     teamId: "general-management",
     isDirector: true,
-    social: { email: "operations@solarpak.com" }
+    social: { email: "solarpakorg@gmail.com" }
   },
   {
     id: 3,
@@ -65,7 +65,7 @@ const teamDirectors: TeamMember[] = [
     image: "/ayaan-omer.jpg",
     teamId: "events-outreach",
     isDirector: true,
-    social: { email: "events@solarpak.com", linkedin: "https://www.linkedin.com/in/ayaan-omer" }
+    social: { email: "solarpakorg@gmail.com", linkedin: "https://www.linkedin.com/in/ayaan-omer" }
   },
   {
     id: 4,
@@ -78,7 +78,7 @@ const teamDirectors: TeamMember[] = [
     image: "/ramin-tihami.jpg",
     teamId: "sponsorships",
     isDirector: true,
-    social: { email: "fundraising@solarpak.com" }
+    social: { email: "solarpakorg@gmail.com" }
   },
   {
     id: 5,
@@ -91,7 +91,7 @@ const teamDirectors: TeamMember[] = [
     image: "/moiz-ali.jpg",
     teamId: "predictive-healthcare",
     isDirector: true,
-    social: { email: "research@solarpak.com" }
+    social: { email: "solarpakorg@gmail.com" }
   },
   {
     id: 11,
@@ -104,15 +104,15 @@ const teamDirectors: TeamMember[] = [
     image: "/marwa.jpg",
     teamId: "international-expansion",
     isDirector: true,
-    social: { email: "international@solarpak.com" }
+    social: { email: "solarpakorg@gmail.com" }
   }
 ];
 
 const teamMembers: TeamMember[] = [
   { id: 7, name: "Roham Jan", role: "Social Media Manager", description: "Managing social media presence and engagement across multiple platforms with creative content and strategic posting.", location: "Pakistan", expertise: ["Editing", "CapCut", "Content Creation", "Engagement"], achievements: ["Posted over 4 times", "Grew social media account by 30% in likes", "Maintained posts over both platforms"], image: "/roham-jan.jpg", teamId: "social-media", social: {} },
   { id: 6, name: "Jonathan Joseph", role: "Head of Event and Brand Promotion", description: "Specializing in creating brand promotion content for events and marketing initiatives to amplify SolarPak's message.", location: "Pakistan", expertise: ["Graphic Design", "Canva", "Cold Outreach", "Brand Image"], achievements: ["Created 2 flyers for future events", "Actively shows willingness to produce content for SolarPak"], image: "/jonathan-joseph.jpg", teamId: "social-media", social: {} },
-  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization.", location: "Pakistan", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/adnan-syed.jpg", teamId: "events-outreach", social: { email: "adnan@solarpak.com" } },
-  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations and impactful engagement.", location: "Pakistan", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "zaid@solarpak.com", linkedin: "https://www.linkedin.com/in/zaid-afal-501030303" } }
+  { id: 9, name: "Adnan Syed", role: "Community Liaison", description: "Building relationships with local communities and recruiting talented individuals for the organization.", location: "Pakistan", expertise: ["Community Relations", "Organisation", "Talent Acquisition"], achievements: ["Helped organise 10 events", "Helped recruit talent"], image: "/adnan-syed.jpg", teamId: "events-outreach", social: { email: "solarpakorg@gmail.com" } },
+  { id: 10, name: "Zaid Afal", role: "Event Coordinator", description: "Organizing and executing community events with focus on community relations and impactful engagement.", location: "Pakistan", expertise: ["Community Relations", "Organisation"], achievements: ["Helped organise 10 events"], image: "/zaid-afal.jpg", teamId: "events-outreach", social: { email: "solarpakorg@gmail.com", linkedin: "https://www.linkedin.com/in/zaid-afal-501030303" } }
 ];
 
 export default function Team() {
@@ -359,11 +359,11 @@ export default function Team() {
             </p>
             
             <a 
-              href="mailto:solarpakinitiative@gmail.com"
+              href="mailto:solarpakorg@gmail.com"
               className="inline-flex items-center gap-3 bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-5 rounded-full text-lg transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105"
             >
               <Mail className="w-6 h-6" />
-              solarpakinitiative@gmail.com
+              solarpakorg@gmail.com
             </a>
           </div>
         </section>

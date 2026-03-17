@@ -69,7 +69,7 @@ export default function Footer() {
                 <div className="bg-white/10 p-2 rounded-lg mr-3 group-hover:bg-white/20 transition-colors duration-300">
                   <Mail className="w-4 h-4 text-amber-300" />
                 </div>
-                <span className="text-white/70 text-sm leading-relaxed">solarpakinitiative@gmail.com</span>
+                <span className="text-white/70 text-sm leading-relaxed">solarpakorg@gmail.com</span>
               </li>
               <li className="flex items-start group">
                 <div className="bg-white/10 p-2 rounded-lg mr-3 group-hover:bg-white/20 transition-colors duration-300">

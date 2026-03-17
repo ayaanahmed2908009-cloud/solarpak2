@@ -403,11 +403,11 @@ export default function Opportunities() {
               Don't see a role that fits? We're always open to hearing from people who share our mission. Send us a note about who you are and how you'd like to help.
             </p>
             <a
-              href="mailto:solarpakinitiative@gmail.com?subject=SolarPak Volunteer Interest"
+              href="mailto:solarpakorg@gmail.com?subject=SolarPak Volunteer Interest"
               className="inline-flex items-center gap-2 text-sm font-medium text-gray-900 hover:text-green-800 transition-colors group"
             >
               <Mail className="w-4 h-4" />
-              solarpakinitiative@gmail.com
+              solarpakorg@gmail.com
               <ArrowUpRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-green-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </a>
           </div>
