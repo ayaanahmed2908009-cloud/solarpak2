@@ -1501,13 +1501,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/kpi/impact-data", async (req, res) => {
+  app.post("/api/kpi/impact-data", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
     try {
-      const adminToken = process.env.KPI_ADMIN_TOKEN || "sp-kpi-admin-2025";
-      const providedToken = (req.headers["x-kpi-admin-token"] as string) || req.body.__adminToken;
-      if (!providedToken || providedToken !== adminToken) {
-        return res.status(403).json({ message: "Forbidden: admin access required" });
-      }
       const { month, familiesServed, co2AvoidedKg } = req.body;
       if (!month) return res.status(400).json({ message: "month required" });
       const record = await storage.upsertKpiImpactData(

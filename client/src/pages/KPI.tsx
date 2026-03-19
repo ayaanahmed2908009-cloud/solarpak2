@@ -327,18 +327,9 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     queryKey: ["/api/kpi/impact-data"],
   });
 
-  const KPI_ADMIN_TOKEN = import.meta.env.VITE_KPI_ADMIN_TOKEN || "sp-kpi-admin-2025";
   const impactDataMutation = useMutation({
     mutationFn: (body: { month: string; familiesServed: number; co2AvoidedKg: number }) =>
-      fetch("/api/kpi/impact-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-kpi-admin-token": KPI_ADMIN_TOKEN },
-        body: JSON.stringify(body),
-        credentials: "include",
-      }).then(async (res) => {
-        if (!res.ok) throw new Error(await res.text());
-        return res.json();
-      }),
+      apiRequest("POST", "/api/kpi/impact-data", body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/kpi/impact-data"] }),
   });
 
@@ -2639,50 +2630,73 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
         )}
       </div>
 
-      {/* ── Families Served / CO2 Avoided ── */}
+      {/* ── Families Served & CO₂ Avoided (monthly time series) ── */}
       <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div>
             <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Environmental & Social Impact</div>
-            <div className="text-[10px] text-white/20">Families served & CO₂ avoided · manually logged monthly by admin</div>
+            <div className="text-[10px] text-white/20">Families served & CO₂ avoided · monthly · admin-logged</div>
           </div>
           {totalCo2 > 0 && (
             <div className="text-right">
               <div className="text-xl font-black text-green-400">{(totalCo2 / 1000).toFixed(1)} t</div>
-              <div className="text-[10px] text-white/30">CO₂ avoided</div>
+              <div className="text-[10px] text-white/30">CO₂ avoided total</div>
             </div>
           )}
         </div>
-        {impactData.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-white/30 uppercase tracking-widest">
-                  <th className="text-left pb-2 pr-4">Month</th>
-                  <th className="text-right pb-2 px-4">Families Served</th>
-                  <th className="text-right pb-2">CO₂ Avoided (kg)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {impactData.map((d) => (
-                  <tr key={d.month} className="border-t border-white/5">
-                    <td className="py-2 pr-4 text-white/60">{d.month}</td>
-                    <td className="py-2 px-4 text-right font-semibold text-green-400">{d.familiesServed.toLocaleString()}</td>
-                    <td className="py-2 text-right font-semibold text-teal-400">{d.co2AvoidedKg.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+        {impactData.length === 0 ? (
+          <div className="flex items-center justify-center h-[160px] text-white/30 text-xs text-center">
+            {isAdmin
+              ? "No data yet — use the form below to log monthly impact data"
+              : "No impact data recorded yet"}
           </div>
         ) : (
-          <div className="text-white/25 text-xs text-center py-4">
-            No impact data logged yet{isAdmin ? " — use the form below to add monthly data" : ""}
-          </div>
+          <>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={impactData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="month" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                       interval={Math.max(0, Math.floor(impactData.length / 6) - 1)} />
+                <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                         itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                         formatter={(v: any, name: string) => [
+                           name === "familiesServed" ? `${v.toLocaleString()} families` : `${v.toLocaleString()} kg`,
+                           name === "familiesServed" ? "Families Served" : "CO₂ Avoided",
+                         ]} />
+                <Legend wrapperStyle={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }} formatter={(v) => v === "familiesServed" ? "Families Served" : "CO₂ Avoided (kg)"} />
+                <Bar dataKey="familiesServed" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="co2AvoidedKg" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="overflow-x-auto mt-3">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-white/30 uppercase tracking-widest">
+                    <th className="text-left pb-2 pr-4">Month</th>
+                    <th className="text-right pb-2 px-4">Families Served</th>
+                    <th className="text-right pb-2">CO₂ Avoided (kg)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {impactData.map((d) => (
+                    <tr key={d.month} className="border-t border-white/5">
+                      <td className="py-2 pr-4 text-white/60">{d.month}</td>
+                      <td className="py-2 px-4 text-right font-semibold text-green-400">{d.familiesServed.toLocaleString()}</td>
+                      <td className="py-2 text-right font-semibold text-teal-400">{d.co2AvoidedKg.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {isAdmin && (
           <div className="mt-4 pt-4 border-t border-white/5">
-            <div className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Log Monthly Impact</div>
+            <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Log Monthly Impact</div>
+            <div className="text-[10px] text-white/20 mb-3">Requires worker admin login</div>
             <div className="flex flex-col sm:flex-row gap-2">
               <input type="month" value={impactMonth} onChange={e => setImpactMonth(e.target.value)}
                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400/40 transition-colors flex-1" />
