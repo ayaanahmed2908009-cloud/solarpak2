@@ -189,6 +189,7 @@ const INPUT_FIELDS: Record<string, { key: string; label: string; hint: string; t
     { key: "prospects_meeting", label: "Prospects currently in meeting stage", hint: "Kanban column 2 badge count (infographic only)", type: "number" },
     { key: "new_partnerships_this_week", label: "New partnerships formalised this week", hint: "Kanban column 3 · cumulative partner count and probability · Target: ~1 every 8 weeks", type: "number" },
     { key: "total_active_partners", label: "Total active partners right now", hint: "Absolute count for probability gap calculation", type: "number" },
+    { key: "communities_reached", label: "Total communities reached (cumulative)", hint: "Number of distinct communities engaged via partners · feeds community reach chart", type: "number" },
     { key: "funds_raised_this_week", label: "Funds raised or committed this week (USD)", hint: "Feeds monthly fundraising bar chart and thermometer", type: "number" },
     { key: "total_funds_ytd", label: "Total funds raised YTD (USD)", hint: "Absolute figure for thermometer fill and probability gap", type: "number" },
   ],
@@ -328,7 +329,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
   });
 
   const impactDataMutation = useMutation({
-    mutationFn: (body: { month: string; familiesServed: number; co2AvoidedKg: number }) =>
+    mutationFn: (body: { month: string; familiesServed: number; co2AvoidedKg: number; adminToken: string }) =>
       apiRequest("POST", "/api/kpi/impact-data", body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/kpi/impact-data"] }),
   });
@@ -658,8 +659,8 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     submissions={submissions as any[]}
                     impactData={impactDataList}
                     isAdmin={isAdmin}
-                    onSaveImpact={(month, families, co2) =>
-                      impactDataMutation.mutate({ month, familiesServed: families, co2AvoidedKg: co2 })
+                    onSaveImpact={(month, families, co2, adminToken) =>
+                      impactDataMutation.mutate({ month, familiesServed: families, co2AvoidedKg: co2, adminToken })
                     }
                   />
                 </motion.div>
@@ -2513,11 +2514,12 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
   submissions: any[];
   impactData: any[];
   isAdmin: boolean;
-  onSaveImpact: (month: string, familiesServed: number, co2AvoidedKg: number) => void;
+  onSaveImpact: (month: string, familiesServed: number, co2AvoidedKg: number, adminToken: string) => void;
 }) {
   const [impactMonth, setImpactMonth] = useState("");
   const [impactFamilies, setImpactFamilies] = useState("");
   const [impactCo2, setImpactCo2] = useState("");
+  const [impactAdminToken, setImpactAdminToken] = useState("");
 
   // ── Monthly aggregation helpers ──────────────────────────────────────────
   function aggMonthlyLast<T>(teamId: string, mapFn: (s: any) => T): { month: string; data: T }[] {
@@ -2541,6 +2543,7 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
 
   const reachMonthly = aggMonthlyLast("partnerships", (s: any) => ({
     partners: (s.inputs as any)?.total_active_partners ?? 0,
+    communities: (s.inputs as any)?.communities_reached ?? 0,
   }));
 
   const followerData = socialMonthly.map((d) => ({ month: d.month, ...d.data }));
@@ -2602,10 +2605,40 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
         )}
       </div>
 
+      {/* ── Engagement Rate Trend (monthly) ── */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+        <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Engagement Rate Trend</div>
+        <div className="text-[10px] text-white/20 mb-4">Average engagement rate (%) per month · from weekly marketing submissions</div>
+        {followerData.length === 0 ? (
+          <div className="flex items-center justify-center h-[150px] text-white/30 text-xs text-center">
+            {noSubmissionsYet
+              ? "No data yet — submit weekly marketing inputs"
+              : "No marketing submissions with engagement data found"}
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={150}>
+            <LineChart data={followerData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                     interval={Math.max(0, Math.floor(followerData.length / 6) - 1)} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                     tickFormatter={(v) => `${v}%`} />
+              <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                       itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                       formatter={(v: any) => [`${Number(v).toFixed(2)}%`, "Engagement Rate"]} />
+              <ReferenceLine y={5} stroke="#a855f7" strokeDasharray="4 3" strokeOpacity={0.5}
+                             label={{ value: "Y1 target 5%", position: "right", fill: "#d8b4fe", fontSize: 8.5, opacity: 0.7 }} />
+              <Line type="monotone" dataKey="engagement" stroke="#a855f7" strokeWidth={2.5}
+                    dot={{ fill: "#a855f7", r: 3, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
       {/* ── Community Reach (monthly) ── */}
       <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
-        <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Community Reach — Active Partners</div>
-        <div className="text-[10px] text-white/20 mb-4">Total active institutional partners per month · from partnerships submissions</div>
+        <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Community Reach — Partners & Communities</div>
+        <div className="text-[10px] text-white/20 mb-4">Active institutional partners + communities reached per month · from partnerships submissions</div>
         {partnerData.length === 0 ? (
           <div className="flex items-center justify-center h-[160px] text-white/30 text-xs text-center">
             {noSubmissionsYet
@@ -2621,10 +2654,12 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
               <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
                        itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
-                       formatter={(v: any) => [v, "Partners"]} />
+                       formatter={(v: any, name: string) => [v, name === "partners" ? "Active Partners" : "Communities Reached"]} />
+              <Legend wrapperStyle={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }} formatter={(v) => v === "partners" ? "Active Partners" : "Communities Reached"} />
               <ReferenceLine y={6} stroke="#0891b2" strokeDasharray="4 3" strokeOpacity={0.5}
-                             label={{ value: "Y1 target 6", position: "right", fill: "#38bdf8", fontSize: 8.5, opacity: 0.7 }} />
-              <Bar dataKey="partners" name="Partners" fill="#0891b2" radius={[4, 4, 0, 0]} />
+                             label={{ value: "Y1 partners 6", position: "right", fill: "#38bdf8", fontSize: 8.5, opacity: 0.7 }} />
+              <Bar dataKey="partners" name="partners" fill="#0891b2" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="communities" name="communities" fill="#06b6d4" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -2696,7 +2731,7 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
         {isAdmin && (
           <div className="mt-4 pt-4 border-t border-white/5">
             <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Log Monthly Impact</div>
-            <div className="text-[10px] text-white/20 mb-3">Requires worker admin login</div>
+            <div className="text-[10px] text-white/20 mb-3">Enter admin token to save (set via KPI_ADMIN_TOKEN env var on server)</div>
             <div className="flex flex-col sm:flex-row gap-2">
               <input type="month" value={impactMonth} onChange={e => setImpactMonth(e.target.value)}
                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400/40 transition-colors flex-1" />
@@ -2704,11 +2739,13 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400/40 transition-colors flex-1" min={0} />
               <input type="number" placeholder="CO₂ avoided (kg)" value={impactCo2} onChange={e => setImpactCo2(e.target.value)}
                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-400/40 transition-colors flex-1" min={0} />
+              <input type="password" placeholder="Admin token" value={impactAdminToken} onChange={e => setImpactAdminToken(e.target.value)}
+                     className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-400/40 transition-colors flex-1" />
               <button
                 onClick={() => {
-                  if (!impactMonth) return;
-                  onSaveImpact(impactMonth, Number(impactFamilies) || 0, Number(impactCo2) || 0);
-                  setImpactMonth(""); setImpactFamilies(""); setImpactCo2("");
+                  if (!impactMonth || !impactAdminToken) return;
+                  onSaveImpact(impactMonth, Number(impactFamilies) || 0, Number(impactCo2) || 0, impactAdminToken);
+                  setImpactMonth(""); setImpactFamilies(""); setImpactCo2(""); setImpactAdminToken("");
                 }}
                 className="bg-green-500/15 hover:bg-green-500/25 border border-green-500/30 text-green-400 text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                 Save

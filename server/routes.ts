@@ -1501,9 +1501,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/kpi/impact-data", isWorkerAuthenticated, isWorkerAdmin, async (req, res) => {
+  app.post("/api/kpi/impact-data", async (req, res) => {
     try {
-      const { month, familiesServed, co2AvoidedKg } = req.body;
+      const serverToken = process.env.KPI_ADMIN_TOKEN;
+      if (!serverToken) {
+        return res.status(503).json({ message: "KPI_ADMIN_TOKEN not configured on server" });
+      }
+      const { month, familiesServed, co2AvoidedKg, adminToken } = req.body;
+      if (!adminToken || adminToken !== serverToken) {
+        return res.status(403).json({ message: "Invalid admin token" });
+      }
       if (!month) return res.status(400).json({ message: "month required" });
       const record = await storage.upsertKpiImpactData(
         month,

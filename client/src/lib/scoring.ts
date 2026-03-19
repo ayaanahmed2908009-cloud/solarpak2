@@ -32,6 +32,7 @@ export interface PartnershipsInputs {
   prospects_meeting: number;
   new_partnerships_this_week: number;
   total_active_partners: number;
+  communities_reached: number;
   funds_raised_this_week: number;
   total_funds_ytd: number;
 }
@@ -246,6 +247,7 @@ export const DEFAULT_INPUTS: Record<string, any> = {
     prospects_meeting: 0,
     new_partnerships_this_week: 0,
     total_active_partners: 0,
+    communities_reached: 0,
     funds_raised_this_week: 0,
     total_funds_ytd: 0,
   } as PartnershipsInputs,
