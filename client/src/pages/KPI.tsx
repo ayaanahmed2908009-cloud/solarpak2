@@ -327,9 +327,18 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     queryKey: ["/api/kpi/impact-data"],
   });
 
+  const KPI_ADMIN_TOKEN = import.meta.env.VITE_KPI_ADMIN_TOKEN || "sp-kpi-admin-2025";
   const impactDataMutation = useMutation({
     mutationFn: (body: { month: string; familiesServed: number; co2AvoidedKg: number }) =>
-      apiRequest("POST", "/api/kpi/impact-data", body),
+      fetch("/api/kpi/impact-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-kpi-admin-token": KPI_ADMIN_TOKEN },
+        body: JSON.stringify(body),
+        credentials: "include",
+      }).then(async (res) => {
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/kpi/impact-data"] }),
   });
 
@@ -2503,6 +2512,12 @@ function HistoryTab({ historyByTeam, overallHistory, visibleTeamIds, isAdmin }: 
   );
 }
 
+function toMonthKey(submittedAt: string | null | undefined): string {
+  if (!submittedAt) return "unknown";
+  const d = new Date(submittedAt);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
   submissions: any[];
   impactData: any[];
@@ -2513,24 +2528,32 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
   const [impactFamilies, setImpactFamilies] = useState("");
   const [impactCo2, setImpactCo2] = useState("");
 
-  const marketingSubs = submissions
-    .filter((s: any) => s.teamId === "marketing")
-    .sort((a: any, b: any) => a.weekNumber - b.weekNumber);
+  // ── Monthly aggregation helpers ──────────────────────────────────────────
+  function aggMonthlyLast<T>(teamId: string, mapFn: (s: any) => T): { month: string; data: T }[] {
+    const filtered = submissions
+      .filter((s: any) => s.teamId === teamId)
+      .sort((a: any, b: any) => new Date(a.submittedAt ?? 0).getTime() - new Date(b.submittedAt ?? 0).getTime());
+    const byMonth: Record<string, T> = {};
+    for (const s of filtered) {
+      const month = toMonthKey(s.submittedAt);
+      if (month !== "unknown") byMonth[month] = mapFn(s);
+    }
+    return Object.entries(byMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, data]) => ({ month, data }));
+  }
 
-  const partnershipsSubs = submissions
-    .filter((s: any) => s.teamId === "partnerships")
-    .sort((a: any, b: any) => a.weekNumber - b.weekNumber);
-
-  const followerData = marketingSubs.map((s: any) => ({
-    week: `W${s.weekNumber}`,
+  const socialMonthly = aggMonthlyLast("marketing", (s: any) => ({
     followers: (s.inputs as any)?.total_followers ?? 0,
     engagement: (s.inputs as any)?.avg_engagement_rate ?? 0,
   }));
 
-  const partnerData = partnershipsSubs.map((s: any) => ({
-    week: `W${s.weekNumber}`,
+  const reachMonthly = aggMonthlyLast("partnerships", (s: any) => ({
     partners: (s.inputs as any)?.total_active_partners ?? 0,
   }));
+
+  const followerData = socialMonthly.map((d) => ({ month: d.month, ...d.data }));
+  const partnerData = reachMonthly.map((d) => ({ month: d.month, ...d.data }));
 
   const latestFollowers = followerData.length > 0 ? followerData[followerData.length - 1].followers : 0;
   const latestPartners = partnerData.length > 0 ? partnerData[partnerData.length - 1].partners : 0;
@@ -2538,15 +2561,17 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
   const totalFamilies = impactData.reduce((sum, d) => sum + (d.familiesServed ?? 0), 0);
   const totalCo2 = impactData.reduce((sum, d) => sum + (d.co2AvoidedKg ?? 0), 0);
 
+  const noSubmissionsYet = submissions.length === 0;
+
   return (
     <div className="space-y-6">
 
       {/* ── Live Metrics Strip ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Social Followers", value: latestFollowers > 0 ? latestFollowers.toLocaleString() : "—", sub: "latest week", color: "#7c3aed" },
-          { label: "Avg Engagement", value: latestEngagement > 0 ? `${latestEngagement.toFixed(1)}%` : "—", sub: "latest week", color: "#7c3aed" },
-          { label: "Active Partners", value: latestPartners > 0 ? String(latestPartners) : "—", sub: "latest week", color: "#0891b2" },
+          { label: "Social Followers", value: latestFollowers > 0 ? latestFollowers.toLocaleString() : "—", sub: "latest month", color: "#7c3aed" },
+          { label: "Avg Engagement", value: latestEngagement > 0 ? `${latestEngagement.toFixed(1)}%` : "—", sub: "latest month", color: "#7c3aed" },
+          { label: "Active Partners", value: latestPartners > 0 ? String(latestPartners) : "—", sub: "latest month", color: "#0891b2" },
           { label: "Families Served", value: totalFamilies > 0 ? totalFamilies.toLocaleString() : "—", sub: "all time", color: "#22c55e" },
         ].map((m) => (
           <div key={m.label} className="bg-[#0c1326] border border-white/10 rounded-xl p-4 flex flex-col gap-1">
@@ -2557,16 +2582,22 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
         ))}
       </div>
 
-      {/* ── Social Growth Chart ── */}
-      {followerData.length > 0 && (
-        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
-          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Social Following Growth</div>
-          <div className="text-[10px] text-white/20 mb-4">Total followers by week · from weekly submissions</div>
+      {/* ── Social Following Growth (monthly) ── */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+        <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Social Following Growth</div>
+        <div className="text-[10px] text-white/20 mb-4">Total followers per month · aggregated from weekly submissions</div>
+        {followerData.length === 0 ? (
+          <div className="flex items-center justify-center h-[180px] text-white/30 text-xs text-center">
+            {noSubmissionsYet
+              ? "No data yet — submit weekly marketing inputs"
+              : "No marketing submissions with follower data found"}
+          </div>
+        ) : (
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={followerData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
-                     interval={Math.max(0, Math.floor(followerData.length / 8) - 1)} />
+              <XAxis dataKey="month" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                     interval={Math.max(0, Math.floor(followerData.length / 6) - 1)} />
               <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
                        itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
@@ -2577,19 +2608,25 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
                     dot={{ fill: "#7c3aed", r: 3, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* ── Partners Chart ── */}
-      {partnerData.length > 0 && (
-        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
-          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Active Partners Growth</div>
-          <div className="text-[10px] text-white/20 mb-4">Total active partners by week · from weekly submissions</div>
+      {/* ── Community Reach (monthly) ── */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+        <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Community Reach — Active Partners</div>
+        <div className="text-[10px] text-white/20 mb-4">Total active institutional partners per month · from partnerships submissions</div>
+        {partnerData.length === 0 ? (
+          <div className="flex items-center justify-center h-[160px] text-white/30 text-xs text-center">
+            {noSubmissionsYet
+              ? "No data yet — submit weekly partnerships inputs"
+              : "No partnerships submissions with partner data found"}
+          </div>
+        ) : (
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={partnerData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
-                     interval={Math.max(0, Math.floor(partnerData.length / 8) - 1)} />
+              <XAxis dataKey="month" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                     interval={Math.max(0, Math.floor(partnerData.length / 6) - 1)} />
               <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
                        itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
@@ -2599,15 +2636,15 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
               <Bar dataKey="partners" name="Partners" fill="#0891b2" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── Families Served / CO2 Avoided ── */}
       <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Environmental & Social Impact</div>
-            <div className="text-[10px] text-white/20">Families served & CO₂ avoided · manually logged monthly</div>
+            <div className="text-[10px] text-white/20">Families served & CO₂ avoided · manually logged monthly by admin</div>
           </div>
           {totalCo2 > 0 && (
             <div className="text-right">
