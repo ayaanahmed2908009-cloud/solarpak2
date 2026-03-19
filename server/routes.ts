@@ -1491,6 +1491,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // KPI Impact Data (manual monthly metrics)
+  app.get("/api/kpi/impact-data", async (req, res) => {
+    try {
+      const data = await storage.getKpiImpactData();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching impact data" });
+    }
+  });
+
+  app.post("/api/kpi/impact-data", async (req, res) => {
+    try {
+      const { month, familiesServed, co2AvoidedKg } = req.body;
+      if (!month) return res.status(400).json({ message: "month required" });
+      const record = await storage.upsertKpiImpactData(
+        month,
+        Number(familiesServed) || 0,
+        Number(co2AvoidedKg) || 0,
+      );
+      res.json(record);
+    } catch (error) {
+      res.status(500).json({ message: "Error saving impact data" });
+    }
+  });
+
   // AI Probability Analysis
   app.post("/api/kpi/analysis", async (req, res) => {
     try {

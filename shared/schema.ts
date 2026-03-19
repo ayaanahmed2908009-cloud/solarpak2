@@ -315,3 +315,19 @@ export const insertKpiSettingsSchema = createInsertSchema(kpiSettings).omit({
 });
 export type KpiSettings = typeof kpiSettings.$inferSelect;
 export type InsertKpiSettings = z.infer<typeof insertKpiSettingsSchema>;
+
+// KPI Impact Data — monthly manual metrics (families served, CO2 avoided)
+export const kpiImpactData = pgTable("kpi_impact_data", {
+  id: serial("id").primaryKey(),
+  month: text("month").notNull().unique(),
+  familiesServed: integer("families_served").notNull().default(0),
+  co2AvoidedKg: doublePrecision("co2_avoided_kg").notNull().default(0),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpiImpactDataSchema = createInsertSchema(kpiImpactData).omit({
+  id: true,
+  updatedAt: true,
+});
+export type KpiImpactData = typeof kpiImpactData.$inferSelect;
+export type InsertKpiImpactData = z.infer<typeof insertKpiImpactDataSchema>;

@@ -10,6 +10,7 @@ import {
   impactLabsArticles, type ImpactLabsArticle, type InsertImpactLabsArticle,
   kpiSubmissions, type KpiSubmission, type InsertKpiSubmission,
   kpiSettings, type KpiSettings,
+  kpiImpactData, type KpiImpactData, type InsertKpiImpactData,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -81,6 +82,8 @@ export interface IStorage {
   deleteAllKpiSubmissions(): Promise<void>;
   getKpiSettings(): Promise<KpiSettings | undefined>;
   upsertKpiSettings(startDate: string): Promise<KpiSettings>;
+  getKpiImpactData(): Promise<KpiImpactData[]>;
+  upsertKpiImpactData(month: string, familiesServed: number, co2AvoidedKg: number): Promise<KpiImpactData>;
 }
 
 // In-memory storage implementation
@@ -670,6 +673,16 @@ export class MemStorage implements IStorage {
   async createArticle(_article: InsertImpactLabsArticle): Promise<ImpactLabsArticle> { throw new Error("Not implemented"); }
   async updateArticle(_id: number, _updates: Partial<InsertImpactLabsArticle>): Promise<ImpactLabsArticle | undefined> { return undefined; }
   async deleteArticle(_id: number): Promise<boolean> { return false; }
+  async getKpiSubmissions(): Promise<KpiSubmission[]> { return []; }
+  async getKpiSubmissionsByTeam(_teamId: string): Promise<KpiSubmission[]> { return []; }
+  async createKpiSubmission(_submission: InsertKpiSubmission): Promise<KpiSubmission> { throw new Error("Not implemented"); }
+  async deleteAllKpiSubmissions(): Promise<void> {}
+  async getKpiSettings(): Promise<KpiSettings | undefined> { return undefined; }
+  async upsertKpiSettings(startDate: string): Promise<KpiSettings> { return { id: 1, startDate, updatedAt: new Date() }; }
+  async getKpiImpactData(): Promise<KpiImpactData[]> { return []; }
+  async upsertKpiImpactData(month: string, familiesServed: number, co2AvoidedKg: number): Promise<KpiImpactData> {
+    return { id: 1, month, familiesServed, co2AvoidedKg, updatedAt: new Date() };
+  }
 }
 
 // Database storage implementation
@@ -991,6 +1004,24 @@ export class DatabaseStorage implements IStorage {
       return updated;
     }
     const [created] = await db.insert(kpiSettings).values({ startDate }).returning();
+    return created;
+  }
+
+  async getKpiImpactData(): Promise<KpiImpactData[]> {
+    return db.select().from(kpiImpactData).orderBy(kpiImpactData.month);
+  }
+
+  async upsertKpiImpactData(month: string, familiesServed: number, co2AvoidedKg: number): Promise<KpiImpactData> {
+    const existing = await db.select().from(kpiImpactData).where(eq(kpiImpactData.month, month)).limit(1);
+    if (existing.length > 0) {
+      const [updated] = await db
+        .update(kpiImpactData)
+        .set({ familiesServed, co2AvoidedKg, updatedAt: new Date() })
+        .where(eq(kpiImpactData.month, month))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(kpiImpactData).values({ month, familiesServed, co2AvoidedKg }).returning();
     return created;
   }
 }

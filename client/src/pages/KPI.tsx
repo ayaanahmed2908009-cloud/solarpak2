@@ -323,6 +323,16 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
     queryKey: ["/api/kpi/submissions"],
   });
 
+  const { data: impactDataList = [] } = useQuery<any[]>({
+    queryKey: ["/api/kpi/impact-data"],
+  });
+
+  const impactDataMutation = useMutation({
+    mutationFn: (body: { month: string; familiesServed: number; co2AvoidedKg: number }) =>
+      apiRequest("POST", "/api/kpi/impact-data", body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/kpi/impact-data"] }),
+  });
+
   const settingsMutation = useMutation({
     mutationFn: (startDate: string) =>
       apiRequest("POST", "/api/kpi/settings", { startDate }),
@@ -608,6 +618,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     visibleTeamIds={visibleTeamIds}
                     isAdmin={isAdmin}
                     historyByTeam={historyByTeam}
+                    submissions={submissions as any[]}
                     analysisResult={analysisResult}
                     analysisLoading={analysisLoading}
                     analysisError={analysisError}
@@ -643,7 +654,14 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
               )}
               {tab === "impact" && isAdmin && (
                 <motion.div key="impact" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
-                  <ImpactTab />
+                  <ImpactTab
+                    submissions={submissions as any[]}
+                    impactData={impactDataList}
+                    isAdmin={isAdmin}
+                    onSaveImpact={(month, families, co2) =>
+                      impactDataMutation.mutate({ month, familiesServed: families, co2AvoidedKg: co2 })
+                    }
+                  />
                 </motion.div>
               )}
               {tab === "settings" && isAdmin && (
@@ -791,7 +809,7 @@ function KpiDashboard({ session, onLogout }: { session: KpiSession; onLogout: ()
                     <h2 className="text-xl font-bold text-white mb-1">General Management Dashboard</h2>
                     <p className="text-sm text-white/40">Headcount · OKR Heatmap · Team Satisfaction · Week {weeks}</p>
                   </div>
-                  <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} />
+                  <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} submissions={submissions as any[]} />
                 </motion.div>
               )}
 
@@ -1109,49 +1127,6 @@ function Speedometer({ score }: { score: number }) {
 
 // ─── Management Analytics ────────────────────────────────────────────────────
 
-const HEADCOUNT_SEED: { headcount: number; joins: number; departures: number }[] = [
-  { headcount: 4,  joins: 4, departures: 0 }, { headcount: 5,  joins: 1, departures: 0 },
-  { headcount: 6,  joins: 1, departures: 0 }, { headcount: 6,  joins: 0, departures: 0 },
-  { headcount: 7,  joins: 1, departures: 0 }, { headcount: 8,  joins: 2, departures: 1 },
-  { headcount: 9,  joins: 1, departures: 0 }, { headcount: 9,  joins: 0, departures: 0 },
-  { headcount: 10, joins: 2, departures: 1 }, { headcount: 11, joins: 1, departures: 0 },
-  { headcount: 12, joins: 2, departures: 1 }, { headcount: 12, joins: 0, departures: 0 },
-  { headcount: 13, joins: 1, departures: 0 }, { headcount: 14, joins: 2, departures: 1 },
-  { headcount: 15, joins: 1, departures: 0 }, { headcount: 16, joins: 1, departures: 0 },
-  { headcount: 17, joins: 2, departures: 1 }, { headcount: 18, joins: 1, departures: 0 },
-  { headcount: 19, joins: 1, departures: 0 }, { headcount: 19, joins: 0, departures: 0 },
-  { headcount: 20, joins: 1, departures: 0 }, { headcount: 21, joins: 2, departures: 1 },
-  { headcount: 22, joins: 1, departures: 0 }, { headcount: 23, joins: 1, departures: 0 },
-  { headcount: 24, joins: 2, departures: 1 }, { headcount: 25, joins: 1, departures: 0 },
-  { headcount: 26, joins: 2, departures: 1 }, { headcount: 27, joins: 1, departures: 0 },
-  { headcount: 28, joins: 2, departures: 1 }, { headcount: 28, joins: 0, departures: 0 },
-  { headcount: 29, joins: 1, departures: 0 }, { headcount: 30, joins: 1, departures: 0 },
-  { headcount: 31, joins: 2, departures: 1 }, { headcount: 32, joins: 1, departures: 0 },
-  { headcount: 33, joins: 2, departures: 1 }, { headcount: 34, joins: 1, departures: 0 },
-  { headcount: 35, joins: 2, departures: 1 }, { headcount: 36, joins: 1, departures: 0 },
-  { headcount: 37, joins: 2, departures: 1 }, { headcount: 38, joins: 1, departures: 0 },
-  { headcount: 39, joins: 2, departures: 1 }, { headcount: 40, joins: 1, departures: 0 },
-  { headcount: 41, joins: 2, departures: 1 }, { headcount: 42, joins: 1, departures: 0 },
-  { headcount: 43, joins: 2, departures: 1 }, { headcount: 44, joins: 1, departures: 0 },
-  { headcount: 45, joins: 2, departures: 1 }, { headcount: 46, joins: 1, departures: 0 },
-  { headcount: 47, joins: 2, departures: 1 }, { headcount: 48, joins: 1, departures: 0 },
-  { headcount: 49, joins: 2, departures: 1 }, { headcount: 50, joins: 1, departures: 0 },
-];
-
-const OKR_MATRIX: Record<string, number[]> = {
-  marketing:    [72,68,75,71,80,76,83,78,82,85,79,88,85,90,87,92,90,93,91,95,92,96,94,97,95,97,96,98,96,98,97,99,97,99,98,99,98,99,98,99,99,99,99,99,99,99,99,99,99,99,99,99],
-  partnerships: [65,70,68,74,72,69,75,73,77,74,80,78,82,79,85,83,86,84,88,87,89,88,91,90,92,91,93,92,93,92,94,93,94,93,95,94,95,94,95,95,96,95,96,95,96,96,97,96,97,96,97,97],
-  management:   [80,82,78,85,83,86,84,88,87,91,89,92,90,94,93,95,94,96,95,97,96,97,96,98,97,98,97,98,97,99,98,99,98,99,98,99,98,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99],
-  impactlabs:   [55,60,58,63,61,66,64,70,68,72,71,75,73,78,76,80,79,82,81,84,83,86,85,88,87,89,88,91,90,92,91,93,91,93,92,94,93,95,94,95,94,95,95,96,95,96,96,96,96,97,97,97],
-  events:       [45,50,52,55,60,58,65,63,68,66,72,70,75,73,78,76,80,78,82,80,84,82,86,84,87,85,88,86,89,87,90,88,90,89,91,89,91,90,92,90,92,91,93,91,93,92,93,92,94,93,94,93],
-};
-
-const SATISFACTION_HISTORY = [
-  { quarter: "Q1 2025", satisfied: 82 },
-  { quarter: "Q2 2025", satisfied: 87 },
-  { quarter: "Q3 2025", satisfied: 85 },
-  { quarter: "Q4 2025", satisfied: 91 },
-];
 
 function HeadcountDot(props: any) {
   const { cx, cy, payload } = props;
@@ -1178,7 +1153,7 @@ function HeadcountDot(props: any) {
   );
 }
 
-function OkrHeatmap({ weeks }: { weeks: number }) {
+function OkrHeatmap({ weeks, submissions }: { weeks: number; submissions: any[] }) {
   const displayWeeks = Math.min(weeks, 52);
   const teams = [
     { id: "marketing",    label: "Marketing" },
@@ -1198,6 +1173,13 @@ function OkrHeatmap({ weeks }: { weeks: number }) {
   const svgW = labelW + displayWeeks * cellW;
   const svgH = headerH + teams.length * (cellH + gap);
 
+  const liveMatrix: Record<string, Record<number, number>> = {};
+  submissions.forEach((s: any) => {
+    if (!liveMatrix[s.teamId]) liveMatrix[s.teamId] = {};
+    liveMatrix[s.teamId][s.weekNumber] = Math.round(s.teamScore ?? 0);
+  });
+  const hasAnyData = submissions.length > 0;
+
   function scoreColor(s: number) {
     if (s >= 90) return "#14532d";
     if (s >= 80) return "#166534";
@@ -1207,6 +1189,14 @@ function OkrHeatmap({ weeks }: { weeks: number }) {
     return "#b91c1c";
   }
   function scoreOpacity(s: number) { return 0.18 + (s / 100) * 0.72; }
+
+  if (!hasAnyData) {
+    return (
+      <div className="flex items-center justify-center h-32 text-white/30 text-xs text-center">
+        No data yet — submit weekly inputs to see the OKR heatmap
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -1220,18 +1210,22 @@ function OkrHeatmap({ weeks }: { weeks: number }) {
         })}
         {teams.map((team, ti) => {
           const rowY = headerH + ti * (cellH + gap);
-          const scores = OKR_MATRIX[team.id] ?? [];
+          const teamScores = liveMatrix[team.id] ?? {};
           return (
             <g key={team.id}>
               <text x={labelW - 5} y={rowY + cellH / 2 + 1} textAnchor="end" dominantBaseline="middle"
                     fill="rgba(255,255,255,0.45)" fontSize={9}>{team.label}</text>
               {Array.from({ length: displayWeeks }, (_, wi) => {
-                const score = scores[wi] ?? 50;
+                const weekNum = wi + 1;
+                const score = teamScores[weekNum];
+                const hasScore = score !== undefined;
                 return (
                   <g key={wi}>
                     <rect x={labelW + wi * cellW + gap} y={rowY} width={cellW - gap} height={cellH}
-                          rx={2} fill={scoreColor(score)} opacity={scoreOpacity(score)} />
-                    {cellW >= 22 && (
+                          rx={2}
+                          fill={hasScore ? scoreColor(score) : "rgba(255,255,255,0.04)"}
+                          opacity={hasScore ? scoreOpacity(score) : 1} />
+                    {cellW >= 22 && hasScore && (
                       <text x={labelW + wi * cellW + cellW / 2} y={rowY + cellH / 2 + 1}
                             textAnchor="middle" dominantBaseline="middle"
                             fill="rgba(255,255,255,0.75)" fontSize={7.5}>{Math.round(score)}</text>
@@ -1247,15 +1241,26 @@ function OkrHeatmap({ weeks }: { weeks: number }) {
   );
 }
 
-function SatisfactionDonut() {
-  const current = SATISFACTION_HISTORY[SATISFACTION_HISTORY.length - 1];
-  const pct = current.satisfied;
+function SatisfactionDonut({ satisfactionHistory }: { satisfactionHistory: { period: string; satisfied: number }[] }) {
+  const current = satisfactionHistory.length > 0
+    ? satisfactionHistory[satisfactionHistory.length - 1]
+    : null;
+  const pct = current ? current.satisfied : 0;
   const target = 90;
   const nc = pct >= target ? "#22c55e" : pct >= target - 10 ? "#f59e0b" : "#ef4444";
   const data = [
     { name: "Satisfied", value: pct },
     { name: "Gap", value: 100 - pct },
   ];
+
+  if (!current) {
+    return (
+      <div className="flex items-center justify-center h-[180px] text-white/30 text-xs text-center">
+        No satisfaction data yet
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       <ResponsiveContainer width="100%" height={180}>
@@ -1265,7 +1270,6 @@ function SatisfactionDonut() {
             <Cell fill={nc} opacity={0.88} />
             <Cell fill="rgba(255,255,255,0.05)" />
           </Pie>
-          {/* Target indicator ring */}
           <Pie data={[{ value: target }, { value: 100 - target }]} cx="50%" cy="50%"
                innerRadius={80} outerRadius={82} dataKey="value" startAngle={90} endAngle={-270} strokeWidth={0}>
             <Cell fill="#facc15" opacity={0.6} />
@@ -1284,14 +1288,31 @@ function SatisfactionDonut() {
   );
 }
 
-function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
+function ManagementAnalyticsPanel({ historyByTeam, weeks, submissions }: {
   historyByTeam: Record<string, any[]>;
   weeks: number;
+  submissions: any[];
 }) {
-  const slice = HEADCOUNT_SEED.slice(0, Math.min(weeks, HEADCOUNT_SEED.length))
-    .map((d, i) => ({ ...d, week: `W${i + 1}` }));
-  const currentHC = slice[slice.length - 1]?.headcount ?? 0;
+  const mgmtSubs = submissions
+    .filter((s: any) => s.teamId === "management")
+    .sort((a: any, b: any) => a.weekNumber - b.weekNumber);
+
+  const slice = mgmtSubs.map((s: any) => ({
+    week: `W${s.weekNumber}`,
+    headcount: (s.inputs as any)?.total_active_members ?? 0,
+    joins: (s.inputs as any)?.new_members_this_week ?? 0,
+    departures: (s.inputs as any)?.members_left_this_week ?? 0,
+  }));
+
+  const currentHC = slice.length > 0 ? slice[slice.length - 1].headcount : 0;
   const phase = currentHC >= 70 ? 3 : currentHC >= 40 ? 2 : currentHC >= 22 ? 1 : 0;
+
+  const satisfactionHistory = mgmtSubs
+    .filter((s: any) => (s.inputs as any)?.worker_satisfaction_pct > 0)
+    .map((s: any) => ({
+      period: `W${s.weekNumber}`,
+      satisfied: Math.round((s.inputs as any).worker_satisfaction_pct),
+    }));
 
   return (
     <div className="space-y-4">
@@ -1309,11 +1330,13 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
             <div>
               <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Headcount Growth</div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-black text-white">{currentHC}</span>
+                <span className="text-2xl font-black text-white">{currentHC || "—"}</span>
                 <span className="text-xs text-white/30">active members</span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${phase >= 1 ? "bg-blue-500/15 text-blue-400" : "bg-white/5 text-white/30"}`}>
-                  Phase {phase > 0 ? phase : "—"} reached
-                </span>
+                {currentHC > 0 && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${phase >= 1 ? "bg-blue-500/15 text-blue-400" : "bg-white/5 text-white/30"}`}>
+                    Phase {phase > 0 ? phase : "—"} reached
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex gap-3 text-[10px] text-white/40 mt-1">
@@ -1321,40 +1344,46 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
               <span className="flex items-center gap-1"><span className="text-red-400 font-bold">▽</span> Departures</span>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={185}>
-            <LineChart data={slice} margin={{ top: 22, right: 48, left: -24, bottom: 0 }}>
-              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8.5 }}
-                     axisLine={false} tickLine={false}
-                     interval={Math.max(0, Math.floor(slice.length / 8) - 1)} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8.5 }}
-                     axisLine={false} tickLine={false} domain={[0, 75]} />
-              <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
-                       itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
-                       formatter={(v: any, name: string) => name === "headcount" ? [`${v} members`, "Headcount"] : [v, name]} />
-              <ReferenceLine y={22} stroke="#60a5fa" strokeDasharray="4 3" strokeOpacity={0.55}
-                             label={{ value: "Ph.1 · 22", position: "right", fill: "#60a5fa", fontSize: 8.5, opacity: 0.7 }} />
-              <ReferenceLine y={40} stroke="#a78bfa" strokeDasharray="4 3" strokeOpacity={0.55}
-                             label={{ value: "Ph.2 · 40", position: "right", fill: "#a78bfa", fontSize: 8.5, opacity: 0.7 }} />
-              <ReferenceLine y={70} stroke="#f472b6" strokeDasharray="4 3" strokeOpacity={0.55}
-                             label={{ value: "Ph.3 · 70", position: "right", fill: "#f472b6", fontSize: 8.5, opacity: 0.7 }} />
-              <Line type="monotone" dataKey="headcount" stroke="#60a5fa" strokeWidth={2.5}
-                    dot={<HeadcountDot />} activeDot={{ r: 5, fill: "#60a5fa", strokeWidth: 0 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          {slice.length === 0 ? (
+            <div className="flex items-center justify-center h-[185px] text-white/30 text-xs text-center">
+              No data yet — submit weekly management inputs
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={185}>
+              <LineChart data={slice} margin={{ top: 22, right: 48, left: -24, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8.5 }}
+                       axisLine={false} tickLine={false}
+                       interval={Math.max(0, Math.floor(slice.length / 8) - 1)} />
+                <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 8.5 }}
+                       axisLine={false} tickLine={false} domain={[0, 75]} />
+                <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                         itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                         formatter={(v: any, name: string) => name === "headcount" ? [`${v} members`, "Headcount"] : [v, name]} />
+                <ReferenceLine y={22} stroke="#60a5fa" strokeDasharray="4 3" strokeOpacity={0.55}
+                               label={{ value: "Ph.1 · 22", position: "right", fill: "#60a5fa", fontSize: 8.5, opacity: 0.7 }} />
+                <ReferenceLine y={40} stroke="#a78bfa" strokeDasharray="4 3" strokeOpacity={0.55}
+                               label={{ value: "Ph.2 · 40", position: "right", fill: "#a78bfa", fontSize: 8.5, opacity: 0.7 }} />
+                <ReferenceLine y={70} stroke="#f472b6" strokeDasharray="4 3" strokeOpacity={0.55}
+                               label={{ value: "Ph.3 · 70", position: "right", fill: "#f472b6", fontSize: 8.5, opacity: 0.7 }} />
+                <Line type="monotone" dataKey="headcount" stroke="#60a5fa" strokeWidth={2.5}
+                      dot={<HeadcountDot />} activeDot={{ r: 5, fill: "#60a5fa", strokeWidth: 0 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         {/* ── Satisfaction Donut ── */}
         <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5 flex flex-col">
           <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Team Satisfaction</div>
-          <div className="text-[10px] text-white/20 mb-2">Quarterly survey · target ≥ 90%</div>
-          <SatisfactionDonut />
+          <div className="text-[10px] text-white/20 mb-2">Weekly survey · target ≥ 90%</div>
+          <SatisfactionDonut satisfactionHistory={satisfactionHistory} />
           <div className="mt-auto space-y-1.5 pt-2">
-            {SATISFACTION_HISTORY.map((h) => {
+            {satisfactionHistory.slice(-4).map((h) => {
               const c = h.satisfied >= 90 ? "#22c55e" : h.satisfied >= 80 ? "#f59e0b" : "#ef4444";
               return (
-                <div key={h.quarter} className="flex items-center gap-2">
-                  <span className="text-[9.5px] text-white/30 w-14 shrink-0">{h.quarter}</span>
+                <div key={h.period} className="flex items-center gap-2">
+                  <span className="text-[9.5px] text-white/30 w-14 shrink-0">{h.period}</span>
                   <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${h.satisfied}%`, backgroundColor: c }} />
                   </div>
@@ -1362,7 +1391,6 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
                 </div>
               );
             })}
-            {/* 90% target line label */}
             <div className="flex items-center gap-2 pt-0.5">
               <span className="text-[9px] text-white/20 w-14 shrink-0">Target</span>
               <div className="flex-1 h-px border-t border-dashed border-yellow-400/40" />
@@ -1390,7 +1418,7 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks }: {
               ))}
             </div>
           </div>
-          <OkrHeatmap weeks={weeks} />
+          <OkrHeatmap weeks={weeks} submissions={submissions} />
         </div>
 
       </div>
@@ -1820,7 +1848,7 @@ function EventsAnalyticsPanel() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds, isAdmin, historyByTeam, analysisResult, analysisLoading, analysisError, onRunAnalysis }: {
+function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds, isAdmin, historyByTeam, submissions, analysisResult, analysisLoading, analysisError, onRunAnalysis }: {
   teamScores: TeamScore[];
   overallScore: number;
   overallRag: "green" | "amber" | "red";
@@ -1828,6 +1856,7 @@ function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds
   visibleTeamIds: string[];
   isAdmin: boolean;
   historyByTeam: Record<string, any[]>;
+  submissions: any[];
   analysisResult: any | null;
   analysisLoading: boolean;
   analysisError: string | null;
@@ -1930,7 +1959,7 @@ function ScoresTab({ teamScores, overallScore, overallRag, weeks, visibleTeamIds
       )}
 
       {isAdmin && (
-        <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} />
+        <ManagementAnalyticsPanel historyByTeam={historyByTeam} weeks={weeks} submissions={submissions as any[]} />
       )}
 
       {/* Overall Score Hero — admin only */}
@@ -2474,9 +2503,170 @@ function HistoryTab({ historyByTeam, overallHistory, visibleTeamIds, isAdmin }: 
   );
 }
 
-function ImpactTab() {
+function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
+  submissions: any[];
+  impactData: any[];
+  isAdmin: boolean;
+  onSaveImpact: (month: string, familiesServed: number, co2AvoidedKg: number) => void;
+}) {
+  const [impactMonth, setImpactMonth] = useState("");
+  const [impactFamilies, setImpactFamilies] = useState("");
+  const [impactCo2, setImpactCo2] = useState("");
+
+  const marketingSubs = submissions
+    .filter((s: any) => s.teamId === "marketing")
+    .sort((a: any, b: any) => a.weekNumber - b.weekNumber);
+
+  const partnershipsSubs = submissions
+    .filter((s: any) => s.teamId === "partnerships")
+    .sort((a: any, b: any) => a.weekNumber - b.weekNumber);
+
+  const followerData = marketingSubs.map((s: any) => ({
+    week: `W${s.weekNumber}`,
+    followers: (s.inputs as any)?.total_followers ?? 0,
+    engagement: (s.inputs as any)?.avg_engagement_rate ?? 0,
+  }));
+
+  const partnerData = partnershipsSubs.map((s: any) => ({
+    week: `W${s.weekNumber}`,
+    partners: (s.inputs as any)?.total_active_partners ?? 0,
+  }));
+
+  const latestFollowers = followerData.length > 0 ? followerData[followerData.length - 1].followers : 0;
+  const latestPartners = partnerData.length > 0 ? partnerData[partnerData.length - 1].partners : 0;
+  const latestEngagement = followerData.length > 0 ? followerData[followerData.length - 1].engagement : 0;
+  const totalFamilies = impactData.reduce((sum, d) => sum + (d.familiesServed ?? 0), 0);
+  const totalCo2 = impactData.reduce((sum, d) => sum + (d.co2AvoidedKg ?? 0), 0);
+
   return (
     <div className="space-y-6">
+
+      {/* ── Live Metrics Strip ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Social Followers", value: latestFollowers > 0 ? latestFollowers.toLocaleString() : "—", sub: "latest week", color: "#7c3aed" },
+          { label: "Avg Engagement", value: latestEngagement > 0 ? `${latestEngagement.toFixed(1)}%` : "—", sub: "latest week", color: "#7c3aed" },
+          { label: "Active Partners", value: latestPartners > 0 ? String(latestPartners) : "—", sub: "latest week", color: "#0891b2" },
+          { label: "Families Served", value: totalFamilies > 0 ? totalFamilies.toLocaleString() : "—", sub: "all time", color: "#22c55e" },
+        ].map((m) => (
+          <div key={m.label} className="bg-[#0c1326] border border-white/10 rounded-xl p-4 flex flex-col gap-1">
+            <div className="text-[10px] text-white/35 uppercase tracking-widest">{m.label}</div>
+            <div className="text-2xl font-black" style={{ color: m.color }}>{m.value}</div>
+            <div className="text-[10px] text-white/25">{m.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Social Growth Chart ── */}
+      {followerData.length > 0 && (
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Social Following Growth</div>
+          <div className="text-[10px] text-white/20 mb-4">Total followers by week · from weekly submissions</div>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={followerData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                     interval={Math.max(0, Math.floor(followerData.length / 8) - 1)} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                       itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                       formatter={(v: any) => [v.toLocaleString(), "Followers"]} />
+              <ReferenceLine y={5000} stroke="#7c3aed" strokeDasharray="4 3" strokeOpacity={0.5}
+                             label={{ value: "Y1 target 5k", position: "right", fill: "#a78bfa", fontSize: 8.5, opacity: 0.7 }} />
+              <Line type="monotone" dataKey="followers" stroke="#7c3aed" strokeWidth={2.5}
+                    dot={{ fill: "#7c3aed", r: 3, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* ── Partners Chart ── */}
+      {partnerData.length > 0 && (
+        <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Active Partners Growth</div>
+          <div className="text-[10px] text-white/20 mb-4">Total active partners by week · from weekly submissions</div>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={partnerData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="week" tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false}
+                     interval={Math.max(0, Math.floor(partnerData.length / 8) - 1)} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.28)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11 }}
+                       itemStyle={{ color: "white" }} labelStyle={{ color: "rgba(255,255,255,0.45)" }}
+                       formatter={(v: any) => [v, "Partners"]} />
+              <ReferenceLine y={6} stroke="#0891b2" strokeDasharray="4 3" strokeOpacity={0.5}
+                             label={{ value: "Y1 target 6", position: "right", fill: "#38bdf8", fontSize: 8.5, opacity: 0.7 }} />
+              <Bar dataKey="partners" name="Partners" fill="#0891b2" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* ── Families Served / CO2 Avoided ── */}
+      <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Environmental & Social Impact</div>
+            <div className="text-[10px] text-white/20">Families served & CO₂ avoided · manually logged monthly</div>
+          </div>
+          {totalCo2 > 0 && (
+            <div className="text-right">
+              <div className="text-xl font-black text-green-400">{(totalCo2 / 1000).toFixed(1)} t</div>
+              <div className="text-[10px] text-white/30">CO₂ avoided</div>
+            </div>
+          )}
+        </div>
+        {impactData.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-white/30 uppercase tracking-widest">
+                  <th className="text-left pb-2 pr-4">Month</th>
+                  <th className="text-right pb-2 px-4">Families Served</th>
+                  <th className="text-right pb-2">CO₂ Avoided (kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {impactData.map((d) => (
+                  <tr key={d.month} className="border-t border-white/5">
+                    <td className="py-2 pr-4 text-white/60">{d.month}</td>
+                    <td className="py-2 px-4 text-right font-semibold text-green-400">{d.familiesServed.toLocaleString()}</td>
+                    <td className="py-2 text-right font-semibold text-teal-400">{d.co2AvoidedKg.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-white/25 text-xs text-center py-4">
+            No impact data logged yet{isAdmin ? " — use the form below to add monthly data" : ""}
+          </div>
+        )}
+
+        {isAdmin && (
+          <div className="mt-4 pt-4 border-t border-white/5">
+            <div className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Log Monthly Impact</div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input type="month" value={impactMonth} onChange={e => setImpactMonth(e.target.value)}
+                     className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400/40 transition-colors flex-1" />
+              <input type="number" placeholder="Families served" value={impactFamilies} onChange={e => setImpactFamilies(e.target.value)}
+                     className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400/40 transition-colors flex-1" min={0} />
+              <input type="number" placeholder="CO₂ avoided (kg)" value={impactCo2} onChange={e => setImpactCo2(e.target.value)}
+                     className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-400/40 transition-colors flex-1" min={0} />
+              <button
+                onClick={() => {
+                  if (!impactMonth) return;
+                  onSaveImpact(impactMonth, Number(impactFamilies) || 0, Number(impactCo2) || 0);
+                  setImpactMonth(""); setImpactFamilies(""); setImpactCo2("");
+                }}
+                className="bg-green-500/15 hover:bg-green-500/25 border border-green-500/30 text-green-400 text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                Save
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Year targets summary */}
       <div className="bg-[#0c1326] border border-white/10 rounded-2xl p-6">
         <h3 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">3-Year KPI Targets — Key Highlights</h3>
