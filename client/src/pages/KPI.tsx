@@ -1242,7 +1242,7 @@ function OkrHeatmap({ weeks, submissions }: { weeks: number; submissions: any[] 
   );
 }
 
-function SatisfactionDonut({ satisfactionHistory }: { satisfactionHistory: { period: string; satisfied: number }[] }) {
+function SatisfactionDonut({ satisfactionHistory }: { satisfactionHistory: { period: string; satisfied: number; respondents?: number }[] }) {
   const current = satisfactionHistory.length > 0
     ? satisfactionHistory[satisfactionHistory.length - 1]
     : null;
@@ -1284,6 +1284,9 @@ function SatisfactionDonut({ satisfactionHistory }: { satisfactionHistory: { per
         <div className={`text-[10px] font-bold mt-1 ${pct >= target ? "text-green-400" : "text-amber-400"}`}>
           target {target}%
         </div>
+        {current.respondents != null && current.respondents > 0 && (
+          <div className="text-[9px] text-white/25 mt-0.5">{current.respondents} respondents</div>
+        )}
       </div>
     </div>
   );
@@ -1313,6 +1316,7 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks, submissions }: {
     .map((s: any) => ({
       period: `W${s.weekNumber}`,
       satisfied: Math.round((s.inputs as any).worker_satisfaction_pct),
+      respondents: (s.inputs as any)?.survey_respondents ?? 0,
     }));
 
   return (
@@ -1389,6 +1393,9 @@ function ManagementAnalyticsPanel({ historyByTeam, weeks, submissions }: {
                     <div className="h-full rounded-full transition-all" style={{ width: `${h.satisfied}%`, backgroundColor: c }} />
                   </div>
                   <span className="text-[9.5px] font-bold w-7 text-right" style={{ color: c }}>{h.satisfied}%</span>
+                  {h.respondents != null && h.respondents > 0 && (
+                    <span className="text-[8.5px] text-white/20 w-8 shrink-0">n={h.respondents}</span>
+                  )}
                 </div>
               );
             })}
@@ -2522,6 +2529,7 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
   const [impactAdminToken, setImpactAdminToken] = useState("");
 
   // ── Monthly aggregation helpers ──────────────────────────────────────────
+  // For cumulative metrics (total_followers, total_active_partners): use last value per month
   function aggMonthlyLast<T>(teamId: string, mapFn: (s: any) => T): { month: string; data: T }[] {
     const filtered = submissions
       .filter((s: any) => s.teamId === teamId)
@@ -2536,10 +2544,38 @@ function ImpactTab({ submissions, impactData, isAdmin, onSaveImpact }: {
       .map(([month, data]) => ({ month, data }));
   }
 
-  const socialMonthly = aggMonthlyLast("marketing", (s: any) => ({
+  // For rate metrics (avg_engagement_rate): average all submissions within the month
+  function aggMonthlyAvgEngagement(teamId: string): { month: string; data: { engagement: number } }[] {
+    const filtered = submissions.filter((s: any) => s.teamId === teamId);
+    const byMonth: Record<string, { sum: number; count: number }> = {};
+    for (const s of filtered) {
+      const month = toMonthKey(s.submittedAt);
+      if (month === "unknown") continue;
+      const val = (s.inputs as any)?.avg_engagement_rate ?? 0;
+      if (!byMonth[month]) byMonth[month] = { sum: 0, count: 0 };
+      byMonth[month].sum += val;
+      byMonth[month].count += 1;
+    }
+    return Object.entries(byMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, { sum, count }]) => ({ month, data: { engagement: count > 0 ? sum / count : 0 } }));
+  }
+
+  const socialFollowersMonthly = aggMonthlyLast("marketing", (s: any) => ({
     followers: (s.inputs as any)?.total_followers ?? 0,
-    engagement: (s.inputs as any)?.avg_engagement_rate ?? 0,
   }));
+  const socialEngagementMonthly = aggMonthlyAvgEngagement("marketing");
+
+  // Merge followers and engagement into one dataset (for the followers chart)
+  const followersByMonth: Record<string, { followers: number; engagement: number }> = {};
+  for (const { month, data } of socialFollowersMonthly) followersByMonth[month] = { followers: data.followers, engagement: 0 };
+  for (const { month, data } of socialEngagementMonthly) {
+    if (followersByMonth[month]) followersByMonth[month].engagement = data.engagement;
+    else followersByMonth[month] = { followers: 0, engagement: data.engagement };
+  }
+  const socialMonthly = Object.entries(followersByMonth)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, data]) => ({ month, data }));
 
   const reachMonthly = aggMonthlyLast("partnerships", (s: any) => ({
     partners: (s.inputs as any)?.total_active_partners ?? 0,
