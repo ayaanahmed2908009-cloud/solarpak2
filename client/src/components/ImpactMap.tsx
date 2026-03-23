@@ -273,8 +273,10 @@ export default function ImpactMap() {
                 </div>
                 
                 <div className="mt-4">
-                  <a 
-                    href="#donate" 
+                  <a
+                    href="https://ko-fi.com/solarpak"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="block bg-primary hover:bg-primary/90 text-white font-heading font-medium text-center px-4 py-2 rounded-md transition w-full"
                   >
                     Support This Community

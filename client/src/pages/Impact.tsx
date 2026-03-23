@@ -128,8 +128,10 @@ export default function Impact() {
               </div>
               
               <div className="text-center mb-8">
-                <a 
-                  href="#donate" 
+                <a
+                  href="https://ko-fi.com/solarpak"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn-glow bg-primary hover:bg-primary/90 text-white font-heading font-semibold px-8 py-4 rounded-md text-center inline-flex items-center transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
                 >
                   <span>Help Us Expand</span>

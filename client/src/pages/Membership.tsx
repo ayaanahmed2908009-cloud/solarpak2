@@ -154,11 +154,11 @@ export default function Membership() {
                   </ul>
                 </CardContent>
                 <CardFooter className="pt-6 pb-6">
-                  <Link href={`/#donate?suggested=${tier.threshold}`}>
+                  <a href="https://ko-fi.com/solarpak" target="_blank" rel="noopener noreferrer" className="w-full block">
                     <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80">
                       Donate Now
                     </Button>
-                  </Link>
+                  </a>
                 </CardFooter>
               </Card>
             ))}
