@@ -1,0 +1,41 @@
+VERDICT: APPROVED_WITH_COMMENTS
+The task is largely implemented correctly: KPI dashboard charts are now wired to live `kpi_submissions` and manual impact data persistence is added end-to-end.
+
+Critical findings / analysis:
+- **Heatmap live data**: `OkrHeatmap` now builds a matrix from submission history (`teamId` + `weekNumber`) and uses `teamScore` values, replacing hardcoded matrix behavior.
+- **Management headcount/satisfaction live data**: `ManagementAnalyticsPanel` now derives headcount (`total_active_members`, `new_members_this_week`, `members_left_this_week`) and satisfaction trend from management submissions ordered by week.
+- **Impact tab live aggregation**: social growth and community reach are now derived from marketing/partnership submissions, grouped monthly (using last value per month from weekly history).
+- **Manual impact metrics persisted**: new schema/table (`kpi_impact_data`), migration (`migrations/0001_kpi_impact_data.sql`), storage methods, and API routes (`GET/POST /api/kpi/impact-data`) are present. UI form on Impact tab allows monthly families served / CO2 avoided entry and persists to DB.
+- **Empty states**: implemented across the newly wired charts (management, heatmap, impact charts), with explicit no-data placeholders.
+
+Comments (non-blocking):
+1) The impact write endpoint is protected by a shared token (`KPI_ADMIN_TOKEN`) rather than role/session auth. This works, but operationally it’s brittle and not true RBAC.
+2) Monthly aggregation currently uses “last submission in month” for social/community data; if intended metric is true monthly aggregate (sum/avg), logic should be clarified and adjusted.
+3) Satisfaction trend ignores `survey_respondents`; requirement mentions both fields. If confidence/weighting by respondents is desired, that’s still missing.
+
+Security: none observed at a serious/blocking level for this task.
+
+Next actions:
+1) Merge as-is if current behavior is acceptable.
+2) Follow-up hardening: enforce admin session/role auth on `POST /api/kpi/impact-data` (or combine with token as second factor).
+3) Confirm business definition of monthly aggregation (last vs avg/sum) and incorporate respondents weighting for satisfaction if required.VERDICT: APPROVED_WITH_COMMENTS
+The task is largely implemented correctly: KPI dashboard charts are now wired to live `kpi_submissions` and manual impact data persistence is added end-to-end.
+
+Critical findings / analysis:
+- **Heatmap live data**: `OkrHeatmap` now builds a matrix from submission history (`teamId` + `weekNumber`) and uses `teamScore` values, replacing hardcoded matrix behavior.
+- **Management headcount/satisfaction live data**: `ManagementAnalyticsPanel` now derives headcount (`total_active_members`, `new_members_this_week`, `members_left_this_week`) and satisfaction trend from management submissions ordered by week.
+- **Impact tab live aggregation**: social growth and community reach are now derived from marketing/partnership submissions, grouped monthly (using last value per month from weekly history).
+- **Manual impact metrics persisted**: new schema/table (`kpi_impact_data`), migration (`migrations/0001_kpi_impact_data.sql`), storage methods, and API routes (`GET/POST /api/kpi/impact-data`) are present. UI form on Impact tab allows monthly families served / CO2 avoided entry and persists to DB.
+- **Empty states**: implemented across the newly wired charts (management, heatmap, impact charts), with explicit no-data placeholders.
+
+Comments (non-blocking):
+1) The impact write endpoint is protected by a shared token (`KPI_ADMIN_TOKEN`) rather than role/session auth. This works, but operationally it’s brittle and not true RBAC.
+2) Monthly aggregation currently uses “last submission in month” for social/community data; if intended metric is true monthly aggregate (sum/avg), logic should be clarified and adjusted.
+3) Satisfaction trend ignores `survey_respondents`; requirement mentions both fields. If confidence/weighting by respondents is desired, that’s still missing.
+
+Security: none observed at a serious/blocking level for this task.
+
+Next actions:
+1) Merge as-is if current behavior is acceptable.
+2) Follow-up hardening: enforce admin session/role auth on `POST /api/kpi/impact-data` (or combine with token as second factor).
+3) Confirm business definition of monthly aggregation (last vs avg/sum) and incorporate respondents weighting for satisfaction if required.

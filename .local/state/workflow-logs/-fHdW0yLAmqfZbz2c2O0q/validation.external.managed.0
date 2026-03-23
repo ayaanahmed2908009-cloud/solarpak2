@@ -1,0 +1,37 @@
+VERDICT: REJECTED
+The diff partially wires KPI charts to live data, but it misses core task requirements in the Impact tab and likely introduces a functional access mismatch for impact data writes.
+
+Critical findings:
+- ✅ Implemented: OKR heatmapVERDICT: REJECTED
+ now derives from `submissions` (`teamId` + `weekNumber` + `teamScoThe diff partially wires KPI charts to live data, but it misses core task requirements in the Impact tab and likely introduces a functional access mismatch for impact data writes.
+re`) instead of a hardcoded matrix.
+- ✅ Implemen
+ted: Management headcount and satisfaction are now derived Critical findings:
+from management submissions (`total_active_members`, `new- ✅ Implemented: OKR heatmap now derives from `submissions` (`teamId` + `weekNumber` + `teamScore`) instead of a hardcoded matrix.
+_members_this_week`, `members_left_this_week`, `worker_satisfaction_pct`).
+- ✅ Implemented: New `kpi_impact_data` schema/table, storage methods, migration file, GET/POST API routes, and admin-only form UI were added.
+- ❌ Missing core requirement: Impact “community reach” is only plotting `total_active_partners`; no communities metric is derived/plotted from partnerships submissions, despite task explicitly requiring partners + communities.
+- ❌ Incomplete social growth requirement: the chart is followers-only; engagement is shown only as a single latest metric card, not as a monthly charted series as requested.
+- ⚠️ Functional mismatch risk: UI grants KPI admins access to submit impact data, but backend POST `/api/kpi/impact-data` requires `isWorkerAuthenticated` + `isWorkerAdmin` (worker auth system). KPI login is separate (client-side session), so “Save” can fail with 401/403 for KPI admins unless they also hold an active worker-admin session.
+- ⚠️ Migration metadata concern: `migrations/meta/_journal.json` does not include the new `0001_kpi_impact_data` entry, so migration execution may skip table creation depending on deploy workflow.
+
+Security:
+- No serious new security violation observed in the KPI-specific changes. (If anything, impact write route is stricter than before.)
+
+Next actions:
+1) Implement full monthly community reach aggregation using both partner and community fields from partnerships submissions, and plot both series.
+2) Extend social growth chart to include engagement trend (monthly), not only followers.
+3) Align auth model for impact-data writes (either use KPI auth consistently or integrate KPI admin with worker-auth session), and ensure migration metadata includes `0001_kpi_impact_data` so schema is actually applied.- ✅ Implemented: Management headcount and satisfaction are now derived from management submissions (`total_active_members`, `new_members_this_week`, `members_left_this_week`, `worker_satisfaction_pct`).
+- ✅ Implemented: New `kpi_impact_data` schema/table, storage methods, migration file, GET/POST API routes, and admin-only form UI were added.
+- ❌ Missing core requirement: Impact “community reach” is only plotting `total_active_partners`; no communities metric is derived/plotted from partnerships submissions, despite task explicitly requiring partners + communities.
+- ❌ Incomplete social growth requirement: the chart is followers-only; engagement is shown only as a single latest metric card, not as a monthly charted series as requested.
+- ⚠️ Functional mismatch risk: UI grants KPI admins access to submit impact data, but backend POST `/api/kpi/impact-data` requires `isWorkerAuthenticated` + `isWorkerAdmin` (worker auth system). KPI login is separate (client-side session), so “Save” can fail with 401/403 for KPI admins unless they also hold an active worker-admin session.
+- ⚠️ Migration metadata concern: `migrations/meta/_journal.json` does not include the new `0001_kpi_impact_data` entry, so migration execution may skip table creation depending on deploy workflow.
+
+Security:
+- No serious new security violation observed in the KPI-specific changes. (If anything, impact write route is stricter than before.)
+
+Next actions:
+1) Implement full monthly community reach aggregation using both partner and community fields from partnerships submissions, and plot both series.
+2) Extend social growth chart to include engagement trend (monthly), not only followers.
+3) Align auth model for impact-data writes (either use KPI auth consistently or integrate KPI admin with worker-auth session), and ensure migration metadata includes `0001_kpi_impact_data` so schema is actually applied.

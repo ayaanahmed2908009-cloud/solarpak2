@@ -230,12 +230,14 @@ export default function CaseStudy() {
               Your support will directly impact families in our hometown, providing them with reliable, 
               clean energy and a brighter future.
             </p>
-            <Link 
-              href="/#donation"
+            <a
+              href="https://ko-fi.com/solarpak"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
             >
               Support This Project
-            </Link>
+            </a>
           </div>
         </div>
       </div>

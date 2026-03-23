@@ -29,8 +29,8 @@ export default function YouthLeadershipSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[
-            { icon: Users, title: "Youth-Led Team", desc: "100% student-run organization with 11 dedicated young leaders across 4 departments" },
-            { icon: Award, title: "Proven Impact", desc: "17 solar installations completed, 100 lives transformed, 270 kWh of clean energy generated" },
+            { icon: Users, title: "Youth-Led Team", desc: "100% student-run organization with 15 dedicated young leaders across 5 departments" },
+            { icon: Award, title: "Proven Impact", desc: "23 solar installations completed, 100 lives transformed, 270 kWh of clean energy generated" },
             { icon: Zap, title: "Rapid Growth", desc: "Founded March 2025, already the largest youth-led solar nonprofit globally" },
             { icon: Heart, title: "Mission-Driven", desc: "Passionate youth combining renewable energy expertise with genuine desire to help" },
           ].map((item, i) => (
@@ -62,8 +62,8 @@ export default function YouthLeadershipSection() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 {[
                   { value: "100%", label: "Youth-Led" },
-                  { value: "11", label: "Team Members" },
-                  { value: "4", label: "Departments" },
+                  { value: "15", label: "Team Members" },
+                  { value: "5", label: "Departments" },
                 ].map((stat, i) => (
                   <div key={i} className={`scroll-reveal-scale stagger-delay-${i + 1}`}>
                     <div className="bg-white/5 rounded-lg p-6 border border-white/10 hover:border-emerald-500/20 transition-all duration-300">

@@ -211,8 +211,10 @@ export default function Gallery() {
               Every video represents real families whose lives have been transformed. 
               Your donation can create the next success story.
             </p>
-            <a 
-              href="/#donate" 
+            <a
+              href="https://ko-fi.com/solarpak"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center bg-white text-blue-600 font-bold px-8 py-4 rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-1 shadow-xl text-lg"
             >
               ❤️ Donate Now

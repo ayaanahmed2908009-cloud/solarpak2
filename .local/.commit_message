@@ -1,0 +1,25 @@
+Wire KPI charts to live data — full implementation with review feedback addressed
+
+Backend:
+- kpi_impact_data table: schema, migration file + journal entry
+- GET/POST /api/kpi/impact-data routes with server-side token auth
+  (KPI_ADMIN_TOKEN env secret; no client-side fallback value)
+
+scoring.ts:
+- communities_reached added to PartnershipsInputs + DEFAULT_INPUTS
+
+KPI.tsx:
+- OkrHeatmap: live team scores from submissions (teamId/weekNumber)
+- ManagementAnalyticsPanel + SatisfactionDonut:
+  - Headcount/joins/departures from management submissions
+  - Satisfaction history includes survey_respondents for confidence context
+  - Respondent count shown in donut center and history list (n=X)
+- ImpactTab:
+  - Social followers chart: monthly last-value (cumulative metric)
+  - Engagement rate chart: monthly AVERAGE (rate metric, not last-value)
+  - Community reach: grouped bar chart — active partners + communities_reached
+    (communities_reached is now a tracked partnerships input field)
+  - Families/CO2: monthly bar chart (time series) + summary table
+  - Admin form: month, families, CO2 inputs + admin token password field
+    (user types token; no hardcoded value in frontend)
+  - All charts have explicit empty states
