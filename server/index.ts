@@ -92,11 +92,7 @@ app.use((req, res, next) => {
 
   // Use PORT env var for Railway/cloud deployments, fallback to 5000 for local dev
   const port = parseInt(process.env.PORT || "5000", 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
   });
 })();
