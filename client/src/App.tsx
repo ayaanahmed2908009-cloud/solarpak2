@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { lazy, Suspense } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
-import Checkout from "@/pages/Checkout";
+const Checkout = lazy(() => import("@/pages/Checkout"));
 import Success from "@/pages/Success";
 import DonationSuccess from "@/pages/DonationSuccess";
 
@@ -150,7 +150,11 @@ function Router() {
       <Route path="/impact" component={Impact} />
 
       <Route path="/case-study" component={CaseStudy} />
-      <Route path="/checkout" component={Checkout} />
+      <Route path="/checkout">
+        <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080d1a" }} />}>
+          <Checkout />
+        </Suspense>
+      </Route>
       <Route path="/success" component={Success} />
       <Route path="/donation-success" component={DonationSuccess} />
 
