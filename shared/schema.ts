@@ -189,6 +189,9 @@ export const insertImpactLabsArticleSchema = createInsertSchema(impactLabsArticl
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  coverImageUrl: z.string().nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
 });
 
 // User impact media table

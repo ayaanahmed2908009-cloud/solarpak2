@@ -1,14 +1,100 @@
 import { db } from "./db";
-import { 
+import { sql } from "drizzle-orm";
+import {
   users, projects, impactStories, testimonials, stats,
-  type InsertUser, type InsertProject, type InsertImpactStory, 
-  type InsertTestimonial, type InsertStats 
+  type InsertUser, type InsertProject, type InsertImpactStory,
+  type InsertTestimonial, type InsertStats
 } from "@shared/schema";
 import { hashPassword } from "./auth";
 import { eq } from "drizzle-orm";
 
+async function ensureTables() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "uploaded_images" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "filename" text NOT NULL,
+      "mime_type" text NOT NULL,
+      "data" text NOT NULL,
+      "created_at" timestamp DEFAULT now(),
+      CONSTRAINT "uploaded_images_filename_unique" UNIQUE("filename")
+    )
+  `);
+
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "impact_labs_articles" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "title" text NOT NULL,
+      "slug" text NOT NULL,
+      "summary" text NOT NULL,
+      "content" text NOT NULL,
+      "cover_image_url" text,
+      "author_name" text NOT NULL,
+      "category" text NOT NULL DEFAULT 'report',
+      "tags" text[],
+      "is_published" boolean NOT NULL DEFAULT false,
+      "published_at" timestamp,
+      "created_at" timestamp NOT NULL DEFAULT now(),
+      "updated_at" timestamp NOT NULL DEFAULT now(),
+      CONSTRAINT "impact_labs_articles_slug_unique" UNIQUE("slug")
+    )
+  `);
+
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "job_listings" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "title" text NOT NULL,
+      "department" text NOT NULL,
+      "type" text NOT NULL,
+      "location" text NOT NULL,
+      "description" text NOT NULL,
+      "responsibilities" text[] NOT NULL,
+      "qualifications" text[] NOT NULL,
+      "is_active" boolean NOT NULL DEFAULT true,
+      "applications_open" boolean NOT NULL DEFAULT true,
+      "created_at" timestamp NOT NULL DEFAULT now()
+    )
+  `);
+
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "job_applications" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "job_id" integer NOT NULL,
+      "name" text NOT NULL,
+      "email" text NOT NULL,
+      "phone" text,
+      "cover_letter" text NOT NULL,
+      "resume_url" text,
+      "resume_filename" text,
+      "resume_mime_type" text,
+      "status" text NOT NULL DEFAULT 'pending',
+      "created_at" timestamp NOT NULL DEFAULT now()
+    )
+  `);
+
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "kpi_submissions" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "team_id" text NOT NULL,
+      "week_number" integer NOT NULL,
+      "inputs" jsonb NOT NULL,
+      "kpi_scores" jsonb NOT NULL,
+      "team_score" double precision NOT NULL,
+      "submitted_at" timestamp NOT NULL DEFAULT now()
+    )
+  `);
+
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS "kpi_settings" (
+      "id" serial PRIMARY KEY NOT NULL,
+      "start_date" text NOT NULL DEFAULT '2025-01-01',
+      "updated_at" timestamp NOT NULL DEFAULT now()
+    )
+  `);
+}
+
 export async function initializeDatabase() {
   try {
+    await ensureTables();
     // Check if admin accounts already exist
     const existingAdmin = await db.select().from(users).where(eq(users.email, 'ayaan@solarpak.com')).limit(1);
     
