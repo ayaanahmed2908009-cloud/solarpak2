@@ -167,11 +167,25 @@ function ArticleViewSkeleton() {
 function ArticleView({ slug }: { slug: string }) {
   const [, setLocation] = useLocation();
   const [imageError, setImageError] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const { data: article, isLoading, error } = useQuery<ImpactLabsArticle>({
     queryKey: [`/api/impact-labs/articles/${slug}`],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
+
+  // Wrap tables in scrollable containers for responsive layout
+  useEffect(() => {
+    if (!contentRef.current || !article?.content) return;
+    const tables = contentRef.current.querySelectorAll<HTMLTableElement>("table");
+    tables.forEach((table) => {
+      if (table.parentElement?.classList.contains("table-scroll")) return;
+      const wrapper = document.createElement("div");
+      wrapper.className = "table-scroll";
+      table.parentNode?.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
+  }, [article?.content]);
 
   if (isLoading) {
     return (
@@ -300,8 +314,9 @@ function ArticleView({ slug }: { slug: string }) {
 
           <div className="border-t border-gray-200 pt-10">
             <div
+              ref={contentRef}
               className="article-content"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ')) }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '), { ADD_TAGS: ['table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'figure', 'figcaption'] }) }}
             />
           </div>
 
@@ -549,9 +564,25 @@ export default function ImpactLabsPublic() {
         .article-content img {
           max-width: 100%;
           height: auto;
-          border-radius: 0.75rem;
-          margin: 2.5rem 0;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+          border-radius: 0.875rem;
+          margin: 2.75rem auto;
+          display: block;
+          box-shadow: 0 4px 32px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.05);
+          border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .article-content figure {
+          margin: 2.75rem 0;
+          text-align: center;
+        }
+        .article-content figure img {
+          margin: 0 auto 0.875rem;
+        }
+        .article-content figcaption {
+          font-size: 0.85rem;
+          color: #6b7280;
+          font-style: italic;
+          line-height: 1.5;
+          text-align: center;
         }
         .article-content a {
           color: #047857;
@@ -591,27 +622,54 @@ export default function ImpactLabsPublic() {
           color: inherit;
           font-weight: 400;
         }
+        .table-scroll {
+          overflow-x: auto;
+          margin: 2.5rem 0;
+          border-radius: 0.875rem;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+          -webkit-overflow-scrolling: touch;
+        }
+        .article-content .table-scroll {
+          margin: 2.5rem 0;
+        }
         .article-content table {
           width: 100%;
           border-collapse: collapse;
-          margin: 2.5rem 0;
           font-size: 0.9375rem;
-          border-radius: 0.75rem;
-          overflow: hidden !important;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-        .article-content th, .article-content td {
-          border: 1px solid #e5e7eb;
-          padding: 0.875rem 1.25rem;
-          text-align: left;
+          min-width: 420px;
         }
         .article-content th {
-          background: #f8fafc;
+          background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
           font-weight: 600;
           color: #1e293b;
           text-transform: uppercase;
-          font-size: 0.75rem;
-          letter-spacing: 0.05em;
+          font-size: 0.72rem;
+          letter-spacing: 0.06em;
+          padding: 0.875rem 1.25rem;
+          border-bottom: 2px solid #e2e8f0;
+          text-align: left;
+          white-space: nowrap;
+        }
+        .article-content td {
+          padding: 0.8125rem 1.25rem;
+          border-bottom: 1px solid #f1f5f9;
+          color: #374151;
+          line-height: 1.6;
+          vertical-align: top;
+        }
+        .article-content tbody tr:nth-child(even) td {
+          background-color: #fafbfc;
+        }
+        .article-content tbody tr:hover td {
+          background-color: #f0fdf4;
+          transition: background-color 0.15s ease;
+        }
+        .article-content tbody tr:last-child td {
+          border-bottom: none;
+        }
+        .article-content th:not(:last-child),
+        .article-content td:not(:last-child) {
+          border-right: 1px solid #f1f5f9;
         }
         .article-content hr {
           border: none;

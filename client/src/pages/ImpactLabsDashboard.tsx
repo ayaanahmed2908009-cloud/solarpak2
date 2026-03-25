@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -27,31 +27,27 @@ import {
   FileText,
   ChevronRight,
   FlaskConical,
+  Table2,
+  ImagePlus,
 } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import type { ImpactLabsArticle } from "@shared/schema";
-
-const quillModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["link", "image"],
-    ["blockquote", "code-block"],
-  ],
-};
 
 const quillFormats = [
   "header",
   "bold",
   "italic",
   "underline",
+  "strike",
   "list",
   "link",
   "image",
   "blockquote",
   "code-block",
+  "align",
+  "color",
+  "indent",
 ];
 
 function generateSlug(title: string) {
@@ -148,6 +144,10 @@ function ArticleEditor({
   const [coverImageUrl, setCoverImageUrl] = useState(article?.coverImageUrl || "");
   const [tags, setTags] = useState(article?.tags?.join(", ") || "");
   const [uploading, setUploading] = useState(false);
+  const [showTablePicker, setShowTablePicker] = useState(false);
+  const [tableRows, setTableRows] = useState(3);
+  const [tableCols, setTableCols] = useState(3);
+  const quillRef = useRef<ReactQuill>(null);
 
   const createMutation = useMutation({
     mutationFn: async (data: Record<string, unknown>) => {
@@ -199,6 +199,70 @@ function ArticleEditor({
       setUploading(false);
     }
   }, [toast]);
+
+  const inlineImageHandler = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const res = await fetch("/api/impact-labs/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        const data = await res.json();
+        const quill = (quillRef.current as any)?.getEditor();
+        if (quill) {
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, "image", data.url);
+          quill.setSelection(range.index + 1, 0);
+        }
+        toast({ title: "Image inserted" });
+      } catch {
+        toast({ title: "Image upload failed", variant: "destructive" });
+      }
+    };
+  }, [toast]);
+
+  const quillModules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+        ["link", "image"],
+        ["blockquote", "code-block"],
+        [{ align: [] }],
+        [{ color: [] }],
+        ["clean"],
+      ],
+      handlers: {
+        image: inlineImageHandler,
+      },
+    },
+  }), [inlineImageHandler]);
+
+  const insertTable = useCallback(() => {
+    const quill = (quillRef.current as any)?.getEditor();
+    if (!quill) return;
+    const range = quill.getSelection(true);
+    const headerCells = Array.from({ length: tableCols }, (_, i) =>
+      `<th>Column ${i + 1}</th>`
+    ).join("");
+    const bodyRows = Array.from({ length: Math.max(1, tableRows - 1) }, () =>
+      `<tr>${Array(tableCols).fill("<td>&nbsp;</td>").join("")}</tr>`
+    ).join("");
+    const tableHtml = `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table><p><br></p>`;
+    (quill.clipboard as any).dangerouslyPasteHTML(range.index, tableHtml);
+    setShowTablePicker(false);
+  }, [tableCols, tableRows]);
 
   const handleSubmit = (isPublished: boolean) => {
     const parsedTags = tags
@@ -266,18 +330,83 @@ function ArticleEditor({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Content</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-gray-700">Content</label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowTablePicker((v) => !v)}
+                  className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 px-2.5 py-1 rounded-md border border-gray-200 hover:border-gray-400 transition-colors bg-white"
+                >
+                  <Table2 className="w-3.5 h-3.5" />
+                  Insert table
+                </button>
+                {showTablePicker && (
+                  <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-xl p-4 w-56">
+                    <p className="text-xs font-semibold text-gray-700 mb-3">Table dimensions</p>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Rows</label>
+                        <input
+                          type="number"
+                          min={2}
+                          max={20}
+                          value={tableRows}
+                          onChange={(e) => setTableRows(Math.max(2, Math.min(20, parseInt(e.target.value) || 2)))}
+                          className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:border-gray-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Columns</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={10}
+                          value={tableCols}
+                          onChange={(e) => setTableCols(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                          className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:border-gray-400"
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 p-2 bg-gray-50 rounded-lg flex items-center justify-center gap-1">
+                      {Array.from({ length: Math.min(tableCols, 5) }).map((_, ci) => (
+                        <div key={ci} className="flex flex-col gap-1">
+                          {Array.from({ length: Math.min(tableRows, 4) }).map((_, ri) => (
+                            <div
+                              key={ri}
+                              className={`w-5 h-3.5 rounded-sm border ${ri === 0 ? "bg-gray-300 border-gray-400" : "bg-white border-gray-200"}`}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                      {tableCols > 5 && <span className="text-xs text-gray-400">+{tableCols - 5}</span>}
+                    </div>
+                    <button
+                      onClick={insertTable}
+                      className="w-full bg-gray-900 text-white text-xs font-medium py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      Insert {tableRows}×{tableCols} table
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <ReactQuill
+                ref={quillRef}
                 theme="snow"
                 value={content}
                 onChange={setContent}
                 modules={quillModules}
                 formats={quillFormats}
-                placeholder="Start writing..."
-                className="min-h-[350px]"
+                placeholder="Start writing your article..."
+                className="min-h-[400px]"
               />
             </div>
+            <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
+              <ImagePlus className="w-3 h-3" />
+              Use the image button in the toolbar to upload inline images directly from your device
+            </p>
           </div>
         </div>
 

@@ -474,3 +474,45 @@ html {
 .animate-ticker {
   animation: ticker linear infinite;
 }
+
+/* Quill editor overrides for Impact Labs dashboard */
+.ql-toolbar.ql-snow {
+  border-color: #e5e7eb !important;
+  border-bottom-color: #f3f4f6 !important;
+  background: #fafafa;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 8px 12px;
+}
+.ql-container.ql-snow {
+  border-color: transparent !important;
+  font-family: inherit;
+  font-size: 1rem;
+}
+.ql-editor {
+  min-height: 380px;
+  padding: 1.25rem 1.5rem;
+  line-height: 1.8;
+  color: #1f2937;
+}
+.ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+  font-size: 0.9375rem;
+}
+.ql-editor h1 { font-size: 1.875rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem; }
+.ql-editor h2 { font-size: 1.5rem; font-weight: 600; color: #1f2937; margin-bottom: 0.4rem; }
+.ql-editor h3 { font-size: 1.25rem; font-weight: 600; color: #374151; }
+.ql-editor blockquote { border-left: 4px solid #10b981; padding: 0.5rem 1rem; color: #374151; background: #f0fdf4; border-radius: 0 0.5rem 0.5rem 0; }
+.ql-editor pre { background: #0f172a; color: #e2e8f0; padding: 1rem 1.25rem; border-radius: 0.5rem; font-size: 0.85rem; }
+.ql-editor img { max-width: 100%; border-radius: 0.5rem; margin: 0.75rem 0; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.ql-editor table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.ql-editor table th { background: #f8fafc; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.625rem 0.875rem; border: 1px solid #e2e8f0; color: #1e293b; }
+.ql-editor table td { padding: 0.625rem 0.875rem; border: 1px solid #e2e8f0; color: #374151; }
+.ql-editor table tr:nth-child(even) td { background: #f8fafc; }
+.ql-toolbar.ql-snow .ql-formats { margin-right: 8px; }
+.ql-snow .ql-stroke { stroke: #4b5563; }
+.ql-snow .ql-fill { fill: #4b5563; }
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button:hover .ql-stroke { stroke: #111827; }
+.ql-snow.ql-toolbar button.ql-active .ql-stroke { stroke: #059669; }
+.ql-snow.ql-toolbar button.ql-active { color: #059669; }
