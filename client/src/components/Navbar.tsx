@@ -90,11 +90,17 @@ export default function Navbar() {
             >
               IMPACT LABS
             </NavLink>
-            <NavLink 
-              href="/opportunities" 
+            <NavLink
+              href="/opportunities"
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
             >
               OPPORTUNITIES
+            </NavLink>
+            <NavLink
+              href="/hackathon"
+              className="text-amber-600 hover:text-amber-800 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide border border-amber-200 rounded px-3 py-1 hover:bg-amber-50"
+            >
+              Hackathon
             </NavLink>
             <div className="relative group">
               <button className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">

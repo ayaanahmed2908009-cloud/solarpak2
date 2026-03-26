@@ -18,7 +18,7 @@ const faqs = [
   {
     question: "Can I participate as a team?",
     answer:
-      "Yes. You can participate solo or form a team of up to 4 people. We encourage collaboration — diverse teams often produce the most creative solutions.",
+      "Yes. Teams are 3–4 people. We encourage collaboration — diverse teams often produce the most creative solutions.",
   },
   {
     question: "What does 'no-code' mean in practice?",
@@ -158,7 +158,7 @@ export default function Hackathon() {
                 {
                   icon: <Users className="w-5 h-5 text-amber-500" />,
                   label: "Team size",
-                  value: "1–4",
+                  value: "3–4",
                   sub: "Solo or group",
                 },
               ].map((item) => (
