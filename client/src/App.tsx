@@ -34,43 +34,7 @@ import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
 import Opportunities from "@/pages/Opportunities";
 import Hackathon from "@/pages/Hackathon";
 import Admin from "@/pages/Admin";
-import { useEffect, Component, type ReactNode } from "react";
-
-const KPI = lazy(() => import("@/pages/KPI"));
-
-class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
-  constructor(props: any) {
-    super(props);
-    this.state = { error: null };
-  }
-  static getDerivedStateFromError(error: Error) {
-    return { error: error.message };
-  }
-  render() {
-    if (this.state.error) {
-      return (
-        <div style={{ padding: 40, background: "#0a0f1e", minHeight: "100vh", color: "white", fontFamily: "monospace" }}>
-          <h2 style={{ color: "#facc15", marginBottom: 16 }}>KPI Page Error</h2>
-          <pre style={{ color: "#f87171", whiteSpace: "pre-wrap" }}>{this.state.error}</pre>
-          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 24, padding: "8px 16px", background: "#facc15", color: "black", border: "none", borderRadius: 8, cursor: "pointer" }}>
-            Retry
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-function KpiRoute() {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080d1a" }} />}>
-        <KPI />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
+import { useEffect } from "react";
 
 // Smooth scroll behavior utility
 function setSmoothScroll() {
@@ -183,8 +147,7 @@ function Router() {
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/hackathon" component={Hackathon} />
       <Route path="/admin" component={Admin} />
-      <Route path="/kpi" component={KpiRoute} />
-      
+
       <Route component={NotFound} />
     </Switch>
   );
