@@ -3,26 +3,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Zap, Trophy, Briefcase, Users, ChevronDown, Mail } from "lucide-react";
 
-const prizes = [
-  {
-    place: "1st Place",
-    award: "$150",
-    description: "Top solution that best addresses SolarPak's energy access mission",
-    accent: "amber",
-  },
-  {
-    place: "2nd Place",
-    award: "$100",
-    description: "Runner-up with strong innovation and real-world applicability",
-    accent: "gray",
-  },
-  {
-    place: "3rd Place",
-    award: "$50",
-    description: "Outstanding effort and creative problem-solving",
-    accent: "amber",
-  },
-];
 
 const faqs = [
   {
@@ -232,20 +212,15 @@ export default function Hackathon() {
 
           {/* Prizes */}
           <div className="max-w-5xl mx-auto py-16 md:py-20">
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-10">Prizes</h2>
-            <div className="grid sm:grid-cols-3 gap-6">
-              {prizes.map((prize) => (
-                <div
-                  key={prize.place}
-                  className="border border-gray-100 rounded-xl p-6 hover:border-amber-200 hover:shadow-sm transition-all"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">{prize.place}</p>
-                  <p className="text-4xl font-bold text-gray-900 mb-3">{prize.award}</p>
-                  <p className="text-sm text-gray-500 leading-relaxed">{prize.description}</p>
-                </div>
-              ))}
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">Prizes</h2>
+            <div className="flex items-center gap-4 p-6 bg-gray-50 rounded-xl mb-6">
+              <Trophy className="w-8 h-8 text-amber-500 flex-shrink-0" />
+              <div>
+                <p className="text-2xl font-bold text-gray-900">Over $300 in prizes</p>
+                <p className="text-sm text-gray-500 mt-0.5">Awarded to the top-performing teams and individuals.</p>
+              </div>
             </div>
-            <div className="mt-8 p-5 bg-amber-50 rounded-xl border border-amber-100">
+            <div className="p-5 bg-amber-50 rounded-xl border border-amber-100">
               <div className="flex items-start gap-3">
                 <Briefcase className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
