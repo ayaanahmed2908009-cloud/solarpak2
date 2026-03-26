@@ -32,6 +32,7 @@ import TestPerformance from "@/pages/worker/TestPerformance";
 import ImpactLabsDashboard from "@/pages/ImpactLabsDashboard";
 import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
 import Opportunities from "@/pages/Opportunities";
+import Hackathon from "@/pages/Hackathon";
 import Admin from "@/pages/Admin";
 import { useEffect, Component, type ReactNode } from "react";
 
@@ -180,6 +181,7 @@ function Router() {
       <Route path="/impactlabs" component={ImpactLabsDashboard} />
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
+      <Route path="/hackathon" component={Hackathon} />
       <Route path="/admin" component={Admin} />
       <Route path="/kpi" component={KpiRoute} />
       
