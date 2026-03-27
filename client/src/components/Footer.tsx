@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Sun, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
+import { Sun, Twitter, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -24,16 +24,13 @@ export default function Footer() {
               We're on a mission to bring clean, reliable solar energy to families across Pakistan.
             </p>
             <div className="flex space-x-3">
-              <a href="#" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
-                <Facebook className="w-5 h-5 text-white/80" />
-              </a>
-              <a href="#" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
+<a href="https://x.com/Solarpakn" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
                 <Twitter className="w-5 h-5 text-white/80" />
               </a>
-              <a href="#" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
+              <a href="https://www.instagram.com/solarpak.org_/" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
                 <Instagram className="w-5 h-5 text-white/80" />
               </a>
-              <a href="#" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
+              <a href="https://linkedin.com/company/solarpakorg" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
                 <Linkedin className="w-5 h-5 text-white/80" />
               </a>
             </div>
