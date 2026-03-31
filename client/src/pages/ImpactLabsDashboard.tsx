@@ -30,9 +30,52 @@ import {
   Table2,
   ImagePlus,
 } from "lucide-react";
-import ReactQuill from "react-quill-new";
+import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import type { ImpactLabsArticle } from "@shared/schema";
+
+// Register custom blots so Quill preserves table HTML instead of stripping it
+const BlockBlot = Quill.import("blots/block") as any;
+const ContainerBlot = Quill.import("blots/container") as any;
+
+class TableCellBlot extends BlockBlot {}
+TableCellBlot.blotName = "table-cell";
+TableCellBlot.tagName = "TD";
+
+class TableHeaderCellBlot extends BlockBlot {}
+TableHeaderCellBlot.blotName = "table-header-cell";
+TableHeaderCellBlot.tagName = "TH";
+
+class TableRowBlot extends ContainerBlot {}
+TableRowBlot.blotName = "table-row";
+TableRowBlot.tagName = "TR";
+TableRowBlot.defaultChild = "table-cell";
+TableRowBlot.allowedChildren = [TableCellBlot, TableHeaderCellBlot];
+
+class TableBodyBlot extends ContainerBlot {}
+TableBodyBlot.blotName = "table-body";
+TableBodyBlot.tagName = "TBODY";
+TableBodyBlot.defaultChild = "table-row";
+TableBodyBlot.allowedChildren = [TableRowBlot];
+
+class TableHeadBlot extends ContainerBlot {}
+TableHeadBlot.blotName = "table-head";
+TableHeadBlot.tagName = "THEAD";
+TableHeadBlot.defaultChild = "table-row";
+TableHeadBlot.allowedChildren = [TableRowBlot];
+
+class TableBlot extends ContainerBlot {}
+TableBlot.blotName = "table";
+TableBlot.tagName = "TABLE";
+TableBlot.defaultChild = "table-body";
+TableBlot.allowedChildren = [TableHeadBlot, TableBodyBlot, TableRowBlot];
+
+Quill.register(TableCellBlot, true);
+Quill.register(TableHeaderCellBlot, true);
+Quill.register(TableRowBlot, true);
+Quill.register(TableBodyBlot, true);
+Quill.register(TableHeadBlot, true);
+Quill.register(TableBlot, true);
 
 const quillFormats = [
   "header",
@@ -48,6 +91,12 @@ const quillFormats = [
   "align",
   "color",
   "indent",
+  "table",
+  "table-head",
+  "table-body",
+  "table-row",
+  "table-cell",
+  "table-header-cell",
 ];
 
 function generateSlug(title: string) {
