@@ -34,48 +34,9 @@ import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import type { ImpactLabsArticle } from "@shared/schema";
 
-// Register custom blots so Quill preserves table HTML instead of stripping it
-const BlockBlot = Quill.import("blots/block") as any;
-const ContainerBlot = Quill.import("blots/container") as any;
-
-class TableCellBlot extends BlockBlot {}
-TableCellBlot.blotName = "table-cell";
-TableCellBlot.tagName = "TD";
-
-class TableHeaderCellBlot extends BlockBlot {}
-TableHeaderCellBlot.blotName = "table-header-cell";
-TableHeaderCellBlot.tagName = "TH";
-
-class TableRowBlot extends ContainerBlot {}
-TableRowBlot.blotName = "table-row";
-TableRowBlot.tagName = "TR";
-TableRowBlot.defaultChild = "table-cell";
-TableRowBlot.allowedChildren = [TableCellBlot, TableHeaderCellBlot];
-
-class TableBodyBlot extends ContainerBlot {}
-TableBodyBlot.blotName = "table-body";
-TableBodyBlot.tagName = "TBODY";
-TableBodyBlot.defaultChild = "table-row";
-TableBodyBlot.allowedChildren = [TableRowBlot];
-
-class TableHeadBlot extends ContainerBlot {}
-TableHeadBlot.blotName = "table-head";
-TableHeadBlot.tagName = "THEAD";
-TableHeadBlot.defaultChild = "table-row";
-TableHeadBlot.allowedChildren = [TableRowBlot];
-
-class TableBlot extends ContainerBlot {}
-TableBlot.blotName = "table";
-TableBlot.tagName = "TABLE";
-TableBlot.defaultChild = "table-body";
-TableBlot.allowedChildren = [TableHeadBlot, TableBodyBlot, TableRowBlot];
-
-Quill.register(TableCellBlot, true);
-Quill.register(TableHeaderCellBlot, true);
-Quill.register(TableRowBlot, true);
-Quill.register(TableBodyBlot, true);
-Quill.register(TableHeadBlot, true);
-Quill.register(TableBlot, true);
+// Register Quill's built-in table module and its formats
+const TableModule = Quill.import("modules/table") as any;
+TableModule.register();
 
 const quillFormats = [
   "header",
@@ -92,11 +53,9 @@ const quillFormats = [
   "color",
   "indent",
   "table",
-  "table-head",
-  "table-body",
   "table-row",
-  "table-cell",
-  "table-header-cell",
+  "table-body",
+  "table-container",
 ];
 
 function generateSlug(title: string) {
@@ -296,20 +255,15 @@ function ArticleEditor({
         image: inlineImageHandler,
       },
     },
+    table: true,
   }), [inlineImageHandler]);
 
   const insertTable = useCallback(() => {
     const quill = (quillRef.current as any)?.getEditor();
     if (!quill) return;
-    const range = quill.getSelection(true);
-    const headerCells = Array.from({ length: tableCols }, (_, i) =>
-      `<th>Column ${i + 1}</th>`
-    ).join("");
-    const bodyRows = Array.from({ length: Math.max(1, tableRows - 1) }, () =>
-      `<tr>${Array(tableCols).fill("<td>&nbsp;</td>").join("")}</tr>`
-    ).join("");
-    const tableHtml = `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table><p><br></p>`;
-    (quill.clipboard as any).dangerouslyPasteHTML(range.index, tableHtml);
+    const tableModule = quill.getModule("table");
+    if (!tableModule) return;
+    tableModule.insertTable(tableRows, tableCols);
     setShowTablePicker(false);
   }, [tableCols, tableRows]);
 
@@ -441,6 +395,11 @@ function ArticleEditor({
               </div>
             </div>
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <style>{`
+                .ql-editor table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+                .ql-editor td { border: 1px solid #cbd5e1; padding: 6px 10px; min-width: 60px; min-height: 24px; }
+                .ql-editor table tr:first-child td { background: #f8fafc; font-weight: 600; }
+              `}</style>
               <ReactQuill
                 ref={quillRef}
                 theme="snow"
