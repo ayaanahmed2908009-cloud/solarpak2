@@ -5,10 +5,25 @@ import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./initializeDatabase";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Explicit routes for crawlers — must be served before any catch-all
+app.get('/robots.txt', (_req, res) => {
+  res.type('text/plain');
+  res.sendFile(path.resolve(__dirname, '../client/public/robots.txt'));
+});
+app.get('/sitemap.xml', (_req, res) => {
+  res.type('application/xml');
+  res.sendFile(path.resolve(__dirname, '../client/public/sitemap.xml'));
+});
 
 // Serve static files from the public directory
 app.use(express.static('public'));
