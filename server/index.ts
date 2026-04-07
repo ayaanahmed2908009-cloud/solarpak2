@@ -18,11 +18,11 @@ app.use(express.urlencoded({ extended: false }));
 // Explicit routes for crawlers — must be served before any catch-all
 app.get('/robots.txt', (_req, res) => {
   res.type('text/plain');
-  res.sendFile(path.resolve(__dirname, '../client/public/robots.txt'));
+  res.sendFile(path.resolve(__dirname, 'public/robots.txt'));
 });
 app.get('/sitemap.xml', (_req, res) => {
   res.type('application/xml');
-  res.sendFile(path.resolve(__dirname, '../client/public/sitemap.xml'));
+  res.sendFile(path.resolve(__dirname, 'public/sitemap.xml'));
 });
 
 // Serve static files from the public directory
