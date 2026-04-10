@@ -18,8 +18,9 @@ import {
   Briefcase,
   FileText,
   Download,
+  Zap,
 } from "lucide-react";
-import type { JobListing, JobApplication } from "@shared/schema";
+import type { JobListing, JobApplication, HackathonSignup } from "@shared/schema";
 
 function LoginForm({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState("");
@@ -304,8 +305,140 @@ function ApplicationRow({ app, jobs }: { app: JobApplication; jobs: JobListing[]
   );
 }
 
+function SignupRow({ signup }: { signup: HackathonSignup }) {
+  const [expanded, setExpanded] = useState(false);
+  const [notes, setNotes] = useState(signup.notes || "");
+  const [editingNotes, setEditingNotes] = useState(false);
+
+  const statusMutation = useMutation({
+    mutationFn: (status: string) => apiRequest("PATCH", `/api/admin/hackathon/signups/${signup.id}`, { status }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/admin/hackathon/signups"] }),
+  });
+
+  const notesMutation = useMutation({
+    mutationFn: () => apiRequest("PATCH", `/api/admin/hackathon/signups/${signup.id}`, { notes }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/hackathon/signups"] });
+      setEditingNotes(false);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", `/api/admin/hackathon/signups/${signup.id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/admin/hackathon/signups"] }),
+  });
+
+  const statusColors: Record<string, string> = {
+    pending: "text-amber-600 bg-amber-50",
+    approved: "text-green-600 bg-green-50",
+    rejected: "text-red-600 bg-red-50",
+  };
+
+  const divisionLabel: Record<string, string> = {
+    division1: "Division 1 (Non-Code)",
+    division2: "Division 2 (Coding)",
+    both: "Both Divisions",
+  };
+
+  const members = signup.members as { name: string; email: string }[];
+
+  return (
+    <div className="border-b border-gray-100 last:border-0">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between py-4 text-left group"
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <h4 className="text-sm font-semibold text-gray-900 truncate">{signup.teamName}</h4>
+            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${statusColors[signup.status] || statusColors.pending}`}>
+              {signup.status}
+            </span>
+            <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+              {divisionLabel[signup.division] || signup.division}
+            </span>
+          </div>
+          <p className="text-xs text-gray-400">
+            {signup.leaderName} · {signup.leaderEmail} · {new Date(signup.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-gray-300 flex-shrink-0 ml-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
+      </button>
+
+      <div className={`overflow-hidden transition-all duration-200 ${expanded ? "max-h-[600px] opacity-100 pb-4" : "max-h-0 opacity-0"}`}>
+        <div className="bg-gray-50 rounded-lg p-4 mb-3">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Team Members ({members.length})</p>
+          <div className="space-y-1">
+            {members.map((m, i) => (
+              <p key={i} className="text-sm text-gray-700">{m.name} <span className="text-gray-400">— {m.email}</span></p>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-4 mb-3">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Ko-fi Donation Email</p>
+          <p className="text-sm text-gray-700">{signup.kofiEmail}</p>
+        </div>
+
+        <div className="mb-3">
+          {editingNotes ? (
+            <div>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+                className="w-full text-sm border border-gray-200 rounded-lg p-2.5 mb-2 resize-none focus:outline-none focus:ring-1 focus:ring-gray-300"
+                placeholder="Add notes about this team..."
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => notesMutation.mutate()}
+                  disabled={notesMutation.isPending}
+                  className="text-xs font-medium px-3 py-1.5 rounded-full text-white bg-gray-900 hover:bg-gray-700"
+                >
+                  Save
+                </button>
+                <button onClick={() => { setNotes(signup.notes || ""); setEditingNotes(false); }} className="text-xs font-medium px-3 py-1.5 rounded-full text-gray-500 bg-gray-100 hover:bg-gray-200">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setEditingNotes(true)} className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+              {signup.notes ? `Notes: ${signup.notes}` : "+ Add notes"}
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {["pending", "approved", "rejected"].map((s) => (
+            <button
+              key={s}
+              onClick={() => statusMutation.mutate(s)}
+              disabled={signup.status === s || statusMutation.isPending}
+              className={`text-xs font-medium px-3 py-1.5 rounded-full capitalize transition-colors ${
+                signup.status === s
+                  ? statusColors[s] + " cursor-default"
+                  : "text-gray-500 bg-gray-100 hover:bg-gray-200"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+          <button
+            onClick={() => { if (window.confirm("Delete this sign-up?")) deleteMutation.mutate(); }}
+            className="text-xs font-medium px-3 py-1.5 rounded-full text-red-500 bg-red-50 hover:bg-red-100 transition-colors ml-auto"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Dashboard() {
-  const [tab, setTab] = useState<"jobs" | "applications">("jobs");
+  const [tab, setTab] = useState<"jobs" | "applications" | "hackathon">("jobs");
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   const { data: jobs = [], isLoading: jobsLoading } = useQuery<JobListing[]>({
@@ -318,12 +451,18 @@ function Dashboard() {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
+  const { data: hackathonSignupsList = [], isLoading: signupsLoading } = useQuery<HackathonSignup[]>({
+    queryKey: ["/api/admin/hackathon/signups"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+  });
+
   const logoutMutation = useMutation({
     mutationFn: () => apiRequest("POST", "/api/admin/auth/logout"),
     onSuccess: () => window.location.reload(),
   });
 
   const pendingCount = applications.filter((a) => a.status === "pending").length;
+  const pendingSignups = hackathonSignupsList.filter((s) => s.status === "pending").length;
 
   return (
     <div className="min-h-screen bg-white">
@@ -369,6 +508,22 @@ function Dashboard() {
                 </span>
                 {tab === "applications" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />}
               </button>
+              <button
+                onClick={() => setTab("hackathon")}
+                className={`px-4 py-2.5 text-sm font-medium transition-colors relative ${
+                  tab === "hackathon" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Zap className="w-4 h-4" /> Hackathon ({hackathonSignupsList.length})
+                  {pendingSignups > 0 && (
+                    <span className="text-[10px] font-bold text-white bg-amber-500 w-5 h-5 rounded-full flex items-center justify-center">
+                      {pendingSignups}
+                    </span>
+                  )}
+                </span>
+                {tab === "hackathon" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />}
+              </button>
             </div>
 
             {tab === "jobs" && (
@@ -410,6 +565,30 @@ function Dashboard() {
                       <ApplicationRow key={app.id} app={app} jobs={jobs} />
                     ))}
                   </div>
+                )}
+              </>
+            )}
+
+            {tab === "hackathon" && (
+              <>
+                {signupsLoading ? (
+                  <p className="text-sm text-gray-400 py-8">Loading...</p>
+                ) : hackathonSignupsList.length === 0 ? (
+                  <p className="text-sm text-gray-400 py-8">No sign-ups yet.</p>
+                ) : (
+                  <>
+                    <div className="flex gap-4 mb-6 text-xs text-gray-500">
+                      <span>Total: <strong className="text-gray-900">{hackathonSignupsList.length}</strong></span>
+                      <span>Pending: <strong className="text-amber-600">{hackathonSignupsList.filter(s => s.status === "pending").length}</strong></span>
+                      <span>Approved: <strong className="text-green-600">{hackathonSignupsList.filter(s => s.status === "approved").length}</strong></span>
+                      <span>Rejected: <strong className="text-red-500">{hackathonSignupsList.filter(s => s.status === "rejected").length}</strong></span>
+                    </div>
+                    <div>
+                      {hackathonSignupsList.map((signup) => (
+                        <SignupRow key={signup.id} signup={signup} />
+                      ))}
+                    </div>
+                  </>
                 )}
               </>
             )}

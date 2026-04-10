@@ -254,6 +254,35 @@ export const insertJobApplicationSchema = createInsertSchema(jobApplications).om
   createdAt: true,
 });
 
+// Hackathon sign-ups
+export const hackathonSignups = pgTable("hackathon_signups", {
+  id: serial("id").primaryKey(),
+  teamName: text("team_name").notNull(),
+  division: text("division").notNull(), // 'division1' | 'division2' | 'both'
+  leaderName: text("leader_name").notNull(),
+  leaderEmail: text("leader_email").notNull(),
+  members: jsonb("members").notNull(), // [{name: string, email: string}]
+  kofiEmail: text("kofi_email").notNull(), // email used for ko-fi donation
+  status: text("status").notNull().default("pending"), // 'pending' | 'approved' | 'rejected'
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertHackathonSignupSchema = createInsertSchema(hackathonSignups).omit({
+  id: true,
+  status: true,
+  notes: true,
+  createdAt: true,
+}).extend({
+  leaderEmail: z.string().email("Please enter a valid email"),
+  kofiEmail: z.string().email("Please enter the email used for your Ko-fi donation"),
+  division: z.enum(["division1", "division2", "both"]),
+  members: z.array(z.object({ name: z.string().min(1), email: z.string().email() })).min(1).max(4),
+});
+
+export type HackathonSignup = typeof hackathonSignups.$inferSelect;
+export type InsertHackathonSignup = z.infer<typeof insertHackathonSignupSchema>;
+
 // Type exports
 export type JobListing = typeof jobListings.$inferSelect;
 export type InsertJobListing = z.infer<typeof insertJobListingSchema>;

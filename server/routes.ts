@@ -10,7 +10,7 @@ import { wsManager } from "./websocket";
 import { db } from "./db";
 import { sql, eq, desc } from "drizzle-orm";
 
-import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema, insertJobListingSchema, insertJobApplicationSchema, jobListings, jobApplications } from "@shared/schema";
+import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema, insertJobListingSchema, insertJobApplicationSchema, insertHackathonSignupSchema, jobListings, jobApplications, hackathonSignups } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -1671,6 +1671,61 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no expla
     } catch (error: any) {
       console.error("AI analysis error:", error);
       res.status(500).json({ message: error.message || "Analysis failed" });
+    }
+  });
+
+  // Hackathon sign-ups — public submission
+  app.post("/api/hackathon/signup", async (req, res) => {
+    try {
+      const validated = insertHackathonSignupSchema.parse(req.body);
+      const [signup] = await db.insert(hackathonSignups).values(validated).returning();
+      res.status(201).json(signup);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: fromZodError(error).message });
+      }
+      console.error("Hackathon signup error:", error);
+      res.status(500).json({ message: "Error submitting sign-up" });
+    }
+  });
+
+  // Hackathon sign-ups — admin management
+  app.get("/api/admin/hackathon/signups", requireAdminAuth, async (_req, res) => {
+    try {
+      const signups = await db.select().from(hackathonSignups).orderBy(desc(hackathonSignups.createdAt));
+      res.json(signups);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching signups" });
+    }
+  });
+
+  app.patch("/api/admin/hackathon/signups/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates: Record<string, any> = {};
+      if (req.body.status !== undefined) {
+        const valid = ["pending", "approved", "rejected"];
+        if (!valid.includes(req.body.status)) return res.status(400).json({ message: "Invalid status" });
+        updates.status = req.body.status;
+      }
+      if (req.body.notes !== undefined) updates.notes = req.body.notes;
+      if (Object.keys(updates).length === 0) return res.status(400).json({ message: "No valid fields" });
+      const [signup] = await db.update(hackathonSignups).set(updates).where(eq(hackathonSignups.id, id)).returning();
+      if (!signup) return res.status(404).json({ message: "Signup not found" });
+      res.json(signup);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating signup" });
+    }
+  });
+
+  app.delete("/api/admin/hackathon/signups/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const [deleted] = await db.delete(hackathonSignups).where(eq(hackathonSignups.id, id)).returning();
+      if (!deleted) return res.status(404).json({ message: "Signup not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting signup" });
     }
   });
 
