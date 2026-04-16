@@ -15,7 +15,7 @@ const faqs = [
   {
     question: "Can I participate as a team?",
     answer:
-      "Yes. Teams are 3–4 people. We encourage collaboration — diverse teams often produce the most creative solutions.",
+      "Yes. Teams are 2–4 people. We encourage collaboration — diverse teams often produce the most creative solutions.",
   },
   {
     question: "Do I need coding skills?",
@@ -40,7 +40,7 @@ const faqs = [
   {
     question: "What's the internship opportunity?",
     answer:
-      "Top participants will be considered for an internship with SolarPak. You'll work alongside our team on real projects — from field operations to impact research — and gain hands-on experience in a mission-driven nonprofit.",
+      "Top participants will be considered for a paid internship with SwentaGlobal. You'll work on real projects and gain hands-on experience at a global organization — a tangible reward for your performance.",
   },
   {
     question: "When are winners announced?",
@@ -206,7 +206,7 @@ function SignupModal({ onClose }: { onClose: () => void }) {
           {/* Members */}
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5 block">
-              Team Members <span className="font-normal normal-case text-gray-400">(3–4 per team)</span>
+              Team Members <span className="font-normal normal-case text-gray-400">(2–4 per team)</span>
             </label>
             <div className="space-y-2">
               {members.map((m, i) => (
@@ -351,7 +351,7 @@ export default function Hackathon() {
                 <span className="text-amber-400">Hackathon</span>
               </h1>
               <p className="text-lg text-gray-400 max-w-lg leading-relaxed mb-8">
-                A two-division innovation challenge — one non-code, one coding — open to everyone. Solve real solar energy problems, compete across two weekends, and earn prizes plus internship opportunities.
+                A two-division innovation challenge — one non-code, one coding — open to everyone. Solve real solar energy problems, compete across two weekends, and win over $1,000 in prizes plus a paid internship with SwentaGlobal.
               </p>
               <button
                 onClick={() => setShowSignup(true)}
@@ -378,19 +378,19 @@ export default function Hackathon() {
                 {
                   icon: <Trophy className="w-5 h-5 text-amber-500" />,
                   label: "Prize Pool",
-                  value: "$300+",
+                  value: "$1,000+",
                   sub: "Cash prizes",
                 },
                 {
                   icon: <Briefcase className="w-5 h-5 text-amber-500" />,
                   label: "Bonus",
-                  value: "Internships",
-                  sub: "For top performers",
+                  value: "Paid Internship",
+                  sub: "With SwentaGlobal",
                 },
                 {
                   icon: <Users className="w-5 h-5 text-amber-500" />,
                   label: "Team size",
-                  value: "3–4",
+                  value: "2–4",
                   sub: "Per team",
                 },
               ].map((item) => (
@@ -434,7 +434,7 @@ export default function Hackathon() {
                   {[
                     "Tackle a real-world energy crisis affecting millions",
                     "Win cash prizes and recognition",
-                    "Earn an internship with SolarPak",
+                    "Earn a paid internship with SwentaGlobal",
                     "Build your portfolio with meaningful impact work",
                     "Connect with a global community of changemakers",
                   ].map((item) => (
@@ -592,7 +592,7 @@ export default function Hackathon() {
             <div className="flex items-center gap-4 p-6 bg-gray-50 rounded-xl mb-6">
               <Trophy className="w-8 h-8 text-amber-500 flex-shrink-0" />
               <div>
-                <p className="text-2xl font-bold text-gray-900">Over $300 in prizes</p>
+                <p className="text-2xl font-bold text-gray-900">Over $1,000 in prizes</p>
                 <p className="text-sm text-gray-500 mt-0.5">Awarded to the top-performing teams. Combined scores from both divisions determine final rankings.</p>
               </div>
             </div>
@@ -600,9 +600,9 @@ export default function Hackathon() {
               <div className="flex items-start gap-3">
                 <Briefcase className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-semibold text-amber-900 mb-1">Internship opportunities</p>
+                  <p className="text-sm font-semibold text-amber-900 mb-1">Paid internship with SwentaGlobal</p>
                   <p className="text-sm text-amber-700 leading-relaxed">
-                    Beyond cash prizes, top participants will be considered for a real internship with SolarPak. Work on live projects alongside our team and make a tangible difference.
+                    Beyond cash prizes, top participants will be considered for a <strong>paid internship with SwentaGlobal</strong>. Gain real-world experience at a global organization and make a tangible difference.
                   </p>
                 </div>
               </div>
