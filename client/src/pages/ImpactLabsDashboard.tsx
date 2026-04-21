@@ -209,10 +209,12 @@ function ArticleEditor({
   }, [toast]);
 
   const inlineImageHandler = useCallback(() => {
+    const quill = (quillRef.current as any)?.getEditor();
+    const savedRange = quill?.getSelection();
+
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
-    input.click();
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
@@ -226,9 +228,8 @@ function ArticleEditor({
         });
         if (!res.ok) throw new Error("Upload failed");
         const data = await res.json();
-        const quill = (quillRef.current as any)?.getEditor();
         if (quill) {
-          const range = quill.getSelection(true);
+          const range = savedRange ?? quill.getSelection(true) ?? { index: quill.getLength(), length: 0 };
           quill.insertEmbed(range.index, "image", data.url);
           quill.setSelection(range.index + 1, 0);
         }
@@ -237,6 +238,7 @@ function ArticleEditor({
         toast({ title: "Image upload failed", variant: "destructive" });
       }
     };
+    input.click();
   }, [toast]);
 
   const quillModules = useMemo(() => ({

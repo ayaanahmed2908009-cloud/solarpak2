@@ -1179,8 +1179,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ext = path.extname(req.file.originalname).toLowerCase();
       const filename = `impact-${uniqueSuffix}${ext}`;
 
+      const base64Data = req.file.buffer.toString('base64');
       await db.execute(
-        sql`INSERT INTO uploaded_images (filename, mime_type, data) VALUES (${filename}, ${req.file.mimetype}, ${req.file.buffer})`
+        sql`INSERT INTO uploaded_images (filename, mime_type, data) VALUES (${filename}, ${req.file.mimetype}, ${base64Data})`
       );
 
       const fileUrl = `/api/images/${filename}`;
@@ -1692,9 +1693,24 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no expla
   // Hackathon sign-ups — admin management
   app.get("/api/admin/hackathon/signups", requireAdminAuth, async (_req, res) => {
     try {
-      const signups = await db.select().from(hackathonSignups).orderBy(desc(hackathonSignups.createdAt));
+      const result = await db.execute(
+        sql`SELECT id, team_name, division, leader_name, leader_email, members, kofi_email, status, notes, created_at FROM hackathon_signups ORDER BY created_at DESC`
+      );
+      const signups = result.rows.map((r: any) => ({
+        id: r.id,
+        teamName: r.team_name,
+        division: r.division,
+        leaderName: r.leader_name,
+        leaderEmail: r.leader_email,
+        members: typeof r.members === "string" ? JSON.parse(r.members) : r.members,
+        kofiEmail: r.kofi_email,
+        status: r.status,
+        notes: r.notes,
+        createdAt: r.created_at,
+      }));
       res.json(signups);
     } catch (error) {
+      console.error("Hackathon signups fetch error:", error);
       res.status(500).json({ message: "Error fetching signups" });
     }
   });
