@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import ProgramsSection from "@/components/ProgramsSection";
 import YouthLeadershipSection from "@/components/YouthLeadershipSection";
 
 import UnifiedImpactSection from "@/components/UnifiedImpactSection";
@@ -191,6 +192,7 @@ export default function Home() {
         {/* Youth Leadership Section - Why We're Different */}
         <section id="youth-leadership" className="snap-section">
           <YouthLeadershipSection />
+          <ProgramsSection />
         </section>
         
         

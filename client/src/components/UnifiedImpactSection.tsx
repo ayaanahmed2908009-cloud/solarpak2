@@ -47,11 +47,11 @@ export default function UnifiedImpactSection() {
   });
 
   const finalNumbers = {
-    livesImpacted: 120,
+    livesImpacted: 240,
     energyGenerated: 270,
     co2Prevented: 1900,
     hoursOfPower: 3,
-    panelsInstalled: 23,
+    panelsInstalled: 24,
     homesEmpowered: 23
   };
 
@@ -136,134 +136,108 @@ export default function UnifiedImpactSection() {
     return () => clearInterval(autoPlayTimer);
   }, [isAutoPlay, currentVideo]);
 
+  const statColumns = [
+    {
+      icon: <Zap className="w-5 h-5" />,
+      label: "SOLAR ENERGY",
+      title: "Clean Power",
+      stats: [
+        { icon: <Zap className="w-5 h-5" />, value: counters.panelsInstalled, suffix: "+", label: "Solar Panels Installed" },
+        { icon: <Home className="w-5 h-5" />, value: counters.homesEmpowered, suffix: "+", label: "Homes Empowered" },
+        { icon: <Home className="w-5 h-5" />, value: 1, suffix: " school", label: "School Powered" },
+      ],
+    },
+    {
+      icon: <Users className="w-5 h-5" />,
+      label: "COMMUNITY",
+      title: "Human Impact",
+      stats: [
+        { icon: <Heart className="w-5 h-5" />, value: counters.livesImpacted, suffix: "+", label: "Lives Changed" },
+        { icon: <Users className="w-5 h-5" />, value: 100, suffix: "K+", label: "Engaged — Social Media" },
+        { icon: <Globe className="w-5 h-5" />, value: 3, suffix: " villages", label: "Communities Powered" },
+      ],
+    },
+    {
+      icon: <Globe className="w-5 h-5" />,
+      label: "ENVIRONMENT",
+      title: "Planet Care",
+      stats: [
+        { icon: <Globe className="w-5 h-5" />, value: Math.round(counters.co2Prevented), suffix: " kg", label: "CO₂ Emissions Prevented" },
+        { icon: <Heart className="w-5 h-5" />, value: 95, suffix: " trees", label: "Equivalent Trees Planted" },
+        { icon: <Zap className="w-5 h-5" />, value: counters.panelsInstalled * 25, suffix: " W", label: "Clean Capacity Installed" },
+      ],
+    },
+  ];
+
   return (
     <div ref={(el) => {
       (sectionRef as any).current = el;
       if (scrollRef.current === null && el) {
         (scrollRef as any).current = el;
       }
-    }} className="py-16 md:py-24 bg-gray-50 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
-      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
+    }} className="relative overflow-hidden">
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-14 scroll-reveal">
-          <span className="inline-block text-emerald-700 font-semibold text-sm uppercase tracking-widest mb-4">
-            Our Global Impact
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Transforming Lives <span className="text-emerald-700">Across Pakistan</span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Every solar panel we install creates ripple effects of positive change. From individual families to entire communities, 
-            witness the real-time impact of your donations.
-          </p>
-        </div>
+      {/* Nahj-style full-width stats banner */}
+      <div className="relative w-full overflow-hidden" style={{ minHeight: "90vh" }}>
+        {/* Video background */}
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          src={video3}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.72)" }} />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
-          {[
-            { icon: Zap, value: counters.panelsInstalled, label: "Solar Panels Installed", note: "+3 panels this month", accent: "emerald" },
-            { icon: Home, value: counters.homesEmpowered, label: "Homes Empowered", note: "+3 families this month", accent: "emerald" },
-            { icon: Heart, value: counters.livesImpacted, label: "Lives Transformed", note: "Every donation matters", accent: "emerald" },
-          ].map((metric, i) => (
-            <div key={i} className={`scroll-reveal stagger-delay-${i + 1}`}>
-              <div className="bg-white rounded-xl p-8 border border-gray-200 hover:border-emerald-200 transition-all duration-500 hover:shadow-lg hover:shadow-emerald-900/5 hover:-translate-y-1">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="p-3 bg-emerald-50 rounded-lg">
-                    <metric.icon className="w-7 h-7 text-emerald-700" />
+        <div className="relative z-10 container mx-auto px-6 py-20">
+          {/* Header */}
+          <div className="mb-14">
+            <span className="text-yellow-400 font-semibold text-xs uppercase tracking-[0.25em] mb-3 block">
+              Our Impact
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight max-w-2xl">
+              Numbers that tell the story of empowerment
+            </h2>
+            <div className="w-16 h-1 bg-yellow-400 mt-4" />
+          </div>
+
+          {/* Stats columns */}
+          <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/20">
+            {statColumns.map((col, ci) => (
+              <div
+                key={ci}
+                className={`${ci > 0 ? "md:pl-10" : ""} ${ci < statColumns.length - 1 ? "md:pr-10" : ""} pb-10 md:pb-0 ${ci > 0 ? "pt-10 md:pt-0" : ""}`}
+              >
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="text-yellow-400">{col.icon}</span>
+                  <div>
+                    <p className="text-yellow-400/80 text-[10px] uppercase tracking-widest font-semibold">{col.label}</p>
+                    <p className="text-white font-bold text-lg leading-tight">{col.title}</p>
                   </div>
-                  <div className="text-right">
-                    <div className="text-3xl md:text-4xl font-bold text-gray-900 font-mono">
-                      {metric.value.toLocaleString()}
+                </div>
+                <div className="space-y-8">
+                  {col.stats.map((stat, si) => (
+                    <div key={si} className="flex items-start gap-4">
+                      <span className="text-yellow-400 shrink-0 mt-2">{stat.icon}</span>
+                      <div>
+                        <div className="text-white font-bold text-5xl md:text-6xl leading-none">
+                          {stat.value.toLocaleString()}{stat.suffix}
+                        </div>
+                        <p className="text-white/70 text-base mt-2">{stat.label}</p>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">{metric.label}</div>
-                  </div>
-                </div>
-                <div className="bg-emerald-50 rounded-lg p-3">
-                  <div className="flex items-center text-emerald-700 text-sm">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
-                    {metric.note}
-                  </div>
+                  ))}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-          <div className="scroll-reveal-left">
-            <div className="bg-white rounded-xl p-8 border border-gray-200 h-full hover:shadow-lg transition-all duration-500">
-              <div className="flex items-center mb-6">
-                <div className="p-3 bg-emerald-50 rounded-lg mr-5">
-                  <Zap className="w-8 h-8 text-emerald-700" />
-                </div>
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-mono">
-                    {counters.energyGenerated.toLocaleString()} kWh
-                  </h3>
-                  <p className="text-sm text-emerald-700">Clean Energy Generated Total</p>
-                </div>
-              </div>
-              <div className="bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                <div 
-                  className="bg-emerald-600 h-2.5 rounded-full transition-all duration-2000 ease-out"
-                  style={{ width: isVisible ? '78%' : '0%' }}
-                ></div>
-              </div>
-              <p className="text-sm text-gray-500">Enough to power 30 homes for a day</p>
-            </div>
-          </div>
-
-          <div className="scroll-reveal-right">
-            <div className="bg-white rounded-xl p-8 border border-gray-200 h-full hover:shadow-lg transition-all duration-500">
-              <div className="flex items-center mb-6">
-                <div className="p-3 bg-emerald-50 rounded-lg mr-5">
-                  <Globe className="w-8 h-8 text-emerald-700" />
-                </div>
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-mono">
-                    {counters.co2Prevented.toFixed(1)} kg
-                  </h3>
-                  <p className="text-sm text-emerald-700">CO₂ Emissions Prevented</p>
-                </div>
-              </div>
-              <div className="bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                <div 
-                  className="bg-emerald-600 h-2.5 rounded-full transition-all duration-2000 ease-out"
-                  style={{ width: isVisible ? '65%' : '0%' }}
-                ></div>
-              </div>
-              <p className="text-sm text-gray-500">Equivalent to planting 95 trees this year</p>
-            </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        <div className="scroll-reveal">
-          <div className="bg-white rounded-xl p-8 border border-gray-200 mb-16 hover:shadow-lg transition-all duration-500">
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Solar Panel Goal</h3>
-              <p className="text-gray-600">Working toward 100 solar panels across Pakistan</p>
-            </div>
-            
-            <div className="max-w-2xl mx-auto">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-gray-900 font-semibold text-sm">Progress: 23 / 100 panels</span>
-                <span className="text-gray-500 text-sm">23%</span>
-              </div>
-              
-              <div className="bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
-                <div 
-                  className="bg-emerald-600 h-3 rounded-full transition-all duration-2000 ease-out"
-                  style={{ width: isVisible ? '23%' : '0%' }}
-                ></div>
-              </div>
-              
-              <div className="text-center">
-                <p className="text-gray-700 font-medium">Every donation brings us closer to transforming 100 communities</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="py-16 md:py-20 bg-gray-50">
+      <div className="container mx-auto px-6 relative z-10">
 
         <div className="relative mb-16">
           <div className="text-center mb-12 scroll-reveal">
@@ -388,6 +362,7 @@ export default function UnifiedImpactSection() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
