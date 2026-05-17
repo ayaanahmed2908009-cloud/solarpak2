@@ -97,6 +97,12 @@ export default function Navbar() {
               OPPORTUNITIES
             </NavLink>
             <NavLink
+              href="/events"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
+            >
+              EVENTS
+            </NavLink>
+            <NavLink
               href="/hackathon"
               className="text-amber-600 hover:text-amber-800 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide border border-amber-200 rounded px-3 py-1 hover:bg-amber-50"
             >
@@ -207,6 +213,9 @@ export default function Navbar() {
             </NavLink>
             <NavLink href="/opportunities" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Opportunities
+            </NavLink>
+            <NavLink href="/events" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
+              Events
             </NavLink>
             <button 
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}

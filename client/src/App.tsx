@@ -34,6 +34,7 @@ import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
 import Opportunities from "@/pages/Opportunities";
 import Hackathon from "@/pages/Hackathon";
 import Admin from "@/pages/Admin";
+import Events from "@/pages/Events";
 import { useEffect } from "react";
 
 // Smooth scroll behavior utility
@@ -146,6 +147,7 @@ function Router() {
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/hackathon" component={Hackathon} />
+      <Route path="/events" component={Events} />
       <Route path="/admin" component={Admin} />
 
       <Route component={NotFound} />
