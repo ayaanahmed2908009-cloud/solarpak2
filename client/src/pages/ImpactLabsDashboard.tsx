@@ -29,6 +29,9 @@ import {
   FlaskConical,
   Table2,
   ImagePlus,
+  BarChart2,
+  Clock,
+  Users,
 } from "lucide-react";
 import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -527,12 +530,125 @@ function ArticleEditor({
   );
 }
 
+interface ArticleViewLog {
+  id: number;
+  articleId: number;
+  sessionId: string;
+  readDuration: number | null;
+  createdAt: string;
+}
+
+interface ArticleAnalytics {
+  totalViews: number;
+  uniqueSessions: number;
+  avgReadTime: number;
+  logs: ArticleViewLog[];
+}
+
+function AnalyticsView({ article, onBack }: { article: ImpactLabsArticle; onBack: () => void }) {
+  const { data, isLoading } = useQuery<ArticleAnalytics>({
+    queryKey: [`/api/impact-labs/articles/${article.id}/analytics`],
+  });
+
+  function formatDuration(secs: number | null) {
+    if (secs == null || secs === 0) return "—";
+    if (secs < 60) return `${secs}s`;
+    return `${Math.floor(secs / 60)}m ${secs % 60}s`;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onBack}
+          className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Analytics</h2>
+          <p className="text-sm text-gray-500 truncate max-w-md">{article.title}</p>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+        </div>
+      ) : !data ? (
+        <p className="text-sm text-gray-500 py-8 text-center">Failed to load analytics.</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="border border-gray-200 rounded-xl p-5 bg-white">
+              <div className="flex items-center gap-2 mb-3">
+                <Eye className="w-4 h-4 text-gray-400" />
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Views</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{data.totalViews}</p>
+            </div>
+            <div className="border border-gray-200 rounded-xl p-5 bg-white">
+              <div className="flex items-center gap-2 mb-3">
+                <Users className="w-4 h-4 text-gray-400" />
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Unique Readers</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{data.uniqueSessions}</p>
+            </div>
+            <div className="border border-gray-200 rounded-xl p-5 bg-white">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Read Time</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{formatDuration(data.avgReadTime)}</p>
+            </div>
+          </div>
+
+          <div className="border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
+              <h3 className="text-sm font-semibold text-gray-700">View Log</h3>
+            </div>
+            {data.logs.length === 0 ? (
+              <div className="py-12 text-center text-sm text-gray-400">No views recorded yet.</div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wider">
+                    <th className="px-5 py-3 text-left font-medium">Date & Time</th>
+                    <th className="px-5 py-3 text-left font-medium">Session ID</th>
+                    <th className="px-5 py-3 text-left font-medium">Read Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {data.logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-gray-50/50">
+                      <td className="px-5 py-3 text-gray-700">
+                        {new Date(log.createdAt).toLocaleString("en-US", {
+                          month: "short", day: "numeric", year: "numeric",
+                          hour: "2-digit", minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="px-5 py-3 text-gray-400 font-mono text-xs">{log.sessionId}</td>
+                      <td className="px-5 py-3 text-gray-700">{formatDuration(log.readDuration)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function ArticleList({
   onEdit,
   onNew,
+  onAnalytics,
 }: {
   onEdit: (article: ImpactLabsArticle) => void;
   onNew: () => void;
+  onAnalytics: (article: ImpactLabsArticle) => void;
 }) {
   const { toast } = useToast();
   const [filter, setFilter] = useState<"all" | "published" | "drafts">("all");
@@ -671,6 +787,13 @@ function ArticleList({
                   {article.isPublished ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
                 <button
+                  onClick={() => onAnalytics(article)}
+                  className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  title="Analytics"
+                >
+                  <BarChart2 className="w-3.5 h-3.5" />
+                </button>
+                <button
                   onClick={() => onEdit(article)}
                   className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                   title="Edit"
@@ -698,8 +821,9 @@ function ArticleList({
 }
 
 export default function ImpactLabsDashboard() {
-  const [view, setView] = useState<"list" | "editor">("list");
+  const [view, setView] = useState<"list" | "editor" | "analytics">("list");
   const [editingArticle, setEditingArticle] = useState<ImpactLabsArticle | undefined>();
+  const [analyticsArticle, setAnalyticsArticle] = useState<ImpactLabsArticle | undefined>();
   const { toast } = useToast();
 
   const authQuery = useQuery<{ authenticated: boolean }>({
@@ -768,6 +892,18 @@ export default function ImpactLabsDashboard() {
             onNew={() => {
               setEditingArticle(undefined);
               setView("editor");
+            }}
+            onAnalytics={(article) => {
+              setAnalyticsArticle(article);
+              setView("analytics");
+            }}
+          />
+        ) : view === "analytics" && analyticsArticle ? (
+          <AnalyticsView
+            article={analyticsArticle}
+            onBack={() => {
+              setAnalyticsArticle(undefined);
+              setView("list");
             }}
           />
         ) : (

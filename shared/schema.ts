@@ -194,6 +194,17 @@ export const insertImpactLabsArticleSchema = createInsertSchema(impactLabsArticl
   tags: z.array(z.string()).nullable().optional(),
 });
 
+export const articleViews = pgTable("article_views", {
+  id: serial("id").primaryKey(),
+  articleId: integer("article_id").notNull().references(() => impactLabsArticles.id, { onDelete: "cascade" }),
+  sessionId: text("session_id").notNull(),
+  readDuration: integer("read_duration"), // seconds on page before leaving
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type ArticleView = typeof articleViews.$inferSelect;
+
 // User impact media table
 export const userImpacts = pgTable("user_impacts", {
   id: serial("id").primaryKey(),

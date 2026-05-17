@@ -10,7 +10,7 @@ import { wsManager } from "./websocket";
 import { db } from "./db";
 import { sql, eq, desc } from "drizzle-orm";
 
-import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema, insertJobListingSchema, insertJobApplicationSchema, insertHackathonSignupSchema, jobListings, jobApplications, hackathonSignups } from "@shared/schema";
+import { insertDonationSchema, insertSubscriberSchema, insertUserSchema, insertImpactLabsArticleSchema, insertJobListingSchema, insertJobApplicationSchema, insertHackathonSignupSchema, jobListings, jobApplications, hackathonSignups, articleViews } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -1167,6 +1167,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Error deleting article" });
+    }
+  });
+
+  // Record a new article view (public)
+  app.post("/api/impact-labs/articles/:id/view", async (req, res) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const { sessionId } = req.body;
+      if (!sessionId) return res.status(400).json({ message: "sessionId required" });
+
+      const [view] = await db.insert(articleViews).values({
+        articleId,
+        sessionId,
+      }).returning();
+      res.json({ viewId: view.id });
+    } catch (error) {
+      res.status(500).json({ message: "Error recording view" });
+    }
+  });
+
+  // Update read duration when reader leaves (public)
+  app.patch("/api/impact-labs/articles/:id/view/:viewId", async (req, res) => {
+    try {
+      const viewId = parseInt(req.params.viewId);
+      const { readDuration } = req.body;
+      await db.update(articleViews)
+        .set({ readDuration, updatedAt: new Date() })
+        .where(eq(articleViews.id, viewId));
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Error updating view" });
+    }
+  });
+
+  // Get analytics for a single article (protected)
+  app.get("/api/impact-labs/articles/:id/analytics", requireImpactLabsAuth, async (req, res) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const views = await db.select().from(articleViews)
+        .where(eq(articleViews.articleId, articleId))
+        .orderBy(desc(articleViews.createdAt));
+
+      const totalViews = views.length;
+      const uniqueSessions = new Set(views.map(v => v.sessionId)).size;
+      const withDuration = views.filter(v => v.readDuration != null && v.readDuration > 0);
+      const avgReadTime = withDuration.length
+        ? Math.round(withDuration.reduce((sum, v) => sum + (v.readDuration ?? 0), 0) / withDuration.length)
+        : 0;
+
+      res.json({ totalViews, uniqueSessions, avgReadTime, logs: views });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching analytics" });
     }
   });
 

@@ -164,6 +164,56 @@ function ArticleViewSkeleton() {
   );
 }
 
+function useArticleViewTracking(articleId: number | undefined) {
+  const viewIdRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    if (!articleId) return;
+
+    // Generate or retrieve a persistent session ID
+    let sessionId = sessionStorage.getItem("il_session");
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sessionStorage.setItem("il_session", sessionId);
+    }
+
+    startTimeRef.current = Date.now();
+
+    fetch(`/api/impact-labs/articles/${articleId}/view`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    })
+      .then(r => r.json())
+      .then(data => { viewIdRef.current = data.viewId; })
+      .catch(() => {});
+
+    const sendDuration = () => {
+      if (viewIdRef.current == null) return;
+      const seconds = Math.round((Date.now() - startTimeRef.current) / 1000);
+      const blob = new Blob([JSON.stringify({ readDuration: seconds })], { type: "application/json" });
+      navigator.sendBeacon(
+        `/api/impact-labs/articles/${articleId}/view/${viewIdRef.current}`,
+        blob
+      );
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") sendDuration();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("beforeunload", sendDuration);
+
+    return () => {
+      sendDuration();
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("beforeunload", sendDuration);
+    };
+  }, [articleId]);
+}
+
 function ArticleView({ slug }: { slug: string }) {
   const [, setLocation] = useLocation();
   const [imageError, setImageError] = useState(false);
@@ -173,6 +223,8 @@ function ArticleView({ slug }: { slug: string }) {
     queryKey: [`/api/impact-labs/articles/${slug}`],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
+
+  useArticleViewTracking(article?.id);
 
   // Wrap tables in scrollable containers for responsive layout
   useEffect(() => {
