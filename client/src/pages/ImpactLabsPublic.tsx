@@ -167,11 +167,12 @@ function ArticleViewSkeleton() {
 function useArticleViewTracking(articleId: number | undefined) {
   const viewIdRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(Date.now());
+  const accumulatedRef = useRef<number>(0); // total seconds excluding hidden time
+  const sentRef = useRef(false);
 
   useEffect(() => {
     if (!articleId) return;
 
-    // Generate or retrieve a persistent session ID
     let sessionId = sessionStorage.getItem("il_session");
     if (!sessionId) {
       sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -179,6 +180,8 @@ function useArticleViewTracking(articleId: number | undefined) {
     }
 
     startTimeRef.current = Date.now();
+    accumulatedRef.current = 0;
+    sentRef.current = false;
 
     fetch(`/api/impact-labs/articles/${articleId}/view`, {
       method: "POST",
@@ -189,10 +192,12 @@ function useArticleViewTracking(articleId: number | undefined) {
       .then(data => { viewIdRef.current = data.viewId; })
       .catch(() => {});
 
-    const sendDuration = () => {
-      if (viewIdRef.current == null) return;
-      const seconds = Math.round((Date.now() - startTimeRef.current) / 1000);
-      const blob = new Blob([JSON.stringify({ readDuration: seconds })], { type: "application/json" });
+    const flush = () => {
+      if (viewIdRef.current == null || sentRef.current) return;
+      sentRef.current = true;
+      const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
+      const total = accumulatedRef.current + elapsed;
+      const blob = new Blob([JSON.stringify({ readDuration: total })], { type: "application/json" });
       navigator.sendBeacon(
         `/api/impact-labs/articles/${articleId}/view/${viewIdRef.current}`,
         blob
@@ -200,16 +205,23 @@ function useArticleViewTracking(articleId: number | undefined) {
     };
 
     const handleVisibility = () => {
-      if (document.visibilityState === "hidden") sendDuration();
+      if (document.visibilityState === "hidden") {
+        accumulatedRef.current += Math.round((Date.now() - startTimeRef.current) / 1000);
+        flush();
+      } else {
+        // Page became visible again — reset timer and allow re-flush
+        startTimeRef.current = Date.now();
+        sentRef.current = false;
+      }
     };
 
     document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("beforeunload", sendDuration);
+    window.addEventListener("beforeunload", flush);
 
     return () => {
-      sendDuration();
+      flush();
       document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("beforeunload", sendDuration);
+      window.removeEventListener("beforeunload", flush);
     };
   }, [articleId]);
 }

@@ -1187,8 +1187,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update read duration when reader leaves (public)
-  app.patch("/api/impact-labs/articles/:id/view/:viewId", async (req, res) => {
+  // Update read duration when reader leaves (public) — must be POST because sendBeacon only supports POST
+  app.post("/api/impact-labs/articles/:id/view/:viewId", async (req, res) => {
     try {
       const viewId = parseInt(req.params.viewId);
       const { readDuration } = req.body;
