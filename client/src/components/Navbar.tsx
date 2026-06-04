@@ -103,10 +103,10 @@ export default function Navbar() {
               EVENTS
             </NavLink>
             <NavLink
-              href="/hackathon"
-              className="text-amber-600 hover:text-amber-800 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide border border-amber-200 rounded px-3 py-1 hover:bg-amber-50"
+              href="/annual-report"
+              className="text-emerald-600 hover:text-emerald-800 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide border border-emerald-200 rounded px-3 py-1 hover:bg-emerald-50"
             >
-              Hackathon
+              Annual Report
             </NavLink>
             <div className="relative group">
               <button className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
@@ -217,7 +217,10 @@ export default function Navbar() {
             <NavLink href="/events" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
               Events
             </NavLink>
-            <button 
+            <NavLink href="/annual-report" className="px-4 py-2 text-emerald-600 font-semibold hover:bg-emerald-50 rounded-lg transition-colors duration-200">
+              Annual Report
+            </NavLink>
+            <button
               onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
               className="mx-4 mt-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 px-6 rounded-md text-sm uppercase tracking-wide transition-colors duration-200"
             >
