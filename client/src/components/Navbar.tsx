@@ -1,10 +1,24 @@
-import { Link, useLocation } from "wouter";
-import { Sun, Zap, Users, Heart, MapPin, Camera, FlaskConical } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { Menu, X, Users, Camera, Zap } from "lucide-react";
 
-function NavLink({ href, children, className, ...props }: { href: string; children: React.ReactNode; className?: string; [key: string]: any }) {
+function NavLink({
+  href,
+  children,
+  className,
+  onNavigate,
+  external,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+  onNavigate?: () => void;
+  external?: boolean;
+}) {
   const [, setLocation] = useLocation();
-  
+
   const handleClick = (e: React.MouseEvent) => {
+    if (external) return;
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: "instant" });
     if (href.startsWith("/#")) {
@@ -13,222 +27,184 @@ function NavLink({ href, children, className, ...props }: { href: string; childr
         const id = href.replace("/#", "");
         const el = document.getElementById(id);
         if (el) {
-          const offset = 80;
-          const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+          const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
           window.scrollTo({ top, behavior: "smooth" });
         }
       }, 100);
     } else {
       setLocation(href);
     }
-    const menu = document.getElementById("mobile-menu");
-    if (menu && !menu.classList.contains("hidden")) {
-      menu.classList.add("hidden");
-    }
+    onNavigate?.();
   };
 
   return (
-    <a href={href} onClick={handleClick} className={className} {...props}>
-      {children}
-    </a>
-  );
-}
-
-function DropdownNavLink({ href, children, className, ...props }: { href: string; children: React.ReactNode; className?: string; [key: string]: any }) {
-  const [, setLocation] = useLocation();
-  
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setLocation(href);
-  };
-
-  return (
-    <a href={href} onClick={handleClick} className={className} {...props}>
+    <a href={href} onClick={handleClick} className={className}>
       {children}
     </a>
   );
 }
 
 export default function Navbar() {
+  const [visible, setVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <NavLink href="/" className="flex items-center space-x-3 group">
-            <img src="/favicon.png" alt="SolarPak Logo" className="h-10 w-12 object-contain" />
-            <div>
-              <span className="text-2xl font-bold text-gray-900">SolarPak</span>
-            </div>
-          </NavLink>
-          
-          <div className="hidden lg:flex items-center space-x-8">
-            <NavLink 
-              href="/" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
-              data-testid="link-home"
-            >
-              HOME
-            </NavLink>
-            <NavLink 
-              href="/#solution" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
-              data-testid="link-what-we-do"
-            >
-              WHAT WE DO
-            </NavLink>
-            <NavLink 
-              href="/#impact" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
-              data-testid="link-our-impact"
-            >
-              OUR IMPACT
-            </NavLink>
-            <NavLink 
-              href="/impact-labs" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
-            >
-              IMPACT LABS
-            </NavLink>
-            <NavLink
-              href="/opportunities"
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
-            >
-              OPPORTUNITIES
-            </NavLink>
-            <NavLink
-              href="/events"
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
-            >
-              EVENTS
-            </NavLink>
-            <NavLink
-              href="/annual-report"
-              className="text-emerald-600 hover:text-emerald-800 font-semibold transition-colors duration-200 text-sm uppercase tracking-wide border border-emerald-200 rounded px-3 py-1 hover:bg-emerald-50"
-            >
-              Annual Report
-            </NavLink>
-            <div className="relative group">
-              <button className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200 text-sm uppercase tracking-wide flex items-center">
-                GET INVOLVED
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
-                <div className="py-2">
-                  <DropdownNavLink 
-                    href="/impact" 
-                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
-                    data-testid="link-map"
-                  >
-                    <MapPin className="w-4 h-4 mr-3 text-gray-400" />
-                    <div>
-                      <div className="font-medium text-sm text-gray-700">Map</div>
-                      <div className="text-xs text-gray-400">Locations</div>
-                    </div>
-                  </DropdownNavLink>
-                  <DropdownNavLink 
-                    href="/membership" 
-                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
-                    data-testid="link-membership"
-                  >
-                    <Users className="w-4 h-4 mr-3 text-gray-400" />
-                    <div>
-                      <div className="font-medium text-sm text-gray-700">Membership</div>
-                      <div className="text-xs text-gray-400">Join us</div>
-                    </div>
-                  </DropdownNavLink>
-                  <DropdownNavLink 
-                    href="/gallery" 
-                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
-                    data-testid="link-gallery"
-                  >
-                    <Camera className="w-4 h-4 mr-3 text-gray-400" />
-                    <div>
-                      <div className="font-medium text-sm text-gray-700">Gallery</div>
-                      <div className="text-xs text-gray-400">Photos</div>
-                    </div>
-                  </DropdownNavLink>
-                  <DropdownNavLink 
-                    href="/worker/login" 
-                    className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 transition-colors duration-200 border-t border-gray-100"
-                    data-testid="link-team-login"
-                  >
-                    <span className="mr-3 text-gray-400">🔐</span>
-                    <div>
-                      <div className="font-medium text-sm text-gray-700">Team Login</div>
-                      <div className="text-xs text-gray-400">Access portal</div>
-                    </div>
-                  </DropdownNavLink>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <button 
-            onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
-            className="hidden lg:block bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 px-6 rounded-md text-sm uppercase tracking-wide transition-colors duration-200"
-            data-testid="button-donate"
-          >
-            DONATE
-          </button>
-          
-          <button 
-            className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            onClick={() => {
-              const menu = document.getElementById('mobile-menu');
-              menu?.classList.toggle('hidden');
+    <>
+      <style>{`
+        @keyframes drawerIn {
+          from { transform: translateX(100%); }
+          to   { transform: translateX(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+      `}</style>
+
+      {/* Floating menu button */}
+      <button
+        onClick={() => setOpen(true)}
+        data-testid="button-mobile-menu"
+        style={{
+          transform: visible ? "translateX(0)" : "translateX(80px)",
+          opacity: visible ? 1 : 0,
+          transition: "transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease",
+          background: "rgba(5, 10, 24, 0.65)",
+          border: "1px solid rgba(255,255,255,0.14)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+        }}
+        className="fixed top-10 right-6 z-50 p-3.5 rounded-xl"
+      >
+        <Menu className="w-7 h-7 text-white" />
+      </button>
+
+      {/* Drawer */}
+      {open && (
+        <div className="fixed inset-0 z-[60]">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 cursor-pointer"
+            style={{ animation: "fadeIn 0.3s ease both", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
+            onClick={() => setOpen(false)}
+          />
+
+          {/* Panel */}
+          <div
+            className="absolute right-0 top-0 h-full w-[300px] flex flex-col bg-white"
+            style={{
+              animation: "drawerIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both",
+              borderLeft: "1px solid #e5e7eb",
+              boxShadow: "-8px 0 40px rgba(0,0,0,0.18)",
             }}
-            data-testid="button-mobile-menu"
+            onClick={e => e.stopPropagation()}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-        
-        <div id="mobile-menu" className="hidden lg:hidden pt-4 pb-2 border-t border-gray-100 mt-4">
-          <div className="flex flex-col space-y-2">
-            <NavLink href="/" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              HOME
-            </NavLink>
-            <NavLink href="/#solution" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              WHAT WE DO
-            </NavLink>
-            <NavLink href="/#impact" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              OUR IMPACT
-            </NavLink>
-            <NavLink href="/impact" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              Map
-            </NavLink>
-            <NavLink href="/membership" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              Membership
-            </NavLink>
-            <NavLink href="/gallery" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              Gallery
-            </NavLink>
-            <NavLink href="/impact-labs" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              Impact Labs
-            </NavLink>
-            <NavLink href="/opportunities" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              Opportunities
-            </NavLink>
-            <NavLink href="/events" className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors duration-200">
-              Events
-            </NavLink>
-            <NavLink href="/annual-report" className="px-4 py-2 text-emerald-600 font-semibold hover:bg-emerald-50 rounded-lg transition-colors duration-200">
-              Annual Report
-            </NavLink>
-            <button
-              onClick={() => window.open('https://ko-fi.com/solarpak', '_blank')}
-              className="mx-4 mt-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 px-6 rounded-md text-sm uppercase tracking-wide transition-colors duration-200"
-            >
-              DONATE
-            </button>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-5 border-b border-gray-100">
+              <NavLink href="/" onNavigate={() => setOpen(false)} className="flex items-center gap-2.5">
+                <img src="/favicon.png" alt="SolarPak" className="h-8 w-9 object-contain" />
+                <span className="font-bold text-gray-900 text-sm tracking-tight">SolarPak</span>
+              </NavLink>
+              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg transition-colors hover:bg-gray-100">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Live Dashboard — amber hero CTA */}
+            <div className="px-4 pt-4 pb-2">
+              <a
+                href="/impact-dashboard"
+                data-testid="link-impact-dashboard"
+                className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-bold transition-all active:scale-95"
+                style={{
+                  background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                  color: "#0a0f1e",
+                  boxShadow: "0 4px 24px rgba(245,158,11,0.28)",
+                }}
+              >
+                <Zap className="w-4 h-4" style={{ color: "#92400e" }} />
+                Live Impact Dashboard
+              </a>
+            </div>
+
+            {/* Nav links */}
+            <nav className="flex-1 overflow-y-auto px-3 py-2 flex flex-col gap-0.5">
+
+              <p className="px-4 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+                Explore
+              </p>
+              {[
+                { href: "/",          label: "Home" },
+                { href: "/#solution", label: "What We Do" },
+                { href: "/#impact",   label: "Our Impact" },
+              ].map(({ href, label }) => (
+                <NavLink key={href} href={href} onNavigate={() => setOpen(false)}
+                  className="px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-colors hover:bg-gray-50"
+                >
+                  {label}
+                </NavLink>
+              ))}
+
+              <p className="px-4 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+                Programs
+              </p>
+              {[
+                { href: "/impact-labs",   label: "Impact Labs" },
+                { href: "/opportunities", label: "Opportunities" },
+                { href: "/events",        label: "Events" },
+              ].map(({ href, label }) => (
+                <NavLink key={href} href={href} onNavigate={() => setOpen(false)}
+                  className="px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-colors hover:bg-gray-50"
+                >
+                  {label}
+                </NavLink>
+              ))}
+
+              <p className="px-4 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+                About
+              </p>
+              {[
+                { href: "/annual-report", label: "Annual Report" },
+                { href: "/membership",    label: "Membership" },
+                { href: "/gallery",       label: "Gallery" },
+              ].map(({ href, label }) => (
+                <NavLink key={href} href={href} onNavigate={() => setOpen(false)}
+                  className="px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg transition-colors hover:bg-gray-50"
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+
+            {/* Footer */}
+            <div className="px-4 pb-6 pt-3 flex flex-col gap-2.5 border-t border-gray-100">
+              <button
+                onClick={() => { window.open("https://ko-fi.com/solarpak", "_blank"); setOpen(false); }}
+                className="w-full py-3 rounded-xl text-sm font-semibold bg-gray-900 hover:bg-gray-800 text-white transition-all active:scale-95"
+              >
+                Donate
+              </button>
+              <NavLink
+                href="/worker/login"
+                onNavigate={() => setOpen(false)}
+                className="w-full py-2 text-center text-xs text-gray-400 hover:text-gray-600 rounded-lg transition-colors hover:bg-gray-50"
+              >
+                Team Login
+              </NavLink>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      )}
+    </>
   );
 }

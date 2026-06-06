@@ -93,9 +93,9 @@ export default function Home() {
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
         <Navbar />
         <AnnouncementBanner />
-        <main className="relative w-full pt-20">
+        <main className="relative w-full">
           {/* Hero Section with Video - No Tint */}
-          <section ref={heroRef} className="relative w-full overflow-hidden" style={{ height: 'calc(100vh - 5rem)' }}>
+          <section ref={heroRef} className="relative w-full overflow-hidden" style={{ height: '100vh' }}>
             
             {/* Static Background (Instant Load) */}
             <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900">
