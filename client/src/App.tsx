@@ -29,6 +29,7 @@ import PerformanceReport from "@/pages/worker/PerformanceReport";
 import TestPerformance from "@/pages/worker/TestPerformance";
 import ImpactLabsDashboard from "@/pages/ImpactLabsDashboard";
 import ImpactLabsPublic from "@/pages/ImpactLabsPublic";
+import LiveImpactDashboard from "@/pages/LiveImpactDashboard";
 import Opportunities from "@/pages/Opportunities";
 import Hackathon from "@/pages/Hackathon";
 import Admin from "@/pages/Admin";
@@ -140,6 +141,7 @@ function Router() {
       <Route path="/worker/performance-report" component={PerformanceReport} />
       <Route path="/worker/test" component={TestPerformance} />
       
+      <Route path="/impact-dashboard" component={LiveImpactDashboard} />
       <Route path="/impactlabs" component={ImpactLabsDashboard} />
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
