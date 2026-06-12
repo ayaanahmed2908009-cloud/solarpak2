@@ -185,38 +185,6 @@ function Bar({label, value, max, unit, color=C.greenMid}: {label?: string; value
   );
 }
 
-function PaybackChart({netAnnual, install, payback, years}: {netAnnual: number; install: number; payback: number; years: number}) {
-  const [hov, setHov]=useState<number | null>(null);
-  const cum=Array.from({length:years},(_,i)=>netAnnual*(i+1)-install);
-  const hi=Math.max(...cum,1),lo=Math.min(...cum,-1),range=hi-lo;
-  return (
-    <div style={{position:"relative"}}>
-      {hov!==null&&<div style={{position:"absolute",top:-34,left:"50%",transform:"translateX(-50%)",background:C.navy,color:"#fff",fontSize:11,padding:"4px 10px",borderRadius:7,whiteSpace:"nowrap",zIndex:10,pointerEvents:"none"}}>Year {hov+1}: ${cum[hov].toLocaleString("en-US",{maximumFractionDigits:0})}</div>}
-      <div style={{display:"flex",gap:2,alignItems:"flex-end",height:80}}>
-        {cum.map((v,i)=>{
-          const h=Math.max(((v-lo)/range)*100,4);
-          const isBreak=Math.abs(i+1-payback)<0.7;
-          return <div key={i} style={{flex:1}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
-            <div style={{height:`${h}%`,minHeight:4,borderRadius:"3px 3px 0 0",background:isBreak?C.gold:v>=0?C.greenMid:"#f87171",opacity:hov!==null&&hov!==i?0.5:1,border:hov===i?`1.5px solid ${C.navy}`:"1.5px solid transparent",transition:"opacity .12s"}}/>
-          </div>;
-        })}
-      </div>
-      <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}>
-        <span style={{fontSize:10,color:C.subtle}}>Year 1</span>
-        {payback>0&&payback<=years&&<span style={{fontSize:10,color:C.gold,fontWeight:700}}>↑ Breakeven yr {payback.toFixed(1)}</span>}
-        <span style={{fontSize:10,color:C.subtle}}>Year {years}</span>
-      </div>
-      <div style={{display:"flex",gap:14,marginTop:10,flexWrap:"wrap"}}>
-        {[{c:"#f87171",l:"Pre-payback"},{c:C.gold,l:"Breakeven"},{c:C.greenMid,l:"Net positive"}].map(x=>(
-          <div key={x.l} style={{display:"flex",alignItems:"center",gap:5}}>
-            <span style={{width:9,height:9,borderRadius:2,background:x.c,display:"inline-block"}}/>
-            <span style={{fontSize:11,color:C.body}}>{x.l}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function KPITile({label, value, sub, color=C.navy}: {label: string; value: string; sub?: string; color?: string}) {
   return (
