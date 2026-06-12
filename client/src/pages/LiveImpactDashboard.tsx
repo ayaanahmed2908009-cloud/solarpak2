@@ -687,19 +687,6 @@ export default function LiveImpactDashboard() {
                 <StatCard icon="📊" label="Gross Margin"     value={gMargin}  unit="%"      pill="Revenue minus op. cost"/>
                 <StatCard icon="🔧" label="Annual Op. Cost" value={opCost}   unit="$/kWh"  pill="Maintenance per unit generated"/>
               </div>
-              <Card style={{marginBottom:16}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12,marginBottom:24}}>
-                  <div>
-                    <h3 style={{fontSize:16,fontWeight:700,color:C.navy,marginBottom:4}}>{inp.lifeYears}-Year Cumulative Savings</h3>
-                    <p style={{fontSize:12,color:C.subtle}}>Hover each bar to see the cumulative figure</p>
-                  </div>
-                  <div style={{background:lifetime>=0?C.greenLight:"#fef2f2",border:`1px solid ${lifetime>=0?C.border:"#fecaca"}`,borderRadius:12,padding:"10px 18px",textAlign:"center"}}>
-                    <div style={{fontSize:11,color:C.subtle,marginBottom:3}}>Total lifetime savings</div>
-                    <div style={{fontSize:22,fontWeight:800,color:lifetime>=0?C.green:"#dc2626"}}>${lifetime.toLocaleString("en-US",{maximumFractionDigits:0})}</div>
-                  </div>
-                </div>
-                <PaybackChart netAnnual={netAnn} install={inp.installUsd} payback={payback} years={inp.lifeYears}/>
-              </Card>
               <Card>
                 <h3 style={{fontSize:15,fontWeight:700,color:C.navy,marginBottom:16}}>System Availability</h3>
                 <Bar label={`${avail.toFixed(1)}% uptime — ${inp.downtimeDays} downtime days / year`} value={parseFloat(avail.toFixed(1))} max={100} unit="%"/>
