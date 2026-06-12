@@ -76,7 +76,7 @@ export default function LiveImpactTracker() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-blue-100 px-4 py-2 rounded-full mb-4">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></div>
-            <span className="text-sm font-medium text-gray-700">Live Impact Dashboard</span>
+            <span className="text-sm font-medium text-gray-700">Live Impact Tracker</span>
           </div>
           <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-4">
             Real-Time Impact in Pakistan

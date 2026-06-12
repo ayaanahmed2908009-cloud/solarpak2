@@ -187,13 +187,12 @@ export default function DonationSuccess() {
                   Track Your Impact
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Keep a close lookout on your user dashboard for updates on where your money goes. 
-                  You'll receive detailed reports showing exactly how your contribution is helping 
+                  You'll receive detailed reports showing exactly how your contribution is helping
                   families in Pakistan get access to clean, reliable solar energy.
                 </p>
                 <div className="flex items-center text-sm text-yellow-700">
                   <Zap className="h-4 w-4 mr-1" />
-                  <span>Real-time impact updates coming to your dashboard</span>
+                  <span>Real-time impact updates coming soon</span>
                 </div>
               </div>
             </div>
@@ -202,16 +201,7 @@ export default function DonationSuccess() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            onClick={() => navigate('/dashboard')}
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3"
-          >
-            <Users className="mr-2 h-5 w-5" />
-            View Dashboard
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-          
-          <Button 
+          <Button
             variant="outline"
             onClick={() => navigate('/')}
             className="border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900 px-8 py-3"
