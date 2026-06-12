@@ -582,6 +582,7 @@ export default function LiveImpactDashboard() {
             </div>
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <StatusPill fetching={fetching} lastFetched={lastFetched}/>
+              <a href="https://solarpak.org" target="_blank" rel="noopener noreferrer" style={{background:C.green,color:C.white,fontSize:13,fontWeight:600,textDecoration:"none",padding:"9px 20px",borderRadius:10}}>solarpak.org ↗</a>
             </div>
           </div>
         </nav>
