@@ -153,7 +153,7 @@ export default function UnifiedImpactSection() {
       title: "Human Impact",
       stats: [
         { icon: <Heart className="w-5 h-5" />, value: counters.livesImpacted, suffix: "+", label: "Lives Changed" },
-        { icon: <Users className="w-5 h-5" />, value: 100, suffix: "K+", label: "Engaged — Social Media" },
+        { icon: <Users className="w-5 h-5" />, value: 200, suffix: "K+", label: "Engaged — Social Media" },
         { icon: <Globe className="w-5 h-5" />, value: 3, suffix: " villages", label: "Communities Powered" },
       ],
     },
