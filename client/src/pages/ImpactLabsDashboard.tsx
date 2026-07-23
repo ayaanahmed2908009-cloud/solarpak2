@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -242,6 +242,67 @@ function ArticleEditor({
       }
     };
     input.click();
+  }, [toast]);
+
+  // Pasting or dragging an image straight into the editor makes Quill embed it
+  // as a base64 data URI, which can blow past the request body size limit.
+  // Intercept those and route them through the upload endpoint instead.
+  useEffect(() => {
+    const quill = (quillRef.current as any)?.getEditor();
+    if (!quill) return;
+    const root: HTMLElement = quill.root;
+
+    const uploadAndInsert = async (file: File, index: number) => {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const res = await fetch("/api/impact-labs/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        const data = await res.json();
+        quill.insertEmbed(index, "image", data.url);
+        quill.setSelection(index + 1, 0);
+      } catch {
+        toast({ title: "Image upload failed", variant: "destructive" });
+      }
+    };
+
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            e.preventDefault();
+            const range = quill.getSelection(true);
+            uploadAndInsert(file, range ? range.index : quill.getLength());
+          }
+        }
+      }
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      const files = e.dataTransfer?.files;
+      if (!files || files.length === 0) return;
+      const imageFile = Array.from(files).find((f) => f.type.startsWith("image/"));
+      if (imageFile) {
+        e.preventDefault();
+        e.stopPropagation();
+        const range = quill.getSelection(true);
+        uploadAndInsert(imageFile, range ? range.index : quill.getLength());
+      }
+    };
+
+    root.addEventListener("paste", handlePaste);
+    root.addEventListener("drop", handleDrop, true);
+    return () => {
+      root.removeEventListener("paste", handlePaste);
+      root.removeEventListener("drop", handleDrop, true);
+    };
   }, [toast]);
 
   const quillModules = useMemo(() => ({
