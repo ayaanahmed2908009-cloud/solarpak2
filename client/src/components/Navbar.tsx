@@ -161,7 +161,6 @@ export default function Navbar() {
               {[
                 { href: "/impact-labs",   label: "Impact Labs" },
                 { href: "/opportunities", label: "Opportunities" },
-                { href: "/events",        label: "Events" },
               ].map(({ href, label }) => (
                 <NavLink key={href} href={href} onNavigate={() => setOpen(false)}
                   className="px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-colors hover:bg-gray-50"

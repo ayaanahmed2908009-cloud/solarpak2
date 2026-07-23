@@ -13,7 +13,6 @@ import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import ImpactLabsPreview from "@/components/ImpactLabsPreview";
 import FounderQuote from "@/components/FounderQuote";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { SEOOptimizedContent, SEOFAQSection } from "@/components/SEOOptimizedContent";
 import { SEOBlogContent, SEOLocationContent } from "@/components/SEOBlogContent";
 import { useState, useEffect, useRef } from "react";
@@ -92,7 +91,6 @@ export default function Home() {
     >
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
         <Navbar />
-        <AnnouncementBanner />
         <main className="relative w-full">
           {/* Hero Section with Video - No Tint */}
           <section ref={heroRef} className="relative w-full overflow-hidden" style={{ height: '100vh' }}>

@@ -33,7 +33,6 @@ import LiveImpactDashboard from "@/pages/LiveImpactDashboard";
 import Opportunities from "@/pages/Opportunities";
 import Hackathon from "@/pages/Hackathon";
 import Admin from "@/pages/Admin";
-import Events from "@/pages/Events";
 import AnnualReport from "@/pages/AnnualReport";
 import { useEffect } from "react";
 
@@ -146,7 +145,6 @@ function Router() {
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/hackathon" component={Hackathon} />
-      <Route path="/events" component={Events} />
       <Route path="/annual-report" component={AnnualReport} />
       <Route path="/admin" component={Admin} />
 
