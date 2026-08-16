@@ -1602,6 +1602,7 @@ export default function PoweredAtlas() {
         flexDirection:
           "column",
         gap: 20,
+        padding: "0 24px",
         fontFamily:
           "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         color: C.body
@@ -1643,7 +1644,7 @@ export default function PoweredAtlas() {
 
         .powered-atlas-map {
           width: 100%;
-          height: 520px;
+          height: 650px;
           border-radius: 16px;
           overflow: hidden;
         }
@@ -1755,144 +1756,6 @@ export default function PoweredAtlas() {
               public/atlas.csv
             </strong>
           </div>
-        </div>
-      )}
-
-
-      {/* LOADING */}
-      {loadingData ? (
-        <div
-          style={{
-            textAlign:
-              "center",
-            padding: 24,
-            color: C.subtle,
-            fontSize: 13
-          }}
-        >
-          Loading installations…
-        </div>
-      ) : (
-        <div
-          className="powered-atlas-stats"
-        >
-          {[
-            [
-              "📍",
-              "Total Installations",
-              installations.length,
-              ""
-            ],
-            [
-              "👥",
-              "People Impacted",
-              totalPeople,
-              ""
-            ],
-            [
-              "⚡",
-              "Total Capacity",
-              totalKW,
-              "kW"
-            ],
-            [
-              "🌿",
-              "CO₂ Avoided/yr",
-              totalCO2,
-              "t"
-            ],
-            [
-              "🌳",
-              "Tree Equivalent",
-              totalTrees,
-              ""
-            ]
-          ].map(
-            ([
-              icon,
-              label,
-              value,
-              unit
-            ]) => (
-              <div
-                key={label}
-                style={{
-                  background:
-                    C.white,
-                  border:
-                    `1px solid ${C.border}`,
-                  borderRadius: 16,
-                  padding:
-                    "16px 18px",
-                  boxShadow:
-                    C.shadow,
-                  display:
-                    "flex",
-                  alignItems:
-                    "center",
-                  gap: 12
-                }}
-              >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 11,
-                    background:
-                      C.greenLight,
-                    display:
-                      "flex",
-                    alignItems:
-                      "center",
-                    justifyContent:
-                      "center",
-                    fontSize: 18,
-                    flexShrink: 0
-                  }}
-                >
-                  {icon}
-                </div>
-
-                <div>
-                  <div
-                    style={{
-                      fontSize: 22,
-                      fontWeight: 800,
-                      color: C.navy,
-                      lineHeight: 1
-                    }}
-                  >
-                    {fmtShort(
-                      value
-                    )}
-
-                    {unit && (
-                      <span
-                        style={{
-                          fontSize: 12,
-                          color:
-                            C.greenMid,
-                          marginLeft: 3
-                        }}
-                      >
-                        {unit}
-                      </span>
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: C.subtle,
-                      marginTop: 4
-                    }}
-                  >
-                    {label}
-                  </div>
-                </div>
-              </div>
-            )
-          )}
         </div>
       )}
 

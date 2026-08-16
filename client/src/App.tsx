@@ -1,7 +1,9 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import PoweredAtlas from "./components/PoweredAtlas";
+// Ignore missing type declarations for this JS component
+// @ts-ignore: Allow importing .jsx without declaration
+import PoweredAtlas from "./components/PoweredAtlas.jsx";
 import { Toaster } from "@/components/ui/toaster";
 import { lazy, Suspense } from "react";
 import NotFound from "@/pages/not-found";
