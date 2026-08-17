@@ -47,11 +47,11 @@ export default function UnifiedImpactSection() {
   });
 
   const finalNumbers = {
-    livesImpacted: 250,
+    livesImpacted: 500,
     energyGenerated: 270,
     co2Prevented: 1900,
     hoursOfPower: 3,
-    panelsInstalled: 27,
+    panelsInstalled: 28,
     homesEmpowered: 23
   };
 

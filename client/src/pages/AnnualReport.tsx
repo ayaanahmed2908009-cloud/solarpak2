@@ -4,8 +4,8 @@ import Footer from "@/components/Footer";
 import { FileText, Download, ExternalLink } from "lucide-react";
 
 const stats = [
-  { label: "Solar Installations", value: "24", sub: "completed in FY1" },
-  { label: "People Impacted", value: "240+", sub: "direct beneficiaries" },
+  { label: "Solar Installations", value: "28", sub: "completed in FY1" },
+  { label: "People Impacted", value: "500+", sub: "direct beneficiaries" },
   { label: "CO₂ Avoided", value: "1,900 kg", sub: "estimated annually" },
   { label: "Total Raised", value: "PKR 12.7L", sub: "April 2025 – May 2026" },
 ];
@@ -13,7 +13,7 @@ const stats = [
 const highlights = [
   { num: "21", desc: "Energy-empowered households" },
   { num: "1", desc: "Rural school electrified" },
-  { num: "16", desc: "Active youth team members" },
+  { num: "21", desc: "Active youth volunteers" },
   { num: "200k+", desc: "Social media views" },
   { num: "3", desc: "Research articles published" },
   { num: "270 kWh", desc: "Clean energy generated" },
@@ -69,7 +69,7 @@ export default function AnnualReport() {
               </span>
             </h1>
             <p className="text-lg text-gray-400 max-w-xl leading-relaxed mb-5">
-              Lighting the Way Forward — our first-year impact across 24 installations, 240+ lives
+              Lighting the Way Forward — our first-year impact across 28 installations, 500+ lives
               changed, and the communities of Khairpur, Pakistan.
             </p>
             <p className="text-sm text-gray-500 max-w-lg leading-relaxed mb-10">

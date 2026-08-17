@@ -3,7 +3,7 @@ import { Link } from "wouter";
 
 const stats = [
   { value: "100%", label: "Student-run" },
-  { value: "16", label: "Team members" },
+  { value: "21", label: "Team members" },
   { value: "7", label: "Departments" },
   { value: "2", label: "Cities" },
 ];

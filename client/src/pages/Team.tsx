@@ -30,8 +30,8 @@ const founder: TeamMember = {
   expertise: ["Strategic Leadership", "Solar Energy Systems", "Community Development", "Renewable Energy Policy", "Social Impact"],
   achievements: [
     "Founded SolarPak and established mission-driven approach",
-    "Led 23 successful solar installations across Pakistan",
-    "Transformed 120 lives through clean energy access",
+    "Led 28 successful solar installations across Pakistan",
+    "Transformed 500+ lives through clean energy access",
     "Built partnerships with local communities and suppliers",
     "Certified Solar Energy Specialist and Social Entrepreneur",
     "Website developer"
@@ -146,22 +146,22 @@ export default function Team() {
                   Meet Our Team
                 </h1>
                 <p className="text-lg text-gray-400 max-w-xl leading-relaxed mb-12">
-                  15 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy.
+                  21 passionate young leaders transforming Pakistani communities through clean, sustainable solar energy.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
                 <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
-                  <div className="text-2xl font-bold text-white mb-1">23</div>
+                  <div className="text-2xl font-bold text-white mb-1">28</div>
                   <div className="text-xs text-gray-400">Panels Installed</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
-                  <div className="text-2xl font-bold text-white mb-1">120</div>
+                  <div className="text-2xl font-bold text-white mb-1">500+</div>
                   <div className="text-xs text-gray-400">Lives Transformed</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
-                  <div className="text-2xl font-bold text-white mb-1">15</div>
-                  <div className="text-xs text-gray-400">Team Members</div>
+                  <div className="text-2xl font-bold text-white mb-1">21</div>
+                  <div className="text-xs text-gray-400">Volunteers</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10">
                   <div className="text-2xl font-bold text-white mb-1">5</div>

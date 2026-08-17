@@ -464,6 +464,45 @@ function ArticleList() {
             <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
               Research, reports, and stories documenting our environmental and economic impact across Pakistan.
             </p>
+
+            {/* Research Partners */}
+            <div className="mt-10 pt-8 border-t border-white/10">
+              <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-4">
+                Research guided by faculty at
+              </p>
+              <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
+                <div className="flex items-center gap-2.5 opacity-90 hover:opacity-100 transition-opacity">
+                  <img
+                    src="/partners/lums-logo.png"
+                    alt="LUMS"
+                    className="h-8 md:h-9 w-auto object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                      const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = "flex";
+                    }}
+                  />
+                  <span className="hidden items-center h-9 px-3 rounded-md border border-white/15 bg-white/5 text-white/80 text-sm font-semibold tracking-tight">
+                    LUMS
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5 opacity-90 hover:opacity-100 transition-opacity">
+                  <img
+                    src="/partners/cmu-logo.png"
+                    alt="Carnegie Mellon University"
+                    className="h-8 md:h-9 w-auto object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                      const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = "flex";
+                    }}
+                  />
+                  <span className="hidden items-center h-9 px-3 rounded-md border border-white/15 bg-white/5 text-white/80 text-sm font-semibold tracking-tight">
+                    Carnegie Mellon University
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
