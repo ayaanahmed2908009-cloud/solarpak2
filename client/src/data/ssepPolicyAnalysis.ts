@@ -204,7 +204,7 @@ export const ssepPolicyAnalysisArticle: ImpactLabsArticle = {
     </ul>
   `,
   coverImageUrl: null,
-  authorName: "SolarPak Impact Labs",
+  authorName: "Ayaan Ahmed, Aleena Rafi, Shuban Singh & Moiz Ali",
   category: "report",
   tags: ["Policy Analysis", "Sindh Solar Energy Project", "World Bank", "Renewable Energy Policy"],
   isPublished: true,
