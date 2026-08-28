@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { X, ScrollText, ArrowRight } from "lucide-react";
+import { X } from "lucide-react";
 import { useLocation } from "wouter";
 import { SSEP_POLICY_ANALYSIS_SLUG } from "@/data/ssepPolicyAnalysis";
 
-// On-load announcement for the SSEP policy analysis, shown once on the Impact
-// Labs listing page. Follows the same popup pattern as the retired FY1
-// annual-report announcement (fixed overlay + centered dark gradient card,
-// localStorage-dismissed).
+// On-load announcement for the SSEP policy analysis, shown once on the site's
+// landing page (not on Impact Labs itself). Follows the same popup pattern as
+// the retired FY1 annual-report announcement (fixed overlay + centered dark
+// gradient card, localStorage-dismissed).
 export default function SsepAnalysisAnnouncement() {
   const [isVisible, setIsVisible] = useState(false);
   const [, setLocation] = useLocation();
@@ -14,7 +14,7 @@ export default function SsepAnalysisAnnouncement() {
   useEffect(() => {
     const hasSeen = localStorage.getItem("ssep-policy-analysis-announcement-dismissed");
     if (!hasSeen) {
-      const timer = setTimeout(() => setIsVisible(true), 1000);
+      const timer = setTimeout(() => setIsVisible(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -36,8 +36,8 @@ export default function SsepAnalysisAnnouncement() {
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={handleDismiss} />
 
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4">
-        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm px-4">
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 rounded-2xl shadow-2xl overflow-hidden border border-white/10">
           {/* Ambient glow */}
           <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-green-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -51,62 +51,38 @@ export default function SsepAnalysisAnnouncement() {
             <X className="w-4 h-4" />
           </button>
 
-          <div className="relative p-8 text-center">
-            {/* Icon */}
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-green-400/10 border border-emerald-400/20 mb-5">
-              <ScrollText className="w-7 h-7 text-emerald-400" />
-            </div>
-
+          <div className="relative p-7">
             {/* Badge */}
-            <div className="inline-flex items-center gap-1.5 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-3 py-1 mb-4">
+            <div className="inline-flex items-center gap-1.5 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-3 py-1 mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 text-xs font-semibold uppercase tracking-wider">New Policy Analysis</span>
+              <span className="text-emerald-400 text-xs font-semibold uppercase tracking-wider">New from Impact Labs</span>
             </div>
 
-            <h2 className="text-2xl font-extrabold text-white mb-2 leading-tight tracking-tight">
-              What Really Happened
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">
-                with the SSEP
-              </span>
+            <h2 className="text-xl font-extrabold text-white mb-3 leading-snug tracking-tight">
+              What really happened with the Sindh Solar Energy Project
             </h2>
 
-            <p className="text-gray-400 text-sm leading-relaxed mb-3 max-w-xs mx-auto">
-              A full review of the World Bank-financed Sindh Solar Energy Project — what was
-              promised, what got built, and why the delivery model broke down.
+            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+              A full policy analysis of the World Bank-financed SSEP — what was promised,
+              what got built, and why the delivery model broke down.
             </p>
 
-            <p className="text-gray-500 text-xs leading-relaxed mb-6 max-w-xs mx-auto">
+            <p className="text-gray-500 text-xs leading-relaxed mb-6 pb-6 border-b border-white/10">
               Researched and written in-house by our team of researchers at{" "}
               <span className="text-emerald-400 font-medium">SolarPak Impact Labs</span>, drawing
               on official World Bank, Senate and Auditor-General records.
             </p>
 
-            {/* Stats teaser */}
-            <div className="grid grid-cols-3 gap-3 mb-7">
-              {[
-                { val: "7.5%", lbl: "Capacity Built" },
-                { val: "26.8%", lbl: "Access Delivered" },
-                { val: "12", lbl: "Page Report" },
-              ].map((s) => (
-                <div key={s.lbl} className="bg-white/5 border border-white/10 rounded-xl py-3 px-2">
-                  <div className="text-lg font-bold text-white">{s.val}</div>
-                  <div className="text-xs text-gray-400">{s.lbl}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleReadAnalysis}
-                className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-900/40 text-sm"
+                className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-900/40 text-sm"
               >
-                Read the Analysis
-                <ArrowRight className="w-4 h-4" />
+                Read the analysis
               </button>
               <button
                 onClick={handleDismiss}
-                className="text-gray-500 hover:text-gray-400 text-xs transition-colors pt-1"
+                className="text-gray-500 hover:text-gray-400 text-sm transition-colors"
               >
                 Maybe later
               </button>

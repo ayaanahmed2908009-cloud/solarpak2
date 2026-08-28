@@ -12,6 +12,7 @@ import MonthlyImpactSection from "@/components/MonthlyImpactSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 import ImpactLabsPreview from "@/components/ImpactLabsPreview";
+import SsepAnalysisAnnouncement from "@/components/SsepAnalysisAnnouncement";
 import FounderQuote from "@/components/FounderQuote";
 import { SEOOptimizedContent, SEOFAQSection } from "@/components/SEOOptimizedContent";
 import { SEOBlogContent, SEOLocationContent } from "@/components/SEOBlogContent";
@@ -90,6 +91,7 @@ export default function Home() {
       keywords={["world's largest youth led solar nonprofit", "youth led solar organization", "student run solar charity", "young leaders renewable energy", "solar energy Pakistan", "solar panels donation", "Pakistan electricity crisis", "youth-led nonprofit", "student solar initiative"]}
     >
       <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
+        <SsepAnalysisAnnouncement />
         <Navbar />
         <main className="relative w-full">
           {/* Hero Section with Video - No Tint */}

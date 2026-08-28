@@ -4,7 +4,6 @@ import { useRoute, useLocation, Link } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SsepAnalysisAnnouncement from "@/components/SsepAnalysisAnnouncement";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -539,8 +538,6 @@ function ArticleList() {
 
   return (
     <>
-      <SsepAnalysisAnnouncement />
-
       <div
         ref={heroRef}
         className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
