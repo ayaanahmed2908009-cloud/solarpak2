@@ -4,6 +4,7 @@ import { useRoute, useLocation, Link } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SsepAnalysisAnnouncement from "@/components/SsepAnalysisAnnouncement";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,9 +21,17 @@ import {
   FlaskConical,
   Briefcase,
   Clock,
+  Download,
+  ExternalLink,
+  ScrollText,
 } from "lucide-react";
 import DOMPurify from "dompurify";
 import type { ImpactLabsArticle } from "@shared/schema";
+import {
+  SSEP_POLICY_ANALYSIS_SLUG,
+  SSEP_POLICY_ANALYSIS_PDF_URL,
+  ssepPolicyAnalysisArticle,
+} from "@/data/ssepPolicyAnalysis";
 
 const categories = [
   { value: "all", label: "All", icon: BookOpen },
@@ -51,6 +60,7 @@ function ArticleCard({ article, index }: { article: ImpactLabsArticle; index: nu
   const [, setLocation] = useLocation();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const isFeatured = article.slug === SSEP_POLICY_ANALYSIS_SLUG;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -74,9 +84,19 @@ function ArticleCard({ article, index }: { article: ImpactLabsArticle; index: nu
       }}
     >
       <div
-        className="group cursor-pointer h-full rounded-xl overflow-hidden bg-white border border-gray-100 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500 hover:-translate-y-1"
+        className={`group relative cursor-pointer h-full rounded-xl overflow-hidden bg-white transition-all duration-500 hover:-translate-y-1 ${
+          isFeatured
+            ? "border-2 border-emerald-400/60 ring-4 ring-emerald-500/10 shadow-lg shadow-emerald-900/10 hover:shadow-2xl hover:shadow-emerald-900/20 hover:ring-emerald-500/20"
+            : "border border-gray-100 hover:shadow-2xl hover:shadow-green-900/10"
+        }`}
         onClick={() => setLocation(`/impact-labs/${article.slug}`)}
       >
+        {isFeatured && (
+          <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+            <ScrollText className="w-3 h-3" />
+            Policy Analysis
+          </div>
+        )}
         <div className="relative h-52 overflow-hidden">
           {article.coverImageUrl ? (
             <img
@@ -90,8 +110,12 @@ function ArticleCard({ article, index }: { article: ImpactLabsArticle; index: nu
               }}
             />
           ) : null}
-          <div className={`w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900 items-center justify-center ${article.coverImageUrl ? 'hidden' : 'flex'}`}>
-            <FlaskConical className="w-10 h-10 text-white/30" />
+          <div className={`w-full h-full items-center justify-center ${isFeatured ? "bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900" : "bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900"} ${article.coverImageUrl ? 'hidden' : 'flex'}`}>
+            {isFeatured ? (
+              <ScrollText className="w-10 h-10 text-emerald-400/40" />
+            ) : (
+              <FlaskConical className="w-10 h-10 text-white/30" />
+            )}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
@@ -230,13 +254,18 @@ function ArticleView({ slug }: { slug: string }) {
   const [, setLocation] = useLocation();
   const [imageError, setImageError] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const isHardcoded = slug === SSEP_POLICY_ANALYSIS_SLUG;
 
-  const { data: article, isLoading, error } = useQuery<ImpactLabsArticle>({
+  const { data: fetchedArticle, isLoading, error } = useQuery<ImpactLabsArticle>({
     queryKey: [`/api/impact-labs/articles/${slug}`],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    enabled: !isHardcoded,
   });
 
-  useArticleViewTracking(article?.id);
+  const article = isHardcoded ? ssepPolicyAnalysisArticle : fetchedArticle;
+
+  // The hardcoded policy analysis has no database row, so it's excluded from view tracking.
+  useArticleViewTracking(isHardcoded ? undefined : article?.id);
 
   // Wrap tables in scrollable containers for responsive layout
   useEffect(() => {
@@ -376,13 +405,80 @@ function ArticleView({ slug }: { slug: string }) {
             </div>
           )}
 
-          <div className="border-t border-gray-200 pt-10">
-            <div
-              ref={contentRef}
-              className="article-content"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '), { ADD_TAGS: ['table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'figure', 'figcaption'] }) }}
-            />
-          </div>
+          {isHardcoded && (
+            <div className="mb-14">
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-emerald-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">Original Document</h2>
+                    <p className="text-xs text-gray-400">12 pages · Full policy brief with tables, timeline and citations</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={SSEP_POLICY_ANALYSIS_PDF_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Open in New Tab
+                  </a>
+                  <a
+                    href={SSEP_POLICY_ANALYSIS_PDF_URL}
+                    download="SolarPak-SSEP-Policy-Analysis.pdf"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-full"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download
+                  </a>
+                </div>
+              </div>
+
+              {/* PDF embed — object+embed is the most cross-browser reliable approach */}
+              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl">
+                <object
+                  data={SSEP_POLICY_ANALYSIS_PDF_URL}
+                  type="application/pdf"
+                  className="w-full"
+                  style={{ height: "80vh", minHeight: 560, display: "block" }}
+                >
+                  {/* embed as second fallback */}
+                  <embed
+                    src={SSEP_POLICY_ANALYSIS_PDF_URL}
+                    type="application/pdf"
+                    className="w-full"
+                    style={{ height: "80vh", minHeight: 560, display: "block" }}
+                  />
+                </object>
+              </div>
+              <p className="text-center text-xs text-gray-400 mt-3">
+                PDF not displaying?{" "}
+                <a
+                  href={SSEP_POLICY_ANALYSIS_PDF_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-600 hover:underline"
+                >
+                  Open directly in your browser
+                </a>
+                .
+              </p>
+            </div>
+          )}
+
+          {!isHardcoded && (
+            <div className="border-t border-gray-200 pt-10">
+              <div
+                ref={contentRef}
+                className="article-content"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '), { ADD_TAGS: ['table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'figure', 'figcaption'] }) }}
+              />
+            </div>
+          )}
 
           <footer className="mt-16 mb-16 pt-10 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -431,12 +527,20 @@ function ArticleList() {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  const filteredArticles = articles?.filter(
+  const dbArticles = articles?.filter(
     (a) => activeCategory === "all" || a.category === activeCategory
   );
 
+  // The policy analysis is hardcoded (not in the database) and always pinned first.
+  const showFeatured = activeCategory === "all" || activeCategory === ssepPolicyAnalysisArticle.category;
+  const filteredArticles = showFeatured
+    ? [ssepPolicyAnalysisArticle, ...(dbArticles ?? [])]
+    : dbArticles;
+
   return (
     <>
+      <SsepAnalysisAnnouncement />
+
       <div
         ref={heroRef}
         className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
