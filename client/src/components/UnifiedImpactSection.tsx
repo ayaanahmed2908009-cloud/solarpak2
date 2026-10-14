@@ -51,8 +51,8 @@ export default function UnifiedImpactSection() {
     energyGenerated: 270,
     co2Prevented: 1900,
     hoursOfPower: 3,
-    panelsInstalled: 28,
-    homesEmpowered: 23
+    panelsInstalled: 35,
+    homesEmpowered: 31
   };
 
   useEffect(() => {

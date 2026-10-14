@@ -26,8 +26,8 @@ export default function LiveImpactTracker() {
   });
 
   const targetMetrics: LiveMetrics = {
-    panelsInstalled: (stats as any)?.solarPanelsInstalled || 28,
-    homesEmpowered: (stats as any)?.homesHelped || 5,
+    panelsInstalled: (stats as any)?.solarPanelsInstalled || 35,
+    homesEmpowered: (stats as any)?.homesHelped || 31,
     energyGenerated: 150, // kWh generated today
     co2Saved: 75, // kg CO2 saved
     currentTemp: 45, // Constant temperature

@@ -41,8 +41,8 @@ export function SEOBlogContent() {
         <section>
           <h2>Community-Driven Impact: How Donations Transform Lives</h2>
           <p>
-            Through community donations, SolarPak has successfully installed 28 solar panels
-            across Pakistan, directly empowering 23 families and positively impacting 500+ lives.
+            Through community donations, SolarPak has successfully installed 35 solar panels
+            across Pakistan, directly empowering 31 families and positively impacting 500+ lives.
             These installations prevent 1,900 kg of CO₂ emissions — equivalent to planting 95 trees annually.
           </p>
         </section>
@@ -71,7 +71,7 @@ export function SEOBlogContent() {
           <h2>Environmental Sustainability and Climate Action</h2>
           <p>
             Each solar panel installation contributes to Pakistan's environmental sustainability goals.
-            Our 28 installations prevent 1,900 kg of CO₂ emissions annually, equivalent to the
+            Our 35 installations prevent 1,900 kg of CO₂ emissions annually, equivalent to the
             environmental benefit of planting 95 trees. Solar energy reduces Pakistan's dependence 
             on fossil fuels while providing clean, renewable power to communities in need.
           </p>
@@ -102,7 +102,7 @@ export function SEOBlogContent() {
           <h2>The Future of Solar Energy in Pakistan</h2>
           <p>
             SolarPak aims to install 100 solar panel systems across Pakistan, creating a network
-            of energy-independent communities. Currently at 28% of our goal with 28 installations
+            of energy-independent communities. Currently at 35% of our goal with 35 installations
             completed, we're building momentum toward widespread solar energy adoption in rural
             and underserved Pakistani communities.
           </p>
