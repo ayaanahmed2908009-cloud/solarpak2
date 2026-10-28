@@ -4,6 +4,7 @@ import { useRoute, useLocation, Link } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SsepRecognition from "@/components/SsepRecognition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -403,6 +404,7 @@ function ArticleView({ slug }: { slug: string }) {
               ))}
             </div>
           )}
+          {isHardcoded && <SsepRecognition />}
 
           {isHardcoded && (
             <div className="mb-14">
