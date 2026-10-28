@@ -126,6 +126,17 @@ export default function SsepRecognition() {
             </article>
           ))}
         </div>
+
+        <div className="mt-5 rounded-xl border border-emerald-100 bg-emerald-50/50 p-5">
+          <h3 className="mb-2 text-sm font-semibold text-emerald-800">
+            Upcoming policy discussion
+          </h3>
+          <p className="text-sm leading-6 text-gray-600">
+            We have received confirmation from a member of the Provincial Assembly
+            of Sindh that our SSEP policy analysis will be raised at the next meeting
+            for discussion of future provincial energy programmes.
+          </p>
+        </div>
       </section>
 
       <Dialog open={activeLetter !== null} onOpenChange={(open) => { if (!open) setActiveLetter(null); }}>
