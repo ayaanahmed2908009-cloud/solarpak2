@@ -4,9 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 // Ignore missing type declarations for this JS component
 // @ts-ignore: Allow importing .jsx without declaration
 import PoweredAtlas from "./components/PoweredAtlas.jsx";
-// Unified SolarPak impact dashboard
-// @ts-ignore: JSX dashboard component
-import UnifiedImpactDashboard from "./components/UnifiedImpactDashboard.jsx";
 import { Toaster } from "@/components/ui/toaster";
 import { lazy, Suspense } from "react";
 import NotFound from "@/pages/not-found";
@@ -146,7 +143,7 @@ function Router() {
       <Route path="/worker/performance-report" component={PerformanceReport} />
       <Route path="/worker/test" component={TestPerformance} />
       
-      <Route path="/impact-dashboard" component={UnifiedImpactDashboard} />
+      <Route path="/impact-dashboard" component={LiveImpactDashboard} />
       <Route path="/powered-atlas" component={PoweredAtlas} />
       <Route path="/impactlabs" component={ImpactLabsDashboard} />
       <Route path="/impact-labs/:slug?" component={ImpactLabsPublic} />
