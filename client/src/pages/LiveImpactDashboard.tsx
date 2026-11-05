@@ -527,19 +527,12 @@ function ProjectCard({inst,onClose}){
           </div>
           <button onClick={onClose} style={{background:C.sectionBg,border:"none",borderRadius:4,width:26,height:26,cursor:"pointer",color:C.subtle,fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>×</button>
         </div>
-        <div style={{background:C.greenLight,borderRadius:4,padding:"10px 13px",marginBottom:12,border:`1px solid ${C.border}`}}>
-          {loadingSum?(
-            <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:11,height:11,border:`2px solid ${C.subtle}`,borderTopColor:"transparent",borderRadius:"4px",animation:"spin 0.7s linear infinite"}}/><span style={{fontSize:11,color:C.subtle}}>Preparing summary…</span></div>
-          ):(
-            <p style={{fontSize:12,color:C.green,lineHeight:1.6,margin:0,fontStyle:"italic"}}>"{summary}"</p>
-          )}
-        </div>
-        {hasDoc&&(
+                {hasDoc&&(
           <div onClick={()=>setDocumentOpen(true)} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:4,padding:"13px 14px",marginBottom:12,cursor:"pointer",boxShadow:C.shadow}}
             onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow=C.shadowMd;}}
             onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow=C.shadow;}}>
             <div style={{display:"flex",alignItems:"flex-start",gap:11}}>
-              <div style={{width:36,height:36,borderRadius:4,background:C.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flexShrink:0}}></div>
+              <div aria-hidden="true" style={{fontSize:20,color:C.green,lineHeight:1,flexShrink:0}}>▤</div>
               <div style={{minWidth:0,flex:1}}>
                 <div style={{fontSize:9,fontWeight:800,color:C.green,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>Research Document</div>
                 <div style={{fontSize:13,fontWeight:800,color:C.navy,lineHeight:1.3,marginBottom:5}}>{inst.title||"Project Document"}</div>
