@@ -840,7 +840,7 @@ export default function App() {
               <div className="fu" style={{textAlign:"center",marginBottom:52}}>
                 <Eyebrow text="SolarPak Impact Labs"/>
                 <h1 style={{fontSize:"clamp(30px,5vw,56px)",fontWeight:900,color:C.navy,lineHeight:1.08,letterSpacing:"-0.03em",marginBottom:20}}>Impact by Each Installation</h1>
-                <p style={{fontSize:17,color:C.body,maxWidth:520,margin:"0 auto 44px",lineHeight:1.75}}>A measured view of the change created by each installation.</p>
+                <p style={{fontSize:17,color:C.body,maxWidth:520,margin:"0 auto 44px",lineHeight:1.75}}>A measured view of the change created by each installation — a way to track what your donations are doing.</p>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16,textAlign:"left"}}>
                   <StatCard icon={<Bolt/>} label="Energy Generated / Year" value={E} unit="kWh" pill={`${inp.systemKw} kW system`} sparkData={spk("energyKwh")} sparkColor={C.greenMid} ready={dataReady}/>
                   <StatCard icon={null} label="CO₂ Avoided" value={ghg} unit="MTCO₂e" pill="EF 0.50 kgCO₂e/kWh · 20% loss" sparkData={spkGhg} sparkColor="#16a34a" ready={dataReady}/>
