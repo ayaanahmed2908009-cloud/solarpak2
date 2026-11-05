@@ -664,7 +664,7 @@ function PoweredAtlas(){
     <div style={{display:"flex",flexDirection:"column",gap:20}}>
       <div style={{textAlign:"center"}}>
         <Eyebrow text="Powered"/>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:8}}><MetricMark label="installation"/><h2 style={{fontSize:28,fontWeight:800,color:C.navy,margin:0,letterSpacing:"-0.02em"}}>Powered Installations</h2></div>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:8}}><MetricMark label="installation"/><h2 style={{fontSize:28,fontWeight:800,color:C.navy,margin:0,letterSpacing:"-0.02em"}}>Powered Atlas</h2></div>
         <p style={{fontSize:14,color:C.body,maxWidth:520,margin:"0 auto",lineHeight:1.7}}>Powered is a short new series capturing the lives changed by recent solar installations.</p>
       </div>
       {loadingData?(
@@ -820,7 +820,7 @@ export default function App() {
               <span style={{fontSize:20,fontWeight:800,color:C.navy,letterSpacing:"-0.02em"}}>SolarPak</span>
             </div>
             <div style={{display:"flex",background:C.sectionBg,border:"1px solid "+C.border,borderRadius:4,padding:3,gap:4}}>
-              {[{id:"dashboard",label:"Dashboard",color:"#c46b16",activeBg:"#f4a261"},{id:"atlas",label:"Powered Installations",color:"#1f5f45",activeBg:"#76b893"}].map(s=>(
+              {[{id:"dashboard",label:"Dashboard",color:"#c46b16",activeBg:"#f4a261"},{id:"atlas",label:"Powered Atlas",color:"#1f5f45",activeBg:"#76b893"}].map(s=>(
                 <button key={s.id} onClick={()=>setSection(s.id)} style={{background:section===s.id?s.activeBg:"transparent",color:section===s.id?"#17231d":s.color,border:"none",borderRadius:3,padding:"9px 18px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",transition:"all .15s",boxShadow:section===s.id?"0 1px 3px rgba(27,45,37,.16)":"none",whiteSpace:"nowrap"}}>{s.label}</button>
               ))}
             </div>
