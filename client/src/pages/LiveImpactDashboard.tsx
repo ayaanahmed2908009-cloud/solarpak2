@@ -819,9 +819,9 @@ export default function App() {
               <SPLogo size={44}/>
               <span style={{fontSize:20,fontWeight:800,color:C.navy,letterSpacing:"-0.02em"}}>SolarPak</span>
             </div>
-            <div style={{display:"flex",background:C.sectionBg,borderRadius:4,padding:4,gap:2}}>
-              {[{id:"dashboard",label:"Dashboard"},{id:"atlas",label:"Powered Installations"}].map(s=>(
-                <button key={s.id} onClick={()=>setSection(s.id)} style={{background:section===s.id?C.white:"transparent",color:section===s.id?C.navy:C.subtle,border:"none",borderRadius:4,padding:"7px 18px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",transition:"all .15s",boxShadow:section===s.id?C.shadow:"none",whiteSpace:"nowrap"}}>{s.label}</button>
+            <div style={{display:"flex",background:C.sectionBg,border:"1px solid "+C.border,borderRadius:4,padding:3,gap:4}}>
+              {[{id:"dashboard",label:"Dashboard",color:"#c46b16",activeBg:"#f4a261"},{id:"atlas",label:"Powered Installations",color:"#1f5f45",activeBg:"#76b893"}].map(s=>(
+                <button key={s.id} onClick={()=>setSection(s.id)} style={{background:section===s.id?s.activeBg:"transparent",color:section===s.id?"#17231d":s.color,border:"none",borderRadius:3,padding:"9px 18px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",transition:"all .15s",boxShadow:section===s.id?"0 1px 3px rgba(27,45,37,.16)":"none",whiteSpace:"nowrap"}}>{s.label}</button>
               ))}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:16}}>
