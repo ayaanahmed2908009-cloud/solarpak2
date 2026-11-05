@@ -187,24 +187,20 @@ export default function Navbar() {
                 href="/impact-dashboard"
                 data-testid="link-impact-dashboard"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-bold transition-all active:scale-95"
+                className="flex items-center gap-3 w-full px-4 py-4 text-sm font-semibold transition-all active:scale-95"
                 style={{
-                  background:
-                    "linear-gradient(135deg, #f59e0b, #d97706)",
-                  color: "#0a0f1e",
-                  boxShadow:
-                    "0 4px 24px rgba(245,158,11,0.28)",
+                  background: "#f4a261",
+                  color: "#17231d",
+                  border: "1px solid #c46b16",
+                  boxShadow: "0 4px 18px rgba(196,107,22,0.22)",
                 }}
               >
                 <Zap
                   className="w-4 h-4"
                   style={{ color: "#92400e" }}
                 />
-                Impact Dashboard
+                Impact Dashboard / Powered Atlas
               </a>
-              <p className="px-1 pt-3 text-xs leading-relaxed text-gray-500">
-                One clear place to follow the measurable impact of SolarPak installations.
-              </p>
             </div>
 
             {/* Nav links */}
