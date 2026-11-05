@@ -101,7 +101,7 @@ function MetricMark({label=""}) {
   if (kind.includes("installation") || kind.includes("project")) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 10.5 12 5l7 5.5V19H5v-8.5Z"/><path d="M9 19v-5h6v5M3 10.5 12 3l9 7.5"/></svg>;
   if (kind.includes("tree") || kind.includes("land")) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10M8 20h8M12 4 8.5 9h2l-3 4h9l-3-4h2L12 4Z"/></svg>;
   if (kind.includes("performance") || kind.includes("availability") || kind.includes("uptime")) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg>;
-  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2.5"/></svg>;
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 4C11 4 5 8 5 15c0 2.5 1.5 4 4 4 7 0 11-6 11-15Z"/><path d="M5 19c2.5-4 6-7 11-9"/></svg>;
 }
 
 function StatCard({icon,label,value,unit,pill,color=C.greenMid,sparkData,sparkColor,ready}) {
