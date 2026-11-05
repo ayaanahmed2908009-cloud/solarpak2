@@ -203,7 +203,7 @@ export default function Navbar() {
                 Impact Dashboard
               </a>
               <p className="px-1 pt-3 text-xs leading-relaxed text-gray-500">
-                Powered is a short new series capturing the lives changed by recent solar installations.
+                One clear place to follow the measurable impact of SolarPak installations.
               </p>
             </div>
 
