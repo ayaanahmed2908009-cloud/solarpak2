@@ -181,8 +181,8 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Live Dashboard */}
-            <div className="px-4 pt-4 pb-2">
+            {/* Impact Dashboard */}
+            <div className="px-4 pt-4 pb-3">
               <a
                 href="/impact-dashboard/"
                 data-testid="link-impact-dashboard"
@@ -200,30 +200,11 @@ export default function Navbar() {
                   className="w-4 h-4"
                   style={{ color: "#92400e" }}
                 />
-                Live Impact Dashboard
+                Impact Dashboard
               </a>
-            </div>
-
-            {/* Powered Atlas */}
-            <div className="px-4 pb-3">
-              <a
-                href="/powered-atlas"
-                data-testid="link-powered-atlas"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-bold transition-all active:scale-95"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #22c55e, #16a34a)",
-                  color: "#052e16",
-                  boxShadow:
-                    "0 4px 24px rgba(34,197,94,0.28)",
-                }}
-              >
-                <span className="text-base">
-                  🗺️
-                </span>
-                Powered Atlas
-              </a>
+              <p className="px-1 pt-3 text-xs leading-relaxed text-gray-500">
+                Powered is a short new series capturing the lives changed by recent solar installations.
+              </p>
             </div>
 
             {/* Nav links */}
