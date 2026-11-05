@@ -717,7 +717,6 @@ function PoweredAtlas(){
                 return(
                   <button key={inst.id} onClick={()=>{setSelected(inst);mapInstanceRef.current?.flyTo([inst.latitude,inst.longitude],13,{duration:1.0});}} style={{background:isSel?C.greenLight:C.white,border:`1px solid ${isSel?C.green:C.border}`,borderRadius:4,padding:"10px 12px",cursor:"pointer",textAlign:"left",fontFamily:"inherit",transition:"all .15s"}}>
                     <div style={{display:"flex",alignItems:"center",gap:9}}>
-                      <div style={{width:28,height:28,borderRadius:4,background:color+"20",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}><MetricMark label={inst.projectType||"Installation"}/></div>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontSize:12,fontWeight:700,color:C.navy,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{inst.name}</div>
                         <div style={{fontSize:10,color:C.subtle}}>{inst.city||inst.province} · {inst.capacityKW}kW</div>
