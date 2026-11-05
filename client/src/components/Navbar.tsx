@@ -184,7 +184,7 @@ export default function Navbar() {
             {/* Impact Dashboard */}
             <div className="px-4 pt-4 pb-3">
               <a
-                href="/impact-dashboard/"
+                href="/impact-dashboard"
                 data-testid="link-impact-dashboard"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl text-sm font-bold transition-all active:scale-95"
