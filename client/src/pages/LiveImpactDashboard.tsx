@@ -840,6 +840,15 @@ export default function App() {
                 </div>
               </div>
 
+              <div className="fu" style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:12,marginBottom:28}}>
+                {[{value:"35",label:"Total SolarPak Installations"},{value:"300+",label:"People Powered Across SolarPak"}].map(s=>(
+                  <div key={s.label} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:4,padding:"14px 18px",textAlign:"center"}}>
+                    <div style={{fontSize:24,fontWeight:800,color:C.navy}}>{s.value}</div>
+                    <div style={{fontSize:11,color:C.subtle,textTransform:"uppercase",letterSpacing:"0.08em"}}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
               {/* TABS */}
               <div className="fu" style={{animationDelay:".08s",marginBottom:28}}>
                 <div style={{display:"flex",gap:4,borderBottom:`2px solid ${C.border}`,overflowX:"auto"}}>
