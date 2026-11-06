@@ -664,7 +664,7 @@ function PoweredAtlas(){
         <div style={{textAlign:"center",padding:24,color:C.subtle,fontSize:13}}>Loading installations…</div>
       ):(
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:12}}>
-          {[{label:"Powered Installations",value:installations.length,unit:""},{label:"Powered People Impacted",value:totalPeople,unit:""},{label:"Total Capacity",value:totalKW,unit:"kW"},{label:"CO₂ Avoided/yr",value:totalCO2,unit:"t"},{label:"Tree Equivalent",value:totalTrees,unit:""}].map(s=>(
+          {[{label:"Powered Installations",value:installations.length,unit:""},{label:"People Impacted Through Powered",value:40,unit:""},{label:"Total Capacity",value:totalKW,unit:"kW"},{label:"CO₂ Avoided/yr",value:totalCO2,unit:"t"},{label:"Tree Equivalent",value:totalTrees,unit:""}].map(s=>(
             <div key={s.label} style={{background:C.white,border:`1px solid ${C.border}`,borderRadius:4,padding:"16px 18px",boxShadow:C.shadow,display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:40,height:40,borderRadius:4,background:C.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}><MetricMark label={s.label}/></div>
               <div>
