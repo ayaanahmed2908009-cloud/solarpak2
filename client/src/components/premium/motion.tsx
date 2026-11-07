@@ -124,45 +124,61 @@ type ClipProps = {
   hd?: boolean;
   /** Approximate rendered width in CSS px, used to pick the rendition. */
   approxWidth?: number;
+  /** Start downloading on mount (above-the-fold clips). */
+  eager?: boolean;
   className?: string;
   style?: CSSProperties;
   label: string;
 };
 
 /**
- * Muted, looping, inline video that only plays while on screen,
- * falls back to its poster for reduced motion, and picks 720p or 1080p.
+ * Muted, looping, inline video. Above-the-fold clips (`eager`) download as soon
+ * as the page mounts; the rest start downloading about a screen and a half
+ * before they scroll into view, so they are already buffered when they arrive.
+ * Plays only while on screen and shows its poster for reduced motion.
  */
-export function Clip({ name, hd = false, approxWidth = 400, className, style, label }: ClipProps) {
+export function Clip({ name, hd = false, approxWidth = 400, eager = false, className, style, label }: ClipProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [src, setSrc] = useState<string | null>(null);
-  const reduced = useRef(false);
 
   useEffect(() => {
-    reduced.current = !!prefersReducedMotion();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const want = hd && approxWidth * dpr > 760 ? 1080 : 720;
     const el = ref.current;
-    if (!el) return;
-    if (reduced.current) return; // poster only
-    const io = new IntersectionObserver(
+    if (!el || prefersReducedMotion()) return; // poster only
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const url = MEDIA(name, hd && approxWidth * dpr > 760 ? 1080 : 720);
+    const load = () => setSrc((s) => s ?? url);
+
+    if (eager) load();
+
+    // Prefetch well ahead of the viewport (sideways too, for carousels).
+    const prefetch = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
-          setSrc((s) => s ?? MEDIA(name, want as 720 | 1080));
+          load();
+          prefetch.disconnect();
+        }
+      },
+      { rootMargin: "150% 100%" }
+    );
+    // Play only while actually visible.
+    const visibility = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          load();
           el.play().catch(() => {});
         } else {
           el.pause();
         }
       },
-      { rootMargin: "200px 0px", threshold: 0.01 }
+      { threshold: 0.01 }
     );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [name, hd, approxWidth]);
-
-  useEffect(() => {
-    if (src) ref.current?.play().catch(() => {});
-  }, [src]);
+    prefetch.observe(el);
+    visibility.observe(el);
+    return () => {
+      prefetch.disconnect();
+      visibility.disconnect();
+    };
+  }, [name, hd, approxWidth, eager]);
 
   return (
     <video
@@ -174,7 +190,8 @@ export function Clip({ name, hd = false, approxWidth = 400, className, style, la
       muted
       loop
       playsInline
-      preload="none"
+      autoPlay={eager}
+      preload={src ? "auto" : "none"}
       aria-label={label}
       disablePictureInPicture
       disableRemotePlayback

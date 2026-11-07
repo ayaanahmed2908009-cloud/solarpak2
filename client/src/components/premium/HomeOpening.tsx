@@ -37,6 +37,8 @@ export function Hero() {
   const p = useViewportProgress(wrap);
   // Centre clip rises, outer clips settle: a gentle depth cue, zero at rest.
   const lift = prefersReducedMotion() ? 0 : Math.max(0, p - 0.35);
+  // Desktop and phone layouts both mount; only the visible one loads eagerly.
+  const wide = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
 
   return (
     <section ref={ref} className="relative sp-hero" aria-labelledby="hero-title">
@@ -85,7 +87,7 @@ export function Hero() {
                   willChange: "transform",
                 }}
               >
-                <Clip name={c.name} hd approxWidth={360} label={c.label} />
+                <Clip name={c.name} eager={wide} approxWidth={360} label={c.label} />
               </div>
             ))}
           </div>
@@ -93,9 +95,9 @@ export function Hero() {
 
         {/* Phones: one swipeable rail; the first clip fills the screen naturally */}
         <div className="md:hidden sp-rail sp-reveal" style={{ ["--sp-delay" as string]: "320ms" }}>
-          {TRIPTYCH.map((c) => (
+          {TRIPTYCH.map((c, i) => (
             <div key={c.name} className="sp-card" style={{ width: "78vw", maxWidth: 360, aspectRatio: "9 / 16" }}>
-              <Clip name={c.name} label={c.label} />
+              <Clip name={c.name} eager={!wide && i === 0} label={c.label} />
             </div>
           ))}
         </div>
