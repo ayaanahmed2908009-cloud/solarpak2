@@ -14,13 +14,13 @@
   --sp-ink-strong: #0f1f11; /* near-black, tinted with the logo green */
   --sp-yellow: #fcb41f; /* logo sun yellow; fills and dark backgrounds only */
 
-  /* Neutrals, tinted toward the brand green */
+  /* Neutrals. Brand colour is reserved for accents (see the hero) */
   --sp-bg: #fbfbfd;
   --sp-bg-alt: #f5f5f7;
-  --sp-ink: var(--sp-green);
-  --sp-ink-2: #56665a;
-  --sp-ink-3: #7d8b80;
-  --sp-hairline: #d5ddd3;
+  --sp-ink: var(--sp-ink-strong);
+  --sp-ink-2: #6e6e73;
+  --sp-ink-3: #86868b;
+  --sp-hairline: #d2d2d7;
   --sp-black: #000000;
   --sp-night: #0b0b0c;
 
@@ -96,10 +96,10 @@
   font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--sp-sun-deep);
+  color: var(--sp-green);
 }
 .sp-dark .sp-eyebrow {
-  color: var(--sp-sun);
+  color: var(--sp-yellow);
 }
 .sp-small {
   font-size: 12px;
@@ -168,8 +168,8 @@
   font-size: 17px;
   font-weight: 400;
   letter-spacing: -0.01em;
-  background: var(--sp-yellow);
-  color: var(--sp-green-deep);
+  background: var(--sp-green);
+  color: #fff;
   font-weight: 500;
   text-decoration: none;
   border: 0;
@@ -178,7 +178,25 @@
   white-space: nowrap;
 }
 .sp-btn:hover {
+  background: var(--sp-green-deep);
+}
+.sp-btn-sun {
+  background: var(--sp-yellow);
+  color: var(--sp-green-deep);
+}
+.sp-btn-sun:hover {
   background: #ffc23d;
+}
+.sp-dark .sp-btn {
+  background: var(--sp-yellow);
+  color: var(--sp-green-deep);
+}
+/* Headline accent: the one phrase in logo green */
+.sp-accent {
+  color: var(--sp-green);
+}
+.sp-dark .sp-accent {
+  color: var(--sp-yellow);
 }
 .sp-btn-sm {
   min-height: 28px;
@@ -358,4 +376,56 @@
 }
 .sp-btn-green:hover {
   background: var(--sp-green-deep);
+}
+
+/* ------------------------------------------------------------------ */
+/* .sp-page: brings the older inner pages onto the landing-page system */
+/* Remaps their legacy Tailwind accents (emerald / green / teal / amber) */
+/* to the logo palette. Anything inside .sp-keep (e.g. text over a dark */
+/* photo) is left alone.                                                */
+/* ------------------------------------------------------------------ */
+.sp-page {
+  /* shadcn theme tokens used by buttons, badges and cards */
+  --primary: 122 53% 27%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 122 53% 27%;
+}
+.sp-page :is(h1, h2, h3, h4):not(.sp-keep *) {
+  letter-spacing: -0.022em;
+}
+.sp-page :is([class*="text-emerald-"], [class*="text-green-"], [class*="text-teal-"]):not(.sp-keep *) {
+  color: var(--sp-green);
+}
+.sp-page :is([class*="text-amber-"], [class*="text-yellow-"], [class*="text-orange-"]):not(.sp-keep *) {
+  color: var(--sp-sun-deep);
+}
+.sp-page
+  :is(
+    .bg-emerald-500, .bg-emerald-600, .bg-emerald-700, .bg-green-500, .bg-green-600, .bg-green-700,
+    .bg-teal-600, .bg-amber-500, .bg-amber-600, .bg-yellow-500
+  ):not(.sp-keep *) {
+  background-color: var(--sp-green);
+  color: #fff;
+}
+.sp-page
+  :is(
+    .hover\:bg-emerald-500, .hover\:bg-emerald-600, .hover\:bg-emerald-700, .hover\:bg-green-700,
+    .hover\:bg-amber-400, .hover\:bg-amber-600
+  ):hover:not(.sp-keep *) {
+  background-color: var(--sp-green-deep);
+}
+.sp-page :is(.bg-emerald-50, .bg-green-50, .bg-teal-50, .bg-emerald-100, .bg-green-100):not(.sp-keep *) {
+  background-color: #eef5ec;
+}
+.sp-page :is(.bg-amber-50, .bg-yellow-50, .bg-amber-100, .bg-yellow-100):not(.sp-keep *) {
+  background-color: #fff6df;
+}
+.sp-page :is([class*="border-emerald-"], [class*="border-green-"], [class*="border-teal-"]):not(.sp-keep *) {
+  border-color: #c9dcc6;
+}
+.sp-page :is([class*="border-amber-"], [class*="border-yellow-"]):not(.sp-keep *) {
+  border-color: #f3d48a;
+}
+.sp-page .bg-gray-900:not(.sp-keep *) {
+  background-color: var(--sp-ink-strong);
 }

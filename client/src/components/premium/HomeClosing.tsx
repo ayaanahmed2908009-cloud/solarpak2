@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getQueryFn, apiRequest } from "@/lib/queryClient";
 import type { ImpactLabsArticle } from "@shared/schema";
 import { SSEP_POLICY_ANALYSIS_SLUG } from "@/data/ssepPolicyAnalysis";
-import { prefersReducedMotion, seg, useReveal, useScrollProgress } from "./motion";
+import { Accent, Dot, prefersReducedMotion, seg, useReveal, useScrollProgress } from "./motion";
 import { DONATE_URL } from "./HomeOpening";
 
 /* ------------------------------------------------------------------ */
@@ -94,7 +94,8 @@ export function Organisation() {
         <div className="mt-24 md:mt-32 grid md:grid-cols-[1fr_1.6fr] gap-10 md:gap-16">
           <div>
             <h2 id="org-title" className="sp-title sp-reveal">
-              Organised like the <span className="text-[#fcb41f]">institution</span> we're becoming.
+              Organised like the <Accent>institution</Accent> we're becoming
+              <Dot />
             </h2>
             <div className="mt-6 sp-reveal">
               <Link href="/opportunities" className="sp-link">
@@ -182,7 +183,8 @@ export function Research() {
           <div style={{ maxWidth: 680 }}>
             <p className="sp-eyebrow sp-reveal">Impact Labs</p>
             <h2 id="research-title" className="sp-headline mt-3 sp-reveal">
-              We publish what we learn.
+              We publish <Accent>what we learn</Accent>
+              <Dot />
             </h2>
             <p className="sp-lede mt-6 sp-reveal">
               Field data, policy analysis and annual reporting, open for anyone to read and check.
@@ -205,11 +207,11 @@ export function Research() {
               style={{ background: "#f5f5f7", minHeight: 280, ["--sp-delay" as string]: `${i * 90}ms` }}
             >
               <div className="flex h-full flex-col">
-                <p className="text-[12px] font-semibold text-[#8a5d00]">{p.kind}</p>
-                <h3 className="mt-3 text-[24px] leading-[1.18] font-semibold tracking-[-0.022em] text-[#216b23]">
+                <p className="text-[12px] font-semibold text-[#216b23]">{p.kind}</p>
+                <h3 className="mt-3 text-[24px] leading-[1.18] font-semibold tracking-[-0.022em] text-[#0f1f11]">
                   {p.title}
                 </h3>
-                <p className="mt-auto pt-8 text-[14px] text-[#56665a] flex items-center justify-between">
+                <p className="mt-auto pt-8 text-[14px] text-[#6e6e73] flex items-center justify-between">
                   <span>{p.meta}</span>
                   <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>
                     →
@@ -259,7 +261,8 @@ export function Fund() {
       <div className="sp-container">
         <div className="text-center mx-auto" style={{ maxWidth: 720 }}>
           <h2 id="fund-title" className="sp-headline sp-reveal">
-            Fund a system.
+            Fund <Accent>a system</Accent>
+            <Dot />
           </h2>
           <p className="sp-lede mt-6 sp-reveal">Choose how you'd like to power the next home.</p>
         </div>
@@ -271,7 +274,7 @@ export function Fund() {
               className="sp-tile sp-reveal p-8 md:p-10 flex flex-col"
               style={{ ["--sp-delay" as string]: `${i * 90}ms` }}
             >
-              <h3 className="text-[28px] font-semibold tracking-[-0.024em] text-[#216b23]">{w.title}</h3>
+              <h3 className="text-[28px] font-semibold tracking-[-0.024em] text-[#0f1f11]">{w.title}</h3>
               <p className="sp-body mt-3 flex-1">{w.body}</p>
               <div className="mt-8">
                 {w.external ? (
@@ -320,11 +323,11 @@ function Newsletter() {
 
   return (
     <form onSubmit={submit} className="mt-20 mx-auto text-center" style={{ maxWidth: 520 }} noValidate>
-      <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#216b23]">Get updates from the field.</h3>
+      <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#0f1f11]">Get updates from the field.</h3>
       <p className="sp-body mt-2" style={{ fontSize: 15 }}>
         New installations, research and reports.
       </p>
-      <div className="mt-5 flex items-center gap-2 rounded-full bg-white p-1.5 pl-5 border border-[#d5ddd3] focus-within:border-[#7d8b80]">
+      <div className="mt-5 flex items-center gap-2 rounded-full bg-white p-1.5 pl-5 border border-[#d2d2d7] focus-within:border-[#86868b]">
         <label htmlFor="sp-email" className="sr-only">
           Email address
         </label>
@@ -338,14 +341,14 @@ function Newsletter() {
             if (state !== "sending") setState("idle");
           }}
           placeholder="Email address"
-          className="flex-1 min-w-0 bg-transparent text-[17px] text-[#216b23] placeholder:text-[#7d8b80] outline-none"
+          className="flex-1 min-w-0 bg-transparent text-[17px] text-[#0f1f11] placeholder:text-[#86868b] outline-none"
           style={{ outline: "none" }}
         />
         <button type="submit" className="sp-btn" style={{ minHeight: 40 }} disabled={state === "sending"}>
           {state === "sending" ? "Subscribing…" : "Subscribe"}
         </button>
       </div>
-      <p className="mt-3 text-[13px] min-h-[1.5em]" aria-live="polite" style={{ color: state === "error" ? "#b42318" : "#56665a" }}>
+      <p className="mt-3 text-[13px] min-h-[1.5em]" aria-live="polite" style={{ color: state === "error" ? "#b42318" : "#6e6e73" }}>
         {state === "done" && "Thanks. You're on the list."}
         {state === "error" && "Please enter a valid email address and try again."}
       </p>

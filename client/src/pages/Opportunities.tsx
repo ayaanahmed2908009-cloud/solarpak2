@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
+import PageHero, { Accent } from "@/components/premium/PageHero";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -299,39 +300,20 @@ export default function Opportunities() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="sp sp-page min-h-screen bg-white">
       <Navbar />
 
       <div>
-        <div
-          ref={heroRef}
-          className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
-        >
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-green-400/5 to-transparent rounded-full" />
-          </div>
-
-          <div
-            className="container mx-auto px-6 relative z-10 transition-all duration-1000"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? "translateY(0)" : "translateY(20px)",
-            }}
-          >
-            <div className="max-w-2xl">
-              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
-                Careers & Volunteering
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
-                Opportunities
-              </h1>
-              <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
-                SolarPak is built by volunteers. Here's how we're organised and where you can contribute.
-              </p>
-            </div>
-          </div>
+        <div ref={heroRef} data-visible={heroVisible ? "true" : "false"}>
+          <PageHero
+            eyebrow="Careers & Volunteering"
+            title={
+              <>
+                Join the <Accent>team</Accent>
+              </>
+            }
+            lede="SolarPak is built by volunteers. Here's how we're organised and where you can contribute."
+          />
         </div>
 
         <div className="container mx-auto px-6">

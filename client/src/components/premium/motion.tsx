@@ -1,4 +1,20 @@
+import type React from "react";
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
+
+/** The logo's sun as a full stop. */
+export function Dot() {
+  return (
+    <>
+      <span className="sp-sun-dot" aria-hidden />
+      <span className="sr-only">.</span>
+    </>
+  );
+}
+
+/** The one phrase of a headline set in logo green (yellow on dark sections). */
+export function Accent({ children }: { children: React.ReactNode }) {
+  return <span className="sp-accent">{children}</span>;
+}
 
 export function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;

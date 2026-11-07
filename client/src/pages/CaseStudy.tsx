@@ -1,52 +1,39 @@
-import { ArrowLeft, MapPin, Thermometer, Zap, Users, Calendar, Target } from "lucide-react";
-import { Link } from "wouter";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import PageHero, { Accent } from "@/components/premium/PageHero";
+import { MapPin, Thermometer, Zap, Users, Calendar, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export default function CaseStudy() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 transition-colors">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Link>
+    <div className="sp sp-page min-h-screen bg-gray-50">
+      <Navbar />
+      <PageHero
+        eyebrow="Case Study"
+        title={
+          <>
+            Bringing light to <Accent>Khairpur Mirs</Accent>
+          </>
+        }
+        lede="A personal mission to transform my hometown through sustainable solar energy."
+      >
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[15px] text-[#6e6e73]">
+          <span className="inline-flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-[#216b23]" />
+            Khairpur Mirs, Sindh, Pakistan
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <Thermometer className="h-4 w-4 text-[#216b23]" />
+            45°C daily temperatures
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <Zap className="h-4 w-4 text-[#216b23]" />
+            12 hours of daily blackouts
+          </span>
         </div>
-      </div>
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-primary/80 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge className="bg-white/20 text-white border-white/30 mb-4">
-              Case Study
-            </Badge>
-            <h1 className="font-heading font-bold text-4xl md:text-5xl mb-6">
-              Bringing Light to Khairpur Mirs Sindh
-            </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8">
-              A personal mission to transform my hometown through sustainable solar energy
-            </p>
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2" />
-                Khairpur Mirs, Sindh, Pakistan
-              </div>
-              <div className="flex items-center">
-                <Thermometer className="h-4 w-4 mr-2" />
-                45°C Daily Temperatures
-              </div>
-              <div className="flex items-center">
-                <Zap className="h-4 w-4 mr-2" />
-                12 Hours Daily Blackouts
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </PageHero>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
@@ -222,7 +209,7 @@ export default function CaseStudy() {
           </Card>
 
           {/* Call to Action */}
-          <div className="text-center bg-gradient-to-r from-primary to-primary/80 text-white p-8 rounded-xl">
+          <div className="text-center text-white p-8 md:p-12 rounded-[28px]" style={{ background: "var(--sp-green)" }}>
             <h3 className="font-heading font-bold text-2xl mb-4">
               Help Us Light Up Khairpur Mirs
             </h3>
@@ -234,13 +221,14 @@ export default function CaseStudy() {
               href="https://ko-fi.com/solarpak"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+              className="sp-btn sp-btn-sun"
             >
               Support This Project
             </a>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

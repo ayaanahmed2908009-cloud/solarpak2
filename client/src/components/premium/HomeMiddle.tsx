@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { Clip, useReveal } from "./motion";
+import { Accent, Clip, Dot, useReveal } from "./motion";
 
 /* ------------------------------------------------------------------ */
 /* The SolarPak Home System — a product page for the kit we install    */
@@ -41,7 +41,8 @@ export function SystemSection() {
         <div className="text-center mx-auto" style={{ maxWidth: 760 }}>
           <p className="sp-eyebrow sp-reveal">The SolarPak Home System</p>
           <h2 id="system-title" className="sp-headline mt-3 sp-reveal">
-            Everything a home needs to run after dark.
+            Everything a home needs to run <Accent>after dark</Accent>
+            <Dot />
           </h2>
           <p className="sp-lede mt-6 sp-reveal">
             A complete kit, sized for each household, installed and wired on site by our field team, and logged to
@@ -60,7 +61,7 @@ export function SystemSection() {
                 <Clip name={part.name} label={part.label} approxWidth={280} />
               </div>
               <div className="p-6 pb-7">
-                <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#216b23]">{part.title}</h3>
+                <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#0f1f11]">{part.title}</h3>
                 <p className="sp-body mt-2" style={{ fontSize: 15 }}>
                   {part.body}
                 </p>
@@ -100,24 +101,25 @@ export function ImpactNumbers() {
         <div className="max-w-[760px]">
           <p className="sp-eyebrow sp-reveal">Impact</p>
           <h2 id="impact-title" className="sp-headline mt-3 sp-reveal">
-            Measured, not estimated.
+            Measured, <Accent>not estimated</Accent>
+            <Dot />
           </h2>
           <p className="sp-lede mt-6 sp-reveal">
             Every installation is logged and published. These are the numbers from our first year in the field.
           </p>
         </div>
 
-        <dl className="mt-14 md:mt-20 grid grid-cols-2 lg:grid-cols-3 border-t border-[#d5ddd3]">
+        <dl className="mt-14 md:mt-20 grid grid-cols-2 lg:grid-cols-3 border-t border-[#d2d2d7]">
           {STATS.map((s, i) => (
             <div
               key={s.label}
-              className="sp-reveal py-8 md:py-10 pr-6 border-b border-[#d5ddd3]"
+              className="sp-reveal py-8 md:py-10 pr-6 border-b border-[#d2d2d7]"
               style={{ ["--sp-delay" as string]: `${(i % 3) * 80}ms` }}
             >
               <dt className="sr-only">{s.label}</dt>
               <dd>
                 <span
-                  className="block font-semibold tracking-[-0.035em] text-[#216b23]"
+                  className="block font-semibold tracking-[-0.035em] text-[#0f1f11]"
                   style={{ fontSize: "clamp(40px, 6vw, 72px)", lineHeight: 1 }}
                 >
                   {s.value}
@@ -127,7 +129,7 @@ export function ImpactNumbers() {
                     </a>
                   </sup>
                 </span>
-                <span className="block mt-3 text-[17px] text-[#56665a]">{s.label}</span>
+                <span className="block mt-3 text-[17px] text-[#6e6e73]">{s.label}</span>
               </dd>
             </div>
           ))}
@@ -215,7 +217,8 @@ export function FieldStories() {
         <div>
           <p className="sp-eyebrow sp-reveal">From the field</p>
           <h2 id="field-title" className="sp-headline mt-3 sp-reveal">
-            Built with the people who use it.
+            Built with the people <Accent>who use it</Accent>
+            <Dot />
           </h2>
         </div>
       </div>

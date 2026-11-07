@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
-import { Clip, POSTER, prefersReducedMotion, seg, useReveal, useScrollProgress, useViewportProgress } from "./motion";
+import { Accent, Clip, Dot, POSTER, prefersReducedMotion, seg, useReveal, useScrollProgress, useViewportProgress } from "./motion";
 import { PK_PATH, PK_VIEWBOX, projectLngLat } from "./pakistanGeo";
 import { SSEP_POLICY_ANALYSIS_SLUG } from "@/data/ssepPolicyAnalysis";
 
@@ -13,7 +13,7 @@ export const DONATE_URL = "https://ko-fi.com/solarpak";
 export function Ribbon() {
   return (
     <div className="text-center px-6 py-3 text-[14px] leading-[1.45]" style={{ background: "#f5f5f7" }}>
-      <span className="text-[#56665a]">New from Impact Labs: a policy review of the Sindh Solar Energy Project.</span>{" "}
+      <span className="text-[#6e6e73]">New from Impact Labs: a policy review of the Sindh Solar Energy Project.</span>{" "}
       <Link href={`/impact-labs/${SSEP_POLICY_ANALYSIS_SLUG}`} className="sp-link" style={{ fontSize: 14 }}>
         Read the analysis
       </Link>
@@ -48,9 +48,8 @@ export function Hero() {
         >
           Power, where
           <br />
-          <span style={{ color: "var(--sp-green)" }}>the grid ends</span>
-          <span className="sp-sun-dot" aria-hidden />
-          <span className="sr-only">.</span>
+          <Accent>the grid ends</Accent>
+          <Dot />
         </h1>
         <p
           className="sp-lede mx-auto mt-6 sp-reveal"
@@ -256,7 +255,8 @@ export function WhereWeWork() {
         <div>
           <p className="sp-eyebrow sp-reveal">Where we work</p>
           <h2 id="work-title" className="sp-headline mt-3 sp-reveal">
-            Sindh first.
+            Sindh <Accent>first</Accent>
+            <Dot />
           </h2>
           <p className="sp-lede mt-6 sp-reveal" style={{ maxWidth: 460 }}>
             We start where the grid is weakest: villages where outages can last 12 hours a day and summers pass 45°C.
@@ -317,8 +317,8 @@ export function WhereWeWork() {
                 { n: "Islamabad", c: projectLngLat(73.05, 33.68) },
               ].map(({ n, c }) => (
                 <g key={n}>
-                  <circle cx={c[0]} cy={c[1]} r={3} fill="#7d8b80" />
-                  <text x={c[0] + 8} y={c[1] + 5} fontSize={17} fill="#56665a" fontFamily="inherit">
+                  <circle cx={c[0]} cy={c[1]} r={3} fill="#86868b" />
+                  <text x={c[0] + 8} y={c[1] + 5} fontSize={17} fill="#6e6e73" fontFamily="inherit">
                     {n}
                   </text>
                 </g>

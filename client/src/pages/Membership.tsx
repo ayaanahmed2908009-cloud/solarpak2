@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
+import PageHero, { Accent } from "@/components/premium/PageHero";
 import Footer from "@/components/Footer";
 
 import { Button } from "@/components/ui/button";
@@ -88,39 +89,29 @@ export default function Membership() {
         "Invitation to annual virtual event with beneficiaries",
         "Personalized thank you video from a family you've helped",
       ],
-      color: "from-primary to-blue-400",
+      color: "from-[#216b23] to-[#3f8f3a]",
       textColor: "text-primary",
-      borderColor: "border-blue-200",
-      bgColor: "bg-blue-50",
+      borderColor: "border-[#c9dcc6]",
+      bgColor: "bg-[#eef5ec]",
     },
   ];
 
   // Public page - no user-specific tier highlighting
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="sp sp-page min-h-screen flex flex-col bg-white">
       <Navbar />
       
       <div>
-        <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
-          </div>
-          <div className="container mx-auto px-6 relative z-10">
-            <div className={`max-w-2xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
-              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
-                Join Us
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
-                Membership Tiers
-              </h1>
-              <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
-                Join our community of supporters and help bring solar power to families in need. Every contribution makes a difference.
-              </p>
-            </div>
-          </div>
-        </section>
+        <PageHero
+          eyebrow="Membership"
+          title={
+            <>
+              Power a home, <Accent>every month</Accent>
+            </>
+          }
+          lede="Join our community of supporters and help bring solar power to families in need. Every contribution makes a difference."
+        />
       </div>
 
       <div className="container mx-auto px-4 py-12 flex-grow">
@@ -164,8 +155,8 @@ export default function Membership() {
             ))}
           </div>
           
-          <div className="max-w-3xl mx-auto text-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg p-8 border border-blue-100 mb-8">
-            <h2 className="font-heading text-2xl font-semibold mb-4 text-blue-900">
+          <div className="max-w-3xl mx-auto text-center bg-[#f5f5f7] rounded-[28px] p-10 mb-8">
+            <h2 className="font-heading text-2xl font-semibold mb-4 text-[#0f1f11]">
               Learn More About Our Memberships
             </h2>
             <p className="text-gray-600 mb-6">
@@ -175,9 +166,9 @@ export default function Membership() {
               href="/membership-guide.pdf" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
+              className="sp-btn"
             >
-              📄 Download Membership Guide (PDF)
+              Download the membership guide (PDF)
             </a>
           </div>
 

@@ -45,7 +45,7 @@ const COLUMNS: { title: string; items: Item[] }[] = [
 ];
 
 function FooterLink({ item }: { item: Item }) {
-  const cls = "text-[12px] leading-[2] text-[#3d5040] hover:underline underline-offset-2";
+  const cls = "text-[12px] leading-[2] text-[#424245] hover:underline underline-offset-2";
   if (item.external || item.href.includes("#")) {
     return (
       <a
@@ -69,7 +69,7 @@ export default function Footer({ footnotes }: { footnotes?: React.ReactNode }) {
     <footer className="sp" style={{ background: "#f5f5f7" }}>
       <div className="mx-auto" style={{ maxWidth: 1024, padding: "20px 22px 24px" }}>
         {footnotes && (
-          <div className="border-b border-[#d5ddd3] pb-4 mb-5 text-[12px] leading-[1.5] text-[#56665a] space-y-2">
+          <div className="border-b border-[#d2d2d7] pb-4 mb-5 text-[12px] leading-[1.5] text-[#6e6e73] space-y-2">
             {footnotes}
           </div>
         )}
@@ -77,7 +77,7 @@ export default function Footer({ footnotes }: { footnotes?: React.ReactNode }) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-6 pt-2">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="text-[12px] font-semibold text-[#216b23] mb-1.5">{col.title}</h3>
+              <h3 className="text-[12px] font-semibold text-[#0f1f11] mb-1.5">{col.title}</h3>
               <ul>
                 {col.items.map((item) => (
                   <li key={item.label}>
@@ -89,7 +89,7 @@ export default function Footer({ footnotes }: { footnotes?: React.ReactNode }) {
           ))}
         </div>
 
-        <div className="mt-8 pt-4 border-t border-[#d5ddd3] flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-[12px] text-[#56665a]">
+        <div className="mt-8 pt-4 border-t border-[#d2d2d7] flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-[12px] text-[#6e6e73]">
           <p>Copyright © {new Date().getFullYear()} SolarPak. A youth-led energy organisation. Khairpur Mirs, Sindh, Pakistan.</p>
           <Link href="/worker/login" className="hover:underline underline-offset-2">
             Team Login

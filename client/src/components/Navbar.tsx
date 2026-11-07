@@ -47,11 +47,16 @@ function useGo() {
   };
 }
 
-function Wordmark() {
+function Wordmark({ onDark = false }: { onDark?: boolean }) {
   return (
     <span className="flex items-center gap-2">
       <img src="/favicon.png" alt="" className="h-[18px] w-[20px] object-contain" />
-      <span className="text-[15px] font-semibold tracking-[-0.02em]">SolarPak</span>
+      <span
+        className="text-[15px] font-semibold tracking-[-0.02em]"
+        style={{ color: onDark ? "inherit" : "var(--sp-green)" }}
+      >
+        SolarPak
+      </span>
     </span>
   );
 }
@@ -87,7 +92,7 @@ export default function Navbar() {
   const go = useGo();
   const overDark = useOverDark();
   const dark = overDark && !open;
-  const ink = dark ? "#f5f5f7" : "#216b23";
+  const ink = dark ? "#f5f5f7" : "#0f1f11";
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -126,7 +131,7 @@ export default function Navbar() {
           style={{ maxWidth: 1024, padding: "0 22px" }}
         >
           <a href="/" onClick={nav("/")} aria-label="SolarPak home">
-            <Wordmark />
+            <Wordmark onDark={dark} />
           </a>
 
           <ul className="hidden lg:flex items-center gap-8">
@@ -156,7 +161,7 @@ export default function Navbar() {
               href={DONATE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="sp-btn sp-btn-sm"
+              className="sp-btn sp-btn-sun sp-btn-sm"
             >
               Fund a system
             </a>
@@ -210,14 +215,14 @@ export default function Navbar() {
                   href={l.href}
                   onClick={nav(l.href)}
                   tabIndex={open ? 0 : -1}
-                  className="block py-1.5 text-[28px] font-semibold tracking-[-0.02em] text-[#216b23]"
+                  className="block py-1.5 text-[28px] font-semibold tracking-[-0.02em] text-[#0f1f11]"
                 >
                   {l.label}
                 </a>
               </li>
             ))}
           </ul>
-          <p className="mt-10 mb-3 text-[12px] text-[#56665a]">More from SolarPak</p>
+          <p className="mt-10 mb-3 text-[12px] text-[#6e6e73]">More from SolarPak</p>
           <ul className="flex flex-col gap-2">
             {MORE_LINKS.map((l) => (
               <li key={l.href}>
@@ -225,7 +230,7 @@ export default function Navbar() {
                   href={l.href}
                   onClick={nav(l.href)}
                   tabIndex={open ? 0 : -1}
-                  className="text-[17px] text-[#216b23]/80"
+                  className="text-[17px] text-[#0f1f11]/80"
                 >
                   {l.label}
                 </a>
