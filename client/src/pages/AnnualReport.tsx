@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
+import PageHero, { Accent } from "@/components/premium/PageHero";
 import Footer from "@/components/Footer";
 import { FileText, Download, ExternalLink } from "lucide-react";
 
@@ -33,78 +34,35 @@ export default function AnnualReport() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="sp sp-page min-h-screen bg-white">
       <Navbar />
 
       {/* Hero */}
-      <div
-        ref={heroRef}
-        className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 pt-32 pb-24 overflow-hidden"
-      >
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 -left-24 w-[500px] h-[500px] bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
-        </div>
-
-        <div
-          className="container mx-auto px-6 relative z-10 transition-all duration-1000"
-          style={{
-            opacity: heroVisible ? 1 : 0,
-            transform: heroVisible ? "translateY(0)" : "translateY(24px)",
-          }}
-        >
-          <div className="inline-flex items-center gap-2 bg-green-400/10 border border-green-400/20 rounded-full px-4 py-1.5 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-green-400 text-xs font-semibold uppercase tracking-[0.18em]">
-              Fiscal Year 1 · April 2025 – May 2026
-            </span>
-          </div>
-
-          <div className="max-w-3xl">
-            <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-5 leading-[1.05] tracking-tight">
-              SolarPak
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">
-                Annual Report
-              </span>
-            </h1>
-            <p className="text-lg text-gray-400 max-w-xl leading-relaxed mb-5">
-              Lighting the Way Forward — our first-year impact across 35 installations, 500+ lives
-              changed, and the communities of Khairpur, Pakistan.
-            </p>
-            <p className="text-sm text-gray-500 max-w-lg leading-relaxed mb-10">
-              Written by the SolarPak Impact Labs team. Documenting our environmental and
-              economic outcomes, financial transparency, and the year we went from informal
-              youth group to a recognised organisation.
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="/annual-report-fy1.pdf"
-                download="SolarPak-Annual-Report-FY1.pdf"
-                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 hover:shadow-lg hover:shadow-emerald-900/30"
-              >
-                <Download className="w-4 h-4" />
+      <div ref={heroRef} data-visible={heroVisible ? "true" : "false"}>
+        <PageHero
+          eyebrow="Fiscal Year 1 · April 2025 – May 2026"
+          title={
+            <>
+              SolarPak <Accent>Annual Report</Accent>
+            </>
+          }
+          lede="Lighting the way forward: our first year across 35 installations, 500+ lives changed, and the communities of Khairpur, Pakistan."
+          actions={
+            <>
+              <a href="/annual-report-fy1.pdf" download="SolarPak-Annual-Report-FY1.pdf" className="sp-btn">
                 Download PDF
               </a>
-              <a
-                href="/annual-report-fy1.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all duration-200 border border-white/10"
-              >
-                <ExternalLink className="w-4 h-4" />
-                Open in New Tab
+              <a href="/annual-report-fy1.pdf" target="_blank" rel="noopener noreferrer" className="sp-link">
+                Open in a new tab
               </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 48L48 42.7C96 37.3 192 26.7 288 24C384 21.3 480 26.7 576 29.3C672 32 768 32 864 29.3C960 26.7 1056 21.3 1152 21.3C1248 21.3 1344 26.7 1392 29.3L1440 32V48H0Z" fill="white" />
-          </svg>
-        </div>
+            </>
+          }
+        >
+          <p className="sp-small mx-auto" style={{ maxWidth: 520, fontSize: 14 }}>
+            Written by the SolarPak Impact Labs team. Documenting our environmental and economic outcomes, financial
+            transparency, and the year we went from informal youth group to a recognised organisation.
+          </p>
+        </PageHero>
       </div>
 
       {/* Stats row */}

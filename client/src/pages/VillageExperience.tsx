@@ -6,7 +6,7 @@ export default function VillageExperience() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="pt-20">
+      <div>
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />

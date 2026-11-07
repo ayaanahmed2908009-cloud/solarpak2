@@ -92,7 +92,7 @@ function setSmoothScroll() {
   }, observerOptions);
   
   // Observe all sections
-  document.querySelectorAll('section[id]').forEach(section => {
+  document.querySelectorAll('section[id]:not([data-sp])').forEach(section => {
     section.classList.add('section-hidden');
     section.setAttribute('data-animate', 'true');
     sectionObserver.observe(section);

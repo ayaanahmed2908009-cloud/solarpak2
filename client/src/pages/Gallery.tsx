@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Play, Pause, Volume2, VolumeX, Download, Eye } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import PageHero, { Accent } from "@/components/premium/PageHero";
 
 // Import videos
 import video1 from "@assets/mid_1756658713398.mp4";
@@ -106,29 +107,19 @@ export default function Gallery() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="sp sp-page min-h-screen bg-white">
       <Navbar />
       
-      <div className="pt-20">
-        <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
-          </div>
-          <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-2xl">
-              <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
-                Video Gallery
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
-                Our Impact Stories
-              </h1>
-              <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
-                Experience the transformation of Pakistani families through solar energy. Real stories of hope and sustainable change.
-              </p>
-            </div>
-          </div>
-        </section>
+      <div>
+        <PageHero
+          eyebrow="Video Gallery"
+          title={
+            <>
+              Our impact <Accent>stories</Accent>
+            </>
+          }
+          lede="Experience the transformation of Pakistani families through solar energy. Real stories of hope and sustainable change."
+        />
       </div>
 
       <div className="container mx-auto px-4 py-16">
@@ -139,7 +130,7 @@ export default function Gallery() {
             <div key={index} className="group relative">
               <div className="bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-200 overflow-hidden">
                 {/* Background glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-green-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[#fcb41f]/5 to-[#216b23]/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <div className="relative z-10">
                   {/* Video container */}
@@ -190,7 +181,7 @@ export default function Gallery() {
                   
                   {/* Video info */}
                   <div className="text-center">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-[#216b23] transition-colors duration-300">
                       {video.title}
                     </h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
@@ -205,8 +196,8 @@ export default function Gallery() {
 
         {/* Call to action */}
         <div className="text-center mt-20">
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 rounded-3xl p-12 text-white shadow-2xl">
-            <h2 className="text-4xl font-bold mb-6">Become Part of These Stories</h2>
+          <div className="rounded-[28px] p-12 text-white" style={{ background: "var(--sp-green)" }}>
+            <h2 className="sp-title text-white mb-5">Become part of these stories</h2>
             <p className="text-xl mb-8 max-w-3xl mx-auto opacity-95">
               Every video represents real families whose lives have been transformed. 
               Your donation can create the next success story.
@@ -215,9 +206,9 @@ export default function Gallery() {
               href="https://ko-fi.com/solarpak"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center bg-white text-blue-600 font-bold px-8 py-4 rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-1 shadow-xl text-lg"
+              className="sp-btn sp-btn-sun"
             >
-              ❤️ Donate Now
+              Fund a system
             </a>
           </div>
         </div>
