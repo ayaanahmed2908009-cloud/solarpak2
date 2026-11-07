@@ -39,17 +39,25 @@ export function Hero() {
   const lift = prefersReducedMotion() ? 0 : Math.max(0, p - 0.35);
 
   return (
-    <section ref={ref} className="relative" aria-labelledby="hero-title">
-      <div className="sp-container text-center" style={{ paddingTop: "clamp(56px, 9vw, 112px)" }}>
-        <p className="sp-eyebrow sp-reveal">SolarPak</p>
-        <h1 id="hero-title" className="sp-hero-title mt-3 sp-reveal" style={{ ["--sp-delay" as string]: "80ms" }}>
+    <section ref={ref} className="relative sp-hero" aria-labelledby="hero-title">
+      <div className="sp-container text-center relative" style={{ paddingTop: "clamp(56px, 9vw, 112px)" }}>
+        <p className="sp-eyebrow sp-reveal" style={{ color: "var(--sp-green)" }}>
+          SolarPak
+        </p>
+        <h1
+          id="hero-title"
+          className="sp-hero-title mt-3 sp-reveal"
+          style={{ color: "var(--sp-ink-strong)", ["--sp-delay" as string]: "80ms" }}
+        >
           Power, where
           <br />
-          <span className="sp-mark">the grid ends.</span>
+          <span style={{ color: "var(--sp-green)" }}>the grid ends</span>
+          <span className="sp-sun-dot" aria-hidden />
+          <span className="sr-only">.</span>
         </h1>
         <p
           className="sp-lede mx-auto mt-6 sp-reveal"
-          style={{ maxWidth: 640, ["--sp-delay" as string]: "160ms" }}
+          style={{ maxWidth: 640, color: "#6e6e73", ["--sp-delay" as string]: "160ms" }}
         >
           We design, fund and install solar energy systems for homes and schools across rural Sindh, and publish the
           data on every one.
@@ -58,7 +66,7 @@ export function Hero() {
           className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sp-reveal"
           style={{ ["--sp-delay" as string]: "240ms" }}
         >
-          <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" className="sp-btn">
+          <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" className="sp-btn sp-btn-green">
             Fund a system
           </a>
           <a href="#work" className="sp-link">

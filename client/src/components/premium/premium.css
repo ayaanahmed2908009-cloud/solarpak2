@@ -11,6 +11,7 @@
   /* Brand: taken from the SolarPak logo */
   --sp-green: #216b23; /* logo panel green, 6.4:1 on white */
   --sp-green-deep: #145218;
+  --sp-ink-strong: #0f1f11; /* near-black, tinted with the logo green */
   --sp-yellow: #fcb41f; /* logo sun yellow; fills and dark backgrounds only */
 
   /* Neutrals, tinted toward the brand green */
@@ -329,4 +330,32 @@
 }
 .sp-dark .sp-link::after {
   color: inherit;
+}
+
+/* Hero: restrained use of the brand. Near-black type, one green phrase,
+   the logo's sun as the full stop, and a faint sunrise wash. */
+.sp-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 680px;
+  background: radial-gradient(55% 60% at 50% 0%, rgba(252, 180, 31, 0.13), rgba(252, 180, 31, 0) 70%);
+  pointer-events: none;
+}
+.sp-sun-dot {
+  display: inline-block;
+  width: 0.17em;
+  height: 0.17em;
+  margin-left: 0.05em;
+  border-radius: 50%;
+  background: var(--sp-yellow);
+  vertical-align: baseline;
+  box-shadow: 0 0 0.25em rgba(252, 180, 31, 0.55);
+}
+.sp-btn-green {
+  background: var(--sp-green);
+  color: #fff;
+}
+.sp-btn-green:hover {
+  background: var(--sp-green-deep);
 }
