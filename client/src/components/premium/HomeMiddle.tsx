@@ -14,10 +14,10 @@ const PARTS = [
     label: "A solar panel installed against a brick wall",
   },
   {
-    name: "c9364",
+    name: "c7671",
     title: "Battery & controller",
     body: "Stores the day's energy so lights and fans keep running after dark.",
-    label: "A SolarPak technician wiring a battery and charge controller",
+    label: "A battery and charge controller mounted on a wall bracket",
   },
   {
     name: "c7969",
@@ -154,28 +154,22 @@ export function ImpactNumbers() {
 
 const STORIES = [
   {
-    name: "c9342",
+    name: "c9359",
     kicker: "Field Operations",
-    line: "Our team carries the kit in, lane by lane.",
-    label: "SolarPak team walking through a village lane carrying a solar panel",
+    line: "Every fitting prepared on site, room by room.",
+    label: "A technician in a SolarPak shirt preparing a light fitting",
   },
   {
-    name: "c9359",
+    name: "c9364",
     kicker: "Installation",
     line: "Wired, tested and handed over on site.",
-    label: "A technician in a SolarPak shirt preparing a light fitting",
+    label: "A SolarPak technician wiring the battery and controller",
   },
   {
     name: "c7979",
     kicker: "The people we serve",
     line: "Built around the families who use it every day.",
     label: "Portrait of a woman whose home was powered by SolarPak",
-  },
-  {
-    name: "c7976",
-    kicker: "Handover",
-    line: "The moment the power comes on.",
-    label: "A resident switching on power for the first time",
   },
   {
     name: "c9390",

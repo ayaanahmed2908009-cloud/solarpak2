@@ -28,7 +28,7 @@ export function Ribbon() {
 const TRIPTYCH = [
   { name: "c9342", label: "SolarPak field team carrying a solar panel through a village lane in Sindh" },
   { name: "c7976", label: "A resident switching on power from a newly installed switchboard" },
-  { name: "c9388", label: "A bulb lit inside a home after installation" },
+  { name: "c7683", label: "A father and daughter looking up at their new ceiling fan, running on solar power" },
 ];
 
 export function Hero() {
