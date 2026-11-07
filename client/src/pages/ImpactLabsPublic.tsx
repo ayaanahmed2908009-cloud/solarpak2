@@ -659,7 +659,7 @@ export default function ImpactLabsPublic() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="pt-20">
+      <div>
         {match && params?.slug ? (
           <ArticleView slug={params.slug} />
         ) : (

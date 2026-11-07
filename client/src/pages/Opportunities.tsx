@@ -302,7 +302,7 @@ export default function Opportunities() {
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="pt-20">
+      <div>
         <div
           ref={heroRef}
           className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
