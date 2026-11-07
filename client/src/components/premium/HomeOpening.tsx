@@ -40,13 +40,10 @@ export function Hero() {
 
   return (
     <section ref={ref} className="relative sp-hero" aria-labelledby="hero-title">
-      <div className="sp-container text-center relative" style={{ paddingTop: "clamp(56px, 9vw, 112px)" }}>
-        <p className="sp-eyebrow sp-reveal" style={{ color: "var(--sp-green)" }}>
-          SolarPak
-        </p>
+      <div className="sp-container text-center relative" style={{ paddingTop: "clamp(48px, 7vw, 96px)" }}>
         <h1
           id="hero-title"
-          className="sp-hero-title mt-3 sp-reveal"
+          className="sp-hero-title sp-reveal"
           style={{ color: "var(--sp-ink-strong)", ["--sp-delay" as string]: "80ms" }}
         >
           Power, where
