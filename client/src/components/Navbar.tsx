@@ -87,7 +87,7 @@ export default function Navbar() {
   const go = useGo();
   const overDark = useOverDark();
   const dark = overDark && !open;
-  const ink = dark ? "#f5f5f7" : "#1d1d1f";
+  const ink = dark ? "#f5f5f7" : "#216b23";
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -157,7 +157,6 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               className="sp-btn sp-btn-sm"
-              style={dark ? { background: "#f5f5f7", color: "#1d1d1f" } : undefined}
             >
               Fund a system
             </a>
@@ -211,14 +210,14 @@ export default function Navbar() {
                   href={l.href}
                   onClick={nav(l.href)}
                   tabIndex={open ? 0 : -1}
-                  className="block py-1.5 text-[28px] font-semibold tracking-[-0.02em] text-[#1d1d1f]"
+                  className="block py-1.5 text-[28px] font-semibold tracking-[-0.02em] text-[#216b23]"
                 >
                   {l.label}
                 </a>
               </li>
             ))}
           </ul>
-          <p className="mt-10 mb-3 text-[12px] text-[#6e6e73]">More from SolarPak</p>
+          <p className="mt-10 mb-3 text-[12px] text-[#56665a]">More from SolarPak</p>
           <ul className="flex flex-col gap-2">
             {MORE_LINKS.map((l) => (
               <li key={l.href}>
@@ -226,7 +225,7 @@ export default function Navbar() {
                   href={l.href}
                   onClick={nav(l.href)}
                   tabIndex={open ? 0 : -1}
-                  className="text-[17px] text-[#1d1d1f]/80"
+                  className="text-[17px] text-[#216b23]/80"
                 >
                   {l.label}
                 </a>

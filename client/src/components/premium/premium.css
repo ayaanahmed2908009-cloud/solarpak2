@@ -8,20 +8,25 @@
   --sp-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 
-  /* Neutrals */
+  /* Brand: taken from the SolarPak logo */
+  --sp-green: #216b23; /* logo panel green, 6.4:1 on white */
+  --sp-green-deep: #145218;
+  --sp-yellow: #fcb41f; /* logo sun yellow; fills and dark backgrounds only */
+
+  /* Neutrals, tinted toward the brand green */
   --sp-bg: #fbfbfd;
   --sp-bg-alt: #f5f5f7;
-  --sp-ink: #1d1d1f;
-  --sp-ink-2: #6e6e73;
-  --sp-ink-3: #86868b;
-  --sp-hairline: #d2d2d7;
+  --sp-ink: var(--sp-green);
+  --sp-ink-2: #56665a;
+  --sp-ink-3: #7d8b80;
+  --sp-hairline: #d5ddd3;
   --sp-black: #000000;
   --sp-night: #0b0b0c;
 
-  /* The one accent: late-afternoon sun */
-  --sp-sun: #f5a524;
-  --sp-sun-deep: #b45309; /* AA on white for link text */
-  --sp-sun-grad: linear-gradient(100deg, #ffd27a 0%, #f5a524 45%, #e8743b 100%);
+  /* Sun accents */
+  --sp-sun: var(--sp-yellow);
+  --sp-sun-deep: #8a5d00; /* logo yellow darkened to pass AA as text on white */
+  --sp-sun-grad: linear-gradient(100deg, #ffe08a 0%, #fcb41f 55%, #f59e0b 100%);
 
   --sp-radius: 28px;
   --sp-radius-sm: 18px;
@@ -127,7 +132,7 @@
 
 /* Links & buttons */
 .sp-link {
-  color: var(--sp-sun-deep);
+  color: var(--sp-green);
   font-size: 17px;
   font-weight: 400;
   text-decoration: none;
@@ -135,6 +140,8 @@
 }
 .sp-link::after {
   content: " \203A";
+  color: var(--sp-yellow);
+  font-weight: 600;
   display: inline-block;
   margin-left: 2px;
   transition: transform 0.3s var(--sp-ease);
@@ -160,8 +167,9 @@
   font-size: 17px;
   font-weight: 400;
   letter-spacing: -0.01em;
-  background: var(--sp-ink);
-  color: #fff;
+  background: var(--sp-yellow);
+  color: var(--sp-green-deep);
+  font-weight: 500;
   text-decoration: none;
   border: 0;
   cursor: pointer;
@@ -169,14 +177,7 @@
   white-space: nowrap;
 }
 .sp-btn:hover {
-  background: #000;
-}
-.sp-dark .sp-btn {
-  background: #f5f5f7;
-  color: #1d1d1f;
-}
-.sp-dark .sp-btn:hover {
-  background: #fff;
+  background: #ffc23d;
 }
 .sp-btn-sm {
   min-height: 28px;
@@ -187,7 +188,7 @@
 .sp a:focus-visible,
 .sp button:focus-visible,
 .sp input:focus-visible {
-  outline: 2px solid var(--sp-sun);
+  outline: 2px solid var(--sp-green);
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -314,4 +315,18 @@
   .sp-btn {
     transition: none;
   }
+}
+
+/* Highlighter: logo yellow behind green text, legible and on-brand */
+.sp-mark {
+  background-image: linear-gradient(transparent 68%, rgba(252, 180, 31, 0.8) 68%, rgba(252, 180, 31, 0.8) 90%, transparent 90%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 0.04em;
+}
+.sp ::selection {
+  background: rgba(252, 180, 31, 0.45);
+}
+.sp-dark .sp-link::after {
+  color: inherit;
 }

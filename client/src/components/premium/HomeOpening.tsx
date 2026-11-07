@@ -13,7 +13,7 @@ export const DONATE_URL = "https://ko-fi.com/solarpak";
 export function Ribbon() {
   return (
     <div className="text-center px-6 py-3 text-[14px] leading-[1.45]" style={{ background: "#f5f5f7" }}>
-      <span className="text-[#1d1d1f]">New from Impact Labs: a policy review of the Sindh Solar Energy Project.</span>{" "}
+      <span className="text-[#56665a]">New from Impact Labs: a policy review of the Sindh Solar Energy Project.</span>{" "}
       <Link href={`/impact-labs/${SSEP_POLICY_ANALYSIS_SLUG}`} className="sp-link" style={{ fontSize: 14 }}>
         Read the analysis
       </Link>
@@ -45,7 +45,7 @@ export function Hero() {
         <h1 id="hero-title" className="sp-hero-title mt-3 sp-reveal" style={{ ["--sp-delay" as string]: "80ms" }}>
           Power, where
           <br />
-          the grid ends.
+          <span className="sp-mark">the grid ends.</span>
         </h1>
         <p
           className="sp-lede mx-auto mt-6 sp-reveal"
@@ -132,7 +132,7 @@ export function NightToLight() {
               maxWidth: "92vw",
               filter: `brightness(${brightness}) saturate(${0.6 + light * 0.4})`,
               transition: reduced ? undefined : "filter .2s linear",
-              boxShadow: `0 0 ${120 * light}px ${20 * light}px rgba(245,165,36,${0.18 * light})`,
+              boxShadow: `0 0 ${120 * light}px ${20 * light}px rgba(252,180,31,${0.18 * light})`,
             }}
           >
             <Clip name="c9388" hd approxWidth={520} label="A single bulb lighting a room after a SolarPak installation" />
@@ -270,7 +270,7 @@ export function WhereWeWork() {
         <div ref={mapRef} className="sp-reveal" style={{ ["--sp-delay" as string]: "120ms" }}>
           <div className="sp-tile" style={{ background: "#f5f5f7", padding: "clamp(16px, 3vw, 32px)" }}>
             <svg viewBox={vb} className="w-full h-auto" role="img" aria-label="Map of Pakistan with SolarPak installation sites">
-              <path d={PK_PATH} fill="#e8e8ed" stroke="#c7c7cc" strokeWidth={1.2} strokeLinejoin="round" />
+              <path d={PK_PATH} fill="#e6eee3" stroke="#bfd1bc" strokeWidth={1.2} strokeLinejoin="round" />
               {(sites && sites.length ? sites.map((s) => [s.x, s.y] as [number, number]) : sites ? fallback : []).map(
                 ([x, y], i) => {
                   const delay = `${(i * 90) % 2800}ms`;
@@ -281,7 +281,7 @@ export function WhereWeWork() {
                           cx={x}
                           cy={y}
                           r={4}
-                          fill="#f5a524"
+                          fill="#fcb41f"
                           className="sp-site-pulse"
                           style={{ animationDelay: delay }}
                         />
@@ -290,7 +290,7 @@ export function WhereWeWork() {
                         cx={x}
                         cy={y}
                         r={6}
-                        fill="#f5a524"
+                        fill="#fcb41f"
                         stroke="#fff"
                         strokeWidth={1.4}
                         style={{
@@ -312,8 +312,8 @@ export function WhereWeWork() {
                 { n: "Islamabad", c: projectLngLat(73.05, 33.68) },
               ].map(({ n, c }) => (
                 <g key={n}>
-                  <circle cx={c[0]} cy={c[1]} r={3} fill="#86868b" />
-                  <text x={c[0] + 8} y={c[1] + 5} fontSize={17} fill="#6e6e73" fontFamily="inherit">
+                  <circle cx={c[0]} cy={c[1]} r={3} fill="#7d8b80" />
+                  <text x={c[0] + 8} y={c[1] + 5} fontSize={17} fill="#56665a" fontFamily="inherit">
                     {n}
                   </text>
                 </g>

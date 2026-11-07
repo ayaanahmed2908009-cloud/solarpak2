@@ -60,7 +60,7 @@ export function SystemSection() {
                 <Clip name={part.name} label={part.label} approxWidth={280} />
               </div>
               <div className="p-6 pb-7">
-                <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#1d1d1f]">{part.title}</h3>
+                <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#216b23]">{part.title}</h3>
                 <p className="sp-body mt-2" style={{ fontSize: 15 }}>
                   {part.body}
                 </p>
@@ -107,17 +107,17 @@ export function ImpactNumbers() {
           </p>
         </div>
 
-        <dl className="mt-14 md:mt-20 grid grid-cols-2 lg:grid-cols-3 border-t border-[#d2d2d7]">
+        <dl className="mt-14 md:mt-20 grid grid-cols-2 lg:grid-cols-3 border-t border-[#d5ddd3]">
           {STATS.map((s, i) => (
             <div
               key={s.label}
-              className="sp-reveal py-8 md:py-10 pr-6 border-b border-[#d2d2d7]"
+              className="sp-reveal py-8 md:py-10 pr-6 border-b border-[#d5ddd3]"
               style={{ ["--sp-delay" as string]: `${(i % 3) * 80}ms` }}
             >
               <dt className="sr-only">{s.label}</dt>
               <dd>
                 <span
-                  className="block font-semibold tracking-[-0.035em] text-[#1d1d1f]"
+                  className="block font-semibold tracking-[-0.035em] text-[#216b23]"
                   style={{ fontSize: "clamp(40px, 6vw, 72px)", lineHeight: 1 }}
                 >
                   {s.value}
@@ -127,7 +127,7 @@ export function ImpactNumbers() {
                     </a>
                   </sup>
                 </span>
-                <span className="block mt-3 text-[17px] text-[#6e6e73]">{s.label}</span>
+                <span className="block mt-3 text-[17px] text-[#56665a]">{s.label}</span>
               </dd>
             </div>
           ))}
@@ -238,7 +238,7 @@ export function FieldStories() {
                   className="absolute inset-x-0 top-0 p-6"
                   style={{ background: "linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,0))" }}
                 >
-                  <p className="text-[12px] font-semibold text-white/75">{s.kicker}</p>
+                  <p className="text-[12px] font-semibold text-[#fcb41f]">{s.kicker}</p>
                   <p className="mt-1 text-[21px] leading-[1.2] font-semibold tracking-[-0.02em] text-white">{s.line}</p>
                 </figcaption>
               </div>

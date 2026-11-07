@@ -82,7 +82,7 @@ export function Organisation() {
             <div key={s.label}>
               <dt className="sr-only">{s.label}</dt>
               <dd>
-                <span className="block text-[48px] md:text-[56px] leading-none font-semibold tracking-[-0.035em] text-white">
+                <span className="block text-[48px] md:text-[56px] leading-none font-semibold tracking-[-0.035em] text-[#fcb41f]">
                   {s.value}
                 </span>
                 <span className="block mt-2 text-[15px] text-[#a1a1a6]">{s.label}</span>
@@ -94,7 +94,7 @@ export function Organisation() {
         <div className="mt-24 md:mt-32 grid md:grid-cols-[1fr_1.6fr] gap-10 md:gap-16">
           <div>
             <h2 id="org-title" className="sp-title sp-reveal">
-              Organised like the institution we're becoming.
+              Organised like the <span className="text-[#fcb41f]">institution</span> we're becoming.
             </h2>
             <div className="mt-6 sp-reveal">
               <Link href="/opportunities" className="sp-link">
@@ -205,11 +205,11 @@ export function Research() {
               style={{ background: "#f5f5f7", minHeight: 280, ["--sp-delay" as string]: `${i * 90}ms` }}
             >
               <div className="flex h-full flex-col">
-                <p className="text-[12px] font-semibold text-[#b45309]">{p.kind}</p>
-                <h3 className="mt-3 text-[24px] leading-[1.18] font-semibold tracking-[-0.022em] text-[#1d1d1f]">
+                <p className="text-[12px] font-semibold text-[#8a5d00]">{p.kind}</p>
+                <h3 className="mt-3 text-[24px] leading-[1.18] font-semibold tracking-[-0.022em] text-[#216b23]">
                   {p.title}
                 </h3>
-                <p className="mt-auto pt-8 text-[14px] text-[#6e6e73] flex items-center justify-between">
+                <p className="mt-auto pt-8 text-[14px] text-[#56665a] flex items-center justify-between">
                   <span>{p.meta}</span>
                   <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>
                     →
@@ -271,7 +271,7 @@ export function Fund() {
               className="sp-tile sp-reveal p-8 md:p-10 flex flex-col"
               style={{ ["--sp-delay" as string]: `${i * 90}ms` }}
             >
-              <h3 className="text-[28px] font-semibold tracking-[-0.024em] text-[#1d1d1f]">{w.title}</h3>
+              <h3 className="text-[28px] font-semibold tracking-[-0.024em] text-[#216b23]">{w.title}</h3>
               <p className="sp-body mt-3 flex-1">{w.body}</p>
               <div className="mt-8">
                 {w.external ? (
@@ -320,11 +320,11 @@ function Newsletter() {
 
   return (
     <form onSubmit={submit} className="mt-20 mx-auto text-center" style={{ maxWidth: 520 }} noValidate>
-      <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#1d1d1f]">Get updates from the field.</h3>
+      <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#216b23]">Get updates from the field.</h3>
       <p className="sp-body mt-2" style={{ fontSize: 15 }}>
         New installations, research and reports.
       </p>
-      <div className="mt-5 flex items-center gap-2 rounded-full bg-white p-1.5 pl-5 border border-[#d2d2d7] focus-within:border-[#86868b]">
+      <div className="mt-5 flex items-center gap-2 rounded-full bg-white p-1.5 pl-5 border border-[#d5ddd3] focus-within:border-[#7d8b80]">
         <label htmlFor="sp-email" className="sr-only">
           Email address
         </label>
@@ -338,14 +338,14 @@ function Newsletter() {
             if (state !== "sending") setState("idle");
           }}
           placeholder="Email address"
-          className="flex-1 min-w-0 bg-transparent text-[17px] text-[#1d1d1f] placeholder:text-[#86868b] outline-none"
+          className="flex-1 min-w-0 bg-transparent text-[17px] text-[#216b23] placeholder:text-[#7d8b80] outline-none"
           style={{ outline: "none" }}
         />
         <button type="submit" className="sp-btn" style={{ minHeight: 40 }} disabled={state === "sending"}>
           {state === "sending" ? "Subscribing…" : "Subscribe"}
         </button>
       </div>
-      <p className="mt-3 text-[13px] min-h-[1.5em]" aria-live="polite" style={{ color: state === "error" ? "#b42318" : "#6e6e73" }}>
+      <p className="mt-3 text-[13px] min-h-[1.5em]" aria-live="polite" style={{ color: state === "error" ? "#b42318" : "#56665a" }}>
         {state === "done" && "Thanks. You're on the list."}
         {state === "error" && "Please enter a valid email address and try again."}
       </p>
