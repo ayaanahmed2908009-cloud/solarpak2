@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { Accent, Clip, Dot, useReveal } from "./motion";
+import { Accent, Clip, Dot, useReveal, useViewportProgress } from "./motion";
 
 /* ------------------------------------------------------------------ */
 /* The SolarPak Home System — a product page for the kit we install    */
@@ -9,32 +9,61 @@ import { Accent, Clip, Dot, useReveal } from "./motion";
 const PARTS = [
   {
     name: "c7931",
+    step: "Capture",
     title: "Panel",
-    body: "Mounted where the sun is strongest, usually a rooftop or courtyard wall.",
+    body: "Mounted where the sun is strongest, usually a rooftop or a courtyard wall, and angled to catch the day's light.",
     label: "A solar panel installed against a brick wall",
   },
   {
     name: "c7671",
+    step: "Store",
     title: "Battery & controller",
-    body: "Stores the day's energy so lights and fans keep running after dark.",
+    body: "The controller manages charging. The battery holds the day's energy so the home keeps running after dark.",
     label: "A battery and charge controller mounted on a wall bracket",
   },
   {
     name: "c7969",
+    step: "Distribute",
     title: "Wiring & switchboard",
     body: "Clean, conduit-run wiring and a proper switchboard. Built to be safe and to last.",
     label: "A switchboard being fitted on a brick wall",
   },
   {
     name: "c7973",
+    step: "Use",
     title: "Fans & lights",
-    body: "The first things families ask for: a fan for 45°C nights and light to work and study by.",
+    body: "The first things families ask for: a fan through the hottest nights, and light to work and study by.",
     label: "A ceiling fan running on solar power",
   },
 ];
 
+/** Index of the step whose block sits across the middle of the viewport. */
+function useActiveStep(count: number) {
+  const refs = useRef<(HTMLElement | null)[]>([]);
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.step));
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px" }
+    );
+    refs.current.slice(0, count).forEach((el) => el && io.observe(el));
+    return () => io.disconnect();
+  }, [count]);
+  return { refs, active };
+}
+
 export function SystemSection() {
   const ref = useReveal<HTMLDivElement>();
+  const { refs, active } = useActiveStep(PARTS.length);
+  const rail = useRef<HTMLDivElement>(null);
+  const flow = useViewportProgress(rail);
+  // Energy line fill: tracks the steps as they pass the middle of the screen.
+  const fill = Math.min(1, Math.max(0, (flow - 0.22) / 0.56));
+
   return (
     <section data-sp id="system" ref={ref} className="sp-section sp-alt" aria-labelledby="system-title">
       <div className="sp-container">
@@ -45,34 +74,98 @@ export function SystemSection() {
             <Dot />
           </h2>
           <p className="sp-lede mt-6 sp-reveal">
-            A complete kit, sized for each household, installed and wired on site by our field team, and logged to
-            the Powered Atlas.
+            One connected system, from the sun on the roof to the fan on the ceiling. Installed and wired on site by
+            our field team, and logged to the Powered Atlas.
           </p>
         </div>
 
-        <div className="mt-14 md:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
-          {PARTS.map((part, i) => (
-            <article
-              key={part.name}
-              className="sp-tile sp-reveal flex flex-col"
-              style={{ ["--sp-delay" as string]: `${i * 90}ms` }}
-            >
-              <div className="sp-card" style={{ aspectRatio: "4 / 5", borderRadius: 0 }}>
-                <Clip name={part.name} label={part.label} approxWidth={280} />
+        {/* Desktop: one large clip stays in view while the four steps scroll past */}
+        <div className="hidden md:grid mt-20 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-16 lg:gap-24">
+          <div className="relative">
+            <div className="sticky" style={{ top: "calc(50vh - min(36vh, 340px))" }}>
+              <div className="sp-card mx-auto" style={{ height: "min(72vh, 680px)", aspectRatio: "9 / 16" }}>
+                {PARTS.map((part, i) => (
+                  <div
+                    key={part.name}
+                    className="absolute inset-0"
+                    style={{ opacity: active === i ? 1 : 0, transition: "opacity .7s cubic-bezier(.28,.11,.32,1)" }}
+                    aria-hidden={active !== i}
+                  >
+                    <Clip name={part.name} label={part.label} approxWidth={380} paused={active !== i} />
+                  </div>
+                ))}
+                <div
+                  className="absolute left-5 bottom-5 rounded-full px-3 py-1.5 text-[12px] font-semibold"
+                  style={{ background: "rgba(0,0,0,.45)", color: "#fff", backdropFilter: "blur(10px)" }}
+                >
+                  {String(active + 1).padStart(2, "0")} · {PARTS[active].step}
+                </div>
               </div>
-              <div className="p-6 pb-7">
-                <h3 className="text-[21px] font-semibold tracking-[-0.02em] text-[#0f1f11]">{part.title}</h3>
-                <p className="sp-body mt-2" style={{ fontSize: 15 }}>
-                  {part.body}
-                </p>
-              </div>
-            </article>
-          ))}
+            </div>
+          </div>
+
+          <div ref={rail} className="relative">
+            {/* Energy line */}
+            <div aria-hidden className="absolute left-[11px] top-[24vh] bottom-[24vh] w-[2px] bg-[#d2d2d7] rounded-full">
+              <div
+                className="absolute inset-x-0 top-0 rounded-full"
+                style={{
+                  height: `${fill * 100}%`,
+                  background: "linear-gradient(180deg, #ffe08a, #fcb41f)",
+                  boxShadow: "0 0 12px rgba(252,180,31,.6)",
+                }}
+              />
+            </div>
+            {PARTS.map((part, i) => (
+              <article
+                key={part.name}
+                ref={(el) => (refs.current[i] = el)}
+                data-step={i}
+                className="relative flex items-center pl-14"
+                style={{ minHeight: "48vh" }}
+              >
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 flex items-center justify-center"
+                  style={{
+                    borderColor: i <= active ? "#fcb41f" : "#d2d2d7",
+                    background: i <= active ? "#fcb41f" : "#f5f5f7",
+                    transition: "background-color .4s, border-color .4s",
+                  }}
+                />
+                <div style={{ opacity: active === i ? 1 : 0.35, transition: "opacity .5s" }}>
+                  <p className="text-[14px] font-semibold text-[#216b23]">
+                    {String(i + 1).padStart(2, "0")} · {part.step}
+                  </p>
+                  <h3 className="sp-title mt-2">{part.title}</h3>
+                  <p className="sp-body mt-3" style={{ maxWidth: 420 }}>
+                    {part.body}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
 
-        <p className="sp-small mt-8 text-center sp-reveal">
-          Components and capacity vary by household and are specified during each site survey.
-        </p>
+        {/* Phones: the same four steps, stacked, joined by the energy line */}
+        <ol className="md:hidden mt-12 relative">
+          <span aria-hidden className="absolute left-[11px] top-3 bottom-3 w-[2px] rounded-full" style={{ background: "linear-gradient(180deg, #fcb41f, #d2d2d7)" }} />
+          {PARTS.map((part, i) => (
+            <li key={part.name} className="relative pl-12 pb-12 last:pb-0 sp-reveal">
+              <span aria-hidden className="absolute left-0 top-1 w-6 h-6 rounded-full" style={{ background: "#fcb41f" }} />
+              <p className="text-[14px] font-semibold text-[#216b23]">
+                {String(i + 1).padStart(2, "0")} · {part.step}
+              </p>
+              <h3 className="sp-title mt-1">{part.title}</h3>
+              <p className="sp-body mt-2">{part.body}</p>
+              <div className="sp-card mt-5" style={{ aspectRatio: "4 / 5" }}>
+                <Clip name={part.name} label={part.label} approxWidth={340} />
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <p className="sp-small mt-12 text-center sp-reveal">Components and capacity vary by household.</p>
       </div>
     </section>
   );

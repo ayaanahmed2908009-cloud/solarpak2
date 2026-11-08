@@ -126,6 +126,8 @@ type ClipProps = {
   approxWidth?: number;
   /** Start downloading on mount (above-the-fold clips). */
   eager?: boolean;
+  /** Keep the clip paused even while on screen (e.g. a hidden layer in a crossfade). */
+  paused?: boolean;
   className?: string;
   style?: CSSProperties;
   label: string;
@@ -137,9 +139,28 @@ type ClipProps = {
  * before they scroll into view, so they are already buffered when they arrive.
  * Plays only while on screen and shows its poster for reduced motion.
  */
-export function Clip({ name, hd = false, approxWidth = 400, eager = false, className, style, label }: ClipProps) {
+export function Clip({
+  name,
+  hd = false,
+  approxWidth = 400,
+  eager = false,
+  paused = false,
+  className,
+  style,
+  label,
+}: ClipProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [src, setSrc] = useState<string | null>(null);
+  const pausedRef = useRef(paused);
+  const visibleRef = useRef(false);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+    const el = ref.current;
+    if (!el) return;
+    if (paused) el.pause();
+    else if (visibleRef.current) el.play().catch(() => {});
+  }, [paused]);
 
   useEffect(() => {
     const el = ref.current;
@@ -163,9 +184,10 @@ export function Clip({ name, hd = false, approxWidth = 400, eager = false, class
     // Play only while actually visible.
     const visibility = new IntersectionObserver(
       ([e]) => {
+        visibleRef.current = e.isIntersecting;
         if (e.isIntersecting) {
           load();
-          el.play().catch(() => {});
+          if (!pausedRef.current) el.play().catch(() => {});
         } else {
           el.pause();
         }
@@ -190,7 +212,7 @@ export function Clip({ name, hd = false, approxWidth = 400, eager = false, class
       muted
       loop
       playsInline
-      autoPlay={eager}
+      autoPlay={eager && !paused}
       preload={src ? "auto" : "none"}
       aria-label={label}
       disablePictureInPicture
