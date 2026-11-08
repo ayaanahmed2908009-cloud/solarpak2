@@ -115,51 +115,103 @@ export function NightToLight() {
   const p = useScrollProgress(track);
   const reduced = useMemo(() => !!prefersReducedMotion(), []);
 
-  const grow = reduced ? 1 : seg(p, 0.05, 0.6);
-  const light = reduced ? 1 : seg(p, 0.25, 0.7);
-  const first = reduced ? 0 : 1 - seg(p, 0.18, 0.32);
-  const second = reduced ? 1 : seg(p, 0.62, 0.78);
+  // The light switches on at the midpoint (with a short flicker, see CSS),
+  // rather than fading up, so the scroll has a single clear moment.
+  const on = reduced || p >= 0.5;
+  const intro = reduced ? 1 : seg(p, 0, 0.12);
 
-  const height = 46 + grow * 46; // vh
-  const brightness = 0.18 + light * 0.82;
+  // An evening passing: 6:30 PM → 7:12 PM across the scroll.
+  const minutes = 18 * 60 + 30 + Math.round((reduced ? 0.6 : p) * 42);
+  const hh = Math.floor(minutes / 60) % 12 || 12;
+  const mm = String(minutes % 60).padStart(2, "0");
 
   return (
     <section className="sp-dark relative" aria-label="Night to light">
-      <div ref={track} style={{ height: reduced ? "auto" : "260vh" }}>
-        <div
-          className={reduced ? "py-24" : "sticky top-0 h-screen"}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
-        >
+      <div ref={track} style={{ height: reduced ? "auto" : "200vh" }}>
+        <div className={reduced ? "py-24" : "sticky top-0 h-screen overflow-hidden"}>
+          {/* Warm light spilling across the page once the bulb is on */}
           <div
-            className="sp-card relative"
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
             style={{
-              height: reduced ? "80vh" : `${height}vh`,
-              aspectRatio: "9 / 16",
-              maxWidth: "92vw",
-              filter: `brightness(${brightness}) saturate(${0.6 + light * 0.4})`,
-              transition: reduced ? undefined : "filter .2s linear",
-              boxShadow: `0 0 ${120 * light}px ${20 * light}px rgba(252,180,31,${0.18 * light})`,
+              background:
+                "radial-gradient(55% 65% at var(--sp-glow-x, 75%) 52%, rgba(252,180,31,0.22), rgba(252,180,31,0.06) 45%, rgba(0,0,0,0) 75%)",
+              opacity: on ? 1 : 0,
+              transition: "opacity 1.4s cubic-bezier(.28,.11,.32,1)",
             }}
-          >
-            <Clip name="c9388" hd approxWidth={520} label="A single bulb lighting a room after a SolarPak installation" />
-          </div>
+          />
 
-          <div
-            className="pointer-events-none absolute inset-x-0 text-center px-6"
-            style={{ top: "14vh", opacity: first, transform: `translateY(${(1 - first) * -16}px)` }}
-          >
-            <p className="sp-headline text-white mx-auto" style={{ maxWidth: 820 }}>
-              In much of rural Sindh, the day ends when the sun does.
-            </p>
-          </div>
+          <div className="sp-container relative h-full grid md:grid-cols-2 content-center md:items-center gap-6 md:gap-16 py-6 md:py-0">
+            {/* Words */}
+            <div className="order-1 text-center md:text-left">
+              <p className="text-[13px] font-semibold tracking-[0.02em] text-[#a1a1a6]">Khairpur Mirs, Sindh</p>
+              <p
+                className="mt-1 font-semibold tracking-[-0.03em] tabular-nums"
+                style={{
+                  fontSize: "clamp(40px, 6vw, 80px)",
+                  lineHeight: 1,
+                  color: on ? "var(--sp-yellow)" : "#f5f5f7",
+                  transition: "color .6s",
+                }}
+                aria-hidden
+              >
+                {hh}:{mm} <span style={{ fontSize: "0.4em", letterSpacing: 0 }}>PM</span>
+              </p>
 
-          <div
-            className="pointer-events-none absolute inset-x-0 text-center px-6"
-            style={{ bottom: "9vh", opacity: second, transform: `translateY(${(1 - second) * 20}px)` }}
-          >
-            <p className="sp-headline mx-auto" style={{ maxWidth: 820 }}>
-              <span className="sp-sun-text">Now it doesn't have to.</span>
-            </p>
+              <div className="relative mt-4 md:mt-10" style={{ minHeight: "clamp(96px, 16vw, 210px)" }}>
+                <p
+                  className="sp-title text-white absolute inset-x-0 top-0 md:max-w-[460px]"
+                  style={{
+                    opacity: on ? 0 : intro,
+                    transform: `translateY(${on ? -12 : (1 - intro) * 16}px)`,
+                    transition: "opacity .5s, transform .5s",
+                  }}
+                >
+                  In much of rural Sindh, the day ends when the sun does.
+                </p>
+                <div
+                  className="absolute inset-x-0 top-0 md:max-w-[460px]"
+                  style={{
+                    opacity: on ? 1 : 0,
+                    transform: `translateY(${on ? 0 : 16}px)`,
+                    transition: "opacity .6s .15s, transform .6s .15s",
+                  }}
+                >
+                  <p className="sp-title">
+                    <span className="sp-sun-text">Now it doesn't have to.</span>
+                  </p>
+                  <p className="sp-body mt-4 hidden md:block" style={{ color: "#a1a1a6", maxWidth: 400 }}>
+                    Light to study by. A fan through the hottest nights. Evenings that belong to families again.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* The room */}
+            <div className="order-2 flex justify-center">
+              <div
+                className={`sp-card sp-n2l-card relative ${on && !reduced ? "sp-flicker" : ""}`}
+                style={{
+                  aspectRatio: "9 / 16",
+                  opacity: 0.4 + intro * 0.6,
+                  transform: `scale(${0.94 + intro * 0.06})`,
+                  boxShadow: on ? "0 40px 160px -30px rgba(252,180,31,0.45)" : "0 40px 160px -30px rgba(252,180,31,0)",
+                  transition: "box-shadow 1.2s cubic-bezier(.28,.11,.32,1)",
+                }}
+              >
+                <Clip name="c9388" hd approxWidth={420} label="A single bulb lighting a room after a SolarPak installation" />
+                {/* Night grade: cool and dim until the switch */}
+                <div
+                  aria-hidden
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(180deg, rgba(8,18,48,0.78), rgba(4,10,30,0.86))",
+                    opacity: on ? 0 : 1,
+                    transition: "opacity .35s",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

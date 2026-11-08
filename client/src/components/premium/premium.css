@@ -429,3 +429,34 @@
 .sp-page .bg-gray-900:not(.sp-keep *) {
   background-color: var(--sp-ink-strong);
 }
+
+/* Night-to-light: a brief, real-looking flicker as the bulb comes on */
+@keyframes sp-flicker {
+  0% { filter: brightness(0.35); }
+  12% { filter: brightness(1.15); }
+  20% { filter: brightness(0.45); }
+  32% { filter: brightness(1.1); }
+  40% { filter: brightness(0.7); }
+  55%, 100% { filter: brightness(1); }
+}
+.sp-flicker {
+  animation: sp-flicker 0.7s steps(1, end) 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-flicker { animation: none; }
+}
+
+.sp-n2l-card {
+  height: min(50vh, 520px);
+  max-width: 80vw;
+}
+@media (min-width: 768px) {
+  .sp-n2l-card {
+    height: min(74vh, 720px);
+  }
+}
+@media (max-width: 767px) {
+  section[aria-label="Night to light"] {
+    --sp-glow-x: 50%;
+  }
+}
