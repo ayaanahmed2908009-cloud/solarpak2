@@ -180,7 +180,6 @@ type Stat = { value: string; label: string; fn: number };
 const STATS: Stat[] = [
   { value: "35", label: "solar installations completed", fn: 1 },
   { value: "500+", label: "people reached directly", fn: 1 },
-  { value: "3", label: "villages powered", fn: 2 },
   { value: "1", label: "school powered", fn: 2 },
   { value: "1,900 kg", label: "CO₂ avoided each year", fn: 1 },
   { value: "PKR 12.7L", label: "raised in our first year", fn: 1 },
@@ -202,27 +201,32 @@ export function ImpactNumbers() {
           </p>
         </div>
 
-        <dl className="mt-14 md:mt-20 grid grid-cols-2 lg:grid-cols-3 border-t border-[#d2d2d7]">
+        {/* Two headline figures, then three supporting ones */}
+        <dl className="mt-14 md:mt-20 grid grid-cols-2 md:grid-cols-6 border-t border-[#d2d2d7]">
           {STATS.map((s, i) => (
             <div
               key={s.label}
-              className="sp-reveal py-8 md:py-10 pr-6 border-b border-[#d2d2d7]"
-              style={{ ["--sp-delay" as string]: `${(i % 3) * 80}ms` }}
+              className={`sp-reveal py-8 md:py-10 pr-6 border-b border-[#d2d2d7] ${
+                i < 2 ? "col-span-2 sm:col-span-1 md:col-span-3" : `md:col-span-2 ${i === 4 ? "col-span-2 sm:col-span-1" : ""}`
+              }`}
+              style={{ ["--sp-delay" as string]: `${(i < 2 ? i : i - 2) * 80}ms` }}
             >
               <dt className="sr-only">{s.label}</dt>
               <dd>
                 <span
                   className="block font-semibold tracking-[-0.035em] text-[#0f1f11]"
-                  style={{ fontSize: "clamp(40px, 6vw, 72px)", lineHeight: 1 }}
+                  style={{ fontSize: i < 2 ? "clamp(48px, 7vw, 88px)" : "clamp(36px, 4.6vw, 56px)", lineHeight: 1 }}
                 >
                   {s.value}
-                  <sup className="sp-fn">
+                </span>
+                <span className="block mt-3 text-[17px] text-[#6e6e73]">
+                  {s.label}
+                  <sup className="ml-0.5 text-[11px] font-medium text-[#86868b]">
                     <a href={`#fn-${s.fn}`} aria-label={`Footnote ${s.fn}`} className="text-inherit no-underline">
                       {s.fn}
                     </a>
                   </sup>
                 </span>
-                <span className="block mt-3 text-[17px] text-[#6e6e73]">{s.label}</span>
               </dd>
             </div>
           ))}
