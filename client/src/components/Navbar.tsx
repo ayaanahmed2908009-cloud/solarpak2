@@ -1,296 +1,247 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { Menu, X, Users, Camera, Zap } from "lucide-react";
+import "@/components/premium/premium.css";
 
-function NavLink({
-  href,
-  children,
-  className,
-  onNavigate,
-  external,
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-  onNavigate?: () => void;
-  external?: boolean;
-}) {
-  const [, setLocation] = useLocation();
+const DONATE_URL = "https://ko-fi.com/solarpak";
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (external) return;
+const LINKS: { href: string; label: string }[] = [
+  { href: "/#work", label: "Our Work" },
+  { href: "/#system", label: "The System" },
+  { href: "/#impact", label: "Impact" },
+  { href: "/impact-labs", label: "Research" },
+  { href: "/#team", label: "Team" },
+  { href: "/annual-report", label: "Annual Report" },
+  { href: "/opportunities", label: "Join" },
+];
 
-    e.preventDefault();
+const MORE_LINKS: { href: string; label: string }[] = [
+  { href: "/impact-dashboard", label: "Impact Dashboard" },
+  { href: "/powered-atlas", label: "Powered Atlas" },
+  { href: "/membership", label: "Membership" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/worker/login", label: "Team Login" },
+];
 
-    window.scrollTo({
-      top: 0,
-      behavior: "instant",
-    });
-
+function useGo() {
+  const [location, setLocation] = useLocation();
+  return (href: string) => {
     if (href.startsWith("/#")) {
-      setLocation("/");
-
-      setTimeout(() => {
-        const id = href.replace("/#", "");
+      const id = href.slice(2);
+      const scroll = () => {
         const el = document.getElementById(id);
-
-        if (el) {
-          const top =
-            el.getBoundingClientRect().top +
-            window.pageYOffset -
-            80;
-
-          window.scrollTo({
-            top,
-            behavior: "smooth",
-          });
-        }
-      }, 100);
-    } else {
-      setLocation(href);
+        if (!el) return;
+        const top = el.getBoundingClientRect().top + window.scrollY - 44;
+        window.scrollTo({ top, behavior: "smooth" });
+      };
+      if (location !== "/") {
+        setLocation("/");
+        setTimeout(scroll, 120);
+      } else {
+        scroll();
+      }
+      history.replaceState(null, "", href);
+      return;
     }
-
-    onNavigate?.();
+    setLocation(href);
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   };
+}
 
+function Wordmark({ onDark = false }: { onDark?: boolean }) {
   return (
-    <a
-      href={href}
-      onClick={handleClick}
-      className={className}
-    >
-      {children}
-    </a>
+    <span className="flex items-center gap-2">
+      <img src="/favicon.png" alt="" className="h-[18px] w-[20px] object-contain" />
+      <span
+        className="text-[15px] font-semibold tracking-[-0.02em]"
+        style={{ color: onDark ? "inherit" : "var(--sp-green)" }}
+      >
+        SolarPak
+      </span>
+    </span>
   );
 }
 
-export default function Navbar() {
-  const [visible, setVisible] = useState(false);
-  const [open, setOpen] = useState(false);
-
+/** True while the nav bar sits over a `.sp-dark` section. */
+function useOverDark() {
+  const [dark, setDark] = useState(false);
   useEffect(() => {
-    const id = requestAnimationFrame(() =>
-      requestAnimationFrame(() => setVisible(true))
-    );
-
-    return () => cancelAnimationFrame(id);
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const els = document.elementsFromPoint(window.innerWidth / 2, 30);
+      const under = els.find((el) => !el.closest("[data-sp-nav]"));
+      setDark(!!under?.closest(".sp-dark"));
+    };
+    const on = () => {
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
+    return () => {
+      window.removeEventListener("scroll", on);
+      window.removeEventListener("resize", on);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
+  return dark;
+}
+
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+  const go = useGo();
+  const overDark = useOverDark();
+  const dark = overDark && !open;
+  const ink = dark ? "#f5f5f7" : "#0f1f11";
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
+  const nav = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(false);
+    go(href);
+  };
+
   return (
-    <>
-      <style>{`
-        @keyframes drawerIn {
-          from {
-            transform: translateX(100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
-
-      {/* Floating menu button */}
-      <button
-        onClick={() => setOpen(true)}
-        data-testid="button-mobile-menu"
+    <div className="sp">
+      <header
+        data-sp-nav
+        className="fixed inset-x-0 top-0 z-[60]"
         style={{
-          transform: visible
-            ? "translateX(0)"
-            : "translateX(80px)",
-          opacity: visible ? 1 : 0,
-          transition:
-            "transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease",
-          background: "rgba(5, 10, 24, 0.65)",
-          border: "1px solid rgba(255,255,255,0.14)",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
+          height: 44,
+          color: ink,
+          background: open ? "rgba(251,251,253,1)" : dark ? "rgba(22,22,23,0.8)" : "rgba(251,251,253,0.78)",
+          backdropFilter: "saturate(180%) blur(20px)",
+          WebkitBackdropFilter: "saturate(180%) blur(20px)",
+          borderBottom: dark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
+          transition: "background-color .3s",
         }}
-        className="fixed top-10 right-6 z-50 p-3.5 rounded-xl"
       >
-        <Menu className="w-7 h-7 text-white" />
-      </button>
+        <nav
+          aria-label="Global"
+          className="mx-auto flex h-full items-center justify-between"
+          style={{ maxWidth: 1024, padding: "0 22px" }}
+        >
+          <a href="/" onClick={nav("/")} aria-label="SolarPak home">
+            <Wordmark onDark={dark} />
+          </a>
 
-      {/* Drawer */}
-      {open && (
-        <div className="fixed inset-0 z-[60]">
+          <ul className="hidden lg:flex items-center gap-8">
+            {LINKS.map((l) => (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  onClick={nav(l.href)}
+                  className="text-[12px] opacity-80 hover:opacity-100 transition-opacity"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 cursor-pointer"
-            style={{
-              animation: "fadeIn 0.3s ease both",
-              background: "rgba(0,0,0,0.6)",
-              backdropFilter: "blur(6px)",
-              WebkitBackdropFilter: "blur(6px)",
-            }}
-            onClick={() => setOpen(false)}
-          />
-
-          {/* Panel */}
-          <div
-            className="absolute right-0 top-0 h-full w-[300px] flex flex-col bg-white"
-            style={{
-              animation:
-                "drawerIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both",
-              borderLeft: "1px solid #e5e7eb",
-              boxShadow: "-8px 0 40px rgba(0,0,0,0.18)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-5 border-b border-gray-100">
-              <NavLink
-                href="/"
-                onNavigate={() => setOpen(false)}
-                className="flex items-center gap-2.5"
-              >
-                <img
-                  src="/favicon.png"
-                  alt="SolarPak"
-                  className="h-8 w-9 object-contain"
+          <div className="flex items-center gap-4">
+            <a
+              href="/impact-dashboard"
+              onClick={nav("/impact-dashboard")}
+              data-testid="link-impact-dashboard"
+              className="hidden sm:inline text-[12px] opacity-80 hover:opacity-100 transition-opacity"
+            >
+              Impact Dashboard
+            </a>
+            <a
+              href={DONATE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sp-btn sp-btn-sun sp-btn-sm"
+            >
+              Fund a system
+            </a>
+            <button
+              type="button"
+              className="lg:hidden -mr-2 p-2"
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              data-testid="button-mobile-menu"
+              onClick={() => setOpen((o) => !o)}
+            >
+              <span className="relative block h-[12px] w-[18px]">
+                <span
+                  className="absolute left-0 block h-[1.5px] w-full transition-transform duration-300"
+                  style={{ background: ink, top: 2, transform: open ? "translateY(3.5px) rotate(45deg)" : "none" }}
                 />
-
-                <span className="font-bold text-gray-900 text-sm tracking-tight">
-                  SolarPak
-                </span>
-              </NavLink>
-
-              <button
-                onClick={() => setOpen(false)}
-                className="p-1.5 rounded-lg transition-colors hover:bg-gray-100"
-              >
-                <X className="w-5 h-5 text-gray-400" />
-              </button>
-            </div>
-
-            {/* Impact Dashboard */}
-            <div className="px-4 pt-4 pb-3">
-              <a
-                href="/impact-dashboard"
-                data-testid="link-impact-dashboard"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 w-full px-4 py-4 text-sm font-semibold transition-all active:scale-95"
-                style={{
-                  background: "#f4a261",
-                  color: "#17231d",
-                  border: "1px solid #c46b16",
-                  boxShadow: "0 4px 18px rgba(196,107,22,0.22)",
-                }}
-              >
-                <Zap
-                  className="w-4 h-4"
-                  style={{ color: "#92400e" }}
+                <span
+                  className="absolute left-0 block h-[1.5px] w-full transition-transform duration-300"
+                  style={{ background: ink, top: 9, transform: open ? "translateY(-3.5px) rotate(-45deg)" : "none" }}
                 />
-                Impact Dashboard / Powered Atlas
-              </a>
-            </div>
-
-            {/* Nav links */}
-            <nav className="flex-1 overflow-y-auto px-3 py-2 flex flex-col gap-0.5">
-
-              <p className="px-4 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
-                Explore
-              </p>
-
-              {[
-                { href: "/", label: "Home" },
-                { href: "/#solution", label: "What We Do" },
-                { href: "/#impact", label: "Our Impact" },
-              ].map(({ href, label }) => (
-                <NavLink
-                  key={href}
-                  href={href}
-                  onNavigate={() => setOpen(false)}
-                  className="px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-colors hover:bg-gray-50"
-                >
-                  {label}
-                </NavLink>
-              ))}
-
-              <p className="px-4 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
-                Programs
-              </p>
-
-              {[
-                { href: "/impact-labs", label: "Impact Labs" },
-                { href: "/opportunities", label: "Opportunities" },
-              ].map(({ href, label }) => (
-                <NavLink
-                  key={href}
-                  href={href}
-                  onNavigate={() => setOpen(false)}
-                  className="px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-colors hover:bg-gray-50"
-                >
-                  {label}
-                </NavLink>
-              ))}
-
-              <p className="px-4 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
-                About
-              </p>
-
-              {[
-                { href: "/annual-report", label: "Annual Report" },
-                { href: "/membership", label: "Membership" },
-                { href: "/gallery", label: "Gallery" },
-              ].map(({ href, label }) => (
-                <NavLink
-                  key={href}
-                  href={href}
-                  onNavigate={() => setOpen(false)}
-                  className="px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg transition-colors hover:bg-gray-50"
-                >
-                  {label}
-                </NavLink>
-              ))}
-            </nav>
-
-            {/* Footer */}
-            <div className="px-4 pb-6 pt-3 flex flex-col gap-2.5 border-t border-gray-100">
-
-              <button
-                onClick={() => {
-                  window.open(
-                    "https://ko-fi.com/solarpak",
-                    "_blank"
-                  );
-                  setOpen(false);
-                }}
-                className="w-full py-3 rounded-xl text-sm font-semibold bg-gray-900 hover:bg-gray-800 text-white transition-all active:scale-95"
-              >
-                Donate
-              </button>
-
-              <NavLink
-                href="/worker/login"
-                onNavigate={() => setOpen(false)}
-                className="w-full py-2 text-center text-xs text-gray-400 hover:text-gray-600 rounded-lg transition-colors hover:bg-gray-50"
-              >
-                Team Login
-              </NavLink>
-
-            </div>
+              </span>
+            </button>
           </div>
+        </nav>
+      </header>
+
+      {/* Mobile / tablet sheet */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-[59] lg:hidden overflow-y-auto"
+        style={{
+          top: 44,
+          background: "#fbfbfd",
+          opacity: open ? 1 : 0,
+          visibility: open ? "visible" : "hidden",
+          transition: "opacity .35s cubic-bezier(.28,.11,.32,1), visibility .35s",
+        }}
+        aria-hidden={!open}
+      >
+        <div className="px-10 pt-6 pb-16">
+          <ul className="flex flex-col gap-1">
+            {LINKS.map((l, i) => (
+              <li
+                key={l.href}
+                style={{
+                  transform: open ? "none" : "translateY(-8px)",
+                  opacity: open ? 1 : 0,
+                  transition: `transform .5s cubic-bezier(.28,.11,.32,1) ${open ? i * 25 : 0}ms, opacity .5s ${open ? i * 25 : 0}ms`,
+                }}
+              >
+                <a
+                  href={l.href}
+                  onClick={nav(l.href)}
+                  tabIndex={open ? 0 : -1}
+                  className="block py-1.5 text-[28px] font-semibold tracking-[-0.02em] text-[#0f1f11]"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-10 mb-3 text-[12px] text-[#6e6e73]">More from SolarPak</p>
+          <ul className="flex flex-col gap-2">
+            {MORE_LINKS.map((l) => (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  onClick={nav(l.href)}
+                  tabIndex={open ? 0 : -1}
+                  className="text-[17px] text-[#0f1f11]/80"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
-    </>
+      </div>
+
+      {/* Reserve space for the fixed bar */}
+      <div aria-hidden style={{ height: 44 }} />
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
+import PageHero, { Accent } from "@/components/premium/PageHero";
 import Footer from "@/components/Footer";
 import { Zap, Trophy, Briefcase, Users, ChevronDown, Mail, Calendar, Code2, FileText, X, Plus, Trash2, ExternalLink, CheckCircle } from "lucide-react";
 
@@ -316,51 +317,28 @@ export default function Hackathon() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="sp sp-page min-h-screen bg-white">
       <Navbar />
 
       {showSignup && <SignupModal onClose={() => setShowSignup(false)} />}
 
-      <div className="pt-20">
+      <div>
         {/* Hero */}
-        <div
-          ref={heroRef}
-          className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950 py-24 md:py-32 overflow-hidden"
-        >
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-amber-500/8 to-orange-500/8 rounded-full blur-3xl" />
-          </div>
-
-          <div
-            className="container mx-auto px-6 relative z-10 transition-all duration-1000"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? "translateY(0)" : "translateY(20px)",
-            }}
-          >
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/30 px-4 py-2 rounded-full mb-6">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-amber-400/90 font-medium text-xs uppercase tracking-[0.15em]">
-                  Flagship Event
-                </span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
-                SolarPak Energy<br />
-                <span className="text-amber-400">Hackathon</span>
-              </h1>
-              <p className="text-lg text-gray-400 max-w-lg leading-relaxed mb-8">
-                A two-division innovation challenge — one non-code, one coding — open to everyone. Solve real solar energy problems, compete across two weekends, and win over $1,000 in prizes plus a paid internship with SwentaGlobal.
-              </p>
-              <button
-                onClick={() => setShowSignup(true)}
-                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white font-semibold px-8 py-3.5 rounded-md text-sm transition-colors"
-              >
+        <div ref={heroRef} data-visible={heroVisible ? "true" : "false"}>
+          <PageHero
+            eyebrow="Flagship Event"
+            title={
+              <>
+                SolarPak Energy <Accent>Hackathon</Accent>
+              </>
+            }
+            lede="A two-division innovation challenge, one non-code and one coding, open to everyone. Solve real solar energy problems, compete across two weekends, and win over $1,000 in prizes plus a paid internship with SwentaGlobal."
+            actions={
+              <button type="button" onClick={() => setShowSignup(true)} className="sp-btn">
                 Register your team
               </button>
-            </div>
-          </div>
+            }
+          />
         </div>
 
         <div className="container mx-auto px-6">

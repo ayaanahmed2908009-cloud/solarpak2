@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRoute, useLocation, Link } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
 import Navbar from "@/components/Navbar";
+import PageHero, { Accent } from "@/components/premium/PageHero";
 import Footer from "@/components/Footer";
 import SsepRecognition from "@/components/SsepRecognition";
 import { Card, CardContent } from "@/components/ui/card";
@@ -110,7 +111,7 @@ function ArticleCard({ article, index }: { article: ImpactLabsArticle; index: nu
               }}
             />
           ) : null}
-          <div className={`w-full h-full items-center justify-center ${isFeatured ? "bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900" : "bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900"} ${article.coverImageUrl ? 'hidden' : 'flex'}`}>
+          <div className={`sp-keep w-full h-full items-center justify-center ${isFeatured ? "bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900" : "bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-900"} ${article.coverImageUrl ? 'hidden' : 'flex'}`}>
             {isFeatured ? (
               <ScrollText className="w-10 h-10 text-emerald-400/40" />
             ) : (
@@ -315,7 +316,7 @@ function ArticleView({ slug }: { slug: string }) {
   return (
     <div className="min-h-screen bg-white">
       {article.coverImageUrl && !imageError && (
-        <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-slate-900">
+        <div className="sp-keep relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-slate-900">
           <img
             src={article.coverImageUrl}
             alt={article.title}
@@ -356,27 +357,24 @@ function ArticleView({ slug }: { slug: string }) {
       )}
 
       {(!article.coverImageUrl || imageError) && (
-        <div className="pt-24 pb-12 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950">
-          <div className="container mx-auto px-6">
+        <div className="sp-hero relative">
+          <div className="sp-container relative" style={{ paddingTop: 48, paddingBottom: 40 }}>
             <button
               onClick={() => setLocation("/impact-labs")}
-              className="inline-flex items-center text-sm text-white/70 hover:text-white transition-colors group mb-8"
+              className="text-[15px] text-[#216b23] hover:underline underline-offset-2"
             >
-              <ArrowLeft className="w-3.5 h-3.5 mr-1.5 group-hover:-translate-x-0.5 transition-transform" />
-              Back to articles
+              ‹ Back to articles
             </button>
-            <div className="max-w-3xl">
-              <span className="inline-block text-xs font-semibold uppercase tracking-widest text-green-400 mb-4">
-                {article.category}
-              </span>
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-[1.1] tracking-tight">
+            <div className="max-w-3xl mt-8">
+              <p className="sp-eyebrow capitalize">{article.category}</p>
+              <h1 className="sp-title mt-3" style={{ fontSize: "clamp(32px, 4.6vw, 52px)" }}>
                 {article.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/70">
-                <span className="font-medium text-white/90">{article.authorName}</span>
-                <span className="w-1 h-1 rounded-full bg-white/40" />
+              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[#6e6e73]">
+                <span className="font-medium text-[#1d1d1f]">{article.authorName}</span>
+                <span className="w-1 h-1 rounded-full bg-[#d2d2d7]" />
                 <span>{formatDate(article.publishedAt)}</span>
-                <span className="w-1 h-1 rounded-full bg-white/40" />
+                <span className="w-1 h-1 rounded-full bg-[#d2d2d7]" />
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {readTime} min read
@@ -540,74 +538,30 @@ function ArticleList() {
 
   return (
     <>
-      <div
-        ref={heroRef}
-        className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 py-24 md:py-32 overflow-hidden"
-      >
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-r from-teal-500/8 to-cyan-500/8 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-green-400/5 to-transparent rounded-full" />
-        </div>
-
-        <div
-          className="container mx-auto px-6 relative z-10 transition-all duration-1000"
-          style={{
-            opacity: heroVisible ? 1 : 0,
-            transform: heroVisible ? "translateY(0)" : "translateY(20px)",
-          }}
+      <div ref={heroRef} data-visible={heroVisible ? "true" : "false"}>
+        <PageHero
+          eyebrow="Research & Insights"
+          title={
+            <>
+              Impact <Accent>Labs</Accent>
+            </>
+          }
+          lede="Research, reports, and stories documenting our environmental and economic impact across Pakistan."
         >
-          <div className="max-w-2xl">
-            <span className="text-green-400/80 font-medium text-xs uppercase tracking-[0.2em] mb-4 block">
-              Research & Insights
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-[1.1] tracking-tight">
-              Impact Labs
-            </h1>
-            <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
-              Research, reports, and stories documenting our environmental and economic impact across Pakistan.
-            </p>
-
-            {/* Research Partners */}
-            <div className="mt-10 pt-8 border-t border-white/10">
-              <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-4">
-                Research guided by faculty at
-              </p>
-              <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
-                <div className="flex items-center gap-2.5 opacity-90 hover:opacity-100 transition-opacity">
-                  <img
-                    src="/partners/lums-logo.png"
-                    alt="LUMS"
-                    className="h-8 md:h-9 w-auto object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                      const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = "flex";
-                    }}
-                  />
-                  <span className="hidden items-center h-9 px-3 rounded-md border border-white/15 bg-white/5 text-white/80 text-sm font-semibold tracking-tight">
-                    LUMS
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5 opacity-90 hover:opacity-100 transition-opacity">
-                  <img
-                    src="/partners/cmu-logo.png"
-                    alt="Carnegie Mellon University"
-                    className="h-8 md:h-9 w-auto object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                      const fallback = (e.target as HTMLElement).nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = "flex";
-                    }}
-                  />
-                  <span className="hidden items-center h-9 px-3 rounded-md border border-white/15 bg-white/5 text-white/80 text-sm font-semibold tracking-tight">
-                    Carnegie Mellon University
-                  </span>
-                </div>
-              </div>
-            </div>
+          <p className="sp-small" style={{ fontSize: 14 }}>
+            Research guided by faculty at
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+            {["LUMS", "Carnegie Mellon University"].map((p) => (
+              <span
+                key={p}
+                className="inline-flex items-center h-9 px-4 rounded-full border border-[#d2d2d7] bg-white text-[14px] font-semibold text-[#1d1d1f]"
+              >
+                {p}
+              </span>
+            ))}
           </div>
-        </div>
+        </PageHero>
       </div>
 
       <div className="container mx-auto px-6 py-14">
@@ -657,9 +611,9 @@ export default function ImpactLabsPublic() {
   const [match, params] = useRoute("/impact-labs/:slug");
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="sp sp-page min-h-screen bg-white">
       <Navbar />
-      <div className="pt-20">
+      <div>
         {match && params?.slug ? (
           <ArticleView slug={params.slug} />
         ) : (
