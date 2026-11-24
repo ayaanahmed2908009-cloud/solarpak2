@@ -831,6 +831,59 @@ export default function ImpactLabsPublic() {
         .article-content td:not(:last-child) {
           border-right: 1px solid #f1f5f9;
         }
+        /* The editor writes an inline black border on tables; use our own styling */
+        .article-content table[style] {
+          border: none !important;
+        }
+        /* Editor tables have no <thead>; treat the first row as the header */
+        .article-content table:not(:has(thead)) tbody tr:first-child td {
+          background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+          font-weight: 600;
+          color: #1e293b;
+          border-bottom: 2px solid #e2e8f0;
+        }
+        .article-content table:not(:has(thead)) tbody tr:first-child:hover td {
+          background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+        }
+        .article-content td p, .article-content th p {
+          margin-bottom: 0.5rem;
+          line-height: 1.6;
+        }
+        .article-content td p:last-child, .article-content th p:last-child {
+          margin-bottom: 0;
+        }
+        .article-content li > ul, .article-content li > ol {
+          margin-top: 0.75rem;
+          margin-bottom: 0.75rem;
+        }
+        .article-content ul ul { list-style-type: circle; }
+        .article-content ul ul ul { list-style-type: square; }
+        .article-content ol ol { list-style-type: lower-alpha; }
+        .article-content ol ol ol { list-style-type: lower-roman; }
+        .article-content h4, .article-content h5, .article-content h6 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #1f2937;
+          margin-top: 2rem;
+          margin-bottom: 0.625rem;
+          line-height: 1.4;
+        }
+        .article-content sup, .article-content sub {
+          font-size: 0.7em;
+          line-height: 0;
+          position: relative;
+          vertical-align: baseline;
+        }
+        .article-content sup { top: -0.5em; }
+        .article-content sub { bottom: -0.25em; }
+        .article-content u { text-decoration: underline; text-underline-offset: 3px; }
+        .article-content s { text-decoration: line-through; }
+        .article-content .ql-align-center { text-align: center; }
+        .article-content .ql-align-right { text-align: right; }
+        .article-content .ql-align-justify { text-align: justify; }
+        .article-content .ql-indent-1 { padding-left: 3em; }
+        .article-content .ql-indent-2 { padding-left: 6em; }
+        .article-content .ql-indent-3 { padding-left: 9em; }
         .article-content hr {
           border: none;
           border-top: 2px solid #f3f4f6;

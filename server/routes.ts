@@ -16,6 +16,7 @@ import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import mammoth from "mammoth";
 
 // Configure multer for file uploads (memory storage for DB persistence)
 const upload = multer({
@@ -35,6 +36,50 @@ const upload = multer({
     }
   }
 });
+
+// Word documents imported into Impact Labs articles
+const docxUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB — docx files often carry embedded images
+  },
+  fileFilter: (req, file, cb) => {
+    const isDocxExt = path.extname(file.originalname).toLowerCase() === '.docx';
+    const isDocxMime =
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.mimetype === 'application/octet-stream';
+    if (isDocxExt && isDocxMime) {
+      return cb(null, true);
+    }
+    cb(new Error('Invalid file type. Only .docx Word documents are allowed.'));
+  }
+});
+
+// Collapse multiple paragraphs inside a table cell into one line. The article
+// editor (Quill) treats every paragraph as its own table row, so leaving them
+// would scramble imported tables.
+function flattenTableCells(html: string): string {
+  return html.replace(/<(td|th)([^>]*)>([\s\S]*?)<\/\1>/g, (_m, tag, attrs, inner) => {
+    const flattened = inner
+      .replace(/<\/p>\s*<p[^>]*>/g, ' ')
+      .replace(/<\/?p[^>]*>/g, '')
+      .replace(/<br\s*\/?>/g, ' ')
+      .trim();
+    return `<${tag}${attrs}>${flattened}</${tag}>`;
+  });
+}
+
+function stripTags(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 const cvUpload = multer({
   storage: multer.memoryStorage(),
@@ -1241,6 +1286,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Upload error:", error);
       res.status(500).json({ message: "Error uploading file" });
+    }
+  });
+
+  // Convert an uploaded Word document into article HTML. Embedded images are
+  // stored the same way as regular uploads so the article doesn't carry base64.
+  app.post("/api/impact-labs/import-docx", requireImpactLabsAuth, (req, res, next) => {
+    docxUpload.single('document')(req, res, (err: any) => {
+      if (err) {
+        const message = err.code === 'LIMIT_FILE_SIZE'
+          ? "Document is too large (max 25MB)"
+          : err.message || "Invalid document";
+        return res.status(400).json({ message });
+      }
+      next();
+    });
+  }, async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No document uploaded" });
+      }
+
+      let imageCount = 0;
+      const result = await mammoth.convertToHtml(
+        { buffer: req.file.buffer },
+        {
+          styleMap: [
+            "p[style-name='Title'] => h1:fresh",
+            "p[style-name='Subtitle'] => h2:fresh",
+            "p[style-name='Quote'] => blockquote > p:fresh",
+            "p[style-name='Intense Quote'] => blockquote > p:fresh",
+            "r[style-name='Strong'] => strong",
+            "u => u",
+            "strike => s",
+          ],
+          convertImage: mammoth.images.imgElement(async (image) => {
+            const buffer = await image.readAsBuffer();
+            const contentType = image.contentType || 'image/png';
+            const ext = (contentType.split('/')[1] || 'png').replace('jpeg', 'jpg').replace(/[^a-z0-9]/gi, '');
+            const filename = `impact-docx-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
+            await db.execute(
+              sql`INSERT INTO uploaded_images (filename, mime_type, data) VALUES (${filename}, ${contentType}, ${buffer.toString('base64')})`
+            );
+            imageCount++;
+            return { src: `/api/images/${filename}` };
+          }),
+        }
+      );
+
+      let html = flattenTableCells(result.value)
+        // Drop empty paragraphs Word uses for spacing
+        .replace(/<p>\s*<\/p>/g, '');
+
+      // Use a leading top-level heading as the title and pull it out of the body so it
+      // isn't shown twice on the article page.
+      let title = '';
+      const headingMatch = html.match(/^\s*<h1[^>]*>([\s\S]*?)<\/h1>/);
+      if (headingMatch) {
+        title = stripTags(headingMatch[1]);
+        html = html.slice(headingMatch[0].length);
+      }
+
+      // The article title is already the page's top heading, so shift Word's
+      // "Heading 1/2/3..." down a level to keep the article's hierarchy right.
+      if (/<h1[\s>]/.test(html)) {
+        html = html.replace(/<(\/?)h([1-6])(\s[^>]*)?>/g, (_m, slash, level, attrs = '') =>
+          `<${slash}h${Math.min(Number(level) + 1, 6)}${slash ? '' : attrs}>`
+        );
+      }
+
+      const firstParagraph = html.match(/<p[^>]*>([\s\S]*?)<\/p>/);
+      let summary = firstParagraph ? stripTags(firstParagraph[1]) : '';
+      if (summary.length > 280) {
+        summary = summary.slice(0, 277).replace(/\s+\S*$/, '') + '...';
+      }
+
+      res.json({
+        html,
+        title,
+        summary,
+        imageCount,
+        warnings: result.messages
+          .filter((m) => m.type === 'warning')
+          .map((m) => m.message),
+      });
+    } catch (error) {
+      console.error("DOCX import error:", error);
+      res.status(500).json({ message: "Could not read that Word document" });
     }
   });
 

@@ -55,6 +55,7 @@ const quillFormats = [
   "align",
   "color",
   "indent",
+  "script",
   "table",
   "table-row",
   "table-body",
@@ -155,6 +156,8 @@ function ArticleEditor({
   const [coverImageUrl, setCoverImageUrl] = useState(article?.coverImageUrl || "");
   const [tags, setTags] = useState(article?.tags?.join(", ") || "");
   const [uploading, setUploading] = useState(false);
+  const [importingDocx, setImportingDocx] = useState(false);
+  const docxInputRef = useRef<HTMLInputElement>(null);
   const [showTablePicker, setShowTablePicker] = useState(false);
   const [tableRows, setTableRows] = useState(3);
   const [tableCols, setTableCols] = useState(3);
@@ -210,6 +213,62 @@ function ArticleEditor({
       setUploading(false);
     }
   }, [toast]);
+
+  const handleDocxImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".docx")) {
+      toast({
+        title: "Unsupported file",
+        description: "Only .docx files are supported. Re-save older .doc files as .docx in Word first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const editorHasContent = content.replace(/<[^>]+>/g, "").trim().length > 0;
+    if (editorHasContent && !window.confirm("Replace the current article content with this document?")) {
+      return;
+    }
+
+    setImportingDocx(true);
+    try {
+      const formData = new FormData();
+      formData.append("document", file);
+      const res = await fetch("/api/impact-labs/import-docx", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "Import failed");
+
+      const quill = (quillRef.current as any)?.getEditor();
+      if (quill) {
+        // Run the HTML through Quill so it is normalised into the editor's format
+        quill.setContents(quill.clipboard.convert({ html: data.html }), "user");
+        quill.setSelection(0, 0);
+      } else {
+        setContent(data.html);
+      }
+      if (!title.trim() && data.title) setTitle(data.title);
+      if (!summary.trim() && data.summary) setSummary(data.summary);
+
+      const parts = [];
+      if (data.imageCount) parts.push(`${data.imageCount} image${data.imageCount === 1 ? "" : "s"} uploaded`);
+      parts.push("review the content before publishing");
+      toast({ title: `Imported ${file.name}`, description: parts.join(" · ") });
+    } catch (err) {
+      toast({
+        title: "Import failed",
+        description: err instanceof Error ? err.message : undefined,
+        variant: "destructive",
+      });
+    } finally {
+      setImportingDocx(false);
+    }
+  }, [content, summary, title, toast]);
 
   const inlineImageHandler = useCallback(() => {
     const quill = (quillRef.current as any)?.getEditor();
@@ -401,6 +460,27 @@ function ArticleEditor({
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-sm font-medium text-gray-700">Content</label>
+              <div className="flex items-center gap-2">
+              <input
+                ref={docxInputRef}
+                type="file"
+                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                className="hidden"
+                onChange={handleDocxImport}
+              />
+              <button
+                type="button"
+                onClick={() => docxInputRef.current?.click()}
+                disabled={importingDocx}
+                className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 px-2.5 py-1 rounded-md border border-gray-200 hover:border-gray-400 transition-colors bg-white disabled:opacity-60"
+              >
+                {importingDocx ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <FileText className="w-3.5 h-3.5" />
+                )}
+                {importingDocx ? "Importing..." : "Import .docx"}
+              </button>
               <div className="relative">
                 <button
                   type="button"
@@ -459,6 +539,7 @@ function ArticleEditor({
                   </div>
                 )}
               </div>
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <style>{`
@@ -479,7 +560,7 @@ function ArticleEditor({
             </div>
             <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
               <ImagePlus className="w-3 h-3" />
-              Use the image button in the toolbar to upload inline images directly from your device
+              Use the image button in the toolbar to upload inline images, or import a Word (.docx) file to fill the article
             </p>
           </div>
         </div>
