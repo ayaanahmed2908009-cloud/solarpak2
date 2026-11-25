@@ -552,7 +552,7 @@ function ArticleList() {
             Research guided by faculty at
           </p>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
-            {["LUMS", "Carnegie Mellon University"].map((p) => (
+            {["LUMS", "Carnegie Mellon University", "University of Oklahoma", "UC Berkeley"].map((p) => (
               <span
                 key={p}
                 className="inline-flex items-center h-9 px-4 rounded-full border border-[#d2d2d7] bg-white text-[14px] font-semibold text-[#1d1d1f]"

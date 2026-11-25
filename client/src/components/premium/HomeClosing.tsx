@@ -190,7 +190,7 @@ export function Research() {
               Field data, policy analysis and annual reporting, open for anyone to read and check.
             </p>
             <p className="sp-small mt-4 sp-reveal" style={{ fontSize: 14 }}>
-              Research guided by faculty at LUMS and Carnegie Mellon University.
+              Research guided by faculty at LUMS, Carnegie Mellon University, the University of Oklahoma and UC Berkeley.
             </p>
           </div>
           <Link href="/impact-labs" className="sp-link sp-reveal">
